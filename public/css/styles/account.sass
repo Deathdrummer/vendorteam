@@ -1,0 +1,3156 @@
+@import "bourbon"
+@import "../public/css/assets/vars"
+@import "../public/css/assets/mixins"
+@import "../public/css/assets/layout"
+@import "../public/css/assets/fonts"
+@import "../public/css/libraries/bootstrap/bootstrap"
+@import "../public/css/libraries/fontawesome/font-awesome"
+@import "../public/css/libraries/animate"
+
+
+
+/* ---------- Стили ---------- */
+body
+	+scrollbar(#cec7d4, #a38eb7)
+	
+	&.body_start
+		+scrollbar(#806c92, #2b1f3c)
+
+
+
+
+
+.tabstitles
+	word-spacing: 10px
+	margin-bottom: 1rem
+	
+	li
+		display: inline-flex
+		align-items: center
+		justify-content: center
+		word-spacing: normal
+		vertical-align: middle
+		+resp(height, (xs: 30px, sm: 35px, md: 40px))
+		box-shadow: 0 0 10px -2px rgba(0, 0, 0, 0.3)
+		background-color: #fff
+		border-radius: 4px
+		cursor: pointer
+		+resp(padding-left, (xs: 10px, sm: 20px, md: 30px), (padding-right: 0))
+		transition: background-color 0.16s, box-shadow 0.16s
+		margin-bottom: 10px
+		
+		p
+			+resp(font-size, (xs: 12px, sm: 14px, md: 14px, lg: 16px), (line-height: 0))
+			+font(roboto, medium)
+			color: #8e8b98
+			margin-bottom: 0
+			
+		
+		&:hover:not(.active):not(.error)
+			box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3)
+		
+		&.active
+			background-color: #443868
+			box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3)
+			
+			p
+				color: #fff
+			
+		
+		&.error
+			background-color: #ffdcdc
+			border: 1px solid #f00
+			box-shadow: 0 0 0 1px #f00 inset
+			
+			p
+				color: #fff
+			
+			&:hover
+				box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3), 0 0 0 1px #f00 inset
+			
+	
+	&.sub
+		height: 30px
+		
+		li
+			font-size: 13px
+			line-height: 15px
+			padding-left: 10px
+			padding-right: 10px
+			max-width: 200px
+
+
+.tabscontent
+	> div
+		display: none
+		
+		&.visible
+			display: block
+		
+		h3
+			margin-bottom: 2rem
+			+font(roboto, medium)
+			color: #555
+			text-transform: uppercase
+			font-size: 20px
+			line-height: 20px	
+
+
+
+
+
+
+
+.main
+
+.start
+	background-color: #110617
+	position: relative
+	background:		
+		repeat: no-repeat
+		size: cover
+	+resp(background-position, (xs: left -500px center, 500px: left -400px center, sm: left -200px center, md: center center))
+
+
+.startblock	
+	position: relative
+	display: flex
+	height: 100vh
+	flex-direction: column
+	justify-content: space-between
+	//background-color: rgba(#fff, 0.4)
+	z-index: 1
+	
+	.header
+		&__block
+			+resp(height, (xs: 60px, sm: 70px, md: 80px, lg: 90px))
+					
+		&__logo
+			p
+				+font(reSquare, bold)
+				color: #fff
+				+resp(font-size, (xs: 24px, sm: 28px, md: 36px), (line-height: 0))
+				text-transform: uppercase
+				margin-bottom: 0
+				margin-top: -6px
+		
+		&__account
+			display: flex
+			align-items: center
+			height: 30px
+			cursor: pointer
+			
+			&:hover
+				p, i
+					color: $colorBlue
+			
+			p, i
+				+resp(font-size, (xs: 14px, sm: 16px), (line-height: 0))
+				transition: color 0.16s
+			
+			.avatar
+				width: 30px
+				height: 30px
+				overflow: hidden
+				margin-right: 6px
+				border-radius: 50%
+				box-shadow: 0 0 10px 0 rgba(31, 0, 58, 0.8)
+				background:		
+					repeat: no-repeat
+					size: cover
+					position: center center
+					
+			
+			i
+			
+				color: #fff
+				margin-right: 6px
+				margin-top: -2px
+				
+			p
+				+font(reboto, regular)
+				color: #fff
+				margin-bottom: 0
+	
+	
+	.content
+		margin-top: calc(100vw / 14)
+		margin-bottom: auto
+		
+		.title
+			min-width: 290px
+			+resp(width, (xs: 100%, sm: 80%, md: 70%, lg: 60%))
+		
+			h1
+				+font(reSquare, bold)
+				+resp(font-size, (xs: 40px, sm: 60px, md: 70px, lg: 80px, xl: 90px), (line-height: -8))
+				color: #fff
+		
+		.desc
+			min-width: 290px
+			+resp(width, (xs: 100%, sm: 80%, md: 70%, lg: 60%))
+			+resp(margin-top, (xs: 2rem, sm: 2rem, md: 3rem, lg: 4rem))
+			
+			p
+				+font(roboto, bold)
+				+resp(font-size, (xs: 14px, sm: 14px, md: 16px, lg: 18px, xl: 20px), (line-height: 10))
+				color: #bbbbcd
+		
+		
+		.triggersblock
+			+resp(margin-top, (xs: 8rem, sm: 8rem, md: 8rem, lg: 10rem, xl: 12rem))
+			
+			h2
+				text-align: center
+				+font(reSquare, bold)
+				color: #fff
+				+resp(font-size, (xs: 30px, sm: 46px, md: 60px), (line-height: 0))
+				text-transform: uppercase
+				margin-bottom: 0
+				margin-top: -6px
+			
+			
+			.trigger
+				background-color: #20172c
+				border: 2px solid #9f96a9
+				border-radius: 3px
+				+resp(margin-bottom, (xs: 1rem, sm: 2rem, md: 2rem, lg: 3rem, xl: 30px))
+				+resp(padding, (xs: 10px, md: 10px, lg: 10px, xl: 30px))
+				text-align: center
+				
+				&__image
+					img
+						+resp(width, (xs: 120px, sm: 130px, md: 140px, lg: auto))
+						+resp(margin-top, (xs: -1rem, sm: -1rem, md: -1rem, lg: -2rem, xl: -3rem))
+				
+				&__title
+					margin-top: -20px
+					margin-bottom: 20px
+					
+					h3
+						color: $colorBlue
+						+font(reSquare, bold)
+						+resp(font-size, (xs: 24px, sm: 26px, md: 24px, lg: 24px, xl: 30px), (line-height: -4))
+						
+				
+				&__text
+					p
+						+font(roboto, medium)
+						+resp(font-size, (xs: 18px, sm: 18px, md: 18px, lg: 18px, xl: 18px), (line-height: 6))
+						color: #bbbbcd
+	
+	
+	.footer
+		text-align: center
+		margin-top: 2rem
+		padding-top: 10px
+		padding-bottom: 10px
+		
+		small	
+			+resp(font-size, (xs: 12px, sm: 12px, md: 14px, lg: 16px), (line-height: 3))
+			color: #b6afbf
+			+font(roboto, regular)	
+			display: block
+			
+			
+		
+		
+	
+				
+		
+	
+
+
+
+
+
+
+
+
+
+
+
+//---------------------------------------------------------------------------- Аккаунт 
+	
+.account
+	min-height: 100vh
+
+.leftblock
+	min-height: 600px
+	height: 100%
+	display: flex
+	flex-direction: column
+	justify-content: space-between
+	+resp(width, (xs: 100%, md: 230px, lg: 250px, xl: 290px))
+	z-index: 998
+	transition: left 0.2s
+	background:		
+		image: url('../images/lk_leftblock.jpg')
+		repeat: no-repeat
+		size: cover
+		position: center center
+	
+	&_opened
+		left: 0
+	
+	
+	&__block
+		flex: 0 1 auto
+		max-height: 100%
+		
+		&_top
+			background-color: rgba(#000, 0.5)
+			+resp(padding, (xs: 10px, sm: 10px, md: 15px, lg: 20px))
+			text-align: center
+		
+		
+		
+		&_navblock
+			flex: 1 0 0
+			//max-height: 200px
+			overflow-y: auto
+			+scrollbar(#483565, #291746, 6px, 3px, 3px)
+			+resp(margin-left, (xs: 8px, sm: 8px, md: 10px), (margin-right: 0))
+			margin-bottom: auto
+		
+		&_bottom
+			background-color: rgba(#000, 0.5)
+			padding: 10px
+			
+	
+	
+	&__title
+		color: #fff
+		+font(roboto, bold)
+		
+		&_left
+			text-align: left
+	
+	
+	&__avatar
+		text-align: center
+		overflow: hidden
+		display: inline-block
+		border-radius: 6px
+		box-shadow: 0 0 10px 0 #000
+		position: relative
+		
+		&:hover
+			.leftblock__changebutton
+				pointer-events: auto
+				opacity: 1
+				transition: opacity 0.16s 0.4s
+		
+		img
+			width: auto
+			max-width: 100%
+			+resp(max-height, (xs: 70px, sm: 80px, md: 90px, lg: 130px, xl: 130px))
+			
+	
+	&__changebutton
+		position: absolute
+		bottom: 0
+		left: 0
+		width: 100%
+		height: 30px
+		font-size: 12px
+		background-color: rgba(38, 29, 59, 0.52)
+		color: #fff
+		opacity: 0
+		pointer-events: none
+		transition: opacity 0.16s 0s
+	
+		
+	&__nickname
+		+resp(font-size, (xs: 16px, sm: 18px, md: 20px, lg: 22px), (line-height: 0))
+		+font(roboto, bold)
+		color: #fff
+		text-align: center
+		position: relative
+		margin-bottom: 10px
+		
+		&:hover i
+			pointer-events: auto
+			opacity: 1
+			transition: opacity 0.16s 0.4s
+		
+		i
+			position: absolute
+			right: -4px
+			top: -5px
+			font-size: 0.6em
+			cursor: pointer
+			opacity: 0
+			pointer-events: none
+			transition: opacity 0.16s 0.3s
+			
+	
+	&__infolist
+		margin-bottom: 0
+		text-align: left
+		
+		li
+			//+font(roboto, reguler)
+			color: #edefef
+			+resp(font-size, (xs: 12px, sm: 12px, md: 14px), (line-height: 0))
+			
+			&.nowrap
+				display: flex
+				
+				span
+					flex: 1 0 auto
+				
+				strong
+					white-space: nowrap
+					display: inline-block
+					text-overflow: ellipsis
+					overflow: hidden
+					
+					&:hover
+						text-overflow: unset
+						z-index: 999
+						position: absolute
+						background-color: #917baf
+						border-radius: 3px
+						padding: 6px
+						+resp(width, (xs: calc(100% - 20px), sm: calc(100% - 20px), md: calc(100% - 30px), lg: calc(100% - 40px)))
+						width: auto	
+						white-space: normal
+						box-shadow: 0 0 10px 0 rgba(124, 60, 195, 0.46)
+				
+			
+			+ li
+				margin-top: 10px
+			
+			span
+				color: #b4a7c7
+				margin-right: 5px
+			
+			strong
+				+resp(font-size, (xs: 12px, sm: 14px, md: 16px), (line-height: 0))
+				+font(roboto, regular)
+			
+			.link
+				display: block
+				text-align: center
+				cursor: pointer
+				
+				&:hover
+					span, small
+						color: #fff
+				
+				.icon
+					background:		
+						repeat: no-repeat
+						size: contain
+						position: center center
+					width: auto
+					height: 30px
+					margin-bottom: 3px
+					transition: opacity 0.16s
+					
+					&_table
+						background-image: url('data:image/png;base64,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')
+					
+					&_stat
+						background-image: url('data:image/png;base64,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')
+				
+				
+				span, small
+					display: block
+					transition: color 0.16s
+				
+				span
+					font-size: 14px
+					color: #b4a7c7
+					
+				
+				small
+					font-size: 13px
+					color: #b4a7c7
+
+	&__button
+		height: 26px
+		padding-left: 15px
+		padding-right: 15px
+		background-color: $colorBlue
+		color: $colorDarkViolett
+		border-radius: 4px
+		+font(roboto, bold)
+		+resp(font-size, (xs: 14px, sm: 14px, md: 14px, lg: 14px, xl: 14px), (line-height: 0))
+		transition: background-color 0.16s
+		
+		&:hover
+			background-color: darken($colorBlue, 10%)
+		
+		&:active
+			background-color: darken($colorBlue, 20%)
+			transition: background-color 0s
+		
+		&:disabled
+			background-color: #c7c7c7
+			color: #f1f1f1
+			transition: background-color 0s
+			cursor: default
+	
+	
+	
+	&__logout
+		margin-top: 10px
+		text-align: left
+		
+		button, a
+			margin: 0
+			margin-top: 10px
+			padding: 0
+			color: #fff
+			background-color: transparent
+			+font(roboto, bold)
+			+resp(font-size, (xs: 18px, sm: 18px, md: 18px, lg: 18px, xl: 18px), (line-height: 0))
+			transition: color 0.16s
+			
+			i
+				margin-right: 4px
+			
+			&:hover
+				color: #54e9ff
+	
+	
+			
+	&__nav
+		height: 100%
+		
+		ul
+			height: 100%
+			margin-bottom: 0
+			
+			li
+				display: flex
+				align-items: center
+				height: 40px
+				position: relative
+				cursor: pointer
+				background-clip: content-box
+				padding-right: 4px
+				transition: background-color 0.16s
+				
+				a
+					display: contents
+				
+				
+				&:hover, &.active
+					background-color: rgba(#000, 0.24)
+					
+					svg
+						opacity: 1
+				
+				span
+					+resp(font-size, (xs: 16px, sm: 16px, md: 16px, lg: 16px, xl: 16px), (line-height: 0))
+					color: #fff
+					
+				
+				svg
+					width: 16px
+					height: 16px
+					margin-right: 10px
+					opacity: 0.5
+					fill: #fff
+					margin-left: 6px
+					transition: opacity 0.16s
+				
+				i
+					font-style: normal
+					color: #000
+					font-size: 12px
+					width: 18px
+					height: 18px
+					display: flex
+					align-items: center
+					justify-content: center
+					background-color: #54e9ff
+					border-radius: 50%
+					position: absolute
+					left: 234px
+		
+		
+		&_bottom
+			ul
+				li
+					height: 50px
+					
+					&.link
+						a
+							display: contents
+							
+							svg
+								width: 36px
+								height: 36px
+								margin-right: 10px
+								fill: #1facf0
+								fill-rule: evenodd
+								//opacity: 0.5
+								margin-left: 6px
+								transition: opacity 0.16s
+							
+							span, small
+								display: block
+							
+							span
+								font-size: 16px
+								color: #fff
+							
+							small
+								font-size: 13px
+								color: #b4a7c7
+							
+					
+	
+	
+	
+	
+	
+	
+	//----------------------------------------------- Образование
+	&__guides
+		margin: 0
+		padding: 0
+		
+		ul
+			font-size: 0.9em
+			display: none
+			
+		li
+			div
+				display: flex
+				justify-content: space-between
+				padding-left: 10px
+				padding-right: 10px
+				padding-top: 6px
+				padding-bottom: 6px
+				cursor: pointer
+				transition: background-color 0.16s
+				
+				&:hover, &.active
+					background-color: rgba(#fff, 0.05)
+				
+				&.active
+					span
+						color: #fff
+			
+			&.opened
+				> ul
+					display: block
+				
+				> div i:after
+					content: '\f106'!important
+				
+		
+		
+		li
+			span
+				color: #c6bae0
+				
+				+font(roboto, regular)
+				transition: color 0.16s
+			
+			i
+				margin-left: 3px
+				color: #c6bae0
+				cursor: pointer
+				transition: color 0.16s
+				font-size: 1.2em
+				line-height: 1em
+				
+				&::after
+					content: '\f107'
+					font: normal normal normal 14px/1 FontAwesome
+					font-size: 1.2em
+					line-height: 1em
+				
+				&:hover
+					color: #fff
+	
+	
+		&_first
+			> li.opened
+				background-color: #261f43
+			
+		&_second
+			> li
+				&.opened
+					background-color: #1c1430
+				
+				> div
+					padding-top: 5px
+					padding-bottom: 5px
+					padding-left: 16px
+				
+			
+			
+		&_third
+			> li
+				&.opened
+					background-color: #140d25
+				
+				> div
+					padding-top: 4px
+					padding-bottom: 4px
+					padding-left: 22px
+			
+		&_forth
+			li
+				> div
+					padding-top: 4px
+					padding-bottom: 4px
+					padding-left: 28px
+		
+	
+	
+	
+	
+	
+	
+	
+	
+	
+		
+			
+
+
+
+.mobileheader
+	
+	p
+		+font(LifeCraft)
+		font-size: 40px
+		line-height: 30px
+		margin-bottom: 0
+		color: $colorDarkViolett
+		
+		span
+			font-size: 0.8em
+			font-family: inherit
+			color: inherit
+	
+	
+	i
+		font-size: 30px
+		color: $colorDarkViolett
+
+
+
+
+
+
+
+.contentblock
+	background-color: #eceeee
+	height: 100%
+	+resp(max-width, (xs: 100%, md: calc(100vw - 230px), lg: calc(100vw - 250px), xl: calc(100vw - 290px)))
+	padding: 20px
+	background:		
+		image: url('../images/lk_bg.png')
+		repeat: no-repeat
+		size: cover
+		position: center center
+	
+	
+	&__guides
+		position: relative
+		
+		p.empty
+			position: absolute
+			top: calc(50% - 12px)
+			width: 100%
+			margin-bottom: 0
+			text-align: center
+			font-size: 20px
+			color: #9991af
+	
+	&__wait
+		position: absolute
+		top: 0
+		left: 0
+		width: 100%
+		height: 100%
+		background-color: rgba(#fff, 0.5)
+		opacity: 0
+		pointer-events: none
+		
+		&_visible
+			opacity: 1
+			pointer-events: auto
+		
+		> div
+			display: flex
+			flex-direction: column
+			align-items: center
+			position: absolute
+			top: calc(50% - 20px)
+			left: calc(50% - 20px)
+			
+			i
+				color: #9991af
+			
+			span
+				color: #9991af
+				font-size: 16px
+				+font(roboto, light)
+				display: block
+				margin-top: 2px
+		
+			
+	
+	
+	
+	
+	.staticsblock
+		width: calc(100% + 20px)
+		height: 0
+		position: relative
+		visibility: hidden
+		position: relative
+		margin-left: -10px
+		margin-right: -10px
+		
+		&__rows
+			padding-left: 30px
+			padding-right: 30px
+			
+		
+		&__visible
+			visibility: visible
+			height: auto
+		
+		&__arrow
+			width: 24px
+			height: 24px
+			position: absolute
+			right: 7px
+			top: calc(50% - 12px)
+			cursor: pointer
+			fill: #897e96
+			pointer-events: none
+			opacity: 0
+			transition: fill 0.16s
+			
+			&_left
+				transform: scale(-1, 1)
+				left: 7px
+			
+			&_visible
+				pointer-events: auto
+				opacity: 1
+			
+			&:hover
+				fill: $colorDarkViolett
+
+	
+	.static	
+		display: flex
+		align-items: center
+		height: 50px
+		width: 200px
+		background-color: #fff	
+		box-shadow: 0 0 10px 0 rgba(51, 51, 51, 0.23)
+		border-radius: 4px
+		margin: 10px
+		padding-left: 10px
+		padding-right: 10px
+		opacity: 0.7
+		cursor: pointer
+		transition: opacity 0.16s
+		
+		&:hover, &.active
+			opacity: 1
+			box-shadow: 0 0 10px 0 rgba(124, 60, 195, 0.46)
+		
+		&.main
+			box-shadow: 0 0 10px 0 rgba(51, 51, 51, 0.23), 0 0 0 2px #f00 inset
+		
+		
+		&__icon
+			height: 30px
+			
+			img
+				height: 100%
+			
+			+ .static__title
+				margin-left: 10px
+		
+		&__title
+			p
+				margin-bottom: 0
+				+resp(font-size, (xs: 13px, sm: 14px, md: 14px, lg: 16px, xl: 16px), (line-height: 0))
+				+font(roboto, bold)
+				color: $colorDarkViolett
+		
+		&__stat
+			display: flex
+			align-items: center
+			margin-left: auto
+			word-spacing: 3px
+			
+			> * + *
+				margin-left: 3px
+			
+			.lider
+				width: 16px
+				height: 16px
+				fill: #16abc1
+			
+			.main
+				color: #16abc1
+				
+			
+		
+		
+	
+	
+	.column
+		background-color: rgba(#fff, 0.8)
+		border-radius: 4px
+		box-shadow: 0 0 10px 0 rgba(124, 60, 195, 0.46)
+		width: 100%
+		
+		&_staticusers
+			// +resp(width, (xs: 100%, md: 100%, lg: 680px, xl: 680px))
+			+resp(width, (xs: 100%, md: 100%, lg: 290px))
+		
+		&__title
+			border-bottom: 1px solid #e3e3e5
+			padding: 15px
+			
+			p
+				+resp(font-size, (xs: 18px, sm: 18px, md: 18px, lg: 18px, xl: 18px), (line-height: 0))
+				color: $colorDarkViolett
+				+font(roboto, bold)
+				margin-bottom: 0
+			
+			
+		&__content
+			
+		
+		
+		
+	.staticpanel
+		display: flex
+		flex-direction: column
+		justify-content: space-between
+		height: 100%
+		padding-bottom: 10px
+		padding-top: 10px
+		padding-right: 5px // убрать, когда включатся сообщения
+	
+			
+	.staticusers
+		padding:
+			top: 8px
+			bottom: 8px
+			left: 10px
+			right: 10px
+		border-right: 1px solid #e3e3e5
+		max-height: calc(100vh - 274px)
+		overflow-y: auto
+		padding-right: 4px
+		+scrollbar(#d4ccde, #5f4877, 6px, 3px, 3px)
+		min-height: 300px
+	
+	.staticuser
+		display: flex
+		justify-content: space-between
+		padding: 15px 10px
+		cursor: pointer
+		box-shadow: 0 0px 8px -3px transparent
+		transition: box-shadow 0.16s, box-shadow 0.16s
+		
+		+ .staticuser
+			border-top: 1px solid #e3e3e5
+		
+		&:hover, &.active
+			background-color: #fff
+			box-shadow: 0 0px 8px -3px #54e9ff
+		
+			
+		&__image
+			width: 40px
+			height: 40px
+			border-radius: 3px
+			margin-right: 8px
+			box-shadow: 0 0 5px 0 rgba(68, 68, 68, 0.45)
+			position: relative
+			background:		
+				repeat: no-repeat
+				size: cover
+				position: center center
+			
+			img
+				width: 100%
+				height: auto
+		
+		&__stat
+			width: 10px
+			height: 10px
+			display: inline-block
+			opacity: 0
+			background-color: $colorBlue
+			border-radius: 50%
+			box-shadow: 0 0 0 2px #fff
+			position: absolute
+			bottom: -4px
+			right: -4px
+			z-index: 1
+			
+			&.online
+				opacity: 1
+				
+		
+		&__name
+			height: 40px
+			display: flex
+			flex-direction: column
+			justify-content: space-between
+			
+			p
+				margin-bottom: 0
+				+font(roboto, bold)
+				+resp(font-size, (xs: 14px, sm: 14px, md: 14px, lg: 14px, xl: 14px), (line-height: 0))
+				color: $colorDarkViolett
+				
+			span
+				color: $colorLightViolett
+				display: inline-block
+				+resp(font-size, (xs: 12px, sm: 12px, md: 12px, lg: 12px, xl: 12px), (line-height: 0))
+				
+		
+		&__info
+			text-align: right
+			
+			span
+				+resp(font-size, (xs: 14px, sm: 14px, md: 14px, lg: 14px, xl: 14px), (line-height: 0))
+				color: $colorLightViolett
+				display: block
+				
+		
+		&__mess
+			display: inline-flex
+			align-items: center
+			vertical-align: top
+			
+			svg
+				width: 14px
+				height: 15px
+				fill: #463b6e
+				margin-right: 4px
+			
+			span
+				color: #463b6e
+				display: inline-block
+				+resp(font-size, (xs: 14px, sm: 14px, md: 14px, lg: 14px, xl: 13px), (line-height: 0))
+				+font(roboto, bold)
+		
+		&__color
+			align-self: center
+			
+			> div
+				width: 30px
+				height: 30px
+				border-radius: 50%
+				background-color: #f4f5f6
+				box-shadow: 0 0 5px 0 rgba(68, 68, 68, 0.45)
+			
+			
+				
+	
+	
+	
+	.staticbuttons
+		display: flex
+		justify-content: space-between
+		padding: 10px 5px 0 10px
+		margin-top: 1rem
+		
+		button
+			height: 44px
+			width: calc(50% - 5px)
+			padding-left: 10px
+			padding-right: 10px
+			background-color: $colorBlue
+			color: $colorDarkViolett
+			border-radius: 4px
+			+font(roboto, bold)
+			+resp(font-size, (xs: 14px, sm: 14px, md: 14px, lg: 14px, xl: 14px), (line-height: 0))
+			transition: background-color 0.16s
+			
+			&:hover
+				background-color: darken($colorBlue, 10%)
+			
+			&:active
+				background-color: darken($colorBlue, 20%)
+				transition: background-color 0s
+	
+	
+	
+		
+	
+	.messages
+		display: flex
+		flex-direction: column
+		justify-content: space-between
+		position: relative
+		height: 100%
+		padding:
+			left: 10px
+			right: 10px
+			top: 10px
+			bottom: 10px
+		
+		&__block
+			max-height: calc(100vh - 260px)
+			overflow-y: auto
+			padding-right: 6px
+			+scrollbar(#d4ccde, #5f4877, 6px, 3px, 3px)
+			min-height: 300px
+	
+	.message
+		display: flex
+		margin-bottom: 2rem
+		
+		&__image
+			flex: 0 0 40px
+			height: 40px
+			border-radius: 3px
+			margin-right: 8px
+			box-shadow: 0 0 5px 0 rgba(68, 68, 68, 0.45)
+			position: relative
+			
+			img
+				width: 100%
+				height: auto
+		
+		&__content
+			flex: 0 1 100%
+		
+		&__title
+			display: flex
+			justify-content: space-between
+			
+			p
+				+font(roboto, bold)
+				color: $colorDarkViolett
+				margin-bottom: 0
+				+resp(font-size, (xs: 16px, sm: 16px, md: 16px, lg: 16px, xl: 16px), (line-height: 0))
+				
+			small
+				+resp(font-size, (xs: 12px, sm: 12px, md: 12px, lg: 12px, xl: 12px), (line-height: 0))
+				color: $colorLightViolett
+		
+		
+		&__text
+			margin-top: 10px
+			margin-bottom: 0
+			+resp(font-size, (xs: 14px, sm: 14px, md: 14px, lg: 14px, xl: 14px), (line-height: 2))
+			color: $colorDarkViolett
+				
+			
+	
+	
+	.send_message
+		display: flex
+		align-items: flex-end
+		margin-top: 1rem
+		margin-top: auto
+		padding-top: 1rem
+		max-width: 100%
+		
+		&__image
+			align-self: flex-start
+			flex: 0 0 40px
+			height: 40px
+			border-radius: 3px
+			margin-right: 8px
+			box-shadow: 0 0 5px 0 rgba(68, 68, 68, 0.45)
+			position: relative
+			
+			img
+				width: 100%
+				height: auto
+		
+		&__content
+			flex: 0 1 100%
+			border-bottom: 1px solid #c3c0d0
+			
+			.textarea
+				padding: 2px 0
+				max-height: 38px
+				width: 100%
+				+resp(font-size, (xs: 14px, sm: 14px, md: 14px, lg: 14px, xl: 14px), (line-height: 2))
+				+scrollbar(#d4ccde, #5f4877, 4px, 3px, 3px)
+				overflow-y: auto
+				overflow-x: hidden
+				word-break: break-word
+				
+				&:empty::after
+					content: 'Введите сообщение'
+					color: #b6b4bb
+					pointer-events: none
+				
+				&:focus::after
+					content: ''
+				
+				
+		&__send
+			padding-left: 3px
+			border-bottom: 1px solid #c3c0d0
+			
+			svg
+				width: 20px
+				height: 20px
+				cursor: pointer
+				fill: #463b6e
+				
+		
+		
+		
+	
+	
+	.newsblock
+		margin-right: 10px
+		margin-top: 10px
+		padding-bottom: 10px
+	
+	.news
+		+scrollbar(#d4ccde, #5f4877, 6px, 3px, 3px)
+		overflow-y: auto
+		overflow-x: hidden
+		max-height: calc(100vh - 204px)
+		min-height: 180px
+		
+		p.empty
+			font-size: 18px
+			color: #908e96
+			margin-bottom: 0
+			text-align: center
+			margin-top: 70px
+			
+			
+		
+		&_item
+			display: flex
+			padding: 15px
+			position: relative
+			
+			
+			
+			+ .news_item
+				margin-top: 2rem
+				
+				&::after
+					content: ''
+					display: block
+					width: calc(100% - 30px)
+					height: 1px
+					background-color: #e3e3e5
+					position: absolute
+					top: -1rem 
+					
+			
+			&__image
+				flex: 1 0 150px
+				+resp(flex-basis, (xs: 70px, sm: 80px, md: 90px, lg: 100px, xl: 150px))
+				max-width: 100%
+				
+				img
+					max-width: 100%
+					height: auto
+				
+			&__content
+				margin-left: 10px
+				flex: 1 1 100%
+				max-width: 100%
+				word-break: break-word
+				
+				h3
+					margin-bottom: 5px
+					+font(roboto, bold)
+					color: $colorDarkViolett
+					+resp(font-size, (xs: 16px, sm: 16px, md: 16px, lg: 16px, xl: 16px), (line-height: 0))
+					
+				small
+					display: block
+					color: $colorLightViolett
+					+resp(font-size, (xs: 13px, sm: 13px, md: 13px, lg: 13px, xl: 13px), (line-height: 0))
+				
+				p
+					color: $colorDarkViolett
+					+resp(font-size, (xs: 14px, sm: 14px, md: 14px, lg: 14px, xl: 14px), (line-height: 4))
+					//+font(roboto, regular)
+							
+
+
+
+
+
+
+
+.staticscontent
+	display: none
+	
+	&_visible
+		display: block
+
+
+
+
+.raiderscolorswrap
+	.jBox-container
+		box-shadow: 0 0 0 1px #cdc8d2, 0 5px 30px 0 rgba(49, 40, 58, 0.64)
+	
+	
+.raiderscolors
+	width: 500px
+	//min-height: 60px
+	max-height: 150px
+	overflow-y: scroll
+	+scrollbar(#e4e6e6, #3a2651, 6px, 3px, 3px)
+	padding-top: 3px
+	padding-bottom: 3px
+	
+	&__item
+		cursor: pointer
+		display: block
+		margin: 0 auto
+		text-align: center
+		position: relative
+		width: 50px
+		height: 50px
+		border-radius: 50%
+		margin-bottom: 30px
+		transition: transform 0.07s
+		
+		&:hover
+			transform: scale(1.05)
+			
+			small
+				transform: scale(0.995)
+				
+		small
+			color: #000
+			font-size: 11px
+			line-height: 11px
+			+font(roboto, regular)
+			position: absolute
+			display: block
+			text-align: center
+			width: calc(100% + 40px)
+			top: 50px
+			left: -20px
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.popup
+	+scrollbar(#cec7d4, #a38eb7)
+	
+	&.visible
+		background-color: rgba(#000, 0.5)
+		
+	
+	&__window
+		background-color: #fff
+		box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.58)
+		border-radius: 5px
+		overflow: hidden
+		
+	&__wait
+		i
+			color: #775d94
+	
+	&__close
+		display: block
+		width: 20px
+		height: 20px
+		position: absolute
+		+resp(top, (xs: 15px, sm: 20px, lg: 25px), (right: -5))
+		cursor: pointer
+		
+		
+		&:hover::before, &:hover::after
+			background-color: #fff			
+		
+		
+		&::before, &::after
+			content: ''
+			height: 2px
+			width: 100%
+			display: block
+			background-color: #776e90
+			position: absolute
+			top: calc(50% - 1px)
+			transition: background-color 0.16s
+		
+		&::before
+			transform: rotate(45deg)
+			
+		&::after
+			transform: rotate(-45deg)
+			
+	
+	&__top
+		background-color: #443868
+		+resp(height, (xs: 50px, sm: 60px, lg: 70px))
+		display: flex
+		align-items: center
+		+resp(padding-left, (xs: 10px, sm: 20px, lg: 25px))
+		+resp(padding-right, (xs: 40px, sm: 50px, lg: 55px))
+		
+		
+		h5
+			color: #fff
+			+font(roboto, bold)
+			+resp(font-size, (xs: 16px, sm: 16px, md: 18px), (line-height: 0))
+			
+	
+	&__content
+		+resp(padding, (xs: 8px, sm: 8px, md: 10px, lg: 15px, xl: 20px))
+		
+		button.small.main
+			+btn()
+			
+			
+			
+		
+	&__buttons
+		+resp(padding, (xs: 8px, sm: 8px, md: 10px, lg: 15px))
+		
+		button
+			background-color: $colorBlue
+			color: #1e1528
+			+font(roboto, bold)
+			+resp(font-size, (xs: 14px, md: 16px), (line-height: 0))
+			border-radius: 3px
+			+resp(padding-left, (xs: 6px, sm: 10px, md: 15px, lg: 20px), (padding-right: 0))
+			padding-top: 6px
+			padding-bottom: 6px
+			transition: background-color 0.16s
+			
+			+ button
+				margin-right: 10px
+			
+			&:hover
+				background-color: darken($colorBlue, 10%)
+			
+			&[close], &.close
+				background-color: #e2573a
+				color: #fff
+				opacity: 1
+				
+				&:hover
+					background-color: darken(#e2573a, 10%)
+			
+			&:disabled, &.disabled, &[disabled]
+				background-color: #e4e4e4
+				color: #868686
+				
+
+
+
+
+
+
+
+	//------------------ Заголовок (в контенте)
+	&__title
+		display: flex
+		align-items: center
+		margin-bottom: 10px
+		padding-top: 5px
+		padding-bottom: 5px
+		
+		img
+			flex: 0 1 24px
+			height: auto
+			margin-right: 10px
+		
+		.image
+				width: 30px
+				border: 1px solid #cbc7d8
+				background-color: #fff
+				border-radius: 3px
+				box-shadow: 0 0 5px -2px rgba(0, 0, 0, 0.49)
+				margin-right: 5px
+				
+				img
+					max-width: 100%
+					height: auto
+		
+		h6
+			+resp(font-size, (xs: 16px, sm: 16px, md: 16px, lg: 16px, xl: 16px), (line-height: 0))
+			color: $colorDarkViolett
+			+font(roboto, bold)
+			margin-bottom: 0
+		
+		.buttons
+			word-spacing: 2px
+			font-size: 0
+			
+			button
+				background-color: $colorBlue
+				color: #1e1528
+				+font(roboto, bold)
+				+resp(font-size, (xs: 14px, md: 16px), (line-height: 0))
+				border-radius: 3px
+				padding: 2px 8px
+				transition: background-color 0.16s
+				
+				&:hover
+					background-color: darken($colorBlue, 10%)
+				
+				&:disabled, &.disabled, &[disabled]
+					background-color: #e4e4e4
+					color: #868686
+		
+		
+		
+	&__data
+		+scrollbar(#d4ccde, #6e6194, 8px, 3px, 3px)
+		overflow-x: auto
+		width: 100%
+		padding-bottom: 10px
+		
+		> *
+			overflow: hidden
+		
+		.auth
+			margin: 0 auto
+			max-width: 300px
+		
+		.changeavatar
+			margin: 0 auto
+			max-width: 300px
+		
+		
+		.timesheet
+			min-width: 1162px
+			border-top: 1px solid #e5e5e5
+		
+		.operators
+			min-width: 280px
+			border-top: 1px solid #e5e5e5
+		
+		.payments
+			min-width: 280px
+			border-top: 1px solid #e5e5e5
+			
+			i
+				font-size: 18px
+				line-height: 18px
+				color: $colorLightViolett
+				cursor: pointer
+				vertical-align: middle
+				transition: color 0.16s
+				
+				&:hover
+					color: $colorDarkViolett
+		
+		.reports
+			min-width: 1130px
+			
+			&.keys
+				min-width: 980px
+			
+			
+		
+		.offtime
+			min-width: 1120px
+			
+			table
+				table-layout: fixed
+				flex: 0 1 100%
+				width: 100%
+				
+				td
+					//border: 1px solid #6d8a98
+					color: #fff
+					vertical-align: middle
+					padding: 0
+					vertical-align: top
+					font-size: 14px
+					position: relative
+						
+			&__title
+				border-top: 1px solid #e5e5e5
+				background: #fff
+				height: 50px
+				text-align: center
+				display: flex
+				align-items: center
+				justify-content: center
+				flex-direction: column
+				
+				span, small
+					display: block
+					
+				span
+					font-size: 14px
+					line-height: 14px
+					margin-bottom: 2px
+					
+				small
+					font-size: 12px
+					line-height: 12px
+			
+			&__content
+				margin: 4px 5px 10px
+				height: 154px
+				padding: 6px 5px
+				overflow-y: auto
+				+scrollbar(#dfe4e4, #9b98a5, 4px, 2px, 2px)
+				
+				&_closed
+					position: relative
+					
+					&::after
+						content: ''
+						position: absolute
+						top: 0
+						bottom: 0
+						left: 0
+						right: 0
+						width: 100%
+						height: 100%
+						background-color: #eee
+						opacity: 0.6
+					// display: flex
+					// justify-content: center
+					// align-items: center
+					
+					// p
+					// 	//position: absolute
+					// 	width: 100%
+					// 	//top: calc(50% + 10px)
+					// 	margin-top: 36px
+					// 	margin-bottom: 0
+					// 	font-size: 16px
+					// 	color: #c3c3c3
+					// 	+font(robot, medium)
+					// 	text-align: center
+					// 	@extend .noselect
+					
+					
+			
+			
+			.users_list
+				padding: 0
+				margin: 0
+				
+				li
+					list-style: none
+					font-size: 13px
+					color: $colorDarkViolett
+					
+					&:not(:last-of-type)
+						padding-bottom: 5px
+					
+					+ li
+						border-top: 1px solid #d6d6d6
+						padding-top: 5px
+					
+					p
+						font-size: 14px
+						line-height: 13px
+						margin-bottom: 0
+						color: $colorDarkViolett
+					
+					small
+						font-size: 12px
+						color: #ababab
+			
+			
+			.buttons
+				text-align: center
+				margin-bottom: 10px
+				height: 22px
+				
+				button
+					font-size: 13px
+					+font(roboto, medium)
+					background-color: $colorBlue
+					border-radius: 2px
+					opacity: 0.44
+					color: #000
+					transition: opacity 0.16s, background-color 0.16s
+					
+					&[disabled]
+						opacity: 0.4
+						pointer-events: none
+					
+					&[setofftime]
+						opacity: 1
+						
+						&:hover
+							background-color: darken($colorBlue, 10%)
+					
+					&[unsetofftime]
+						opacity: 1
+						background-color: #e2573a
+						color: #fff
+						
+						&:hover
+							background-color: darken(#e2573a, 10%)
+		
+		
+			
+		.vacation
+			border: 1px solid #c1beca
+			
+			table
+				table-layout: fixed
+				
+				td
+					padding: 0
+					height: auto
+					
+					&.names
+						text-align: right
+						padding-right: 5px
+						width: 200px
+						background-color: #fff
+						line-height: 12px
+						font-size: 12px
+				
+				thead
+					td
+						border-bottom: 1px solid #c1beca
+						
+						+ td
+							border-left: 1px solid #c1beca
+						
+						&.mon
+						&.tue
+						&.wed
+						&.thu
+						&.fri
+						&.sat
+							background-color: #e0f5e7
+						&.sun
+							background-color: #e0f5e7
+				
+						p
+							font-size: 10px
+							text-align: center
+							
+							&.month
+								text-overflow: ellipsis
+								overflow: hidden
+								white-space: nowrap
+								font-size: 12px
+								text-transform: capitalize
+						
+						&.out:not(.current)
+							filter: brightness(0.96)
+							background-color: #f1f1f1
+						
+						&.current
+							background-color: #8bf0ff
+								
+				
+				tbody
+					tr
+						&.edited
+							td
+								&.names
+									background-color: #a7e9f3
+									color: #000
+									+font(roboto, bold)
+								
+								&.vacated
+									background-color: #60cada
+							
+							
+						td
+							height: 19px
+							border: 1px solid #fff
+							background-color: #f2f5f5
+							
+							&.names
+								//border-color: #c1beca
+							
+							&[setvacation]
+								cursor: pointer
+								//transition: filter 0.16s
+								
+								&:hover:not(.disabled):not(.out):not(.confirmed)
+									filter: brightness(0.9)
+							
+							&.vacated
+								background-color: #9dd9e2 !important
+							
+							&.confirmed
+								background-color: #9dd9e2
+								vertical-align: middle
+								text-align: center
+								cursor: default
+								
+								&::after
+									content: '\f00c'
+									font-family: fontAwesome
+							
+							&.disabled:not(.vacated)
+								background-color: #ffe6e6 !important
+								cursor: default
+								//pointer-events: none
+								position: relative
+								
+								&::before, &::after
+									content: ''
+									position: absolute
+									left: 5%
+									top: calc(50% - 0.5px)
+									display: block
+									width: 90%
+									height: 1px
+									background-color: #ffb0b0
+								
+								&::before
+									transform: rotate(45deg)
+								
+								&::after
+									transform: rotate(-45deg)
+							
+							&.out
+								cursor: default
+								
+								
+							
+							&.mon
+							&.tue
+							&.wed
+							&.thu
+							&.fri
+							&.sat
+								background-color: #e0f5e7
+							&.sun
+								background-color: #e0f5e7
+		
+		
+	.newraid
+		min-width: 500px
+		
+		.new_raid_type
+			margin-bottom: 1rem
+			
+			.fieldset_item
+				display: flex
+				justify-content: flex-end
+				
+				+ .fieldset_item
+					margin-top: 1rem
+				
+				span
+					color: #95b3c1	
+				
+				label
+					flex: 0 1 auto
+					margin-bottom: 0
+					color: #95b3c1
+					margin-right: 10px
+					
+				select
+					flex: 0 1 50%
+					background-color: #b9c9d2
+					border: 1px solid lighten(#b9c9d2, 10%)
+					color: #0a1115
+					
+					
+					&:focus
+						background-color: lighten(#b9c9d2, 10%)
+			
+			
+		#raidStaticTabs	
+			li
+				flex: 0 1 50%
+
+
+		.new_raid_table
+			width: 100%
+			
+			td
+				border: 1px solid #6d8a98
+				color: #fff
+				vertical-align: middle
+				padding-left: 5px
+				padding-right: 5px
+				
+				&:first-of-type
+					padding: 0
+			
+			thead
+				background-color: #617e8c
+				
+				td
+					font-size: 16px
+					+font(roboto, medium)
+					border-color: #b0c1ca
+					
+			
+			tbody
+				background-color: #1f3946
+				
+				td
+					height: 40px
+					font-size: 14px
+					+font(roboto, regular)
+					
+					&.center
+						text-align: center
+					
+					img
+						width: 40px
+						height: auto
+				
+					input[type="number"]
+						width: 65px
+						background: #3a5b6b
+						border: 1px solid #777
+						color: #fff
+						
+						&::-webkit-inner-spin-button, 
+						&::-webkit-outer-spin-button
+							opacity: 1
+					
+					
+					input[type="checkbox"]
+						transform: scale(1.2)
+							
+						
+									
+				
+
+
+
+		.new_raid_orders
+			.fieldset_item
+				display: flex
+				justify-content: flex-end
+				
+				+ .fieldset_item
+					margin-top: 1rem
+					
+				label
+					flex: 0 1 auto
+					margin-bottom: 0
+					color: #95b3c1
+					margin-right: 10px
+					
+				input
+					flex: 0 1 50%
+					background-color: #b9c9d2
+					border: 1px solid lighten(#b9c9d2, 10%)
+					color: #0a1115
+					
+					
+					&:focus
+						background-color: lighten(#b9c9d2, 10%)
+		
+		
+		
+		
+		
+		
+	
+	.compound
+		border-top: 1px solid #dbdbdb
+	
+		
+
+
+
+
+	
+	//------------------ Простой список
+	&__list
+		margin-bottom: 0
+		
+		li
+			background-color: #eef0f0
+			color: 
+			border-radius: 3px
+			display: flex
+			justify-content: center
+			align-items: center
+			text-align: center
+			height: 50px
+			cursor: pointer
+			transition: background-color 0.16s
+			
+			&:hover
+				background-color: darken(#eef0f0, 5%)
+			
+			+ li
+				margin-top: 10px
+				
+			span
+				+font(roboto, bold)
+				font-size: 16px
+				padding-left: 10px
+				padding-right: 10px
+				color: $colorLightViolett
+			
+			.image
+				width: 30px
+				border: 1px solid #cbc7d8
+				background-color: #fff
+				border-radius: 3px
+				box-shadow: 0 0 5px -2px rgba(0, 0, 0, 0.49)
+				
+				img
+					max-width: 100%
+					height: auto
+	
+	
+	
+	
+	//------------------ Сетка
+	&__grid
+		background-color: #eef0f0
+		padding: 6px
+		border-radius: 3px
+		
+		&_title
+			text-align: center
+			background: none
+			padding-top: 14px
+			padding-bottom: 14px
+			
+			p
+				+resp(font-size, (xs: 14px, sm: 14px, md: 14px, lg: 14px, xl: 14px), (line-height: 0))
+				+font(roboto, bold)
+				color: $colorDarkViolett
+				margin-bottom: 6px
+				
+			small
+				display: block
+				+resp(font-size, (xs: 12px, sm: 12px, md: 12px, lg: 12px, xl: 12px), (line-height: 0))
+				+font(roboto, regular)
+		
+		
+		
+		&_content
+			margin-bottom: 10px
+			
+			p
+				+resp(font-size, (xs: 14px, sm: 14px, md: 14px, lg: 14px, xl: 14px), (line-height: 0))
+				+font(roboto, medium)
+				color: $colorLightViolett
+				
+				&.center
+					text-align: center
+			
+			ul
+				margin-bottom: 0
+				
+				li
+					display: flex
+					justify-content: space-between
+					padding-top: 3px
+					padding-bottom: 3px
+			
+			span
+				+font(roboto, light)
+				+resp(font-size, (xs: 14px, sm: 14px, md: 14px, lg: 14px, xl: 14px), (line-height: 0))
+			
+			strong
+				+font(roboto, regular)
+				+resp(font-size, (xs: 14px, sm: 14px, md: 14px, lg: 14px, xl: 14px), (line-height: 0))
+	
+	
+	
+	
+	
+	//------------------ Таблица
+	&__table
+		width: 100%
+		background-color: #eef0f0
+		
+		&_fixed
+			table-layout: fixed
+		
+		&_hover
+			tbody
+				tr
+					&:hover
+						background-color: darken(#eef0f0, 3%)
+		
+		.center
+			text-align: center
+		
+		.right
+			text-align: right
+		
+		thead
+			padding: 0
+			margin: 0
+			background-color: #fff
+			
+			tr
+				td
+					height: 50px
+					padding: 5px
+					+font(roboto, bold)
+					color: $colorDarkViolett
+					font-size: 14px
+					line-height: 14px
+					border: none
+					
+					&.changed
+						background-color: #c9ffc9
+					
+					p, strong, span
+						color: $colorDarkViolett
+						+resp(font-size, (xs: 12px, md: 14px), (line-height: 2))
+						margin-bottom: 0
+					
+					p, span
+						+font(roboto, regular)
+					
+					strong
+						+font(roboto, bold)
+					
+					small
+						display: block
+						font-size: 12px
+						line-height: 14px
+						color: $colorLightViolett
+						+font(roboto, regular)
+					
+					select
+						width: 100%
+						border: 1px solid #b2bbc3
+						border-radius: 2px
+						+font(roboto, regular)
+						font-size: 12px
+					
+					
+					
+				
+		
+		tbody, tfoot
+			padding: 0
+			margin: 0
+			
+			tr
+				&.offtime
+					background-color: #f3f1db
+					
+					p
+						color: #afab82
+				
+				td
+					+font(roboto, regular)
+					color: #000
+					
+					&.nowidth
+						width: 1px
+					
+					&.nopadding
+						padding: 0
+					
+					&.center
+						text-align: center
+					
+					&.changed
+						background-color: #c9ffc9
+					
+					.nowrap, &.nowrap
+						white-space: nowrap
+					
+					border: 1px solid #fff
+					padding: 5px
+					font-size: 14px
+					
+					p, strong, span
+						color: $colorLightViolett
+						+resp(font-size, (xs: 12px, md: 14px), (line-height: 2))
+						margin-bottom: 0
+						
+						&.inline
+							display: inline-block
+					
+					p, span
+						+font(roboto, regular)
+					
+					strong
+						+font(roboto, bold)
+						
+						&.inline
+							display: inline-block
+					
+					small
+						display: block
+						font-size: 12px
+						line-height: 14px
+						color: $colorLightViolett
+						+font(roboto, regular)
+						
+						&.inline
+							display: inline-block
+					
+					.image
+						width: 40px
+						height: 40px
+						border-radius: 2px
+						box-shadow: 0 0 5px -2px rgba(0, 0, 0, 0.49)
+						background:
+							repeat: no-repeat
+							size: cover
+							position: center center
+						
+						&.mini
+							width: 36px
+							height: 36px
+					
+					input[type="number"]
+						background: none
+						border: none
+						width: 50px
+						
+						&::-webkit-inner-spin-button, 
+						&::-webkit-outer-spin-button
+							opacity: 1
+		
+		tfoot
+			background-color: darken(#eef0f0, 4%)
+			
+			&.right
+				text-align: right
+			
+			button
+				+btn((height: 24px, font-size: 13px))
+
+	
+	
+	
+	
+	&__form_item
+		margin-bottom: 1rem
+	
+	&__label
+		font-size: 14px
+		line-height: 14px
+		margin-bottom: 0
+		color: #56545c
+		+font(roboto, medium)
+		display: inline-block
+		
+		
+	&__select
+		min-width: 65px
+		position: relative
+		display: inline-block
+		max-width: 300px
+		
+		&_long
+			width: 100%
+		
+		&::after
+			font-family: fontAwesome
+			content: "\f107"
+			color: #777
+			font-size: 16px
+			line-height: 16px
+			position: absolute
+			right: 4px
+			top: calc(50% - 8px)
+			cursor: pointer
+			pointer-events: none
+		
+		&:focus
+			select
+				border-color: #f00
+				
+			&::after
+				color: #000
+			
+		select
+			border: 1px solid #dbdbdb
+			border-radius: 4px
+			+resp(height, (xs: 36px, sm: 36px, md: 36px, lg: 36px, xl: 36px))
+			padding-left: 6px
+			padding-right: 10px
+			font-size: 14px
+			width: 100%
+			color: #0a1115
+			appearance: none
+			cursor: pointer
+			
+			&:focus ~ .select__caret::after
+				color: #fff
+		
+			option
+		
+
+		
+	
+	&__field
+		max-width: 300px
+		
+		&_long
+			max-width: 100%
+			
+		input
+			border: 1px solid #dbdbdb
+			border-radius: 4px
+			height: 40px
+			padding-left: 4px
+			padding-right: 4px
+			font-size: 14px
+			width: 100%
+	
+	
+	&__textarea
+		max-width: 300px
+		
+		&_long
+			max-width: 100%
+			
+		textarea
+			border: 1px solid #dbdbdb
+			border-radius: 4px
+			font-size: 14px
+			width: 100%
+			resize: vertical
+	
+	
+	&__file
+		max-width: 300px
+		margin-bottom: 0
+		
+		
+		&.error 
+			.icon
+				border: 1px solid #f00
+				background-color: rgba(255, 0, 0, 0.17)
+			
+				img
+					opacity: 0.3
+			
+			.filename
+				z-index: -1
+			
+		
+		input[type="file"]
+			display: none
+		
+		p
+			margin-bottom: 0
+		
+		.icon
+			border: 1px solid #dbdbdb
+			cursor: pointer
+			overflow: hidden
+			position: relative
+			border-radius: 4px
+			z-index: 1
+			
+			img
+				max-width: 100%
+			
+			&::before
+				content: "Выбрать файл"
+				color: #fff
+				+font(roboto, medium)
+				font-size: 20px
+				display: block
+				width: 100%
+				position: absolute
+				z-index: 2
+				top: calc(50% - 15px)
+				text-align: center
+				cursor: pointer
+				opacity: 0
+				transition: opacity 0.16s
+			
+			&::after
+				content: ""
+				position: absolute
+				top: 0
+				left: 0
+				width: 100%
+				height: 100%
+				background-color: rgba(#000, 0.7)
+				cursor: pointer
+				opacity: 0
+				transition: opacity 0.16s
+			
+			&:hover::after, &:hover::before
+				opacity: 1
+		
+		
+			.filename
+				font-size: 13px
+				line-height: 13px
+				+font(roboto, medium)
+				max-width: 286px
+				color: #264b50
+				display: block
+				padding: 2px 10px
+				background-color: #54e9ff
+				border: 1px solid #3ea6b5
+				border-radius: 2px
+				position: absolute
+				top: 6px
+				left: 6px
+				
+				&:empty
+					display: none
+					
+
+	
+	&__color
+		align-self: center
+		
+		> div
+			width: 30px
+			height: 30px
+			border-radius: 50%
+			background-color: #f4f5f6
+			box-shadow: 0 0 5px 0 rgba(68, 68, 68, 0.45)	
+			cursor: pointer
+	
+	
+	
+	&__button
+		background-color: $colorBlue
+		color: #1e1528
+		+font(roboto, bold)
+		+resp(font-size, (xs: 14px, md: 16px), (line-height: 0))
+		border-radius: 3px
+		padding-top: 6px
+		padding-bottom: 6px
+		width: 30px
+		transition: background-color 0.16s
+		
+		+ button
+			margin-left: 5px
+		
+		&:hover
+			background-color: darken($colorBlue, 10%)
+		
+		&_remove
+			background-color: #e2573a
+			color: #fff
+			opacity: 1
+			
+			&:hover
+				background-color: darken(#e2573a, 10%)
+		
+		&:disabled, &.disabled, &[disabled]
+			background-color: #d6d6d6
+			color: #868686
+			cursor: default
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//------------------------------------------------------------------------------------ Кабинет оператора
+
+.operator
+	width: 100%
+	position: relative
+	border-radius: 6px
+	transition: background-color 0.16s 0s, box-shadow 0.16s 0s
+	padding: 10px
+		
+	&:hover
+		background-color: #fff
+		box-shadow: 0 0 10px -2px $colorBlue
+		transition: background-color 0.16s, box-shadow 0.16s
+		
+		.operator__buttons
+			visibility: visible
+	
+	
+	&__title
+		+font(roboto, bold)
+		+resp(font-size, (xs: 18px, sm: 18px, md: 18px, lg: 20px, xl: 20px), (line-height: 0))
+		color: $colorDarkViolett
+		margin-bottom: 0
+		margin-top: 15px
+		
+	&__top
+		display: flex
+		align-items: center
+		padding-bottom: 12px
+		position: relative
+	
+	&__image
+		flex: 1 0 40px
+		width: 40px
+		height: 40px
+		border-radius: 3px
+		margin-right: 6px
+		box-shadow: 0 0 5px 0 rgba(68, 68, 68, 0.45)
+		
+		img
+			width: 100%
+			height: auto
+	
+	&__stat
+		position: absolute
+		top: 35px
+		left: 35px
+		width: 10px
+		height: 10px
+		background-color: $colorBlue
+		border-radius: 50%
+		box-shadow: 0 0 0 2px #fff
+		z-index: 2
+	
+	&__nickname
+		flex: 1 1 100%
+		margin-bottom: 0
+		font-size: 14px
+		line-height: 14px
+		color: $colorDarkViolett
+		+font(roboto, bold)
+	
+	
+	&__bottom
+		
+		
+	&__timesheet
+		padding-top: 12px
+		border-top: 1px solid #e3e3e5
+		
+		.empty
+			margin-bottom: 0
+			font-size: 16px
+			line-height: 16px
+			color: #bdbdbd
+			+font(roboto, regular)
+		
+			
+		
+		ul
+			li
+				font-size: 13px
+				line-height: 13px
+				color: #56545c
+				
+				+ li
+					margin-top: 5px
+					
+				&.title
+					font-size: 14px
+					line-height: 14px
+					color: $colorDarkViolett
+					+font(roboto, bold)
+					
+					span
+						+font(roboto, bolditalic)
+						+resp(font-size, (xs: 14px, sm: 14px, md: 14px, lg: 14px, xl: 14px), (line-height: 0))
+	
+	
+	&__buttons
+		margin-top: 10px
+		display: flex
+		justify-content: space-between
+		visibility: hidden
+		
+		button
+			background-color: transparent
+			padding: 2px 3px
+			margin: 0
+			font-size: 14px
+			line-height: 14px
+			color: $colorDarkViolett
+			+font(roboto, bold)
+			transition: background-color 0.16s, box-shadow 0.16s
+			text-align: left
+			box-shadow: 0 0 0 5px transparent
+			//border-radius: 0.5px
+			
+			
+			&:hover
+				background-color: rgba($colorDarkViolett, 0.1)
+				box-shadow: 0 0 0 5px rgba($colorDarkViolett, 0.1)
+			
+			&:active
+				background-color: rgba($colorDarkViolett, 0.5)
+				box-shadow: 0 0 0 5px rgba($colorDarkViolett, 0.5)
+				transition: none
+			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//------------------------------------------------------------------------------------------- ЛК оператора
+.operator_block
+	display: flex
+	max-width: 100%
+	padding: 30px
+	margin-left: -10px
+	margin-right: -10px
+	
+	> div#operatorContent
+		flex: 1 1 auto
+		max-width: 100%
+		padding-left: 10px
+		padding-right: 10px
+		position: relative
+		
+		.wait
+			position: absolute
+			display: flex
+			justify-content: center
+			align-items: center
+			top: 0
+			left: 0
+			width: 100%
+			height: 100%
+			background-color: rgba(#fff, 0.8)
+			
+			i
+				position: relative
+				color: #464152
+				font-size: 50px			
+		
+
+  
+
+
+			
+			
+		
+	> aside
+		flex: 0 0 200px
+		max-width: 200px
+		padding-left: 10px
+		padding-right: 10px
+		
+		ul
+			li
+				cursor: pointer
+				font-size: 14px
+				line-height: 14px
+				
+				&.active
+					background-color: #a8fbc1
+				
+				+ li
+					margin-top: 10px
+				
+				i
+					margin-right: 3px
+		
+	
+	
+	
+	.tabstitles
+		background-color: #ece9f3
+		
+		li
+			color: #9c97a9
+			
+			+ li
+				border-left: 1px solid #c8c5d0
+				
+			
+			&:hover:not(.active)
+				background-color: #ddd9e6
+				color: #857e94
+			
+			&.active
+				background-color: #8d869e
+				color: #fff
+		
+
+
+
+
+
+
+	.raids
+		width: 100%
+		word-spacing: 6px
+		
+		> div
+			word-spacing: normal
+			width: 160px
+			margin-bottom: 10px
+			display: inline-block
+			padding: 10px
+			background-color: #f8f6fb
+			border: 1px solid #e5e2e8
+			border-radius: 3px
+			transition: background-color 0.16s
+			
+			&:hover
+				background-color: darken(#f8f6fb, 2%)
+			
+			p
+				font-size: 12px
+				line-height: 12px
+				margin-bottom: 0
+			
+			.buttons
+				margin-top: 10px
+				text-align: right
+				word-spacing: 3px
+				
+				button
+					word-spacing: normal
+					background-color: #8d869e
+					color: #fff
+					border-radius: 3px
+					height: 30px
+					width: 40px
+					transition: background-color 0.16s
+					
+					&[removeraid]
+						background-color: #cc5f5f
+						
+						&:hover
+							background-color: darken(#cc5f5f, 10%)
+						
+					
+					&:hover
+						background-color: darken(#8d869e, 10%)
+	
+	
+	
+	
+	
+
+	//---------------------------------------------------------------- Таблица
+	table
+		width: 100%
+		border-radius: 3px
+		
+		td
+			padding-left: 5px
+			padding-right: 5px
+			line-height: 14px
+			
+			&.right
+				text-align: right
+			
+			&.center
+				text-align: center
+			
+		
+		thead
+			tr
+				background-color: #d7dbde
+				
+				td
+					font-size: 14px
+					color: #536777
+					padding-top: 5px
+					padding-bottom: 5px
+					border: 1px solid darken(#d7dbde, 10%)
+					
+					i
+						cursor: pointer
+					
+					.nowrap, &.nowrap
+						white-space: nowrap
+					
+					&.active
+						background-color: #abb8c1
+						color: #00427b
+		
+		
+		tbody
+			background-color: #f7f7f7
+			
+			tr
+				&.changed
+					background-color: #eaffcd !important
+				
+				&.deleted
+					background-color: #d2d2d2
+					opacity: 0.2
+					pointer-events: none
+					@extend .noselect
+				
+				&:nth-child(2n+1):not(.deleted)
+					background-color: #fff
+					
+				td
+					font-size: 14px
+					color: #667a8c
+					height: 52px
+					border: 1px solid #c8ced4
+					
+					&.noheight
+						height: auto !important
+					
+					
+					img
+						max-width: 50px
+					
+					
+					&.access_block
+						width: 60px
+						text-align: right
+						
+						.success, .forbidden
+							cursor: pointer
+							display: inline-block
+							width: 16px
+							height: 16px
+							border-radius: 50%
+							vertical-align: middle
+							background-color: #e0e0e0
+							transition: background-color 0.16s
+						
+						.success
+							background-color: #00b500
+							
+							&:hover
+								background-color: darken(#00b500, 10%)
+						
+						.forbidden
+							background-color: #ff4848
+						
+							&:hover
+								background-color: darken(#ff4848, 10%)
+					
+					
+					
+					&.square_block
+						width: 40px
+						text-align: right
+						
+						.success, .forbidden
+							cursor: pointer
+							display: inline-block
+							vertical-align: middle
+							transition: background-color 0.16s
+							margin-left: 4px
+							min-width: 25px
+							
+							i
+								font-size: 26px
+								position: relative
+						
+						.success i
+							color: #758490
+							
+							&::before
+								content: "\f046"
+						
+						.forbidden 
+							i
+								color: #758490
+								left: -4px
+							
+								&::before
+									content: "\f096"
+							
+							&.disabled
+								pointer-events: none
+								
+								i
+									color: #ced2d6 !important
+					
+					
+					
+					
+					
+					&.nowidth
+						width: 1px
+					
+					&.nopadding
+						padding: 0
+					
+					&.center
+						text-align: center
+					
+					.nowrap, &.nowrap
+						white-space: nowrap
+					
+					.text
+						min-width: 200px
+						
+						input
+							border-radius: 2px
+							border: 1px solid #a7acaf
+							background: #fff
+							height: 30px
+							padding-right: 4px
+							padding-left: 4px
+							color: #666
+							width: 100%
+							min-width: 160px
+							transition: border-color 0.16s
+							
+							&:focus
+								border-color: darken(#a7acaf, 30%)
+					
+					.number
+						width: 100px
+						
+						input
+							border-radius: 2px
+							border: 1px solid #a7acaf
+							background: #fff
+							height: 30px
+							padding-right: 4px
+							padding-left: 4px
+							color: #666
+							width: 100%
+							transition: border-color 0.16s
+							
+							&:focus
+								border-color: darken(#a7acaf, 30%)
+						
+					
+					.checkbox
+						text-align: center
+						label
+							
+							
+						input
+							//display: none
+							
+					
+					.avatar
+						border: 1px solid #a0a7ad
+						overflow: hidden
+						display: block
+						width: 52px
+						height: 52px
+						margin-bottom: 0
+						background:		
+							repeat: no-repeat
+							size: cover
+							position: center center
+					
+					.buttons
+						margin-top: 0
+						
+						.button
+							display: inline-flex
+							align-items: center
+							justify-content: center
+							
+							i
+								font-size: 1.2em
+						
+					
+					
+					ul
+						padding: 0
+						margin-bottom: 4px
+						margin-top: 4px
+						
+						&.list_overflow
+							overflow-y: auto
+							padding-right: 5px
+							
+							&.patterns
+								max-height: 75px
+							
+							&.orders
+								max-height: 148px
+											
+						li
+							margin-bottom: 0
+							list-style: none
+							font-size: 12px
+							line-height: 16px
+							display: flex
+							justify-content: space-between
+							
+							+ li
+								border-top: 1px solid #d7dbde
+
+
+
+
+		tfoot
+			tr
+				background-color: #eceff1
+				
+				td
+					font-size: 14px
+					color: #536777
+					padding-top: 5px
+					padding-bottom: 5px
+					border: 1px solid darken(#eceff1, 10%)
+	
+
+.report
+	display: flex
+	//overflow-x: hidden
+	border-top: 1px solid #e5e5e5
+	
+	&:not(:last-of-type)
+		margin-bottom: 3rem
+	
+	.scroll
+		display: flex
+		flex-grow: 1
+		flex-shrink: 1
+		+resp(flex-basis, (xs: 200px, sm: auto))
+		min-width: 200px
+		//max-width: 100%
+		overflow-x: scroll
+		overflow-y: hidden
+		+scrollbar(#8e8a93, #1e1528, 8px)
+	
+	&__table_left
+		flex: 0 1 auto
+		max-width: 300px
+		//min-width: 394px
+		
+	&__table_center
+		flex: 1 0 100%
+		max-width: 100%
+		
+	&__table_right
+		flex: 0 1 auto
+		max-width: 1px
+	
+	table
+		//flex: 0 1 0
+		//max-width: 100%
+		
+		&.w100
+			flex: 1 0 100%
+			max-width: 100%
+		
+		&.w700
+			flex: 1 0 700px
+			max-width: 700px
+		
+		&.orders
+			flex: 0 0 700px
+			max-width: 700px
+			
+		&.main_report_names
+			flex: 1 0 300px
+			max-width: 300px
+		
+		&.payment_patterns_report
+			flex: 1 0 260px
+			max-width: 260px
+		
+		
+		
+		td
+			border: 1px solid #c0c7ce
+			height: 40px
+			padding: 5px
+			font-size: 14px
+			line-height: 14px
+			
+			&.w150
+				width: 150px
+		
+			&.p0
+				width: 100%
+				padding: 0
+				border-right: none
+			
+			&.nowidth
+				width: 1px
+			
+			&.center
+				text-align: center
+			
+			&.w200
+				width: 200px
+			
+			p
+				font-size: inherit
+				margin-bottom: 0
+			
+			i
+				font-size: 20px
+				
+			.nowrap, &.nowrap
+				white-space: nowrap
+		
+		+ table
+			tr
+				td:first-of-type
+					border-left: none
+		
+		thead
+			tr
+				td
+					height: 60px
+					background-color: #dee1e4
+
+

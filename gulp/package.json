@@ -1,0 +1,40 @@
+{
+  "name": "gulpproject",
+  "version": "1.0.0",
+  "description": "New gulp project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Deathdrumer",
+  "license": "ISC",
+  "devDependencies": {
+    "browser-sync": "^2.18.5",
+    "del": "^2.2.2",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^3.1.1",
+    "gulp-cache": "^0.4.5",
+    "gulp-cheerio": "^0.6.3",
+    "gulp-clean-css": "^2.3.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-connect-php": "^1.0.1",
+    "gulp-fs": "0.0.2",
+    "gulp-notify": "^2.2.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-replace": "^1.0.0",
+    "gulp-sass": "^3.0.0",
+    "gulp-svg-sprite": "^1.5.0",
+    "gulp-svgmin": "^2.1.0",
+    "gulp-tinypng-compress": "^1.2.1",
+    "gulp-uglify": "^2.0.0",
+    "gulp-util": "^3.0.8",
+    "node-bourbon": "^4.2.8",
+    "svg4everybody": "^2.1.8",
+    "yargs": "^13.2.4"
+  },
+  "dependencies": {
+    "directory-tree": "^2.2.3",
+    "express": "^4.16.4",
+    "yargs": "^13.2.4"
+  }
+}

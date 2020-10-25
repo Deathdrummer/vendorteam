@@ -1,0 +1,147 @@
+/* SASS
+.popup
+	&__window
+		
+	&__wait
+	
+	&__close
+	
+	&_top
+	
+	&_content
+	
+	&_buttons
+		button
+			&[close]
+*/
+
+
+.popup {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	overflow-y: auto;
+	overflow-x: hidden;
+	pointer-events: none;
+	z-index: 1000;
+	background-color: transparent;
+	transition: background-color 0.16s;
+}
+	.popup.visible {
+		pointer-events: auto;
+	}
+		.popup.visible .popup__window {
+			opacity: 1;
+		}
+	
+	.popup__window {
+		position: absolute;
+		display: flex;
+		flex-flow: column nowrap;
+		justify-content: space-between;
+		min-height: auto;
+		min-width: 290px !important;
+		margin-top: 30px;
+		margin-bottom: 30px;
+		z-index: 1001;
+		opacity: 0;
+		transition: opacity 0.16s;
+	}
+	
+	.popup__dialog {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		z-index: 1003;
+	}	
+		.popupdialog {
+			min-width: 200px;
+			max-width: 400px;
+		}	
+			.message {
+				margin-bottom: 1rem;
+				text-align: center;
+			}
+			
+			.buttons {
+				text-align: right;
+			}	
+				button + button {
+					margin-left: 5px;
+				}
+	
+	.popup__wait {
+		display: flex;
+		position: absolute;
+		background-color: rgba(255, 255, 255, 0.7);
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		z-index: 1003;
+		pointer-events: none;
+		opacity: 0;
+		transition: opacity 0.16s
+	}
+		.popup__wait.visible {
+			pointer-events: auto;
+			opacity: 1;
+		}
+			
+		.popup__wait i {
+			margin: auto;
+		}
+	
+	
+	
+	.popup__dialog {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(255, 255, 255, 0.7);
+	}
+		
+	
+	
+		
+	.popup__close {
+		display: block;
+		position: absolute;
+		z-index: 1002; 
+	}
+		.popup__close i {
+			cursor: pointer;
+			transition: color 0.16s;
+		}
+			
+		
+	.popup__top {
+		position: relative;
+		flex: 0 1 auto;
+	}
+		.popup__top h5 {
+			cursor: default;
+			margin: 0 !important;
+		}
+	
+	.popup__content {
+		flex: 1 0 auto;
+		max-width: 100%;
+		padding: 0;
+	}
+		
+	.popup__buttons {
+		flex: 0 1 auto;
+		display: flex;
+		flex-direction: row-reverse;
+		justify-content: flex-right;
+	}

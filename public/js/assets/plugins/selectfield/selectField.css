@@ -1,0 +1,50 @@
+.selectfield__wrapper {
+	display: inline-block;
+	line-height: 0;
+	max-width: 100%;
+	white-space: nowrap;
+	vertical-align: bottom
+}
+	.selectfield__wrapper.mobile {
+		white-space: normal;
+	}
+		.selectfield__wrapper.mobile > * {
+			width: 100%;
+		}
+		
+		.selectfield__wrapper > *  {
+			width: auto;
+			border-radius: 0;
+			vertical-align: middle;
+		}
+	
+		.selectfield__wrapper select {
+			background-color: #eee;
+			border: 1px solid;
+			border-radius: 0;
+		}
+		
+		.selectfield__wrapper input {
+		}
+			.selectfield__wrapper:not(.mobile) input {
+				border-left: none !important;
+			}
+		
+			
+			.selectfield__wrapper.mobile select {
+				border-bottom: none;
+				max-width: 100%;
+			}
+			
+			.selectfield__wrapper.mobile input {
+				max-width: 100%;
+			}
+		
+	
+		
+		
+		
+		
+		
+		
+			

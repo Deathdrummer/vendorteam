@@ -1,0 +1,98 @@
+// Variables
+
+
+$enable-grid-classes:       true !default;
+$enable-print-styles:       true !default;
+
+
+// Spacing
+$spacer: 1rem !default;
+$spacers: (
+	0: 0,
+	1: ($spacer * .25),
+	2: ($spacer * .5),
+	3: $spacer,
+	4: ($spacer * 1.5),
+	5: ($spacer * 3)
+) !default;
+
+// This variable affects the `.h-*` and `.w-*` classes.
+$sizes: (
+	25: 25%,
+	50: 50%,
+	75: 75%,
+	100: 100%
+) !default;
+
+
+// Style p element.
+$paragraph-margin-bottom:   0 !default;
+
+
+// Grid breakpoints
+$grid-breakpoints: (
+	xs: 0,
+	sm: 576px,
+	md: 768px,
+	lg: 992px,
+	xl: 1590px
+) !default;
+
+@include _assert-ascending($grid-breakpoints, "$grid-breakpoints");
+@include _assert-starts-at-zero($grid-breakpoints);
+
+
+// Grid containers
+$container-max-widths: (
+	sm: 540px,
+	md: 720px,
+	lg: 960px,
+	xl: 1530px
+) !default;
+
+@include _assert-ascending($container-max-widths, "$container-max-widths");
+
+
+// Grid columns
+$grid-columns:                12 !default;
+$grid-gutter-width:           30px !default;
+$gutters-widths:              15 !default;
+
+// Components
+//$line-height-lg:              1.5 !default;
+//$line-height-sm:              1.5 !default;
+
+$border-width:                1px !default;
+
+
+// Fonts
+
+// stylelint-disable value-keyword-case
+$font-family-sans-serif:      -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !default;
+$font-family-monospace:       "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !default;
+$font-family-base:            $font-family-sans-serif !default;
+// stylelint-enable value-keyword-case
+
+$font-size-base:              1rem !default; // Assumes the browser default, typically `16px`
+$font-size-lg:                ($font-size-base * 1.25) !default;
+$font-size-sm:                ($font-size-base * .875) !default;
+
+$font-weight-light:           300 !default;
+$font-weight-normal:          400 !default;
+$font-weight-bold:            700 !default;
+
+$font-weight-base:            $font-weight-normal !default;
+$line-height-base:            1.5 !default;
+
+
+$headings-margin-bottom:      ($spacer / 2) !default;
+$headings-font-family:        inherit !default;
+$headings-font-weight:        500 !default;
+$headings-line-height:        1.2 !default;
+$headings-color:              inherit !default;
+
+
+$dt-font-weight:              $font-weight-bold !default;
+
+$zindex-sticky:               1020 !default;
+$zindex-fixed:                1030 !default;

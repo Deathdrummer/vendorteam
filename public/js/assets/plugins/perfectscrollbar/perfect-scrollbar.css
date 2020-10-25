@@ -1,0 +1,173 @@
+.ps-container {
+    -ms-touch-action: none;
+    overflow: hidden !important;
+}
+  
+.ps-container.ps-active-x > .ps-scrollbar-x-rail, .ps-container.ps-active-y > .ps-scrollbar-y-rail {
+    display: block; 
+}
+    
+    
+    
+.ps-container.ps-in-scrolling {
+    pointer-events: none; 
+}
+
+
+/*фон при прокрутке*/
+.ps-container.ps-in-scrolling.ps-x > .ps-scrollbar-x-rail {
+    background-color: rgba(48, 86, 125, 0.19);
+    opacity: 0.9; 
+}
+ 
+/*ползунок при прокрутке*/     
+.ps-container.ps-in-scrolling.ps-x > .ps-scrollbar-x-rail > .ps-scrollbar-x {
+    background-color: rgba(12, 55, 101, 0.76); 
+}
+
+/*фон при прокрутке*/  
+.ps-container.ps-in-scrolling.ps-y > .ps-scrollbar-y-rail {
+    background-color: rgba(48, 86, 125, 0.19);
+    opacity: 0.9; 
+}
+
+/*ползунок при прокрутке*/  
+.ps-container.ps-in-scrolling.ps-y > .ps-scrollbar-y-rail > .ps-scrollbar-y {
+    background-color: rgba(12, 55, 101, 0.76); 
+}
+
+
+
+     
+.ps-container > .ps-scrollbar-x-rail {
+    display: none;
+    position: absolute;
+    /* please don't change 'position' */
+    -webkit-border-radius: 1px;
+    -moz-border-radius: 1px;
+    -ms-border-radius: 1px;
+    border-radius: 1px;
+    opacity: 0;
+    -webkit-transition: background-color 0.2s linear, opacity 0.2s linear;
+    -moz-transition: background-color 0.2s linear, opacity 0.2s linear;
+    -o-transition: background-color 0.2s linear, opacity 0.2s linear;
+    transition: background-color 0.2s linear, opacity 0.2s linear;
+    bottom: 0px;
+    /* there must be 'bottom' for ps-scrollbar-x-rail */
+    height: 6px;
+}
+  
+/*ползунок при наведении на контейнер*/
+.ps-container > .ps-scrollbar-x-rail > .ps-scrollbar-x {
+    position: absolute;
+    /* please don't change 'position' */
+    background-color: rgba(46, 74, 103, 0.54);
+    -webkit-border-radius: 1px;
+    -moz-border-radius: 1px;
+    -ms-border-radius: 1px;
+    border-radius: 1px;
+    -webkit-transition: background-color 0.2s linear;
+    -moz-transition: background-color 0.2s linear;
+    -o-transition: background-color 0.2s linear;
+    transition: background-color 0.2s linear;
+    bottom: 0px;
+    /* there must be 'bottom' for ps-scrollbar-x */
+    height: 6px; 
+}
+
+
+
+.ps-container > .ps-scrollbar-y-rail {
+    display: none;
+    position: absolute;
+    /* please don't change 'position' */
+    -webkit-border-radius: 1px;
+    -moz-border-radius: 1px;
+    -ms-border-radius: 1px;
+    border-radius: 1px;
+    opacity: 0;
+    -webkit-transition: background-color 0.2s linear, opacity 0.2s linear;
+    -moz-transition: background-color 0.2s linear, opacity 0.2s linear;
+    -o-transition: background-color 0.2s linear, opacity 0.2s linear;
+    transition: background-color 0.2s linear, opacity 0.2s linear;
+    right: 0px;
+    /* there must be 'right' for ps-scrollbar-y-rail */
+    width: 6px; 
+}
+
+
+/*ползунок при наведении на контейнер*/
+.ps-container > .ps-scrollbar-y-rail > .ps-scrollbar-y {
+    position: absolute;
+    /* please don't change 'position' */
+    background-color: rgba(46, 74, 103, 0.54);
+    -webkit-border-radius: 1px;
+    -moz-border-radius: 1px;
+    -ms-border-radius: 1px;
+    border-radius: 1px;
+    -webkit-transition: background-color 0.2s linear;
+    -moz-transition: background-color 0.2s linear;
+    -o-transition: background-color 0.2s linear;
+    transition: background-color 0.2s linear;
+    right: 0px;
+    /* there must be 'right' for ps-scrollbar-y */
+    width: 6px; 
+}
+
+
+
+
+
+.ps-container:hover.ps-in-scrolling {
+    pointer-events: none; 
+}
+
+/*фон при клике*/ 
+.ps-container:hover.ps-in-scrolling.ps-x > .ps-scrollbar-x-rail {
+    background-color: rgba(48, 86, 125, 0.19);
+    opacity: 0.9; 
+}
+
+/*ползунок при клике*/ 
+.ps-container:hover.ps-in-scrolling.ps-x > .ps-scrollbar-x-rail > .ps-scrollbar-x {
+    background-color: rgba(12, 55, 101, 0.76); 
+}
+
+
+/*фон при клике*/ 
+.ps-container:hover.ps-in-scrolling.ps-y > .ps-scrollbar-y-rail {
+    background-color: rgba(48, 86, 125, 0.19);
+    opacity: 0.9; 
+}
+
+ /*ползунок при клике*/ 
+.ps-container:hover.ps-in-scrolling.ps-y > .ps-scrollbar-y-rail > .ps-scrollbar-y {
+    background-color: rgba(12, 55, 101, 0.76); 
+}
+    
+.ps-container:hover > .ps-scrollbar-x-rail, .ps-container:hover > .ps-scrollbar-y-rail {
+    opacity: 0.6;
+}
+
+
+/*фон при наведении*/ 
+.ps-container:hover > .ps-scrollbar-x-rail:hover {
+    background-color: rgba(48, 86, 125, 0.19);
+    opacity: 0.9; 
+}
+
+/*ползунок при наведении*/ 
+.ps-container:hover > .ps-scrollbar-x-rail:hover > .ps-scrollbar-x {
+    background-color: rgba(24, 76, 132, 0.67); 
+}
+
+/*фон при наведении*/ 
+.ps-container:hover > .ps-scrollbar-y-rail:hover {
+    background-color: rgba(48, 86, 125, 0.19);
+    opacity: 0.9; 
+}
+
+/*ползунок при наведении*/
+.ps-container:hover > .ps-scrollbar-y-rail:hover > .ps-scrollbar-y {
+    background-color: rgba(24, 76, 132, 0.67); 
+}

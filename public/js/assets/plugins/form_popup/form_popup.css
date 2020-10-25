@@ -1,0 +1,22 @@
+div[popup][inline], div[form][inline] {
+	display: inline-block;
+}
+
+div[popup] title,
+div[form] title,
+div[popup] popupform,
+div[popup] success,
+div[form] success {
+	display: none;
+}
+
+div[form] popupform {
+	display: inline-block;
+}
+
+.popup__content div[popup] popupform,
+.popup__content div[form] popupform,
+.popup__content div[popup] success,
+.popup__content div[form] success {
+	display: block;
+}

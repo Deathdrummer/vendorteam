@@ -1,0 +1,43 @@
+ul.navigation > li {
+
+}
+    ul.navigation > li > div {
+        overflow: hidden;
+        position: absolute;
+        top: 0;
+        padding-top: 36px;
+        pointer-events: none;
+        height: 0px;
+        min-width: 100%;
+        opacity: 0;
+        -webkit-transition: opacity 0.3s, height 0s, margin-top 0.3s, visibility 0s linear 0.3s;
+        -moz-transition: opacity 0.3s, height 0s, margin-top 0.3s, visibility 0s linear 0.3s;
+        -o-transition: opacity 0.3s, height 0s, margin-top 0.3s, visibility 0s linear 0.3s;
+        transition: opacity 0.3s, height 0s, margin-top 0.3s, visibility 0s linear 0.3s;
+    }
+        ul.navigation > li > div * {
+            -webkit-transition: none;
+            -moz-transition: none;
+            -o-transition: none;
+            transition: none;
+        }
+        
+    
+        ul.navigation > li.active > div {
+            pointer-events: auto;
+            height: auto;
+            opacity: 1!important;
+            -webkit-transition-delay: 0s;
+            -moz-transition-delay: 0s;
+            -o-transition-delay: 0s;
+            transition-delay: 0s;
+        }
+    
+    ul.navigation a {
+        -webkit-transition: all 1s;
+        -moz-transition: all 1s;
+        -ms-transition: all 1s;
+        -khtml-transition: all 1s;
+        transition: all 1s;
+    }
+
