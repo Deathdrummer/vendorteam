@@ -58,7 +58,7 @@
 					
 					{% if not access or access.links.paydata %}
 					<div class="col">
-						<a class="link" href="{{paydataformlink_setting}}" target="_blank" title="Перейти к отчету">
+						<a class="link" href="{{paydataformlink_setting}}" target="_blank" title="Заполнить форму">
 							<div class="icon icon_table"></div>
 							<div>
 								<span>Платежные данные</span>

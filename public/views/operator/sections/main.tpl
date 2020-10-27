@@ -4,6 +4,11 @@
 	</div>
 	
 	
+	
+	{% include 'views/operator/render/test.tpl' %}
+	
+	
+	
 	{#<div class="section__buttons" id="sectionButtons">
 			
 	</div>
