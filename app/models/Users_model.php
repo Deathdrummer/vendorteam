@@ -176,7 +176,6 @@ class Users_model extends MY_Model {
 	 */
 	public function setUsersAccess($id = false) {
 		if (!$id) return false;
-		$this->db->where('access', 0);
 		if (!$this->db->update('users', ['access' => $id])) return false;
 		return true;
 	}

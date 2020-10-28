@@ -628,7 +628,7 @@ class Admin extends MY_Controller {
 		if (!$this->input->is_ajax_request()) return false;
 		$postData = $this->input->post('accounts_access');
 		$postData = array_map(function($item) {
-			$item['access'] = json_encode($item['access']);
+			if (isset($item['access'])) $item['access'] = json_encode($item['access']);
 			return $item;
 		}, $postData);
 		echo $this->admin_model->addAccountsAccess(bringTypes($postData));

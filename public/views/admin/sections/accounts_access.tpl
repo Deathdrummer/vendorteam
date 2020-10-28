@@ -53,7 +53,7 @@
 								<div class="col-auto ml-auto">
 									<div class="buttons right ml-auto">
 										<button class="fieldheight set_default_access"{% if accounts_access[id]['default'] %} disabled{% endif %} data-id="{{id}}" title="Задать дотсуп по-умолчанию"><i class="fa fa-users"></i></button>
-										<button class="remove fieldheight remove_accounts_access" data-id="{{id}}" title="Удалить уровень доступа"><i class="fa fa-trash"></i></button>
+										<button class="remove fieldheight remove_accounts_access"{% if accounts_access[id]['default'] %} disabled{% endif %} data-id="{{id}}" title="Удалить уровень доступа"><i class="fa fa-trash"></i></button>
 									</div>
 								</div>
 							</div>
@@ -116,9 +116,20 @@ $(document).ready(function() {
 	
 	
 	$('.set_default_access').on(tapEvent, function() {
-		var id = $(this).data('id');
+		var id = $(this).data('id'),
+			thisRow = $(this).closest('.list_item'),
+			activeRow = $('#accountsAccessBlock').find('.list_item.list_item_active');
 		$.post('/admin/set_users_access', {id: id}, function(response) {
-			if (response) notify('Уровень доступа по-умолчанию назначен!');
+			if (response) {
+				$(activeRow).removeClass('list_item_active');
+				$(activeRow).find('.set_default_access, .remove_accounts_access').removeAttrib('disabled');
+				
+				$('#accountsAccessBlock').find('.list_item.list_item_active').remove
+				$(thisRow).addClass('list_item_active');
+				$(thisRow).find('.set_default_access, .remove_accounts_access').setAttrib('disabled');
+				
+				notify('Уровень доступа по-умолчанию назначен!');
+			}
 			else notify('Ошибка назначения уровнея доступа!', 'error');
 		});
 	});
