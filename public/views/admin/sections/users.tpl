@@ -161,7 +161,7 @@
 																{% if accounts_access|length > 0 %}
 																	<div class="select wpx40">
 																		<select class="user_access">
-																			<option value="0" selected disabled>Полный доступ</option>
+																			<option value="0" selected>По-умолчанию</option>
 																			{% for id, access in accounts_access %}
 																				<option value="{{id}}"{% if id == user.access %} selected=""{% endif %}>{{access.name}}</option>
 																			{% endfor %}

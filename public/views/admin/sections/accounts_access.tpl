@@ -21,33 +21,33 @@
 								</div>
 								<div class="col-auto">
 									<strong>Меню</strong>
-									<div><label for="nav1"><input type="checkbox"{% if accounts_access[id]['access']['nav']['guides'] %} checked{% endif %} name="accounts_access[{{id}}][access][nav][guides]" value="1" id="nav1"> Образование</label></div>
-									<div><label for="nav2"><input type="checkbox"{% if accounts_access[id]['access']['nav']['timesheet'] %} checked{% endif %} name="accounts_access[{{id}}][access][nav][timesheet]" value="1" id="nav2"> Расписание</label></div>
-									<div><label for="nav3"><input type="checkbox"{% if accounts_access[id]['access']['nav']['wallet'] %} checked{% endif %} name="accounts_access[{{id}}][access][nav][wallet]" value="1" id="nav3"> Выплаты</label></div>
-									<div><label for="nav4"><input type="checkbox"{% if accounts_access[id]['access']['nav']['information'] %} checked{% endif %} name="accounts_access[{{id}}][access][nav][information]" value="1" id="nav4"> Важная информация</label></div>
-									<div><label for="nav5"><input type="checkbox"{% if accounts_access[id]['access']['nav']['operators'] %} checked{% endif %} name="accounts_access[{{id}}][access][nav][operators]" value="1" id="nav5"> Операторы</label></div>
-									<div><label for="nav6"><input type="checkbox"{% if accounts_access[id]['access']['nav']['offtime'] %} checked{% endif %} name="accounts_access[{{id}}][access][nav][offtime]" value="1" id="nav6"> Выходные</label></div>
-									<div><label for="nav7"><input type="checkbox"{% if accounts_access[id]['access']['nav']['vacation'] %} checked{% endif %} name="accounts_access[{{id}}][access][nav][vacation]" value="1" id="nav7"> Отпуск</label></div>
-									<div><label for="nav8"><input type="checkbox"{% if accounts_access[id]['access']['nav']['personages'] %} checked{% endif %} name="accounts_access[{{id}}][access][nav][personages]" value="1" id="nav8"> Мои персонажи</label></div>
-									<div><label for="nav9"><input type="checkbox"{% if accounts_access[id]['access']['nav']['paymentorders'] %} checked{% endif %} name="accounts_access[{{id}}][access][nav][paymentorders]" value="1" id="nav9"> Мои заявки</label></div>
+									<div><label for="nav{{id}}_1"><input type="checkbox"{% if accounts_access[id]['access']['nav']['guides'] %} checked{% endif %} name="accounts_access[{{id}}][access][nav][guides]" value="1" id="nav{{id}}_1"> Образование</label></div>
+									<div><label for="nav{{id}}_2"><input type="checkbox"{% if accounts_access[id]['access']['nav']['timesheet'] %} checked{% endif %} name="accounts_access[{{id}}][access][nav][timesheet]" value="1" id="nav{{id}}_2"> Расписание</label></div>
+									<div><label for="nav{{id}}_3"><input type="checkbox"{% if accounts_access[id]['access']['nav']['wallet'] %} checked{% endif %} name="accounts_access[{{id}}][access][nav][wallet]" value="1" id="nav{{id}}_3"> Выплаты</label></div>
+									<div><label for="nav{{id}}_4"><input type="checkbox"{% if accounts_access[id]['access']['nav']['information'] %} checked{% endif %} name="accounts_access[{{id}}][access][nav][information]" value="1" id="nav{{id}}_4"> Важная информация</label></div>
+									<div><label for="nav{{id}}_5"><input type="checkbox"{% if accounts_access[id]['access']['nav']['operators'] %} checked{% endif %} name="accounts_access[{{id}}][access][nav][operators]" value="1" id="nav{{id}}_5"> Операторы</label></div>
+									<div><label for="nav{{id}}_6"><input type="checkbox"{% if accounts_access[id]['access']['nav']['offtime'] %} checked{% endif %} name="accounts_access[{{id}}][access][nav][offtime]" value="1" id="nav{{id}}_6"> Выходные</label></div>
+									<div><label for="nav{{id}}_7"><input type="checkbox"{% if accounts_access[id]['access']['nav']['vacation'] %} checked{% endif %} name="accounts_access[{{id}}][access][nav][vacation]" value="1" id="nav{{id}}_7"> Отпуск</label></div>
+									<div><label for="nav{{id}}_8"><input type="checkbox"{% if accounts_access[id]['access']['nav']['personages'] %} checked{% endif %} name="accounts_access[{{id}}][access][nav][personages]" value="1" id="nav{{id}}_8"> Мои персонажи</label></div>
+									<div><label for="nav{{id}}_9"><input type="checkbox"{% if accounts_access[id]['access']['nav']['paymentorders'] %} checked{% endif %} name="accounts_access[{{id}}][access][nav][paymentorders]" value="1" id="nav{{id}}_9"> Мои заявки</label></div>
 								</div>
 								
 								<div class="col-auto">
 									<strong>Нижнее меню</strong>
-									<div><label for="navdown1"><input type="checkbox"{% if accounts_access[id]['access']['navdown']['skype'] %} checked{% endif %} name="accounts_access[{{id}}][access][navdown][skype]" value="1" id="navdown1"> Ссылка скайп</label></div>
-									<div><label for="navdown2"><input type="checkbox"{% if accounts_access[id]['access']['navdown']['complaints'] %} checked{% endif %} name="accounts_access[{{id}}][access][navdown][complaints]" value="1" id="navdown2"> Заказ оплаты</label></div>
-									<div><label for="navdown3"><input type="checkbox"{% if accounts_access[id]['access']['navdown']['message'] %} checked{% endif %} name="accounts_access[{{id}}][access][navdown][message]" value="1" id="navdown3"> Форма для обращений</label></div>
+									<div><label for="navdown{{id}}_1"><input type="checkbox"{% if accounts_access[id]['access']['navdown']['skype'] %} checked{% endif %} name="accounts_access[{{id}}][access][navdown][skype]" value="1" id="navdown{{id}}_1"> Ссылка скайп</label></div>
+									<div><label for="navdown{{id}}_2"><input type="checkbox"{% if accounts_access[id]['access']['navdown']['complaints'] %} checked{% endif %} name="accounts_access[{{id}}][access][navdown][complaints]" value="1" id="navdown{{id}}_2"> Заказ оплаты</label></div>
+									<div><label for="navdown{{id}}_3"><input type="checkbox"{% if accounts_access[id]['access']['navdown']['message'] %} checked{% endif %} name="accounts_access[{{id}}][access][navdown][message]" value="1" id="navdown{{id}}_3"> Форма для обращений</label></div>
 								</div>
 								
 								<div class="col-auto">
 									<strong>Контент</strong>
-									<div><label for="content1"><input type="checkbox"{% if accounts_access[id]['access']['content']['compound'] %} checked{% endif %} name="accounts_access[{{id}}][access][content][compound]" value="1" id="content1"> Состав команды</label></div>
-									<div><label for="content2"><input type="checkbox"{% if accounts_access[id]['access']['content']['news'] %} checked{% endif %} name="accounts_access[{{id}}][access][content][news]" value="1" id="content2"> Новости</label></div>
+									<div><label for="content{{id}}_1"><input type="checkbox"{% if accounts_access[id]['access']['content']['compound'] %} checked{% endif %} name="accounts_access[{{id}}][access][content][compound]" value="1" id="content{{id}}_1"> Состав команды</label></div>
+									<div><label for="content{{id}}_2"><input type="checkbox"{% if accounts_access[id]['access']['content']['news'] %} checked{% endif %} name="accounts_access[{{id}}][access][content][news]" value="1" id="content{{id}}_2"> Новости</label></div>
 								</div>
 								
 								<div class="col-auto">
 									<strong>Ссылки</strong>
-									<div><label for="links1"><input type="checkbox"{% if accounts_access[id]['access']['links']['paydata'] %} checked{% endif %} name="accounts_access[{{id}}][access][links][paydata]" value="1" id="links1"> Платежные данные</label></div>
+									<div><label for="links{{id}}_1"><input type="checkbox"{% if accounts_access[id]['access']['links']['paydata'] %} checked{% endif %} name="accounts_access[{{id}}][access][links][paydata]" value="1" id="links{{id}}_1"> Платежные данные</label></div>
 								</div>
 								
 								<div class="col-auto ml-auto">
