@@ -705,57 +705,6 @@ class Admin_model extends CI_Model {
 	
 	
 	
-	//------------------------------------------------------------------------------------------------ Ранги
-	public function getAccessLevels() {
-		$query = $this->db->get('access_levels');
-		$accessLevelsData = $query->result_array();
-		
-		$tableAccessLevels = [];
-		foreach ($accessLevelsData as $item) {
-			$itemId = $item['id'];
-			unset($item['id']);
-			$tableAccessLevels[$itemId] = $item;
-		}
-		return $tableAccessLevels;
-	}
-	
-	
-	public function addAccessLevels($postData) {
-		$tableAccessLevels = $this->getAccessLevels();
-		$newAccessLevels = array_diff_key($postData, $tableAccessLevels);
-		$updateAccessLevels = array_intersect_key($postData, $tableAccessLevels);
-		
-		$newAccessLevels = array_filter($newAccessLevels);
-		
-		if ($updateAccessLevels) {
-			foreach ($updateAccessLevels as $key => $item) $updateAccessLevels[$key]['id'] = $key;
-			$this->db->update_batch('access_levels', array_values($updateAccessLevels), 'id');
-		}
-		
-		if ($newAccessLevels) {
-			$this->db->insert_batch('access_levels', array_values($newAccessLevels));
-		}
-		return 1;
-	}
-	
-	
-	public function removeAccessLevels($id) {
-		$this->db->where('id', $id);
-		if ($this->db->delete('access_levels')) {
-			return 1;
-		}
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	//------------------------------------------------------------------------------------------------ Уровни доступа
 	public function getAccountsAccess($decode = true) {

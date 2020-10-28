@@ -49,7 +49,7 @@
 					<li data-block="statics">Статики</li>
 					<li data-block="accounts_access">Уровни доступа аккаунтов</li>
 					<li data-block="ranks">Звания</li>
-					<li data-block="access_levels">Ранги</li>
+					{#<li data-block="access_levels">Ранги</li>#}
 					<li data-block="roles">Роли</li>
 					{#<li data-block="payments_types">Средства платежа</li>#}
 					<li data-block="raids_types">Типы рейдов и ключей</li>

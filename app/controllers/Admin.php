@@ -117,9 +117,10 @@ class Admin extends MY_Controller {
 		if (! $this->input->is_ajax_request()) return false;
 		$section = $this->input->post('section');
 		$params = $this->input->post('params');
-		if ($section) $data = $this->getDataToSection($section, $params);
+		if (!$section || (!$data = $this->getDataToSection($section, $params))) exit('');
 		$data['form'] = 'views/admin/form/';
 		$data['date'] = date('Y');
+		if (!file_exists('public/'.$this->viewsPath.'sections/'.$section.'.tpl')) exit('');
 		echo $this->twig->render($this->viewsPath.'sections/'.$section.'.tpl', (array)$data);
 	}
 	
@@ -212,10 +213,6 @@ class Admin extends MY_Controller {
 				$data['ranks'] = $this->admin_model->getRanks();
 				break;
 				
-			case 'access_levels':
-				$data['access_levels'] = $this->admin_model->getAccessLevels();
-				break;
-			
 			case 'accounts_access':
 				$data['accounts_access'] = $this->admin_model->getAccountsAccess();
 				break;
