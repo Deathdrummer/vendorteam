@@ -1419,8 +1419,9 @@ $(document).ready(function() {
 	
 	
 	//---------------------------------------- Забронировать выходной
-	var offtimeWin, offtimeStatic, history = 0;
+	var offtimeWin, offtimeStatic, historyWeeks, weeksStep = 4;
 	$('[getofftime]').on(tapEvent, function() {
+		historyWeeks = 0;
 		popUp({
 			title: 'Забронировать выходной',
 		    width: 500,
@@ -1450,17 +1451,17 @@ $(document).ready(function() {
 	
 	$('body').off(tapEvent, '[offtimehistory]').on(tapEvent, '[offtimehistory]', function() {
 		var dir = $(this).attr('offtimehistory');
-		history = dir == '+' ? history+1 : history-1;
-		if (history == 0) $('[offtimehistory="+"]').setAttrib('disabled');
+		historyWeeks = dir == '+' ? historyWeeks+weeksStep : historyWeeks-weeksStep;
+		if (historyWeeks == 0) $('[offtimehistory="+"]').setAttrib('disabled');
 		else $('[offtimehistory="+"]').removeAttrib('disabled');
 		offtimeWin.wait();
-		getOfftimeDates(offtimeStatic, history);
+		getOfftimeDates(offtimeStatic, historyWeeks);
 	});
 	
 	
-	function getOfftimeDates(static, history) {
-		$.post('/offtime/get_offtime_dates', {static: static, history: history}, function(html) {
-			if (!history) offtimeWin.setWidth(1330);
+	function getOfftimeDates(static, hWeeks) {
+		$.post('/offtime/get_offtime_dates', {static: static, history: hWeeks}, function(html) {
+			if (!hWeeks) offtimeWin.setWidth(1330);
 			offtimeWin.setData(html);
 			offtimeWin.wait(false);
 		}, 'html').fail(function(e) {

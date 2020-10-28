@@ -69,8 +69,9 @@ class Offtime extends MY_Controller {
 		$static = $this->input->post('static');
 		$history = $this->input->post('history');
 		
-		if ($history) $startDatePoint = (date('l', time()) == 'Monday') ? strtotime('today '.$history.' month') : strtotime('first monday of '.$history.' month');
+		if ($history) $startDatePoint = (date('l', time()) == 'Monday') ? strtotime('today '.$history.' week') : strtotime('last Monday of '.$history.' week');
 		else $startDatePoint = (date('l', time()) == 'Monday') ? strtotime('today') : strtotime('last monday');
+		
 		$data['offtime_dates'] = getDatesRange(($startDatePoint - 604800), 28, 'day'); // 604800 показывать предыдущую неделю
 		$data['disabled'] = $this->offtime_model->getOfftimeDisabled();
 		$data['user_id'] = $this->session->userdata('id');
@@ -119,7 +120,7 @@ class Offtime extends MY_Controller {
 		$data['roles'] = $this->admin_model->getRoles();
 		$data['roles_limits'] = $this->offtime_model->getRolesLimits();
 		
-		$startDatePoint = (date('l', time()) == 'Monday') ? strtotime('today '.$history.' month') : strtotime('first monday of '.$history.' month');
+		$startDatePoint = (date('l', time()) == 'Monday') ? strtotime('today '.$history.' week') : strtotime('last Monday of '.$history.' week');
 		$data['offtime']['dates'] = getDatesRange($startDatePoint - 604800, 35, 'day');
 		$data['offtime']['users'] = $this->offtime_model->getOfftimeUsers();
 		$data['offtime']['disabled'] = $this->offtime_model->getOfftimeDisabled();

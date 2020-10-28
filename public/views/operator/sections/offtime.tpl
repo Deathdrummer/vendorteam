@@ -146,15 +146,14 @@
 $(document).ready(function() {
 	//-------------------------------------------------------------------------------------------------- Выходные
 	
-	var history = 0;
+	var history = 0, weeksStep = 4;
 	$('[offtimehistory]').on(tapEvent, function() {
 		var dir = $(this).attr('offtimehistory'),
 			hash = location.hash.split('.');
-		history = dir == '+' ? history+1 : history-1;
+		history = dir == '+' ? history+weeksStep : history-weeksStep;
 		
 		getAjaxHtml('operator/get_offtime_history', {history: history}, function(html) {
 			$('#offtimeDataContent').html(html);
-			
 			
 			if (hash[2] != undefined) {
 				$('#'+hash[2]).addClass('active');
@@ -163,9 +162,6 @@ $(document).ready(function() {
 				$('#offtimeDataContent').find('.tabstitles.sub li:first').addClass('active');
 				$('#offtimeDataContent').find('.tabscontent [tabid]:first').addClass('visible');
 			}
-			
-		}, function() {
-			
 		});
 	});
 	
