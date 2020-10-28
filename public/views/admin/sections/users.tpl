@@ -40,7 +40,7 @@
 							
 							<div class="tabscontent">
 								{% for staticId, usersData in udata %}
-									<div tabid="tab{{staticId}}">
+									<div tabid="tab{{staticId}}" class="scroll">
 										<strong>{% if staticId == 0 %}Статик не задан{% else %}{{statics[staticId]['name']|default('Статик удален')}}{% endif %}</strong>
 										
 										{% if usersData %}

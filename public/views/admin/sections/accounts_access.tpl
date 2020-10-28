@@ -13,7 +13,7 @@
 		<div class="list" id="accountsAccessBlock">
 			{% if accounts_access|length > 0 %}
 				{% for id in accounts_access|keys %}
-					<div class="list_item" rowid="{{id}}">
+					<div class="list_item{% if accounts_access[id]['default'] %} list_item_active{% endif %}" rowid="{{id}}">
 						<div>
 							<div class="row w100">
 								<div class="col-auto">
@@ -52,6 +52,7 @@
 								
 								<div class="col-auto ml-auto">
 									<div class="buttons right ml-auto">
+										<button class="fieldheight set_default_access"{% if accounts_access[id]['default'] %} disabled{% endif %} data-id="{{id}}" title="Задать дотсуп по-умолчанию"><i class="fa fa-users"></i></button>
 										<button class="remove fieldheight remove_accounts_access" data-id="{{id}}" title="Удалить уровень доступа"><i class="fa fa-trash"></i></button>
 									</div>
 								</div>
@@ -110,5 +111,17 @@ $(document).ready(function() {
 		});
 		
 	});
+	
+	
+	
+	
+	$('.set_default_access').on(tapEvent, function() {
+		var id = $(this).data('id');
+		$.post('/admin/set_users_access', {id: id}, function(response) {
+			if (response) notify('Уровень доступа по-умолчанию назначен!');
+			else notify('Ошибка назначения уровнея доступа!', 'error');
+		});
+	});
+	
 });
 //--></script>

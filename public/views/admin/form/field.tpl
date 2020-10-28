@@ -14,8 +14,6 @@
 {% endfor %}
 
 
-{{foo}}
-
 <div class="item {{class|default('w10')}}{% if inline %} inline{% endif %}">
 	<div class="field">
 		<label for="{{id}}"><span>{{label}}</span></label>

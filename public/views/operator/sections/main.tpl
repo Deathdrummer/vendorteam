@@ -5,7 +5,13 @@
 	
 	
 	
-	{% include 'views/operator/render/test.tpl' %}
+	{#{% include 'views/operator/render/block.tpl' with {
+		'items': [
+			{'component': 'field', 'data': {'foo': 'bar1'}},
+			{'component': 'color', 'data': {'foo': 'bar2'}},
+			{'component': 'radio', 'data': {'foo': 'bar2'}}
+		]
+	} %}#}
 	
 	
 	

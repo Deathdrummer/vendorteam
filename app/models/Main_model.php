@@ -18,8 +18,11 @@ class Main_model extends CI_Model {
 		$this->db->where('email', $email);
 		$count = $this->db->count_all_results('users');
 		
+		$this->load->model('admin_model');
+		$access = $this->admin_model->getSettings('default_access_setting');
+		
 		if ($count == 0) {
-			$this->db->insert('users', ['email' => $email, 'password' => md5($password), 'reg_date' => time()]);
+			$this->db->insert('users', ['email' => $email, 'password' => md5($password), 'reg_date' => time(), 'access' => $access]);
 			return 1;
 		} else {
 			return 0;

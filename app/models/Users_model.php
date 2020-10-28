@@ -169,6 +169,22 @@ class Users_model extends MY_Model {
 	
 	
 	
+	/**
+	 * Задать уровень доступа по-умолчанию
+	 * @param 
+	 * @return 
+	 */
+	public function setUsersAccess($id = false) {
+		if (!$id) return false;
+		$this->db->where('access', 0);
+		if (!$this->db->update('users', ['access' => $id])) return false;
+		return true;
+	}
+	
+	
+	
+	
+	
 	
 	/**
 	 * Присвоение Звания участнику

@@ -189,9 +189,15 @@ class Admin_model extends CI_Model {
 	public function setSetting($param, $value) {
 		if (is_array($value)) $value = json_encode($value);
 		
-		$this->db->set('value', $value);
 		$this->db->where('param', $param);
-		$this->db->update('settings');
+		if ($this->db->count_all_results('settings') == 0) {
+			$this->db->insert('settings', ['param' => $param, 'value' => $value]);
+		} else {
+			$this->db->set('value', $value);
+			$this->db->where('param', $param);
+			$this->db->update('settings');
+		}
+		
 		return 1;
 	}
 	
@@ -756,10 +762,13 @@ class Admin_model extends CI_Model {
 		$query = $this->db->get('accounts_access');
 		$accountsAccessData = $query->result_array();
 		
+		$defaultAccess = $this->getSettings('default_access_setting');
+		
 		$tableAccountsAccess = [];
 		foreach ($accountsAccessData as $item) {
 			$itemId = $item['id'];
 			unset($item['id']);
+			if ($itemId == $defaultAccess) $item['default'] = 1;
 			if ($decode) $item['access'] = json_decode($item['access'], true);
 			$tableAccountsAccess[$itemId] = $item;
 		}

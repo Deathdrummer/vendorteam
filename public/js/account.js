@@ -1,6 +1,9 @@
 $(document).ready(function() {
 	
 	
+	
+	
+	
 	$('.scroll').ddrScrollTable();
 	$(document).on('popup:open', function() {
 		$('.scroll').ddrScrollTable();

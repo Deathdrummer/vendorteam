@@ -118,6 +118,8 @@ jQuery(document).ready(function($) {
 				initEditors($(content).find('[editor]'));
 			});
 			
+			$('.scroll').ddrScrollTable();
+			
 			$('#sectionWait').removeClass('visible');
 			if (callback) callback();
 		}, 'html').fail(function(e) {

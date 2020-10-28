@@ -767,6 +767,21 @@ class Admin extends MY_Controller {
 	
 	
 	
+	/**
+	 * Задать уровень доступа по-умолчанию
+	 * @param 
+	 * @return 
+	 */
+	public function set_users_access() {
+		$id = $this->input->post('id');
+		if (!$id) exit('0');
+		if (!$this->users_model->setUsersAccess($id)) exit('0');
+		$this->admin_model->setSetting('default_access_setting', $id);
+		echo '1';
+	}
+	
+	
+	
 	
 	
 	

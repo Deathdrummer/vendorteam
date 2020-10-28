@@ -48848,6 +48848,8 @@ html::-webkit-resizer {
       margin-bottom: 1rem; }
       .main fieldset .list_item {
         padding: 7.5px 0px; }
+        .main fieldset .list_item_active > div {
+          box-shadow: 0 0 0 5px #67d1ff inset; }
         .main fieldset .list_item.changed > * {
           background-color: #c5efd1;
           border-color: #9de4b1; }

@@ -24,7 +24,7 @@ class CI_Twig {
 	/**
 	 * @var array Functions to add to Twig
 	 */
-	private $functions_asis = ['base_url', 'site_url', 'getHoursMinutes', 'time', 'date', 'rand', 'substr'];
+	private $functions_asis = ['base_url', 'site_url', 'getHoursMinutes', 'time', 'date', 'rand', 'substr', 'file_exists'];
 
 	/**
 	 * @var array Functions with `is_safe` option
