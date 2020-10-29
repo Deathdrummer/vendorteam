@@ -503,11 +503,6 @@ $(document).ready(function() {
 	
 	
 	
-	
-	
-	
-	
-	
 	// --------------------------------------- Изменить статус выплаты участника
 	$('body').off(tapEvent, '[paydone]').on(tapEvent, '[paydone]', function() {
 		var thisItem = this,

@@ -438,9 +438,13 @@ class Reports_model extends CI_Model {
 		$raidUsers = $this->_getRaidUsers($pData['period_id']);
 		$compoundsData = $this->_getCompoundsData($pData['period_id']); 
 		
+		$this->load->model('admin_model');
+		$defaultDepositPercent = $this->admin_model->getSettings('default_deposit_percent_setting'); // процент депозита по-умолчанию
+		// в таблице два поля - sdp: процент депозита статика deposit_percent: процент депозита пользователя
+		
 		//---------------------------------------------------------- Формирование отчета "налету"
 		if (!isset($pData['pattern_id'])) {
-			$this->db->select('u.id AS user_id, u.color, u.nickname, u.deposit, u.deleted, s.name AS static_name, s.cap_simple, s.cap_lider, r.name AS rank_name, r.coefficient AS rank_coefficient, us.lider, us.static_id AS static');
+			$this->db->select('u.id AS user_id, u.color, u.nickname, u.deposit, u.deposit_percent, u.deleted, s.name AS static_name, s.cap_simple, s.cap_lider, s.deposit_percent AS sdp, r.name AS rank_name, r.coefficient AS rank_coefficient, us.lider, us.static_id AS static');
 			$this->db->join('users_statics us', 'us.user_id = u.id', 'left outer');
 			$this->db->join('statics s', 's.id = us.static_id', 'left outer');
 			$this->db->join('ranks r', 'u.rank = r.id', 'left outer');
@@ -479,6 +483,9 @@ class Reports_model extends CI_Model {
 			
 			// static id => [static type, users => [user id => user data... raids => [raid id => rate]]]
 			foreach ($resultUsers as $user) {
+				$user['deposit_percent'] = $user['deposit_percent'] ?: ($user['sdp'] ? $user['sdp'] : $defaultDepositPercent);
+				unset($user['sdp']);
+				
 				// если в кэше не задан статик - то прьосто пропускаем его, так как необходимы записи "cap_lider" и "cap_simple", которые неоткуда взять
 				if (!isset($pData['cash'][$user['static']])) continue;
 				$personesCount = isset($compoundsData[$user['static']][$user['user_id']]) ? $compoundsData[$user['static']][$user['user_id']]['persones_count'] : 0;
@@ -542,7 +549,7 @@ class Reports_model extends CI_Model {
 		$rpp = $this->_getReportPatternsPayments($pData['pattern_id']);
 		
 		
-		$this->db->select('u.id AS user_id, u.color, u.nickname, u.deposit, u.payment AS pay_method, u.deleted, s.name AS static_name, s.cap_simple, s.cap_lider, r.name AS rank_name, rpr.rank_coefficient, rpus.lider, rpus.static_id AS static');
+		$this->db->select('u.id AS user_id, u.color, u.nickname, u.deposit, u.deposit_percent, u.payment AS pay_method, u.deleted, s.name AS static_name, s.cap_simple, s.cap_lider, s.deposit_percent AS sdp, r.name AS rank_name, rpr.rank_coefficient, rpus.lider, rpus.static_id AS static');
 		$this->db->join('reports_patterns_user_static rpus', 'rpus.user_id = u.id', 'left outer');
 		$this->db->join('statics s', 's.id = rpus.static_id', 'left outer');
 		$this->db->join('ranks r', 'u.rank = r.id', 'left outer');
@@ -554,7 +561,6 @@ class Reports_model extends CI_Model {
 		$this->db->order_by('rpus.static_id ASC, rpus.lider DESC, u.nickname DESC');
 		$query = $this->db->get('users u');
 		if (!$resultUsers = $query->result_array()) return $response;
-		
 		
 		
 		$resultUsers = sortUsers($resultUsers); // сортировка участников по именам (сначала русские потом англ.)
@@ -588,7 +594,10 @@ class Reports_model extends CI_Model {
 		$response = [];
 		if ($resultUsers) {
 			foreach ($resultUsers as $user) {
-				 // если в кэше не задан статик - то прьосто пропускаем его, так как необходимы записи "cap_lider" и "cap_simple", которые неоткуда взять
+				$user['deposit_percent'] = $user['deposit_percent'] ?: ($user['sdp'] ? $user['sdp'] : $defaultDepositPercent);
+				unset($user['sdp']);
+				
+				// если в кэше не задан статик - то прьосто пропускаем его, так как необходимы записи "cap_lider" и "cap_simple", которые неоткуда взять
 				if (!isset($pData['cash'][$user['static']])) continue;
 				$personesCount = isset($compoundsData[$user['static']][$user['user_id']]) ? $compoundsData[$user['static']][$user['user_id']]['persones_count'] : 0;
 				$effectiveness = isset($compoundsData[$user['static']][$user['user_id']]) ? $compoundsData[$user['static']][$user['user_id']]['effectiveness'] : 0;
