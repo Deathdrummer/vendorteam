@@ -1,10 +1,12 @@
 const 	domain			= 'vendorteam.loc', // прописать домен
 		prodDir			= 'production', // директория для продакшн версии
 
-		gulp           	= require('gulp'),
+		{src, dest, parallel, series, watch} = require('gulp'),
+		browserSync    	= require('browser-sync').create(),
+		babel			= require('gulp-babel');
 		gulpUtil      	= require('gulp-util'),
 		sass           	= require('gulp-sass'),
-		browserSync    	= require('browser-sync'),
+		sass.compiler 	= require('node-sass'),
 		connectPhp     	= require('gulp-connect-php'),
 		concat         	= require('gulp-concat'),
 		uglify         	= require('gulp-uglify'),
@@ -24,98 +26,97 @@ const 	domain			= 'vendorteam.loc', // прописать домен
 		args        	= require('yargs').argv, // gulp t(название функции) --env(переменная) [аргументы]
 		dirTree 		= require("directory-tree"),
 		publicDirs		= dirTree('../public/views/').children; // директории public
+		
 
 
-
-
-
-
-
-// LIVE REMOVEDIST CLEARCACHE
-gulp.task('livereload', () => {connectPhp.server({}, function () {browserSync({proxy: domain, notify: false, open: false});});});
-gulp.task('removedist', function() { return del.sync('../'+prodDir, {force: true}); });
-gulp.task('clearcache', function () { return cache.clearAll(); });
 
 
 
 
 // Отслеживание файлов
-gulp.task('watch', ['clearcache', 'livereload', 'plugins.css', 'plugins.js', 'sass', 'svg'], () => {
+function startWatch() {
 	var watchDirs = args.dirs != undefined ? args.dirs.split(',') : publicDirs;
 	
-	gulp.watch('../public/svg/icons/**/*.svg', ['svg']);
-	gulp.watch(['../public/css/assets/**/*.{sass,scss}', '../public/css/libraries/**/*.{sass,scss}', '../public/css/styles/*.{sass,scss}'], ['sass']);
-	gulp.watch('../public/js/plugins/**/*.css', ['plugins.css']);
-	gulp.watch(['../public/js/assets/**/*.js', '!../public/js/assets/plugins.min.js'], ['plugins.js']);
+	browserSync.init({
+		//server: {baseDir: '../'},
+		proxy: domain,
+		notify: false,
+		online: true,
+		open: false
+	})
+	
+	watch('../public/svg/icons/**/*.svg', svg);
+	watch(['../public/css/assets/**/*.{sass,scss}', '../public/css/libraries/**/*.{sass,scss}', '../public/css/styles/*.{sass,scss}'], sassToCss);
+	watch('../public/js/plugins/**/*.css', pluginsCss);
+	watch(['../public/js/assets/**/*.js'], pluginsJs);
 	
 	if (watchDirs) {
 		var jsDirs = [];
 		watchDirs.forEach(function(dir) {
 			var dirName = dir.name || dir;
-			gulp.watch('../public/js/'+dirName+'.js', browserSync.reload);	
-			gulp.watch(['../public/views/'+dirName+'/**/*.tpl'], browserSync.reload);
+			watch('../public/js/'+dirName+'.js').on('change', browserSync.reload);;	
+			watch(['../public/views/'+dirName+'/**/*.tpl']).on('change', browserSync.reload);
 		});
 	} else {
 		console.log('Нет директорий для отслеживания файлов!');
 	}
-});
+}
+
 
 
 
 
 
 // Формирование паблик версии
-gulp.task('build', ['removedist', 'clearcache', 'imagemin', 'sass', 'plugins.css', 'plugins.js', 'svg'], () => {
-	gulp.src(['../app/**/*']).pipe(gulp.dest('../'+prodDir+'/app'));
-	gulp.src(['../system/**/*']).pipe(gulp.dest('../'+prodDir+'/system'));
-	gulp.src(['../index.php', '../.htaccess']).pipe(gulp.dest('../'+prodDir));
-	gulp.src('../public/css/plugins.min.css').pipe(cleanCSS()).pipe(gulp.dest('../'+prodDir+'/public/css'));
-	gulp.src('../public/js/plugins.min.js')
+async function build() {
+	await src(['../app/**/*']).pipe(dest('../'+prodDir+'/app'));
+	await src(['../system/**/*']).pipe(dest('../'+prodDir+'/system'));
+	await src(['../index.php', '../.htaccess']).pipe(dest('../'+prodDir));
+	await src('../public/css/plugins.min.css').pipe(cleanCSS()).pipe(dest('../'+prodDir+'/public/css'));
+	await src('../public/js/plugins.min.js')
+	.pipe(babel())
 	.pipe(uglify().on('error', function(err) {
 		gulpUtil.log(gulpUtil.colors.red('[Error]'), err.toString());
 		this.emit('end');
 	}))
-	.pipe(gulp.dest('../'+prodDir+'/public/js'));
+	.pipe(dest('../'+prodDir+'/public/js'));
 	
-	gulp.src(['../public/js/assets/common.js', '../public/js/assets/functions.js'])
+	await src(['../public/js/assets/common.js', '../public/js/assets/functions.js'])
+	.pipe(babel())
 	.pipe(uglify().on('error', function(err) {
 		gulpUtil.log(gulpUtil.colors.red('[Error]'), err.toString());
 		this.emit('end');
 	}))
-	.pipe(gulp.dest('../'+prodDir+'/public/js/assets'));
+	.pipe(dest('../'+prodDir+'/public/js/assets'));
 	
-	gulp.src('../public/fonts/**/*').pipe(gulp.dest('../'+prodDir+'/public/fonts'));
-	gulp.src('../public/images/**/*.svg').pipe(gulp.dest('../'+prodDir+'/public/images'));
-	gulp.src('../public/svg/sprite.svg').pipe(gulp.dest('../'+prodDir+'/public/svg'));
-	gulp.src('../public/filemanager/**/*').pipe(gulp.dest('../'+prodDir+'/public/filemanager'));
+	await src('../public/fonts/**/*').pipe(dest('../'+prodDir+'/public/fonts'));
+	await src('../public/images/**/*.svg').pipe(dest('../'+prodDir+'/public/images'));
+	await src('../public/svg/sprite.svg').pipe(dest('../'+prodDir+'/public/svg'));
+	await src('../public/filemanager/**/*').pipe(dest('../'+prodDir+'/public/filemanager'));
 	
 	
 	publicDirs.forEach(function(dir) {
 		var dirName = dir.name;
 		
-		gulp.src(['../public/views/'+dirName+'/**/*.tpl']).pipe(gulp.dest('../'+prodDir+'/public/views/'+dirName));
-		gulp.src('../public/css/'+dirName+'.min.css').pipe(cleanCSS()).pipe(gulp.dest('../'+prodDir+'/public/css/'));
-		gulp.src('../public/js/'+dirName+'.js')
+		src(['../public/views/'+dirName+'/**/*.tpl']).pipe(dest('../'+prodDir+'/public/views/'+dirName));
+		src('../public/css/'+dirName+'.min.css').pipe(cleanCSS()).pipe(dest('../'+prodDir+'/public/css/'));
+		src('../public/js/'+dirName+'.js')
+		.pipe(babel())
 		.pipe(uglify().on('error', function(err) {
 			gulpUtil.log(gulpUtil.colors.red('[Error]'), err.toString());
 			this.emit('end');
 		}))
-		.pipe(gulp.dest('../'+prodDir+'/public/js'));
+		.pipe(dest('../'+prodDir+'/public/js'));
 	});
-});
-
-
-
-
-gulp.task('b', ['build']);
-gulp.task('default', ['watch']);
+}
 
 
 
 
 
 
-
+exports.default 	= series(clearcache, parallel(sassToCss, pluginsCss, pluginsJs, svg), startWatch);
+exports.b 			= series(clearcache, removedist, parallel(sassToCss, pluginsCss, pluginsJs, svg, imagemin), build);
 
 
 
@@ -123,11 +124,35 @@ gulp.task('default', ['watch']);
 
 
 
+  
 
+
+
+
+// REMOVEDIST
+async function removedist() {
+	return await del.sync('../'+prodDir, {force: true});
+}
+
+
+// CLEARCACHE
+function clearcache() {
+	return cache.clearAll();
+}
+
+
+// JS Скрипты: css
+function pluginsCss() {
+	return src(['../public/js/assets/plugins/**/*.css'])
+	.pipe(concat('plugins.min.css'))
+	.pipe(autoprefixer(['> 1%', 'last 10 versions', 'Firefox >= 20', 'iOS 7', 'ie 9']))
+	.pipe(dest('../public/css'))
+	.pipe(browserSync.stream());
+}
 
 // JS Скрипты: js
-gulp.task('plugins.js', () => {
-	return gulp.src([
+function pluginsJs() {
+	return src([
 		'../public/js/assets/plugins/jquery/jquery-3.2.1.min.js',
 		'../public/js/assets/plugins/jquery/jquery.migrate.js',
 		'../public/js/assets/plugins/jquery/ui/**/*.js',
@@ -135,61 +160,49 @@ gulp.task('plugins.js', () => {
 		'../public/js/assets/plugins/**/*.js'
 	])
 	.pipe(concat('plugins.min.js'))
-	.pipe(gulp.dest('../public/js'))
-	.pipe(browserSync.reload({stream: true}));
-});
+	.pipe(babel({compact: false}))
+	.pipe(dest('../public/js'))
+	.pipe(browserSync.stream());
+}
 
-
-// JS Скрипты: css
-gulp.task('plugins.css', () => {
-	return gulp.src([
-		'../public/js/assets/plugins/**/*.css'
-	])
-	.pipe(concat('plugins.min.css'))
-	.pipe(autoprefixer(['> 1%', 'last 2 versions', 'Firefox >= 20', 'iOS 7', 'ie 9']))
-	.pipe(gulp.dest('../public/css'))
-	.pipe(browserSync.reload({stream: true}));
-});
 
 
 
 
 // SASS
-gulp.task('sass', () => {
-	var sassFiles = [];
-	publicDirs.forEach(function(dir) {sassFiles.push('../public/css/styles/'+dir.name+'.sass');});	
+function sassToCss(done) {
+	let sassFiles = [];
+	publicDirs.forEach(function(dir) {sassFiles.push('../public/css/styles/'+dir.name+'.sass');});
 	
-	return gulp.src(sassFiles)
+	return src(sassFiles).on('end', done)
 	.pipe(sass({includePaths: bourbon.includePaths}).on("error", notify.onError()))
 	.pipe(rename({suffix: '.min', prefix : ''}))
-	.pipe(autoprefixer(['> 1%', 'last 2 versions', 'Firefox >= 20', 'iOS 7', 'ie 9']))
-	.pipe(gulp.dest('../public/css/'))
-	.pipe(browserSync.reload({stream: true}));
-});
-
-
+	.pipe(autoprefixer(['> 1%', 'last 10 versions', 'Firefox >= 20', 'iOS 7', 'ie 9']))
+	.pipe(dest('../public/css/'))
+	.pipe(browserSync.stream());
+	
+}
 
 
 // IMAGES
-gulp.task('imagemin', () => {
-	return gulp.src('../public/images/**/*.{png,jpg,jpeg,gif,ico}')
+function imagemin() {
+	return src('../public/images/**/*.{png,jpg,jpeg,gif,ico}')
 	.pipe(tinypng({
 		key: 'aQsAF4hQiCt4tKRrcqo9E32Mm3FCWFef',
 		sigFile: '../public/images/.tinypng-sigs',
+		parallel: true,
+		parallelMax: 50,
 		summarize: true,
 	}))
-	.pipe(gulp.dest('../'+prodDir+'/public/images'));
-});
-
+	.pipe(dest('../'+prodDir+'/public/images'));
+}
 
 
 
 // SVG
-gulp.task('svg', () => {
-	return gulp.src('../public/svg/icons/**/*.svg')
-	.pipe(svgmin({
-		js2svg: {pretty: true}	
-	}))
+function svg() {
+	return src('../public/svg/icons/**/*.svg')
+	.pipe(svgmin({js2svg: {pretty: true}	}))
 	.pipe(cheerio({
 		run: function($) {
 			$('[fill]').removeAttr('fill');	
@@ -206,5 +219,6 @@ gulp.task('svg', () => {
 			}
 		}	
 	}))
-	.pipe(gulp.dest('../public/svg'));
-});
+	.pipe(dest('../public/svg'))
+	.pipe(browserSync.stream());
+}

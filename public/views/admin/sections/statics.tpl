@@ -30,8 +30,10 @@
 							
 							<strong class="ml4">Приостановить стаж:</strong>
 							<div class="checkbox"><input type="checkbox"{% if statics[id]['stopstage'] %} checked{% endif %} name="statics[{{id}}][stopstage]" value="1"></div>
-							
 							<span class="w3"></span>
+							
+							{% include form~'field.tpl' with {'label': 'Процент начисления в депозит', 'name': 'statics|'~id~'|deposit_percent', 'postfix': 0, 'class': 'w6', 'inline': 1} %}
+							
 							<div class="buttons right ml-auto">
 								<button class="remove remove_static fieldheight" data-id="{{id}}" title="Удалить Статик"><i class="fa fa-trash"></i></button>
 							</div>

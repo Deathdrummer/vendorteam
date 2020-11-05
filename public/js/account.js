@@ -1,14 +1,9 @@
 $(document).ready(function() {
 	
-	
-	
-	
-	
 	$('.scroll').ddrScrollTable();
 	$(document).on('popup:open', function() {
 		$('.scroll').ddrScrollTable();
 	});
-	
 	
 	addPayItem = function(response) {
 		delete response['from'];
@@ -26,7 +21,6 @@ $(document).ready(function() {
 			console.log(e.responseText);
 		});
 	}
-
 
 	addComplaintsItem = function(response) {
 		
@@ -1459,8 +1453,8 @@ $(document).ready(function() {
 	});
 	
 	
-	function getOfftimeDates(static, hWeeks) {
-		$.post('/offtime/get_offtime_dates', {static: static, history: hWeeks}, function(html) {
+	function getOfftimeDates(st, hWeeks) {
+		$.post('/offtime/get_offtime_dates', {static: st, history: hWeeks}, function(html) {
 			if (!hWeeks) offtimeWin.setWidth(1330);
 			offtimeWin.setData(html);
 			offtimeWin.wait(false);
@@ -1573,10 +1567,10 @@ $(document).ready(function() {
 		}
 	});
 	
-	function getVacationDates(static, shift) {
+	function getVacationDates(st, shift) {
 		vacationWin.wait();
 		shift == shift || 0;
-		$.post('/vacation/get_vacation_dates', {static: static, shift: shift}, function(html) {
+		$.post('/vacation/get_vacation_dates', {static: st, shift: shift}, function(html) {
 			if (!html) {
 				vacationWin.setData('<p class="empty text-center">Запрещено бронировать отпуск в текущем звании!</p>');
 				vacationWin.wait(false);

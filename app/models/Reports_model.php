@@ -442,6 +442,7 @@ class Reports_model extends CI_Model {
 		$defaultDepositPercent = $this->admin_model->getSettings('default_deposit_percent_setting'); // процент депозита по-умолчанию
 		// в таблице два поля - sdp: процент депозита статика deposit_percent: процент депозита пользователя
 		
+		
 		//---------------------------------------------------------- Формирование отчета "налету"
 		if (!isset($pData['pattern_id'])) {
 			$this->db->select('u.id AS user_id, u.color, u.nickname, u.deposit, u.deposit_percent, u.deleted, s.name AS static_name, s.cap_simple, s.cap_lider, s.deposit_percent AS sdp, r.name AS rank_name, r.coefficient AS rank_coefficient, us.lider, us.static_id AS static');
@@ -483,9 +484,6 @@ class Reports_model extends CI_Model {
 			
 			// static id => [static type, users => [user id => user data... raids => [raid id => rate]]]
 			foreach ($resultUsers as $user) {
-				$user['deposit_percent'] = $user['deposit_percent'] ?: ($user['sdp'] ? $user['sdp'] : $defaultDepositPercent);
-				unset($user['sdp']);
-				
 				// если в кэше не задан статик - то прьосто пропускаем его, так как необходимы записи "cap_lider" и "cap_simple", которые неоткуда взять
 				if (!isset($pData['cash'][$user['static']])) continue;
 				$personesCount = isset($compoundsData[$user['static']][$user['user_id']]) ? $compoundsData[$user['static']][$user['user_id']]['persones_count'] : 0;
@@ -506,7 +504,10 @@ class Reports_model extends CI_Model {
 				else $response[$user['static']]['period_koeff_summ'] += round($periodKoeff, 3);
 				
 				
-				$persentToDeposit = 10; // Процент, отстегивающийся в Резерв
+				// Процент, отстегивающийся в Резерв
+				$persentToDeposit = $user['deposit_percent'] ?: ($user['sdp'] ?: ($defaultDepositPercent ?: 10));
+				unset($user['sdp']);
+				
 				$depositLimit = $user['lider'] ? $user['cap_lider'] : $user['cap_simple'];
 				$percentFromPayment = ($payment * ($persentToDeposit / 100)) <= $depositLimit ? ($payment * ($persentToDeposit / 100)) : $depositLimit;
 				
@@ -594,9 +595,6 @@ class Reports_model extends CI_Model {
 		$response = [];
 		if ($resultUsers) {
 			foreach ($resultUsers as $user) {
-				$user['deposit_percent'] = $user['deposit_percent'] ?: ($user['sdp'] ? $user['sdp'] : $defaultDepositPercent);
-				unset($user['sdp']);
-				
 				// если в кэше не задан статик - то прьосто пропускаем его, так как необходимы записи "cap_lider" и "cap_simple", которые неоткуда взять
 				if (!isset($pData['cash'][$user['static']])) continue;
 				$personesCount = isset($compoundsData[$user['static']][$user['user_id']]) ? $compoundsData[$user['static']][$user['user_id']]['persones_count'] : 0;
@@ -614,7 +612,11 @@ class Reports_model extends CI_Model {
 				if (! isset($response[$user['static']]['period_koeff_summ'])) $response[$user['static']]['period_koeff_summ'] = round($periodKoeff, 3);
 				else $response[$user['static']]['period_koeff_summ'] += round($periodKoeff, 3);
 				
-				$persentToDeposit = 10; // Процент, отстегивающийся в Резерв
+				
+				// Процент, отстегивающийся в Резерв
+				$persentToDeposit = $user['deposit_percent'] ?: ($user['sdp'] ?: ($defaultDepositPercent ?: 10));
+				unset($user['sdp']);
+				
 				$depositLimit = $user['lider'] ? $user['cap_lider'] : $user['cap_simple'];
 				$percentFromPayment = ($payment * ($persentToDeposit / 100)) <= $depositLimit ? ($payment * ($persentToDeposit / 100)) : $depositLimit;
 				$hSumm = isset($depositHistories[$pData['pattern_id']][$user['static']][$user['user_id']]) ? ($rpp[$user['static']][$user['user_id']] == 1 ? $depositHistories[$pData['pattern_id']][$user['static']][$user['user_id']] : 0) : 0; // сумма из истории

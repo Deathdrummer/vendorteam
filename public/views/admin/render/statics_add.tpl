@@ -14,6 +14,10 @@
 		<span class="w3"></span>
 		
 		<strong class="ml4">Приостановить стаж:</strong>
-		<div class="checkbox"><input type="checkbox" name="statics[new_{{index}}][stopstage]" value="1"></div>				
+		<div class="checkbox"><input type="checkbox" name="statics[new_{{index}}][stopstage]" value="1"></div>		
+		<span class="w3"></span>
+		
+		
+		{% include form~'field.tpl' with {'label': 'Процент начисления в депозит', 'name': 'statics|new_'~index~'|deposit_percent', 'postfix': 0, 'class': 'w6', 'inline': 1} %}
 	</div>
 </div>

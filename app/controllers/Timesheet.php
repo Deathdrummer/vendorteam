@@ -126,7 +126,7 @@ class Timesheet extends MY_Controller {
 		if ($toOperator) {
 			$this->load->model('operator_model');
 			$operatorData = $this->operator_model->getOperatorData();
-			$timesheetData['access_statics'] = array_keys($operatorData['statics']);
+			$timesheetData['access_statics'] = isset($operatorData['statics']) ? array_keys($operatorData['statics']) : null;
 			echo $this->twig->render('views/operator/render/timesheet_table_data.tpl', bringTypes($timesheetData));
 		} else {
 			echo $this->twig->render('views/admin/render/timesheet_table_data.tpl', bringTypes($timesheetData));

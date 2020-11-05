@@ -5,6 +5,14 @@
 	
 	
 	
+	
+	{#<div class="mainblock">
+		<div class="mainblock__header"></div>
+		<div class="mainblock__aside"></div>
+		<div class="mainblock__content"></div>
+	</div>#}
+	
+	
 	{#{% include 'views/operator/render/block.tpl' with {
 		'items': [
 			{'component': 'field', 'data': {'foo': 'bar1'}},

@@ -346,6 +346,14 @@
 			
 			</fieldset>
 			
+			
+			<fieldset>
+				<legend>Процент отчисления в депозит по-умолчагнию</legend>
+				
+				{% include form~'field.tpl' with {'label': 'Процент', 'name': 'default_deposit_percent', 'class': 'w10', 'type': 'number', 'step': '1'} %}
+			
+			</fieldset>
+			
 		</div>
 		
 		

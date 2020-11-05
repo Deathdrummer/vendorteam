@@ -58,6 +58,7 @@
 														<td>Стаж</td>
 														<td>Средство платежа</td>
 														<td{% if sort_field == 'u.deposit' %} class="active"{% endif %}>Резерв <i class="fa fa-sort" userssortfield="u.deposit" sortorder="{{sort_order}}"></i></td>
+														<td class="nowrap" title="Процент отчисления в депозит">Пр.от.</td>
 														<!-- <td>Ранг</td> -->
 														<td{% if sort_field == 'u.role' %} class="active"{% endif %}>Роль <i class="fa fa-sort" userssortfield="u.role" sortorder="{{sort_order}}"></i></td>
 														<td>Доступ</td>
@@ -130,6 +131,12 @@
 																	<input type="number" showrows class="user_deposit" value="{{user.deposit|default(0)}}">
 																</div>
 															</td>
+															<td class="nowidth">
+																<div class="number w54px">
+																	<input type="number" showrows class="user_deposit_percent" value="{{user.deposit_percent|default(0)}}">
+																</div>
+															</td>
+															
 															{#<td class="nowidth">
 																<div class="select">
 																	<select class="user_access_level">
@@ -765,6 +772,7 @@ $(document).ready(function() {
 				thisUserStage = $(thisRow).find('.user_stage'),
 				thisUserPayment = $(thisRow).find('.user_payment'),
 				thisUserDeposit = $(thisRow).find('.user_deposit'),
+				thisUserDepositPercent = $(thisRow).find('.user_deposit_percent'),
 				thisUserRole = $(thisRow).find('.user_role'),
 				thisUserAccess = $(thisRow).find('.user_access');
 			
@@ -776,9 +784,12 @@ $(document).ready(function() {
 				stage: thisUserStage.val(),
 				payment: $(thisUserPayment).val(),
 				deposit: $(thisUserDeposit).val(),
+				deposit_percent: $(thisUserDepositPercent).val(),
 				role: $(thisUserRole).val(),
 				access: $(thisUserAccess).val()
 			}
+			
+			debugger;
 			usersData.push(user);
 		});
 		
