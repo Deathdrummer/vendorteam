@@ -187,6 +187,13 @@ class Reports extends MY_Controller {
 	public function change_paydone_stat() {
 		$pData = bringTypes($this->input->post());
 		if ($this->reports_model->changePayDoneStat($pData['stat'], $pData['pattern_id'], $pData['static_id'], $pData['user_id'], $pData['to_deposit'])) {
+			$this->admin_model->globalDepositHistoryAdd([
+				'user_id'	=> $pData['user_id'],
+				'summ'		=> $pData['to_deposit'],
+				'date'		=> time(),
+				'reason'	=> 2,
+				'stat'		=> $pData['stat'],
+			]);
 			echo $this->reports_model->setCashAndDaysToinfo($pData['user_id'], $pData['pattern_id'], $pData['cash'], $pData['stat']);
 		} else echo 0;
 	}
@@ -638,6 +645,61 @@ class Reports extends MY_Controller {
 		
 		setHeadersToDownload('application/octet-stream', 'windows-1251');
 		echo $dataToExport;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//----------------------------------------------------------------------------------------------------------------------------- Рассчет окладов
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function get_periods_to_salary() {
+		if (!$this->input->is_ajax_request()) return false;
+		$data['periods'] = $this->reports_model->getReportsPeriods();
+		echo $this->twig->render('views/admin/render/salary/periods.tpl', $data);
+	}
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function get_salary_form() {
+		if (!$this->input->is_ajax_request()) return false;
+		$periodId = $this->input->post('period_id');
+		$periodTitle = $this->input->post('period_title');
+		$data['statics'] = $this->admin_model->getStatics();
+		$data['data'] = $this->reports_model->getCoeffsToSalary($periodId);
+		$data['period_title'] = $periodTitle;
+		
+		echo $this->twig->render('views/admin/render/salary/form.tpl', $data);
+	}
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function set_salary_orders() {
+		if (!$this->input->is_ajax_request()) return false;
+		$data = bringTypes($this->input->post());
+		$orders = $this->reports_model->getSalaryOrders($data);
+		if (!$this->reports_model->insertUsersOrders($orders)) exit('0');
+		echo '1';
 	}
 	
 	

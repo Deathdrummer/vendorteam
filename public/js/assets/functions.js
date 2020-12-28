@@ -732,6 +732,65 @@ $.fn.multiChoose = function(settings, callback) {
 
 
 
+// -------------------------------------------------------------------- Динамически инициализировать табы
+ddrInitTabs = function() {
+	
+	var hashData = location.hash.substr(1, location.hash.length).split('.'),
+		section = hashData[0];
+	
+	if (hashData[1] != undefined) {
+		$('#'+section).find('.tabstitles:not(.sub) li').removeClass('active');
+		$('#'+section).find('.tabstitles:not(.sub) li#'+hashData[1]).addClass('active');
+		
+		$('#'+section).find('.tabstitles:not(.sub)').siblings('.tabscontent').find('[tabid]').removeClass('visible');
+		$('#'+section).find('.tabstitles:not(.sub)').siblings('.tabscontent').find('[tabid="'+hashData[1]+'"]').addClass('visible');
+	} else {
+		$('#'+section).find('.tabstitles:not(.sub) li:first').addClass('active');
+		$('#'+section).find('.tabstitles:not(.sub)').siblings('.tabscontent').find('[tabid]:first').addClass('visible');
+	}
+	
+	if (hashData[2] != undefined) {
+		if ($('#'+section).find('.tabstitles:not(.sub)').siblings('.tabscontent').find('.tabstitles.sub').length > 0) {
+			$('#'+section).find('.tabstitles:not(.sub)').siblings('.tabscontent').find('.tabstitles.sub').each(function() {
+				if ($(this).children('li#'+hashData[2]).length > 0) {
+					$(this).children('li').removeClass('active');
+					$(this).children('li#'+hashData[2]).addClass('active');
+					
+					$(this).siblings('.tabscontent').find('[tabid]').removeClass('visible');
+					$(this).siblings('.tabscontent').find('[tabid="'+hashData[2]+'"]').addClass('visible');
+				} else {
+					$(this).children('li:first').addClass('active');
+					$(this).siblings('.tabscontent').find('[tabid]:first').addClass('visible');
+				}
+			});
+		}
+	} else {
+		if ($('#'+section).find('.tabstitles:not(.sub)').siblings('.tabscontent').find('.tabstitles.sub').length > 0) {
+			$('#'+section).find('.tabstitles:not(.sub)').siblings('.tabscontent').find('.tabstitles.sub').each(function() {
+				$(this).children('li').removeClass('active');
+				$(this).children('li:first').addClass('active');
+				
+				$(this).siblings('.tabscontent').find('[tabid]').removeClass('visible');
+				$(this).siblings('.tabscontent').find('[tabid]:first').addClass('visible');
+			});
+		}	
+	}
+};
+
+
+
+
+
+$.fn.setWaitToBlock = function(mess) {
+	var selector = this;
+	if (mess === false) {
+		$(selector).css('background-color', 'none');
+	} else {
+		$(selector).css('background-color', 'rgba(255, 255, 255, 0.2)');
+		$(selector).html('<div class="d-flex align-items-center justify-content-center flex-column"><i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i><p>'+mess+'</p></div>');
+	}
+		
+};
 
 
 

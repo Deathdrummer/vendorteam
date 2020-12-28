@@ -1,6 +1,40 @@
 <?
 
 
+if (!function_exists('formatArray')) {
+    /**
+     * Сформировать массив
+     * @param массив
+     * @param поле в качестве ключа
+     * @param поле(я) значений 
+     * @param если одно поле - то самого названия поля не будет
+     * @return 
+    */
+    function formatArray($arr = false, $key = false, $fields = false, $noFieldName = false) {
+        if (!$arr || !$key || !$fields) return false;
+        if (!$fields = preg_split("/,\s+/", $fields)) return false;
+        $data = [];
+        foreach ($arr as $k => $row) {
+            if (!isset($row[$key])) continue;
+            if (count($fields) == 1 && $noFieldName) {
+                $field = reset($fields);
+                if (!isset($row[$field])) continue;
+                $data[$row[$key]][] = $row[$field];
+            } else {
+                foreach ($fields as $field) {
+                    if (!isset($row[$field])) continue;
+                    $data[$row[$key]][$k][$field] = $row[$field];
+                }
+                $data[$row[$key]] = array_values($data[$row[$key]]);
+            }  
+        }
+        return $data;
+    }
+}
+
+
+
+
 
 if (!function_exists('sortUsers')) {
     function sortUsers($arr, $field = 'nickname') {    
@@ -40,11 +74,30 @@ if (!function_exists('isJson')) {
      * @return 
     */
     function isJson($string) {
+        if (!is_string($string)) return false;
         json_decode($string);
         return (json_last_error() == JSON_ERROR_NONE);
     }
 }
 
+
+
+
+if (!function_exists('arrTakeItem')) {
+    /**
+     * Взять элемент из массива. сократить сам массив
+     * @param 
+     * @return 
+    */
+    function arrTakeItem(&$arr = false, $itemKey = false) {
+        if (!$arr || !$itemKey) return false;
+        if (!isset($arr[$itemKey])) return false;
+        $takeItem = $arr[$itemKey];
+        unset($arr[$itemKey]);
+        return $takeItem;
+    }
+}     
+    
 
 
 
@@ -288,23 +341,37 @@ if ( ! function_exists('dateToNumeric')) {
 
 
 
-if ( ! function_exists('setArrKeyFromField')) {
+if (!function_exists('setArrKeyFromField')) {
     /**
      * @param Подставляет поле массива в качестве ключа
      * @return array
      */
-    function setArrKeyFromField($array = null, $field = null, $preserveField = false) {
+    function setArrKeyFromField($array = null, $field = null, $preserveField = false, $returnFields = false) {
         if (is_null($array) || empty($array) || !is_array($array) || is_null($field)) return false;
+        if (!is_bool($preserveField) ) {
+            $returnFields = $preserveField;
+            $preserveField = false;
+        }
+        if ($returnFields && !is_array($returnFields)) $returnFields = preg_split('/[\s,]+/', $returnFields);
+        
         $newArr = [];
         foreach ($array as $key => $val) {
             $newKey = $val[$field];
             if (!$preserveField) unset($val[$field]);
-            $newArr[$newKey] = $val;
+            if ($returnFields) {
+                if (count($returnFields) == 1) $newArr[$newKey] = $val[reset($returnFields)];
+                else {
+                    $newArr[$newKey] = array_filter($val, function($item) use($returnFields) {
+                        if (in_array($item, $returnFields)) return $item;
+                    }, ARRAY_FILTER_USE_KEY);
+                }
+            } else {
+                $newArr[$newKey] = $val;
+            }
         }
         return $newArr;
     }
 }
-
 
     
     

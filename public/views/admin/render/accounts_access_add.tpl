@@ -33,6 +33,7 @@
 			<div class="col-auto">
 				<strong>Ссылки</strong>
 				<div><label for="links_new_{{index}}_1"><input type="checkbox" name="accounts_access[new_{{index}}][access][links][paydata]" value="1" id="links_new_{{index}}_1"> Платежные данные</label></div>
+				<div><label for="links_new_{{index}}_2"><input type="checkbox" name="accounts_access[new_{{index}}][access][links][mentors]" value="1" id="links_new_{{index}}_2"> Наставники</label></div>
 			</div>
 		</div>
 	</div>

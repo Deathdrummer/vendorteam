@@ -24,7 +24,6 @@
 	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/3.20.0/mode/xml/xml.js"></script>
 	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/2.36.0/formatting.js"></script>
 	
-	
 	<link rel="stylesheet" href="{{base_url('public/css/plugins.min.css')}}">
 	<script src="{{base_url('public/js/plugins.min.js')}}"></script>
 	
@@ -51,9 +50,12 @@
 					<li data-block="ranks">Звания</li>
 					{#<li data-block="access_levels">Ранги</li>#}
 					<li data-block="roles">Роли</li>
+					<li data-block="classes">Классы</li>
+					<li data-block="mentors">Наставничество</li>
 					{#<li data-block="payments_types">Средства платежа</li>#}
 					<li data-block="raids_types">Типы рейдов и ключей</li>
 					<li data-block="reports">Отчеты</li>
+					<li data-block="ratings">Рейтинги</li>
 					<li data-block="timesheet">Расписание</li>
 					<li data-block="offtime">Выходные</li>
 					<li data-block="vacation">Отпуска</li>

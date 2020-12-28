@@ -1,6 +1,3 @@
-<h1>Спасибо за регистрацию!</h1>
-<p>Ваш пароль: {{password}}</p>
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -71,18 +68,15 @@
 	</style>
 	
 	
-	<title>WOW | Новая заявка</title>
+	<title>Vendorteam | Регистрация аккаунта</title>
 </head>
 <body>
 	
 	<div class="wrap">
-		
 		<h1>Спасибо за регистрацию!</h1>
 		
 		<p>Ваш логин: {{email}}</p>
 		<p>Ваш пароль: {{password}}</p>
-		
-		
 	</div>
 	
 	

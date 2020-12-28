@@ -327,33 +327,88 @@
 		<div tabid="constants">
 			<h3>Константы</h3>
 			
-			<fieldset>
-				<legend>Константы для расчетов и отчета</legend>
+			<ul class="tabstitles sub">
+				<li id="tabReports">Расчетоы и отчеты</li>
+				<li id="tabVacations">Бронирование выходных</li>
+				<li id="tabDeposit">Депозит</li>
+				<li id="tabRating">Рейтинг</li>
+			</ul>
+			
+			<div class="tabscontent">
+				<div tabid="tabReports">
+					<fieldset>
+						<legend>Константы для расчетов и отчета</legend>
+						
+						
+						{% include form~'field.tpl' with {'label': 'Константа для посещения', 'name': 'constants|visits', 'class': 'w20', 'type': 'number', 'step': '0.001'} %}
+						{% include form~'field.tpl' with {'label': 'Константа для персонажей', 'name': 'constants|persons', 'class': 'w20', 'type': 'number', 'step': '0.001'} %}
+						{% include form~'field.tpl' with {'label': 'Константа для эффективности', 'name': 'constants|effectiveness', 'class': 'w20', 'type': 'number', 'step': '0.001'} %}
+						{% include form~'field.tpl' with {'label': 'Константа для штрафов', 'name': 'constants|fine', 'class': 'w20', 'type': 'number', 'step': '0.001'} %}
+						
+					</fieldset>
+				</div>
 				
+				<div tabid="tabVacations">
+					<fieldset>
+						<legend>Бронирование выходных</legend>
+						
+						{% include form~'field.tpl' with {'label': 'Лимит бронирование в месяц', 'name': 'offtime_user_limit', 'class': 'w20', 'type': 'number', 'step': '1'} %}
+					
+					</fieldset>
+				</div>
 				
-				{% include form~'field.tpl' with {'label': 'Константа для посещения', 'name': 'constants|visits', 'class': 'w20', 'type': 'number', 'step': '0.001'} %}
-				{% include form~'field.tpl' with {'label': 'Константа для персонажей', 'name': 'constants|persons', 'class': 'w20', 'type': 'number', 'step': '0.001'} %}
-				{% include form~'field.tpl' with {'label': 'Константа для эффективности', 'name': 'constants|effectiveness', 'class': 'w20', 'type': 'number', 'step': '0.001'} %}
-				{% include form~'field.tpl' with {'label': 'Константа для штрафов', 'name': 'constants|fine', 'class': 'w20', 'type': 'number', 'step': '0.001'} %}
+				<div tabid="tabDeposit">
+					<fieldset>
+						<legend>Процент отчисления в депозит по-умолчанию</legend>
+						
+						{% include form~'field.tpl' with {'label': 'Процент', 'name': 'default_deposit_percent', 'class': 'w10', 'type': 'number', 'step': '1'} %}
+					
+					</fieldset>
+				</div>
 				
-			</fieldset>
-			
-			
-			<fieldset>
-				<legend>Бронирование выходных</legend>
-				
-				{% include form~'field.tpl' with {'label': 'Лимит бронирование в месяц', 'name': 'offtime_user_limit', 'class': 'w20', 'type': 'number', 'step': '1'} %}
-			
-			</fieldset>
-			
-			
-			<fieldset>
-				<legend>Процент отчисления в депозит по-умолчагнию</legend>
-				
-				{% include form~'field.tpl' with {'label': 'Процент', 'name': 'default_deposit_percent', 'class': 'w10', 'type': 'number', 'step': '1'} %}
-			
-			</fieldset>
-			
+				<div tabid="tabRating">
+					<fieldset>
+						<legend>Коэффициенты для рейтинга</legend>
+						
+						<div class="row">
+							<div class="col-12 col-md-6 col-lg-3">
+								{% include form~'textarea.tpl' with {'label': 'Активность', 'name': 'rating_coeffs|activity', 'placeholder': 'коэффициент:баллы / перенос строки'} %}
+							</div>
+							<div class="col-12 col-md-6 col-lg-3">
+								{% include form~'textarea.tpl' with {'label': 'Личный скилл', 'name': 'rating_coeffs|skill', 'placeholder': 'коэффициент:баллы / перенос строки'} %}
+							</div>
+							<div class="col-12 col-md-6 col-lg-3">
+								{% include form~'textarea.tpl' with {'label': 'Штрафы', 'name': 'rating_coeffs|fine', 'placeholder': 'коэффициент:баллы / перенос строки'} %}
+							</div>
+							<div class="col-12 col-md-6 col-lg-3">
+								{% include form~'textarea.tpl' with {'label': 'Коэффициент посещений', 'name': 'rating_coeffs|visits', 'placeholder': 'коэффициент:баллы / перенос строки'} %}
+							</div>
+						</div>
+						
+						<div class="row mt-4">
+							<div class="col-12 col-md-6 col-lg-3">
+								{% include form~'textarea.tpl' with {'label': 'Выговоры', 'name': 'rating_coeffs|reprimands', 'placeholder': 'коэффициент:баллы / перенос строки'} %}
+							</div>
+							<div class="col-12 col-md-6 col-lg-3">
+								{% include form~'textarea.tpl' with {'label': 'Форс мажорные выходныые', 'name': 'rating_coeffs|forcemajeure', 'placeholder': 'коэффициент:баллы / перенос строки'} %}
+							</div>
+							<div class="col-12 col-md-6 col-lg-3">
+								{% include form~'textarea.tpl' with {'label': 'Стимулирование', 'name': 'rating_coeffs|stimulations', 'placeholder': 'коэффициент:баллы / перенос строки'} %}
+							</div>
+							<div class="col-12 col-md-6 col-lg-3">
+								{% include form~'textarea.tpl' with {'label': 'Наставничество', 'name': 'rating_coeffs|mentors', 'placeholder': 'коэффициент:баллы / перенос строки'} %}
+							</div>
+						</div>
+					</fieldset>
+					
+					<fieldset>
+						<legend>Как рассчитывается рейтинг</legend>
+						
+						{% include form~'textarea.tpl' with {'label': 'Описание', 'name': 'rating_desc', 'editor': 'ratingDesc', 'class': 'w100'} %}
+					
+					</fieldset>
+				</div>
+			</div>
 		</div>
 		
 		

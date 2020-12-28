@@ -96,6 +96,7 @@
 							<button id="paymentRequestsTemplates" class="fieldheight ml-0" title="Новая заявка из шаблона"><i class="fa fa-newspaper-o"></i></button>
 							<a class="button fieldheight" target="_self" href="{{base_url()}}reports/paymentrequest_export" download="Заявки_на_оплату_{{date('Y-m-d_H_i')}}.csv" title="Экспортировать отчет"><i class="fa fa-download"></i></a>
 							<button id="paymentRequestsSetStatToAll" class="fieldheight ml-0" title="Рассчитать все заявки"><i class="fa fa-list-ol"></i></button>
+							<button id="setSalaryBtn" class="fieldheight ml-0" title="Рассчитать оклады"><i class="fa fa-money"></i></button>
 						</div>
 					</div>
 					
@@ -513,6 +514,8 @@ $(document).ready(function() {
 			userId = thisData[2],
 			cash = thisData[4],
 			toDeposit = thisData[3];
+		
+		console.log('paydone');
 			
 		$.post('/reports/change_paydone_stat', {
 			stat: stat,
@@ -939,7 +942,7 @@ $(document).ready(function() {
 			
 			
 			$('#buildPaymentsPatterns').on(tapEvent, function() {
-				//paymentsPatternsWin.wait();
+				paymentsPatternsWin.wait();
 				var checkedPatterns = [];
 				$('#reportPaymentsPatternsList [paymentspatternid]').each(function() {
 					if ($(this).hasClass('success')) {
@@ -953,7 +956,7 @@ $(document).ready(function() {
 						$('[id^="tabpaybrago"]:first').addClass('active');
 						$('[tabid^="tabpaybrago"]:first').addClass('visible');
 						$('#downloadPaymentsPatterns').removeAttrib('disabled');
-						//paymentsPatternsWin.close();
+						paymentsPatternsWin.close();
 						
 						
 						$('body').off(tapEvent, '#downloadPaymentsPatterns').on(tapEvent, '#downloadPaymentsPatterns', function() {
@@ -962,11 +965,11 @@ $(document).ready(function() {
 						});
 						
 					}, function() {
-						//paymentsPatternsWin.wait(false);
+						paymentsPatternsWin.wait(false);
 					});
 				} else {
 					notify('Необходимо выбрать диапазоны', 'info');
-					//paymentsPatternsWin.wait(false);
+					paymentsPatternsWin.wait(false);
 				}
 			});
 			
@@ -1208,8 +1211,139 @@ $(document).ready(function() {
 					}
 				}, 50);
 			});
-		});		
+		});
 	});
+	
+	
+	
+	
+	
+	
+	
+	
+	// --------------------------------------- Рассчитать оклады
+	$('#setSalaryBtn').on(tapEvent, function() {
+		popUp({
+			title: 'Расчет окладов',
+		    width: 400,
+		    wrapToClose: true,
+		    winClass: false,
+		    //buttons: ,
+		    closeButton: 'Закрыть',
+		}, function(salaryWin) {
+			salaryWin.wait();
+			getAjaxHtml('reports/get_periods_to_salary', function(html) {
+				salaryWin.setData(html);
+				
+				$('[periodid]').on(tapEvent, function() {
+					var id = $(this).attr('periodid'),
+						title = $(this).attr('periodtitle');
+					
+					salaryWin.wait();
+					getAjaxHtml('reports/get_salary_form', {period_id: id, period_title: title}, function(html) {
+						salaryWin.setWidth(600);
+						salaryWin.setButtons([{id : 'setSalary', title: 'Рассчитать'}], 'Отмена');
+						salaryWin.setData(html);
+						
+						$('#salaryStatics').ddrScrollTable();
+						
+						$('[salarysumm]').number(true, 0, ',', ' ');
+						
+						$('#setSalary').on(tapEvent, function() {
+							var stat = true;
+							
+							if ($('#salaryFormStatics').find('[choosedstatic]:checked').length == 0) {
+								notify('Необходимо выбрать хотя бы один статик!', 'error');
+								stat = false;
+							}
+							
+							if ($('#salesOrder').val() == '') {
+								notify('Необходимо заполнить поле [номер заказа]!', 'error');
+								$('#salesOrder').addClass('error');
+								stat = false;
+							}
+							
+							if ($('#salesComment').val() == '') {
+								notify('Необходимо заполнить поле [комментарий]!', 'error');
+								$('#salesComment').addClass('error');
+								stat = false;
+							}
+								
+							
+							
+							var data = [],
+								salesOrder = $('#salesOrder').val(),
+								salesComment = $('#salesComment').val(),
+								salaryCoeffErrors = false,
+								salarySummErrors = false;
+							
+							$('#salaryFormStatics').find('tr').each(function() {
+								if ($(this).find('[choosedstatic]:checked').length) {
+									var staticId = $(this).find('[choosedstatic]').attr('choosedstatic'),
+										salaryCoeff = $(this).find('[salarycoeff]').val(),
+										salarySumm = $(this).find('[salarysumm]').val();
+									
+									if (!salaryCoeff) {
+										$(this).find('[salarycoeff]').addClass('error');
+										salaryCoeffErrors = true;
+										stat = false;
+									}
+									
+									if (!salarySumm) {
+										$(this).find('[salarysumm]').addClass('error');
+										salarySummErrors = true;
+										stat = false;
+									}
+									
+									data.push({
+										static_id: staticId,
+										coeff: parseFloat(salaryCoeff),
+										summ: parseInt(salarySumm)
+									});
+								}
+							});
+							
+							if (salaryCoeffErrors) {
+								notify('Необходимо корректно прописать коэффициент!', 'error');
+							}
+							
+							if (salarySummErrors) {
+								notify('Необходимо корректно прописать сумму!', 'error');
+							}
+							
+							if (stat) {
+								salaryWin.wait();
+								$.post('/reports/set_salary_orders', {period_id: id, data: data, order: salesOrder, comment: salesComment}, function(response) {
+									if (response) {
+										salaryWin.close();
+									} else {
+										salaryWin.wait(false);
+										notify('Ошибка формирования заявки!', 'error');
+									}
+								}).fail(function(e) {
+									salaryWin.wait(false);
+									showError(e);
+									notify('Системная ошибка!', 'error');
+								});	
+							}
+						});
+						
+					}, function() {
+						salaryWin.wait(false);
+					});
+				});
+				
+				
+				
+			}, function() {
+				salaryWin.wait(false);
+			});
+		});
+	});
+	
+	
+	
+	
 	
 	
 	

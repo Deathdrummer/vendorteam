@@ -127,6 +127,7 @@ jQuery(document).ready(function($) {
     // -------------------------------------------------------------------- Табы
 	$('body').on(tapEvent, '.tabstitles li', function() {
 		var thisItem = this,
+			noroute = $(thisItem).attr('noroute') || false,
 			hashData = location.hash.substr(1, location.hash.length).split('.'),
 			thisId = $(thisItem).attr('id'),
 			section = hashData[0],
@@ -149,9 +150,9 @@ jQuery(document).ready(function($) {
 		$(thisItem).addClass('active');
 		
 		if ($(thisTabsTitles).hasClass('sub') == false) {
-			location.hash = section+'.'+thisId;
+			if (!noroute) location.hash = section+'.'+thisId;
 		} else {
-			location.hash = section+'.'+hashData[1]+'.'+thisId;
+			if (!noroute) location.hash = section+'.'+hashData[1]+'.'+thisId;
 		}
 		
 		if ($(thisTabsContent).children('[tabid="'+thisId+'"]').hasClass('visible') == false) {

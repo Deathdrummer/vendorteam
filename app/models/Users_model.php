@@ -24,7 +24,7 @@ class Users_model extends MY_Model {
 		$orderType = isset($params['order']) ? $params['order'] : false;
 		
 		$this->db->select('u.*, us.lider, us.static_id AS static');
-		$this->db->join('users_statics us', 'us.user_id = u.id', 'left outer');
+		$this->db->join('users_statics us', 'us.user_id = u.id', 'LEFT OUTER');
 		
 		
 		if ($where) $this->db->where($where);
@@ -76,6 +76,109 @@ class Users_model extends MY_Model {
 		}
 		return $data;
 	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * Получить ID главного статика участника
+	 * @param 
+	 * @return 
+	 */
+	public function getMainStaticId($usersId = null) {
+		if (is_null($usersId)) return false;
+		$this->db->select('static_id');
+		$this->db->where('user_id', $usersId);
+		$query = $this->db->get('users_statics');
+		if (!$row = $query->row_array()) return false;
+		return $row['static_id'];
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Получить список классов пользователя с отметкой тех, в которых он состоит
+	 * @param users ID
+	 * @return array [id] => 45, [name] => EU Alliance, [isset] => 1
+	 */
+	public function getUsersClasses($usersId = null) {
+		if (is_null($usersId)) return false;
+		$this->db->select('class_id, mentor');
+		$this->db->where('user_id', $usersId);
+		$query = $this->db->get('users_classes');
+		$response = $query->result_array();
+		if (!$allClasses = $this->admin_model->getClasses()) return false;
+		$usersClasses = $response ? setArrKeyFromField($response, 'class_id') : [];
+		
+		$data = [];
+		foreach ($allClasses as $classId => $class) {
+			$data[] = [
+				'id' 		=> $classId,
+				'name' 		=> $class['name'],
+				'has'		=> isset($usersClasses[$classId]) ? 1 : 0,
+				'mentor'	=> isset($usersClasses[$classId]) ? $usersClasses[$classId]['mentor'] : 0,
+			];
+		}
+		return $data;
+	}
+	
+	
+	
+	
+	
+	/**
+	 * Задать статики пользователю
+	 * @param 
+	 * @return 
+	 */
+	public function setUserClasses($userId, $userClasses) {
+		if ($userClasses) {
+			$this->db->where('user_id', $userId);
+			$this->db->delete('users_classes');
+		}
+		
+		$clData = [];
+		foreach (array_keys(array_intersect_key($userClasses['part'], $userClasses['mentor'])) as $classId) {
+			$clData[$classId]['part'] = $userClasses['part'][$classId];
+			$clData[$classId]['mentor'] = $userClasses['mentor'][$classId];
+		}
+		
+		$insertData = [];
+		if ($clData) {
+			foreach ($clData as $classId => $item) {
+				if (!isset($item['part']) || $item['part'] == 0) continue;
+				$insertData[] = [
+					'user_id' 	=> $userId,
+					'class_id'	=> $classId,
+					'mentor'	=> $item['mentor']
+				];	
+			}
+			
+			if (!$insertData) {
+				$this->db->where('user_id', $userId);
+				$this->db->delete('users_classes');
+				return 1;
+			} else {
+				if ($this->db->insert_batch('users_classes', $insertData)) return 1;
+			}
+		}
+		return 0;
+	}
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -321,7 +424,7 @@ class Users_model extends MY_Model {
 		foreach ($users as $user)  {
 			$usersPayments[] = [
 				'user_id' => $user['id'],
-				'payment' => $user['payment'],
+				'payment' => isset($user['payment']) ? $user['payment'] : null,
 			];
 		}
 			
@@ -342,6 +445,9 @@ class Users_model extends MY_Model {
 	 */
 	public function depositUpdate($data = false) {
 		if (!$data) return false;
+		foreach ($data as $k => $item) {
+			if (isset($item['deposit_origin'])) unset($data[$k]['deposit_origin']);
+		}
 		if ($this->db->update_batch('users', $data, 'id')) return true;
 		return false;
 	}

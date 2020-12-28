@@ -1,6 +1,6 @@
 <? defined('BASEPATH') OR exit('Доступ к скрипту запрещен');
 
-class Admin_model extends CI_Model {
+class Admin_model extends My_Model {
 	
 	
 	private $imgDir = 'public/images/';
@@ -401,6 +401,8 @@ class Admin_model extends CI_Model {
 	
 	
 	
+	//------------------------------------------------------------------------------------------------ Статики
+	
 	/**
 	 * Получить список статиков
 	 * @param только имена статиков [static id => static name]
@@ -438,7 +440,7 @@ class Admin_model extends CI_Model {
 	 * Добавить, обновить список статиков
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function addStatics($postData) {
 		$tableStatics = $this->getStatics() ?: [];
 		if ($newStatics = array_diff_key($postData, $tableStatics)) {
@@ -506,6 +508,10 @@ class Admin_model extends CI_Model {
 	
 	
 	
+	
+	
+	
+	//------------------------------------------------------------------------------------------------ Цвета
 	
 	/**
 	 * Получить список цветов
@@ -691,6 +697,180 @@ class Admin_model extends CI_Model {
 			return 1;
 		}
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//------------------------------------------------------------------------------------------------ Классы
+	
+	public function getClasses() {
+		$query = $this->db->get('classes');
+		if (!$response = $query->result_array()) return false;
+		$data = [];
+
+		foreach ($response as $key => $item) {
+			$sId = $item['id'];
+			unset($item['id']);
+			$data[$sId] = $item;
+		}
+		return $data;
+	}
+	
+	
+	
+	
+
+	/**
+	 * Добавить, обновить список статиков
+	 * @param 
+	 * @return 
+	*/
+	public function addClasses($postData) {
+		$tableClasses = $this->getClasses() ?: [];
+		if ($newClasses = array_diff_key($postData, $tableClasses)) {
+			if ($newClasses = array_filter($newClasses)) {
+				$this->db->insert_batch('classes', array_values($newClasses));
+			}
+			
+		}
+		
+		if ($updateClasses = array_intersect_key($postData, $tableClasses)) {
+			foreach ($updateClasses as $key => $item) $updateClasses[$key]['id'] = $key;
+			$this->db->update_batch('classes', array_values($updateClasses), 'id');
+		}
+		
+		return 1;
+	}
+	
+	
+	
+	public function removeClasses($id) {
+		$this->db->where('id', $id);
+		if (!$this->db->delete('classes')) return false;
+		return true;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//------------------------------------------------------------------------------------------------ Наставничество
+	/**
+	 * @param 
+	 * @return 
+	 */
+	public function getMentorsRequests($requestId = false) {
+		$statuses = [
+			0 => 'Отказано',
+			1 => 'Одобрено'
+		];
+		
+		$this->db->select('mr.id, mr.user_id, mr.mentor_id, mr.date, mr.status, mr.done, c.name AS class_name');
+		$this->db->join('classes c', 'c.id = mr.class', 'LEFT OUTER');
+		$this->db->order_by('mr.id', 'DESC');
+		$query = $this->db->get('mentors_requests mr');
+		if (!$result = $query->result_array()) return false;
+		
+		$allUsersIds = array_unique(array_merge(array_column($result, 'user_id'), array_column($result, 'mentor_id')));
+		
+		$this->db->select('u.id, u.nickname, u.avatar, s.name AS static');
+		$this->db->join('users_statics us', 'us.user_id = u.id');
+		$this->db->join('statics s', 's.id = us.static_id', 'LEFT OUTER');
+		
+		
+		$this->db->where('us.main', 1);
+		$this->db->where_in('u.id', $allUsersIds);
+		$query = $this->db->get('users u');
+		if (!$usersData = $query->result_array()) return false;
+		$usersData = setArrKeyFromField($usersData, 'id');
+		
+		$mentorsRequests = [];
+		foreach ($result as $item) {
+			$item['status'] = $item['status'];
+			$item['status_text'] = is_null($item['status']) ? 'На рассмотрении' : $statuses[$item['status']];
+			$item['user'] = isset($usersData[$item['user_id']]) ? $usersData[$item['user_id']] : null;
+			$item['mentor'] = isset($usersData[$item['mentor_id']]) ? $usersData[$item['mentor_id']] : null;
+			$stat = is_null($item['done']) ? 'active' : 'archive';
+			$mentorsRequests[$stat][] = $item;
+		}
+		
+		return $mentorsRequests;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	 */
+	public function getRequestPayData($requestId = false) {
+		if (!$requestId) return false;
+		$this->db->select('mr.id, mr.mentor_id AS user_id, mr.mentor_static AS static, s.name AS static_name, u.nickname, u.avatar, u.payment');
+		$this->db->where('mr.id', $requestId);
+		$this->db->join('users u', 'u.id = mr.mentor_id', 'LEFT OUTER');
+		$this->db->join('statics s', 's.id = mr.mentor_static', 'LEFT OUTER');
+		$query = $this->db->get('mentors_requests mr');
+		if (!$reqData = $query->row_array()) return false;
+		return $reqData;
+	}
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	 */
+	public function changeMentorsRequestStat($id = false, $status = false) {
+		if (!$id || $status === false) return false;
+		$this->db->where('id', $id);
+		if (!$this->db->update('mentors_requests', ['status' => $status])) return false;
+		return true;
+	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	 */
+	public function addRequestToPay($data = false) {
+		if (!$data) return false;
+		$reqId = $data['id'];
+		unset($data['id']);
+		$data['date'] = time();
+		if (!$this->db->insert('users_orders', $data)) return false;
+		
+		$ratingPeriodId = $this->getActiveRatingsPeriodId();
+		$this->db->where('id', $reqId);
+		if (!$this->db->update('mentors_requests', ['period_id' => $ratingPeriodId, 'done' => time()])) return false;
+		return true;
+	}
+	
+	
+	
+	
 	
 	
 	
@@ -1656,6 +1836,76 @@ class Admin_model extends CI_Model {
 			return true;
 		}
 	}
+	
+	
+	
+	
+	
+	
+	
+	//------------------------------------------------------------------------------------- Добавить оплату в историю
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function globalDepositHistoryAdd($data = false, $batch = false) {
+		if (!$data) return false;
+		if ($batch)  {
+			if (!$this->db->insert_batch('global_deposit_history', $data)) return false;
+			return true;
+		} else {
+			if (!$this->db->insert('global_deposit_history', $data)) return false;
+			return $this->db->insert_id();
+		}
+	}
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	 */
+	public function globalDepositHistoryGet() {
+		$reasons = [
+			1 => 'Выплата резерва',
+			2 => 'Начисление из отчета',
+			3 => 'Третья причина',
+		];
+		
+		$statuses = [
+			0 => 'Возврат',
+			1 => 'Выплата'
+		];
+		$this->load->model('users_model');
+		
+		$this->db->order_by('date', 'DESC');
+		$query = $this->db->get('global_deposit_history');
+		if (!$result = $query->result_array()) return false;
+		$historyUsers = array_column($result, 'user_id');
+		
+		
+		$usersData = $this->users_model->getUsers(['where_in' => ['field' => 'u.id', 'values' => $historyUsers]]);
+		$usersData = setArrKeyFromField($usersData, 'id', false, ['nickname', 'avatar']);
+		
+		$history = [];
+		foreach ($result as $item) {
+			$item['reason'] = $reasons[$item['reason']];
+			$item['stat'] = $statuses[$item['stat']];
+			$item['nickname'] = $usersData[$item['user_id']]['nickname'];
+			$item['avatar'] = $usersData[$item['user_id']]['avatar'];
+			$history[] = $item;
+		}
+		return $history;
+	}
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

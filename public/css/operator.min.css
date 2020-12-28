@@ -367,6 +367,9 @@ ul {
       -ms-user-select: none;
           user-select: none; }
 
+.pointer {
+  cursor: pointer; }
+
 .respimage {
   max-width: 100%;
   height: auto; }
@@ -39438,8 +39441,11 @@ ul {
     .filemanager__dirs::-webkit-scrollbar-thumb:hover {
       background-color: #b3b3b3; }
     .filemanager__dirs::-webkit-resizer {
-      background-color: #000;
-      border-radius: w0x; }
+      display: none;
+      width: 0px;
+      height: 0px;
+      background: transparent;
+      border-radius: 0; }
   .filemanager__files {
     padding-left: 10px; }
   .filemanager__client {
@@ -39495,8 +39501,11 @@ ul {
     .filemanager__topdirs::-webkit-scrollbar-thumb:hover {
       background-color: #b3b3b3; }
     .filemanager__topdirs::-webkit-resizer {
-      background-color: #000;
-      border-radius: w0x; }
+      display: none;
+      width: 0px;
+      height: 0px;
+      background: transparent;
+      border-radius: 0; }
   .filemanager__bottomfiles {
     -webkit-box-flex: 1;
     -webkit-flex: 1 1 100%;
@@ -39522,8 +39531,11 @@ ul {
     .filemanager__bottomfiles::-webkit-scrollbar-thumb:hover {
       background-color: #b3b3b3; }
     .filemanager__bottomfiles::-webkit-resizer {
-      background-color: #000;
-      border-radius: w0x; }
+      display: none;
+      width: 0px;
+      height: 0px;
+      background: transparent;
+      border-radius: 0; }
 
 /* ---------- Шрифты ---------- */
 @font-face {
@@ -48247,8 +48259,11 @@ body::-webkit-scrollbar-thumb:hover {
   background-color: #8a6fa3; }
 
 body::-webkit-resizer {
-  background-color: #000;
-  border-radius: w0x; }
+  display: none;
+  width: 0px;
+  height: 0px;
+  background: transparent;
+  border-radius: 0; }
 
 .tabstitles {
   word-spacing: 10px;
@@ -48411,8 +48426,11 @@ body::-webkit-resizer {
   background-color: #8a6fa3; }
 
 .popup::-webkit-resizer {
-  background-color: #000;
-  border-radius: w0x; }
+  display: none;
+  width: 0px;
+  height: 0px;
+  background: transparent;
+  border-radius: 0; }
 
 .popup.visible {
   background-color: rgba(0, 0, 0, 0.5); }
@@ -48646,8 +48664,11 @@ body::-webkit-resizer {
   .popup__data::-webkit-scrollbar-thumb:hover {
     background-color: #574d75; }
   .popup__data::-webkit-resizer {
-    background-color: #000;
-    border-radius: w0x; }
+    display: none;
+    width: 0px;
+    height: 0px;
+    background: transparent;
+    border-radius: 3px; }
   .popup__data > * {
     overflow: hidden; }
   .popup__data .changeavatar {
@@ -49040,6 +49061,15 @@ body::-webkit-resizer {
             background-color: #395369; }
           .popup__table tbody tr td button.alt:active {
             background-color: #22313e;
+            -webkit-transition: background-color 0s;
+            -o-transition: background-color 0s;
+            transition: background-color 0s; }
+        .popup__table tbody tr td button.pay {
+          background-color: #65a25b; }
+          .popup__table tbody tr td button.pay:hover {
+            background-color: #578b4e; }
+          .popup__table tbody tr td button.pay:active {
+            background-color: #3c6136;
             -webkit-transition: background-color 0s;
             -o-transition: background-color 0s;
             transition: background-color 0s; }
@@ -49466,8 +49496,11 @@ body::-webkit-resizer {
       .leftblock__block_navblock::-webkit-scrollbar-thumb:hover {
         background-color: #130a20; }
       .leftblock__block_navblock::-webkit-resizer {
-        background-color: #000;
-        border-radius: w0x; }
+        display: none;
+        width: 0px;
+        height: 0px;
+        background: transparent;
+        border-radius: 3px; }
       @media screen and (min-width: 576px) {
         .leftblock__block_navblock {
           margin-left: 8px;
@@ -49911,6 +49944,15 @@ body::-webkit-resizer {
         -webkit-transition: background-color 0s;
         -o-transition: background-color 0s;
         transition: background-color 0s; }
+    .contentblock .section button.small.main.pay {
+      background-color: #65a25b; }
+      .contentblock .section button.small.main.pay:hover {
+        background-color: #578b4e; }
+      .contentblock .section button.small.main.pay:active {
+        background-color: #3c6136;
+        -webkit-transition: background-color 0s;
+        -o-transition: background-color 0s;
+        transition: background-color 0s; }
     .contentblock .section button.small.main.done {
       position: relative; }
       .contentblock .section button.small.main.done:disabled::before {
@@ -50106,6 +50148,15 @@ body::-webkit-resizer {
           -webkit-transition: background-color 0s;
           -o-transition: background-color 0s;
           transition: background-color 0s; }
+      .contentblock .section__buttons button.pay, .contentblock .section__buttons .button.pay {
+        background-color: #65a25b; }
+        .contentblock .section__buttons button.pay:hover, .contentblock .section__buttons .button.pay:hover {
+          background-color: #578b4e; }
+        .contentblock .section__buttons button.pay:active, .contentblock .section__buttons .button.pay:active {
+          background-color: #3c6136;
+          -webkit-transition: background-color 0s;
+          -o-transition: background-color 0s;
+          transition: background-color 0s; }
       .contentblock .section__buttons button.done, .contentblock .section__buttons .button.done {
         position: relative; }
         .contentblock .section__buttons button.done:disabled::before, .contentblock .section__buttons .button.done:disabled::before {
@@ -50259,8 +50310,11 @@ body::-webkit-resizer {
       .contentblock .section__content > div::-webkit-scrollbar-thumb:hover {
         background-color: #463557; }
       .contentblock .section__content > div::-webkit-resizer {
-        background-color: #000;
-        border-radius: w0x; }
+        display: none;
+        width: 0px;
+        height: 0px;
+        background: transparent;
+        border-radius: 3px; }
       .contentblock .section__content > div:empty::after, .contentblock .section__content > div p.empty {
         position: absolute;
         text-align: center;
@@ -50492,13 +50546,15 @@ table {
           -o-transition: color 0.16s;
           transition: color 0.16s; }
         table tbody tr td .date input {
+          background: none;
+          background-color: #fefefe;
+          border: none;
+          font-size: 14px;
           -webkit-appearance: none;
              -moz-appearance: none;
                   appearance: none;
           border-radius: 2px;
-          border: 1px solid #a7acaf;
-          background: #fff;
-          height: 30px;
+          height: 34px;
           padding-right: 25px;
           padding-left: 4px;
           -webkit-transition: border-color 0.16s;
@@ -50506,10 +50562,13 @@ table {
           transition: border-color 0.16s;
           color: #666;
           width: 100%;
-          min-width: 160px;
           cursor: pointer; }
         table tbody tr td .date.focused {
-          border-color: #5a6063 !important; }
+          border-color: #b9c2c8;
+          -webkit-box-shadow: 0 4px 10px -1px rgba(68, 86, 101, 0.4);
+                  box-shadow: 0 4px 10px -1px rgba(68, 86, 101, 0.4); }
+          table tbody tr td .date.focused label {
+            background-color: #6c7c8b; }
           table tbody tr td .date.focused::after {
             color: #737c84 !important; }
       table tbody tr td ul {
@@ -50533,8 +50592,11 @@ table {
           table tbody tr td ul.list_overflow::-webkit-scrollbar-thumb:hover {
             background-color: #9cafbe; }
           table tbody tr td ul.list_overflow::-webkit-resizer {
-            background-color: #000;
-            border-radius: w0x; }
+            display: none;
+            width: 0px;
+            height: 0px;
+            background: transparent;
+            border-radius: 0; }
           table tbody tr td ul.list_overflow.patterns {
             max-height: 75px; }
           table tbody tr td ul.list_overflow.orders {
@@ -50753,6 +50815,15 @@ table {
               background-color: #395369; }
             table tbody tr td .buttons button.alt:active, table tbody tr td .buttons .button.alt:active {
               background-color: #22313e;
+              -webkit-transition: background-color 0s;
+              -o-transition: background-color 0s;
+              transition: background-color 0s; }
+          table tbody tr td .buttons button.pay, table tbody tr td .buttons .button.pay {
+            background-color: #65a25b; }
+            table tbody tr td .buttons button.pay:hover, table tbody tr td .buttons .button.pay:hover {
+              background-color: #578b4e; }
+            table tbody tr td .buttons button.pay:active, table tbody tr td .buttons .button.pay:active {
+              background-color: #3c6136;
               -webkit-transition: background-color 0s;
               -o-transition: background-color 0s;
               transition: background-color 0s; }
@@ -50981,8 +51052,11 @@ table {
     .report .scroll::-webkit-scrollbar-thumb:hover {
       background-color: #463557; }
     .report .scroll::-webkit-resizer {
-      background-color: #000;
-      border-radius: w0x; }
+      display: none;
+      width: 0px;
+      height: 0px;
+      background: transparent;
+      border-radius: 0; }
   .report table {
     -webkit-box-flex: 0;
     -webkit-flex: 0 1 0;
@@ -51221,6 +51295,15 @@ table {
             -webkit-transition: background-color 0s;
             -o-transition: background-color 0s;
             transition: background-color 0s; }
+        .report table td button.addraid.pay {
+          background-color: #65a25b; }
+          .report table td button.addraid.pay:hover {
+            background-color: #578b4e; }
+          .report table td button.addraid.pay:active {
+            background-color: #3c6136;
+            -webkit-transition: background-color 0s;
+            -o-transition: background-color 0s;
+            transition: background-color 0s; }
         .report table td button.addraid.done {
           position: relative; }
           .report table td button.addraid.done:disabled::before {
@@ -51337,8 +51420,11 @@ table {
     .orders .scroll::-webkit-scrollbar-thumb:hover {
       background-color: #463557; }
     .orders .scroll::-webkit-resizer {
-      background-color: #000;
-      border-radius: w0x; }
+      display: none;
+      width: 0px;
+      height: 0px;
+      background: transparent;
+      border-radius: 0; }
   .orders__item {
     display: inline-block;
     background-color: #f7f7f7;
@@ -51448,6 +51534,12 @@ table {
           max-height: 100vh;
           font-size: 14px;
           padding: 0 4px; }
+          .orders__item li .textarea textarea[resizey] {
+            resize: vertical; }
+          .orders__item li .textarea textarea[resizex] {
+            resize: horizontal; }
+          .orders__item li .textarea textarea[noresize] {
+            resize: none; }
         .orders__item li .textarea textarea.changed {
           background-color: #c9ffc9; }
 
@@ -51599,6 +51691,15 @@ table {
         -webkit-transition: background-color 0s;
         -o-transition: background-color 0s;
         transition: background-color 0s; }
+    .timesheet__content table tfoot .buttons button.pay {
+      background-color: #65a25b; }
+      .timesheet__content table tfoot .buttons button.pay:hover {
+        background-color: #578b4e; }
+      .timesheet__content table tfoot .buttons button.pay:active {
+        background-color: #3c6136;
+        -webkit-transition: background-color 0s;
+        -o-transition: background-color 0s;
+        transition: background-color 0s; }
     .timesheet__content table tfoot .buttons button.done {
       position: relative; }
       .timesheet__content table tfoot .buttons button.done:disabled::before {
@@ -51742,8 +51843,11 @@ table {
   .offtime::-webkit-scrollbar-thumb:hover {
     background-color: #5e6973; }
   .offtime::-webkit-resizer {
-    background-color: #000;
-    border-radius: w0x; }
+    display: none;
+    width: 0px;
+    height: 0px;
+    background: transparent;
+    border-radius: 10px; }
   .offtime .offtime__limits {
     width: 100%; }
     .offtime .offtime__limits tbody td {
@@ -51956,6 +52060,15 @@ table {
           -webkit-transition: background-color 0s;
           -o-transition: background-color 0s;
           transition: background-color 0s; }
+      .offtime__title .forbidden button.pay {
+        background-color: #65a25b; }
+        .offtime__title .forbidden button.pay:hover {
+          background-color: #578b4e; }
+        .offtime__title .forbidden button.pay:active {
+          background-color: #3c6136;
+          -webkit-transition: background-color 0s;
+          -o-transition: background-color 0s;
+          transition: background-color 0s; }
       .offtime__title .forbidden button.done {
         position: relative; }
         .offtime__title .forbidden button.done:disabled::before {
@@ -52049,8 +52162,11 @@ table {
       .offtime__content .users_list::-webkit-scrollbar-thumb:hover {
         background-color: #516b85; }
       .offtime__content .users_list::-webkit-resizer {
-        background-color: #000;
-        border-radius: w0x; }
+        display: none;
+        width: 0px;
+        height: 0px;
+        background: transparent;
+        border-radius: 2px; }
       .offtime__content .users_list li {
         list-style: none;
         margin-right: 6px; }
@@ -52333,6 +52449,15 @@ table {
           background-color: #395369; }
         .newsfeed__buttons button.alt:active {
           background-color: #22313e;
+          -webkit-transition: background-color 0s;
+          -o-transition: background-color 0s;
+          transition: background-color 0s; }
+      .newsfeed__buttons button.pay {
+        background-color: #65a25b; }
+        .newsfeed__buttons button.pay:hover {
+          background-color: #578b4e; }
+        .newsfeed__buttons button.pay:active {
+          background-color: #3c6136;
           -webkit-transition: background-color 0s;
           -o-transition: background-color 0s;
           transition: background-color 0s; }

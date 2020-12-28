@@ -1190,6 +1190,67 @@ $(document).ready(function() {
 	
 	
 	
+	//---------------------------------------- Рейтинг участников
+	$('[setrating]').on(tapEvent, function() {
+		var c = $(this).attr('setrating').split('|'),
+			staticId = c[0],
+			isLider = parseInt(c[1]);
+		
+		popUp({
+			title: 'Рейтинги участников',
+		    width: 1000,
+		    winClass: 'account',
+		    buttons: [{id: 'setDataToRatings', title: 'Сохранить'}],
+		    closeButton: 'Отмена'
+		}, function(setRatingWin) {
+			setRatingWin.wait();
+			getAjaxHtml('account/get_users_for_rating', {static_id: staticId}, function(html, stat) {
+				if (stat) {
+					setRatingWin.setData(html);
+				} else {
+					setRatingWin.setData('<p class="info">Нет активных периодов!</p>');
+				}
+			}, function() {
+				setRatingWin.wait(false);
+			});
+			
+			
+			$('#setDataToRatings').on(tapEvent, function() {
+				setRatingWin.wait();
+				sendFormData('#usersRatings', {
+					url: '/account/save_data_for_rating',
+					success: function(response) {
+						notify('Данные успешно сохранены!');
+						setRatingWin.close();
+						setRatingWin.wait(false);
+					},
+					error: function(e) {
+						setRatingWin.wait(false);
+						notify('Ошибка сохранения данных', 'error');
+						showError(e);
+					}
+				});
+			});
+		});
+		
+	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//---------------------------------------- Напоминание о заполнении коэффициентов для рейтинга
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -1848,12 +1909,124 @@ $(document).ready(function() {
 			getAjaxHtml('account/statistics_get', function(html) {
 				statisticsWin.setData(html);
 				statisticsWin.wait(false);
+			}, function() {});
+		});
+	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//---------------------------------------------------------------- Личные рейтинг и выбор наставника
+	$('[myrating]').on(tapEvent, function() {
+		popUp({
+			title: 'Мой рейтинг',
+		    width: 600,
+		    closeButton: 'Закрыть',
+		    winClass: 'ratings'
+		}, function(myRatingWin) {
+			myRatingWin.wait();
+			getAjaxHtml('account/get_rating', function(html) {
+				myRatingWin.setData(html);
+				onChangeTabs(function(titles, content) {
+					myRatingWin.correctPosition();
+				});
 			}, function() {
-				
+				myRatingWin.wait(false);
 			});
 		});
 	});
 	
+	
+	
+	
+	/*$('[myrating]').on(tapEvent, function() {
+		popUp({
+			title: 'Мой рейтинг',
+		    width: 800,
+		    buttons: [{id: 'chooseMentor', title: 'Выбрать наставника'}],
+		    closeButton: 'Закрыть',
+		}, function(myRatingWin) {
+			
+			function myRating(replace) {
+				if (replace) {
+					myRatingWin.setTitle('Мой рейтинг');
+					myRatingWin.setButtons([{id: 'chooseMentor', title: 'Выбрать наставника'}], 'Закрыть');
+				}
+				
+				//------------------------------------------------ тут загружать данные личного рейтинга
+				myRatingWin.setData('Мой рейтинг', false);
+				
+				
+				
+				//------------------------------------------------ Выбрать наставника
+				$('#chooseMentor').on(tapEvent, function() {
+					myRatingWin.wait();
+					getAjaxHtml('account/mentors/get', function(html) {
+						myRatingWin.setTitle('Выбрать наставника');
+						myRatingWin.setData(html);
+						myRatingWin.setButtons([{id: 'setMyRating', title: 'Мой рейтинг'}], 'Закрыть');
+						myRatingWin.wait(false);
+					}, function() {
+						$('#mentorsTable').scroll(function(e) {
+							var scrTop = $(this).scrollTop();
+							$('#mentorsTable').find('thead').css('transform', 'translateY('+scrTop+'px)');
+						});
+						
+						$('.popup__window').find('[id^=tab]').on(tapEvent, function() {
+							myRatingWin.correctPosition();
+						});
+						
+						$('.mentors').on(tapEvent, '[choosementor]', function() {
+							const classes = $(this).attr('choosementor');
+							getAjaxHtml('account/mentors/show_classes', {classes: classes}, function(html) {
+								myRatingWin.setData(html);
+								myRatingWin.setWidth(400);
+								myRatingWin.setTitle('Запросить обучение');
+							}, function() {
+								$('[choosementorsclass]').on(tapEvent, function() {
+									let data = $(this).attr('choosementorsclass').split('|'),
+										classId = data[0],
+										mentorId = data[1];
+									
+									myRatingWin.wait();
+									$.post('/account/mentors/add_request', {mentor_id: mentorId, class_id: classId}, function(request) {
+										if (request) {
+											myRatingWin.close();
+											notify('Запрос успешно создан!');
+										} else {
+											notify('Ошибка создания запроса!', 'error');
+											myRatingWin.wait(false);
+										}
+									});
+								});
+							});
+							
+						});
+						
+						
+						$('#setMyRating').on(tapEvent, function() {
+							myRating(true);
+						});
+						
+					});
+				});
+				
+			}
+			
+			myRating();
+		});
+	});
+	*/
 	
 	
 	
@@ -2107,6 +2280,37 @@ $(document).ready(function() {
 		});
 	});
 	
+	
+	
+	
+	
+	if ($('[ratingstatic]').length) {
+		var ratingsStatics = [];
+		$('[ratingstatic]').each(function() {
+			var sData = $(this).attr('ratingstatic').split('|'),
+				sTitle = sData[0],
+				sIcon = sData[1];
+			
+			ratingsStatics.push({
+				title: sTitle,
+				icon: sIcon
+			});
+			
+			popUp({
+				title: 'Заполните коэффициенты!',
+			    width: 500,
+			    closeButton: 'Закрыть',
+			}, function(ratingNotificationsWin) {
+				ratingNotificationsWin.wait();
+				getAjaxHtml('account/get_rating_notifications', {statics: ratingsStatics}, function(html) {
+					ratingNotificationsWin.setData(html);
+				}, function() {
+					ratingNotificationsWin.wait(false);
+				});
+			});
+				
+		});
+	}
 	
 	
 	

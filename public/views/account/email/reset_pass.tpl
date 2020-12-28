@@ -1,6 +1,3 @@
-<h1>Спасибо за регистрацию!</h1>
-<p>Ваш пароль: {{password}}</p>
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -71,7 +68,7 @@
 	</style>
 	
 	
-	<title>WOW | Сброс пароля</title>
+	<title>Vendorteam | Сброс пароля</title>
 </head>
 <body>
 	
@@ -82,7 +79,6 @@
 		
 		<p>Ваш логин: {{email}}</p>
 		<p>Ваш пароль: {{password}}</p>
-		
 		
 	</div>
 	

@@ -157,13 +157,16 @@
 		setTitle: function(title) {
 			$('.popup__top h5').text(title);
 		},
-		setButtons: function(btns) {
+		setButtons: function(btns, close) {
 			var btnsHtml = '';
-			$.each(btns.reverse(), function(k, b) {
-				btnsHtml += '<button'+(b.disabled ? ' disabled' : '')+' id="'+b.id+'"'+(b.cls ? ' class="'+b.cls+'"' : '')+(b.metrikaId ? ' onclick="yaCounter'+(b.metrikaId)+'.reachGoal('+'\''+(b.metrikaTargetId)+'\''+'); return true;"' : '')+'>'+b.title+'</button>';
-			});
+			if(close) btnsHtml += '<button close>'+close+'</button>' ;  
+			if (btns) {
+				$.each(btns.reverse(), function(k, b) {
+					btnsHtml += '<button'+(b.disabled ? ' disabled' : '')+' id="'+b.id+'"'+(b.cls ? ' class="'+b.cls+'"' : '')+(b.metrikaId ? ' onclick="yaCounter'+(b.metrikaId)+'.reachGoal('+'\''+(b.metrikaTargetId)+'\''+'); return true;"' : '')+'>'+b.title+'</button>';
+				});
+			}
 			
-			if ($('.popup__buttons').length == 0){
+			if ($('.popup__buttons').length == 0) {
 				$('.popup__content').after('<div class="popup__buttons">'+btnsHtml+'</div>');   
 			} else {
 				$('.popup__buttons').html(btnsHtml);

@@ -71,13 +71,22 @@ body
 	
 	&.sub
 		height: 30px
+		word-spacing: 6px
 		
 		li
-			font-size: 13px
-			line-height: 15px
 			padding-left: 10px
 			padding-right: 10px
 			max-width: 200px
+			height: 100%
+			
+			p
+				font-size: 13px
+				line-height: 15px
+				color: #8e8b98
+			
+			&.active
+				p
+					color: #fff
 
 
 .tabscontent
@@ -459,14 +468,15 @@ body
 				span, small
 					display: block
 					transition: color 0.16s
+					margin: 0
 				
 				span
-					font-size: 14px
+					font-size: 13px
 					color: #b4a7c7
 					
 				
 				small
-					font-size: 13px
+					font-size: 12px
 					color: #b4a7c7
 
 	&__button
@@ -849,6 +859,7 @@ body
 	.static	
 		display: flex
 		align-items: center
+		position: relative
 		height: 50px
 		width: 200px
 		background-color: #fff	
@@ -901,6 +912,28 @@ body
 			
 			.main
 				color: #16abc1
+		
+		
+		&__ratingnotify
+			position: absolute
+			right: -5px
+			top: -10px
+			
+			i
+				font-size: 26px
+				line-height: 26px
+				color: #f00
+				
+				&::after
+					content: ''
+					position: absolute
+					top: 1px
+					left: 0
+					border-radius: 50%
+					background-color: #d1ff02
+					width: 21px
+					height: 21px
+					z-index: -1
 				
 			
 		
@@ -1263,6 +1296,8 @@ body
 				img
 					max-width: 100%
 					height: auto
+					border: 1px solid #dddfe0
+					border-radius: 3px
 				
 			&__content
 				margin-left: 10px
@@ -1456,6 +1491,10 @@ body
 			&:hover
 				background-color: darken($colorBlue, 10%)
 			
+			&:active
+				background-color: darken($colorBlue, 20%)
+				transition: background-color 0s
+			
 			&[close], &.close
 				background-color: #e2573a
 				color: #fff
@@ -1463,6 +1502,10 @@ body
 				
 				&:hover
 					background-color: darken(#e2573a, 10%)
+				
+				&:active
+					background-color: darken(#e2573a, 20%)
+					transition: background-color 0s
 			
 			&:disabled, &.disabled, &[disabled]
 				background-color: #e4e4e4
@@ -1990,7 +2033,7 @@ body
 		
 		li
 			background-color: #eef0f0
-			color: 
+			color: #333
 			border-radius: 3px
 			display: flex
 			justify-content: center
@@ -3072,7 +3115,7 @@ body
 	&__table_left
 		flex: 0 1 auto
 		max-width: 300px
-		//min-width: 394px
+		min-width: 300px
 		
 	&__table_center
 		flex: 1 0 100%
@@ -3154,3 +3197,261 @@ body
 					background-color: #dee1e4
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+.mentors
+	max-height: calc(100vh - 350px)
+	overflow-y: auto
+	padding-right: 3px
+	+scrollbar(#d4ccde, #5f4877, 6px, 3px, 3px)
+	min-height: 300px
+	
+	&__item
+		border: 1px solid #999
+		flex: 0 0 50%
+	
+.aligntop
+	vertical-align: top
+
+.mentor
+	display: flex
+	justify-content: space-between
+	align-items: center
+	padding-top: 4px
+	padding-bottom: 4px
+		
+	&__image
+		width: 50px
+		height: 50px
+		border-radius: 3px
+		margin-right: 8px
+		box-shadow: 0 0 5px 0 rgba(68, 68, 68, 0.45)
+		position: static
+		background:		
+			repeat: no-repeat
+			size: cover
+			position: center center
+		
+		img
+			width: 100%
+			height: auto
+			
+	
+	&__name
+		display: flex
+		flex-direction: column
+		justify-content: space-between
+		
+		p
+			margin-bottom: 0
+			+font(roboto, bold)
+			+resp(font-size, (xs: 14px, sm: 14px, md: 14px, lg: 14px, xl: 14px), (line-height: 0))
+			color: $colorDarkViolett
+			
+		span
+			color: $colorLightViolett
+			display: inline-block
+			+resp(font-size, (xs: 12px, sm: 12px, md: 12px, lg: 12px, xl: 12px), (line-height: 0))
+		
+	
+	&__list
+		max-height: 56px
+		overflow: auto
+		+scrollbar(#d4ccde, #5f4877, 5px, 2px, 2px)
+		
+		&_mentors
+			small.item
+				display: inline-block
+				color: #969696
+				
+				&.mentor
+					//font-weight: 600
+					color: #333
+					padding: 1px 4px
+					border: 1px solid #bbb
+					border-radius: 3px
+				
+				&.mentor_to_me
+					color: #333
+					//font-weight: 600
+					padding: 1px 4px
+					background-color: #4fafda
+					color: #fff
+					border-radius: 3px
+				
+
+
+
+
+
+
+
+
+
+
+
+.ratingusers
+	&__periodlabel
+		display: inline-block
+		width: 90px
+		text-align: right
+		font-size: 12px !important
+		
+	&__periodname
+		font-size: 10px !important
+	
+	&__periodvalue
+		width: 24px
+		display: inline-block
+		cursor: default
+	
+	&__periodlist
+		display: inline-flex
+		
+		li
+			border: 1px solid #c0cccc
+			border-radius: 4px
+			width: 30px
+			text-align: center
+			font-weight: 600
+			cursor: default
+			
+			+ li
+				margin-left: 4px
+		
+		
+	
+	
+	
+.ratinguser
+	display: flex
+	justify-content: space-between
+	align-items: center
+	padding-top: 2px
+	padding-bottom: 2px
+		
+	&__image
+		width: 50px
+		height: 50px
+		border-radius: 3px
+		margin-right: 8px
+		box-shadow: 0 0 5px 0 rgba(68, 68, 68, 0.45)
+		position: static
+		background:		
+			repeat: no-repeat
+			size: cover
+			position: center center
+		
+		img
+			width: 100%
+			height: auto
+			
+	
+	&__name
+		display: flex
+		flex-direction: column
+		justify-content: space-between
+		
+		p
+			margin-bottom: 0
+			+font(roboto, bold)
+			+resp(font-size, (xs: 14px, sm: 14px, md: 14px, lg: 14px, xl: 14px), (line-height: 0))
+			color: $colorDarkViolett
+			
+		span
+			color: $colorLightViolett
+			display: inline-block
+			+resp(font-size, (xs: 12px, sm: 12px, md: 12px, lg: 12px, xl: 12px), (line-height: 0))
+		
+	
+
+
+
+
+
+.ratingstatics
+	
+	&__item	
+		display: flex
+		align-items: center
+		position: relative
+		height: 80px
+		background-color: #fff	
+		box-shadow: 0 0 10px 0 rgba(51, 51, 51, 0.23)
+		border-radius: 4px
+		margin: 10px
+		padding-left: 10px
+		padding-right: 10px
+		transition: opacity 0.16s
+		
+	&__icon
+		height: 60px
+		
+		img
+			height: 100%
+		
+		+ .static__title
+			margin-left: 10px
+	
+	&__title
+		margin-left: 10px
+		
+		p
+			margin-bottom: 0
+			+resp(font-size, (xs: 13px, sm: 14px, md: 14px, lg: 16px, xl: 16px), (line-height: 0))
+			+font(roboto, bold)
+			color: $colorDarkViolett
+		
+
+
+
+
+.ratings
+	p
+		font-size: 14px
+	
+	h1
+		font-size: 70px
+		color: #08d664
+		
+		small
+			font-size: 0.5em
+			color: #68da9b
+			+font(roboto, light)
+	
+	table
+		width: 100%
+		
+		td
+			border: none
+			border-bottom: 1px solid #dcdcdc
+			
+			&:first-of-type
+				text-align: right
+				padding-right: 10px
+				font-size: 14px
+				width: 50%
+				
+			&:last-of-type
+				padding-left: 10px
+				
+			strong
+				+font(roboto, bold)
+				font-size: 1.5em
+				margin-right: 5px
+				color: #5d5575
+			
+			small
+				font-size: 14px
+				color: #9893a7
+		

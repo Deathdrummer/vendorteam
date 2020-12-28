@@ -1,6 +1,6 @@
 <? defined('BASEPATH') OR exit('Доступ к скрипту запрещен');
 
-class Account_model extends CI_Model {
+class Account_model extends My_Model {
 	
 	
 	private $userData = false;
@@ -21,9 +21,10 @@ class Account_model extends CI_Model {
 	
 	public function __construct() {
 		parent::__construct();
-		if (!$this->session->userdata('id')) return false;
-		$this->userData = $this->getUserData($this->session->userdata('id'));
+		if (!get_cookie('id')/*$this->session->userdata('id')*/) return false;
+		$this->userData = $this->getUserData(get_cookie('id')/*$this->session->userdata('id')*/);
 	}
+	
 	
 	
 	
@@ -34,7 +35,7 @@ class Account_model extends CI_Model {
 	 * Получить данные пользователя
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function getUserData($userId = null) {
 		if ($this->userData) return $this->userData;
 		if (is_null($userId)) return false;
@@ -82,7 +83,7 @@ class Account_model extends CI_Model {
 	 * @param условия 
 	 * @param вернуть и себя тоже (только для аккаунта)
 	 * @return array [static => data] или data
-	 */
+	*/
 	public function getUsers($currentStatic = false, $where = false, $self = false, $fullInfo = false) {
 		$this->db->select('u.id, u.nickname, u.avatar, u.color, us.static_id');
 		if ($fullInfo) {
@@ -126,7 +127,7 @@ class Account_model extends CI_Model {
 	 * Задать данные аккаунта
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function setAccountData($setData) {
 		$this->db->where('id', $this->userData['id']);
 		if ($this->db->count_all_results('users') == 0) return false;
@@ -143,7 +144,7 @@ class Account_model extends CI_Model {
 	 * Задать данные аккаунта
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function isVerifyUser() {
 		if ($this->userData['verification'] == 1) return true;
 		else return false;
@@ -155,11 +156,11 @@ class Account_model extends CI_Model {
 	 * Существует ли пользователь
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function issetUser() {
 		$this->db->where('id', $this->userData['id']);
-		if ($this->db->count_all_results('users') == 0) return false;
-		return true;
+		if ($this->db->count_all_results('users') > 0) return true;
+		return false;
 	}
 	
 	
@@ -168,7 +169,7 @@ class Account_model extends CI_Model {
 	 * Удален ли пользователь
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function isDeletedUser() {
 		$this->db->where('id', $this->userData['id']);
 		$query = $this->db->get('users');
@@ -188,7 +189,7 @@ class Account_model extends CI_Model {
 	 * Получить основной статик пользователя
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function getMainStatic() {
 		return isset($this->userData['main_static']) ? $this->userData['main_static'] : 0;
 	}
@@ -199,7 +200,7 @@ class Account_model extends CI_Model {
 	/**
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function getStaticLocation($staticId = false) {
 		if (!$staticId) return false;
 		$this->db->select('location');
@@ -216,7 +217,7 @@ class Account_model extends CI_Model {
 	 * Получить Резерв пользователя
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function getDeposit() {
 		return isset($this->userData['deposit']) ? $this->userData['deposit'] : 0;
 	}
@@ -228,7 +229,7 @@ class Account_model extends CI_Model {
 	 * Получить ID роли пользователя
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function getRole() {
 		return isset($this->userData['role']) ? $this->userData['role'] : false;
 	}
@@ -240,7 +241,7 @@ class Account_model extends CI_Model {
 	 * Получить роль пользователя
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function getRoleName() {
 		$this->db->select('r.name AS role');
 		$this->db->join('roles r', 'u.role = r.id');
@@ -257,7 +258,7 @@ class Account_model extends CI_Model {
 	 * Получить звание
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function getRankData() {
 		$this->db->select('r.name AS rank');
 		$this->db->join('ranks r', 'u.rank = r.id');
@@ -274,7 +275,7 @@ class Account_model extends CI_Model {
 	 * Получить количество дней до присвоения следующего звания
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function getNextRankData() {
 		$this->db->select('u.reg_date, u.stage, u.rank');
 		$this->db->where('u.id', $this->userData['id']);
@@ -312,7 +313,7 @@ class Account_model extends CI_Model {
 	 * Получить способ оплаты участнику
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function getPayMethod() {
 		return isset($this->userData['payment']) ? $this->userData['payment'] : false;
 	}
@@ -330,7 +331,7 @@ class Account_model extends CI_Model {
 	 * Получить статус соглашения с договором
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function getAgreementStat() {
 		if ($this->userData['verification'] == 0) {
 			return false;
@@ -350,7 +351,7 @@ class Account_model extends CI_Model {
 	 * Задать статус соглашения с договором
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function setAgreementStat($stat) {
 		$this->db->where('id', $this->userData['id']);
 		if ($this->db->update('users', ['agreement' => $stat])) {
@@ -373,7 +374,7 @@ class Account_model extends CI_Model {
 	 * Получть список цветов для рейдеров
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function getRaidersColors() {
 		$this->db->select('name, color');
 		$query = $this->db->get('raiders_colors');
@@ -392,7 +393,7 @@ class Account_model extends CI_Model {
 	 * Получить список типов рейдов
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function getRaidsTypes() {
 		$query = $this->db->get('raids_types');
 		$data = [];
@@ -411,7 +412,7 @@ class Account_model extends CI_Model {
 	 * Получить список типов ключей
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function getKeysTypes() {
 		$this->db->select('id, name');
 		$query = $this->db->get('keys_types');
@@ -432,7 +433,7 @@ class Account_model extends CI_Model {
 	 * Получить состав команды
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function getUsersToCompound($data) {
 		$this->db->select('cd.user_id, cd.persones_count, cd.effectiveness, cd.fine');
 		$this->db->where(['cd.period_id' => $data['period_id'], 'cd.static_id' => $data['static_id']]);
@@ -484,7 +485,7 @@ class Account_model extends CI_Model {
 	 * Получить состав команды для ключей
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function getUsersToKeys($data) {
 		$this->db->select('u.id, u.avatar, u.nickname, u.color');
 		$this->db->join('users_statics us', 'us.user_id = u.id');
@@ -535,7 +536,7 @@ class Account_model extends CI_Model {
 	 * Добавить рейд
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function addRaid($data) {
 		$periodId = $data['period_id'];
 		$staticId = $data['static_id'];
@@ -601,7 +602,7 @@ class Account_model extends CI_Model {
 	 * Добавить ключ
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function addKey($data) {
 		$periodId = $data['period_id'];
 		$staticId = $data['static_id'];
@@ -646,7 +647,7 @@ class Account_model extends CI_Model {
 	 * Редактировать коэффициенты пользователей в рейдах
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function editKeyKoeff($koeffData = false) {
 		if (!$koeffData) return false;
 		foreach ($koeffData as $koeff) {
@@ -661,7 +662,7 @@ class Account_model extends CI_Model {
 	 * Редактировать типы рейдов
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function editKeyTypes($kTypesData = false) {
 		if (!$kTypesData) return false;
 		$this->db->update_batch('raids', $kTypesData, 'id');
@@ -680,7 +681,7 @@ class Account_model extends CI_Model {
 	 * Обновить состав команды
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function setCompound($compoundUsers = [], $periodId, $staticId) {
 		$this->db->select('cd.user_id, cd.persones_count, cd.effectiveness, cd.fine');
 		$this->db->where(['cd.period_id' => $periodId, 'cd.static_id' => $staticId]);
@@ -741,7 +742,7 @@ class Account_model extends CI_Model {
 	 * Получить название активного периода
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function getActiveReportsPeriod($staticId = false) {
 		if (!$staticId) return false;
 		$location = $this->getStaticLocation($staticId);
@@ -771,7 +772,7 @@ class Account_model extends CI_Model {
 	/** Получить список операторов для ЛК
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function getOperators() {
 		$this->db->where('nickname !=', '');
 		$this->db->where('avatar !=', '');
@@ -809,7 +810,7 @@ class Account_model extends CI_Model {
 	/**
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function operatorSendMess($data) {
 		if (!$data) return false;
 		$insert = [
@@ -841,7 +842,7 @@ class Account_model extends CI_Model {
 	 * Статистика зарплаты
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function statisticsGet($static = false) {
 		if (!$static) return false;
 		$this->db->select('u.id, u.nickname, u.avatar, s.name AS static_name, s.icon AS static_icon, u.statistics_cash AS cash, u.statistics_days AS days');
@@ -885,7 +886,7 @@ class Account_model extends CI_Model {
 	/**
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function personagesGetGamesIds() {
 		if (!$this->userData['id']) return false;
 		$this->db->select('pgi.game_id, pgi.date_end, up.nick, up.armor, up.server');
@@ -916,7 +917,7 @@ class Account_model extends CI_Model {
 	/**
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function personagesGet($userId = false, $onlyNew = false) {
 		$this->db->where('from_id', ($userId ?: $this->userData['id']));
 		if ($onlyNew !== false) $this->db->where('game_id', null);
@@ -929,7 +930,7 @@ class Account_model extends CI_Model {
 	/**
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function personagesSave($fields = false) {
 		if (!$fields) return false;
 		$this->db->set($fields);
@@ -949,7 +950,7 @@ class Account_model extends CI_Model {
 	/**
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function personagesUpdate($id = false, $fields = false) {
 		if (!$fields || !$id) return false;
 		$this->db->set($fields);
@@ -962,7 +963,7 @@ class Account_model extends CI_Model {
 	/**
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function personagesRemove($id = false) {
 		if (!$id) return false;
 		$this->db->where('id', $id);
@@ -986,7 +987,7 @@ class Account_model extends CI_Model {
 	 * Получить список выплат
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function getPaymentRequests($params = false, $toExport = false) {
 		$this->db->where('user_id', $this->userData['id']);
 		$this->db->order_by('id', 'DESC');
@@ -1008,7 +1009,7 @@ class Account_model extends CI_Model {
 	 * Редактировать коэффициенты пользователей в рейдах
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function editRaidKoeff($koeffData = false) {
 		if (!$koeffData) return false;
 		$this->db->update_batch('raid_users', $koeffData, 'id');
@@ -1021,12 +1022,624 @@ class Account_model extends CI_Model {
 	 * Редактировать типы рейдов
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function editRaidTypes($rTypesData = false) {
 		if (!$rTypesData) return false;
 		$this->db->update_batch('raids', $rTypesData, 'id');
 		return true;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Получить список менторов
+	 * @param 
+	 * @return 
+	*/
+	public function getMentors() {
+		$userClasses = $this->getUsersClasses();
+		
+		// CAST(CONCAT('[', GROUP_CONCAT(distinct JSON_OBJECT('id', us.static_id, 'name', s.name)), ']') AS JSON) AS statics,
+		$this->db->select("u.id, u.nickname, u.avatar, ra.name AS role, ro.name AS rank, IF(GROUP_CONCAT(us.static_id), CAST(CONCAT('[', GROUP_CONCAT(distinct JSON_OBJECT('id', us.static_id, 'name', s.name)), ']') AS JSON), NULL) AS statics, IF(GROUP_CONCAT(uc.class_id), CAST(CONCAT('[', GROUP_CONCAT(distinct JSON_OBJECT('id', uc.class_id, 'name', cls.name, 'mentor', uc.mentor)), ']') AS JSON), NULL) AS classes");
+		$this->db->join('users_statics us', 'us.user_id = u.id');
+		$this->db->join('statics s', 's.id = us.static_id', 'LEFT OUTER');
+		$this->db->join('users_classes uc', 'uc.user_id = u.id', 'LEFT OUTER');
+		$this->db->join('classes cls', 'uc.class_id = cls.id', 'LEFT OUTER');
+		$this->db->join('roles ro', 'u.role = ro.id', 'LEFT OUTER');
+		$this->db->join('ranks ra', 'u.rank = ra.id', 'LEFT OUTER');
+		
+		//$this->db->where('uc.mentor', 1);
+		$this->db->where('u.id !=', $this->userData['id']);
+		$this->db->where('u.verification', 1);
+		$this->db->where('u.deleted', 0);
+		
+		//$this->db->where_in('us.static_id', array_keys($this->userData['statics']));
+		//$this->db->where_in('uc.class_id', array_keys($userClasses));
+		
+		$this->db->group_by('u.id');
+		$query = $this->db->get('users u');
+		if (!$response = $query->result_array()) return false;
+		
+		$mentors = [];
+		foreach ($response as $item) {
+			$item['statics'] = $item['statics'] ? json_decode($item['statics'], true) : null;
+			$item['classes'] = $item['classes'] ? json_decode($item['classes'], true) : null;
+			$userStatics = $item['statics'] ? setArrKeyFromField($item['statics'], 'id') : null;
+			$userClasses = $item['classes'] ? setArrKeyFromField($item['classes'], 'id') : null;
+			$myStatics = array_keys((array)$this->userData['statics']);
+			$myClasses = array_keys((array)$this->getUsersClasses($this->userData['id']));
+			$grouping = ($userStatics && $myStatics && array_intersect(array_keys($userStatics), $myStatics)) ? 'inner' : 'outer';
+			
+			
+			$mentorClasses = []; $mentorClassesToMe = [];
+			if ($userClasses) {
+				foreach ($userClasses as $uClsId => $uClsData) {
+					if ($uClsData['mentor'] == 1 && in_array($uClsId, $myClasses)) {
+						$uClsData['mentor_to_me'] = 1;
+						$mentorClassesToMe[$uClsId] = [
+							'user_id' 		=> $item['id'],
+							'class_name'	=> $uClsData['name']
+						];
+					}
+					$mentorClasses[$uClsId] = $uClsData;
+				}
+			}
+			
+			if ($mentorClasses) {
+				$item['classes'] = $mentorClasses;
+			}
+			
+			if ($mentorClassesToMe) {
+				$item['classes_to_me'] = $mentorClassesToMe;
+			}
+			
+			
+			if ($grouping == 'inner') {
+				$mentors[$grouping][] = $item;
+			} elseif ($userClasses && $myClasses && ($cls = array_values(array_intersect(array_keys((array)$userClasses), (array)$myClasses)))) {
+				if (array_sum(array_column($mentorClasses, 'mentor')) > 0) $mentors[$grouping][] = $item;
+			}
+			
+		}
+		
+		return $mentors;
+	}
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	private function getUsersClasses($userId = false) {
+		$userId = $userId ?: $this->userData['id'];
+		$this->db->select('cls.*');
+		$this->db->where('uc.user_id', $userId);
+		$this->db->join('classes cls', 'uc.class_id = cls.id', 'LEFT OUTER');
+		$query = $this->db->get('users_classes uc');
+		if (!$response = $query->result_array()) return false;
+		$classes = setArrKeyFromField($response, 'id');
+		return $classes;
+	}
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function addMentorsRequest($addRequestData = false) {
+		if (!$addRequestData) return false;
+		if (!$this->db->insert('mentors_requests', $addRequestData)) return false;
+		return true;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//------------------------------------------------------------------------------------------- рейтинг
+	
+	
+	/**
+	 * Получить данные периода рейтингов
+	 * @param true - текущий (активный) период, ID периода
+	 * @return 
+	*/
+	public function getActiveRatingsPeriod($periodId = false) {
+		if ($periodId === false) return false;
+		if ($periodId !== true) $this->db->where('id', $periodId);
+		else $this->db->where('active', 1);
+		$query = $this->db->get('ratings_periods');
+		if (!$result = $query->row_array()) return false;
+		$result['reports_periods'] = json_decode($result['reports_periods'], true);
+		
+		$this->db->select('id, name');
+		$this->db->where_in('id', $result['reports_periods']);
+		$this->db->order_by('id', 'DESC');
+		$rpQuery = $this->db->get('reports_periods');
+		if (!$rpResult = $rpQuery->result_array()) return false;
+		$result['reports_periods'] = array_reverse(setArrKeyFromField($rpResult, 'id', false, 'name'), true) ?: false;
+		return $result;
+	}
+	
+	
+	
+	
+	/**
+	 * Получить коэффициент посещения за год, где коэффициент больше 0.5
+	 * @param static_id - ID статика, возвращает массив ID участника => коэффициент
+	 * @param static_id user_id - ID участника, возвращает коэффициент
+	 * @param void - возвращает коэффициент текущего участника
+	 * @return mixed
+	*/
+	public function getUserVisitsRate($params = []) {
+		$staticUsers = false;
+		if (isset($params['static_id'])) {
+			$this->db->select('user_id');
+			$this->db->where('static_id', $params['static_id']);
+			$query = $this->db->get('users_statics');
+			if (!$result = $query->result_array()) return false;
+			$staticUsers = array_column($result, 'user_id');
+		}
+		
+		$yearAgo = strtotime('-1 year', $params['period']['visits_date']);
+		$this->db->select('ru.user_id, ru.rate');
+		$this->db->where('r.date >=', $yearAgo);
+		
+		if (!$params) $this->db->where('ru.user_id', $this->userData['id']);
+		elseif ($staticUsers) $this->db->where_in('ru.user_id', $staticUsers);
+		elseif (isset($params['user_id'])) $this->db->where('ru.user_id', $params['user_id']); 
+		
+		$this->db->join('raid_users ru', 'ru.raid_id = r.id');
+		$query = $this->db->get('raids r');
+		$result = $query->result_array();
+		
+		$data = [];
+		foreach ($result as $item) {
+			$data[$item['user_id']][] = $item['rate'];
+		}
+		
+
+		//$result = array_column($result, 'rate');
+		
+		foreach ($data as $userId => $rates) {
+			$countItems = count($rates);
+			$countmatch = 0;
+			foreach($rates as $item) {
+				if ($item > 0.5) $countmatch += 1;
+			}
+			
+			$percent[$userId] = round($countmatch / ($countItems / 100), 2);
+		}
+		
+		if (isset($params['user_id'])) return $percent[$params['user_id']];
+		return $percent;
+	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * Персонажи и ошибки участника за последние 4 сохраненных периода выплат
+	 * @param ID статика
+	 * @return array
+	*/
+	public function getPeriodsInfo($staticId = false, $period = false) {
+		if (!$staticId || !$period) return false;
+		$this->db->select('id, name');
+		$this->db->where_in('id', array_keys($period['reports_periods']));
+		$this->db->order_by('id', 'DESC');
+		$query = $this->db->get('reports_periods');
+		if (!$result = $query->result_array()) return false;
+		$periodsNames = array_reverse(setArrKeyFromField($result, 'id', false, 'name'), true);
+		
+		$savedData = false;
+		if ($savedData = $this->getSavedRatingsdata($period['id'], $staticId)) {
+			$savedData = setArrKeyFromField($savedData, 'user_id', false);
+		}
+		
+		$this->db->select('cd.period_id, cd.user_id, cd.persones_count, cd.fine');
+		$this->db->join('users_statics us', 'us.user_id = cd.user_id');
+		$this->db->where('us.main', 1);
+		$this->db->where('cd.static_id', $staticId);
+		$this->db->where_in('cd.period_id', array_keys($period['reports_periods']));
+		$this->db->order_by('cd.period_id', 'ASC');
+		$personesQuery = $this->db->get('compounds_data cd');
+		if (!$personesResult = $personesQuery->result_array()) return false;
+		
+		$data = ['periods_names' => $periodsNames, 'data' => []];
+		foreach ($personesResult as $item) {
+			if ($savedData && isset($savedData[$item['user_id']])) {
+				$data['data'][$item['user_id']]['fine_summ'] = $savedData[$item['user_id']]['fine'];
+			} else {
+				if (!isset($data['data'][$item['user_id']]['fine_summ'])) $data['data'][$item['user_id']]['fine_summ'] = 0;
+				$data['data'][$item['user_id']]['fine_summ'] += (float)$item['fine'];
+			}
+				
+			
+			$data['data'][$item['user_id']][$item['period_id']] = [
+				'persones'	=> $item['persones_count'],
+				'fine' 		=> $item['fine']
+			];
+		}
+		
+		return $data;
+	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function getUsersForRating($staticId = false) {
+		if (!$staticId) return false;
+		$this->db->select('u.id, u.nickname, u.avatar, ra.name AS role, ro.name AS rank');
+		$this->db->join('users_statics us', 'us.user_id = u.id');
+		$this->db->join('roles ro', 'u.role = ro.id', 'LEFT OUTER');
+		$this->db->join('ranks ra', 'u.rank = ra.id', 'LEFT OUTER');
+		$this->db->where('us.static_id', $staticId);
+		$this->db->where('u.deleted', 0);
+		$this->db->where('u.verification', 1);
+		$this->db->where('us.main', 1);
+		$query = $this->db->get('users u');
+		if (!$result = $query->result_array()) return false;
+		return $result;
+	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * Получить уже сохраненные данные по заданному периоду и статику
+	 * @param 
+	 * @return 
+	*/
+	public function getSavedRatingsdata($periodId = false, $staticId = false) {
+		if (!$periodId || !$staticId) return false;
+		$this->db->where(['period_id' => $periodId, 'static_id' => $staticId]);
+		
+		$query = $this->db->get('ratings_data');
+		if (!$result = $query->result_array()) return false;
+		return $result;
+	}
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function saveDataForRating($data = false) {
+		if (!$data) return false;
+		
+		$periodId = arrTakeItem($data, 'period_id');
+		$staticId = arrTakeItem($data, 'static_id');
+		$data = $data['data'];
+		
+		$this->db->where(['period_id' => $periodId, 'static_id' => $staticId]);
+		if ($this->db->count_all_results('ratings_data') > 0) {
+			if (!$this->db->update_batch('ratings_data', $data, 'user_id')) return false;
+			return true;
+		}
+		
+		if (!$this->db->insert_batch('ratings_data', $data)) return false;
+		$this->_notificationDone($staticId, $periodId);
+		return true;
+	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * Записать в уведомления статус сохранения коэффициентов
+	 * @param 
+	 * @return 
+	*/
+	protected function _notificationDone($staticId = false, $periodId = false) {
+		$this->db->where(['static_id' => $staticId, 'period_id' => $periodId]);
+		if (!$this->db->update('ratings_notifycations', ['status' => 1])) return false;
+		return true;
+	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * Получить список Рейдлидеров
+	 * @param 
+	 * @return user ID => [static ID => static name]
+	*/
+	public function getRatingNotifications() {
+		if (!$periodId = $this->getActiveRatingsPeriodId()) return false;
+		
+		$this->db->select('rn.static_id, s.name, s.icon');
+		$this->db->join('statics s', 's.id = rn.static_id', 'LEFT OUTER');
+		$this->db->where(['rn.period_id' => $periodId, 'rn.user_id' => $this->userData['id'], 'rn.status' => 0]);
+		if (!$result = $this->_result('ratings_notifycations rn')) return false;
+		
+		$data = setArrKeyFromField($result, 'static_id', false);
+		return $data;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//-------------------------------------------------------------- Детальная информация по рейтингу
+	
+	/**
+	 * activity 		Активность 				- 
+	 * skill 			Личный скилл 			- 
+	 * fine 			Штрафы 					- 
+	 * visits 			Коэффициент посещений 	- экв
+	 * reprimands 		Выговоры 				- 
+	 * forcemajeure 	ФМ 						- 0:20 1:15 2:5 3+:0
+	 * stimulations 	Наставники 				- 1:5 2-3:10 4+:20
+	 * mentors 		Стимулирование 			- 1:5 2:10 3:15 4:18 5:20
+	 * @param 
+	 * @return 
+	*/
+	public function getUserRating($onlyRating = false) {
+		if (!$periodId = $this->getActiveRatingsPeriodId()) return false;
+		if (!$userId = $this->userData['id']) return false;
+		if (!$coeffsSettings = $this->admin_model->getSettings('rating_coeffs')) return false;
+		
+		$ratingsData = $this->_getRatingsData($periodId, $userId);
+		$ratingsData['reprimands'] = $this->_getReprimands($periodId, $userId);
+		$ratingsData['forcemajeure'] = $this->_getForcemajeure($periodId, $userId);
+		$ratingsData['stimulations'] = $this->_getStimulations($periodId, $userId);
+		$ratingsData['mentors'] = $this->_getMentorsData($periodId, $userId);
+		
+		
+		$coeffsMap = [];
+		foreach ($coeffsSettings as $field => $cData) {
+			if (!$cData = explode("\n", $cData)) return false;
+			$cData = array_filter($cData, function($item) {return trim($item);});
+			$coeffsMap[$field] = array_map(function($item) {
+				$split = explode(':', $item);
+				return [
+					'index' => isset($split[0]) ? $split[0] : null,
+					'value' => isset($split[1]) ? $split[1] : null
+				];
+			}, $cData);
+		}
+		
+		
+		$finalData = [];
+		foreach ($ratingsData as $name => $item) {
+			//echo $name.' -> '.$item.'<br/>';
+			$coeff = $ratingsData[$name];
+			$coeffMap = $coeffsMap[$name];
+			if (!$coeffMap) continue;
+			
+			foreach ($coeffMap as $k => $mapItem) {
+				$mapItem = bringTypes($mapItem);
+				$endItem = isset($coeffMap[$k+1]) ? $coeffMap[$k+1] : false;
+				if ($endItem && ($coeff >= $mapItem['index'] && $coeff < $endItem['index'])) $finalData[$name] = $mapItem['value'];
+				elseif ($coeff >= $mapItem['index']) $finalData[$name] = $mapItem['value'];
+			}
+			
+			
+			/*if (in_array($name, ['activity', 'skill', 'fine', 'visits', 'reprimands'])) {
+				foreach ($coeffMap as $k => $mapItem) {
+					$mapItem = bringTypes($mapItem);
+					$endItem = isset($coeffMap[$k+1]) ? $coeffMap[$k+1] : false;
+					if ($endItem && ($coeff >= $mapItem['index'] && $coeff < $endItem['index'])) $finalData[$name] = $mapItem['value'];
+					elseif ($coeff >= $mapItem['index']) $finalData[$name] = $mapItem['value'];
+				}
+			} elseif (in_array($name, [])) {
+				$mapItem = bringTypes(reset($coeffMap));
+				$finalData[$name] = round(($mapItem['value'] / $mapItem['index']) * $coeff, 2);
+			}*/
+		}
+		
+		if ($onlyRating) return array_sum($finalData);
+		$finalData['rating'] = array_sum($finalData);
+		return $finalData;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	private function _getRatingsData($periodId = false, $userId = false) {
+		if (!$periodId) return false;
+		$this->db->select('activity, skill, fine, visits');
+		$this->db->where('user_id', $userId);
+		//$this->db->where('period_id !=', $periodId);
+		$this->db->order_by('period_id', 'ASC');
+		if (!$result = $this->_result('ratings_data')) return false;
+		$data = array_merge($result, array_fill(0, 4, end($result)));
+		
+		$countItems = count($data);
+		$activity = 0;
+		$skill = 0;
+		$fine = 0;
+		$visits = 0;
+		foreach ($data as $row) {
+			$activity += $row['activity'];
+			$skill += $row['skill'];
+			$fine += $row['fine'];
+			$visits += $row['visits'];
+		}
+		
+		return [
+			'activity' 	=> round(($activity / $countItems), 2),
+			'skill' 	=> round(($skill / $countItems), 2),
+			'fine' 		=> round(($fine / $countItems), 2),
+			'visits' 	=> round(($visits / $countItems), 2)
+		];
+	}
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	private function _getReprimands($periodId = false, $userId = false) {
+		$this->db->select('COUNT(user_id) AS reprimands');
+		$this->db->where('user_id', $userId);
+		//$this->db->where('rating_period_id !=', $periodId);
+		$this->db->order_by('rating_period_id', 'ASC');
+		$this->db->group_by('rating_period_id');
+		if (!$result = $this->_result('reprimands')) return false;
+		$data = array_merge($result, array_fill(0, 4, end($result)));
+		
+		$countItems = count($data);
+		$reprimands = 0;
+		foreach ($data as $row) {
+			$reprimands += $row['reprimands'];
+		}
+		
+		return round(($reprimands / $countItems), 2);
+	}
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	private function _getForcemajeure($periodId = false, $userId = false) {
+		$this->db->select('COUNT(user_id) AS forcemajeure');
+		$this->db->where('user_id', $userId);
+		//$this->db->where('rating_period_id !=', $periodId);
+		$this->db->order_by('rating_period_id', 'ASC');
+		$this->db->group_by('rating_period_id');
+		if (!$result = $this->_result('forcemajeure')) return false;
+		$data = array_merge($result, array_fill(0, 4, end($result)));
+		
+		$countItems = count($data);
+		$forcemajeure = 0;
+		foreach ($data as $row) {
+			$forcemajeure += $row['forcemajeure'];
+		}
+		
+		return round(($forcemajeure / $countItems), 2);
+	}
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	private function _getStimulations($periodId = false, $userId = false) {
+		$this->db->select('index AS stimulation');
+		$this->db->where('user_id', $userId);
+		//$this->db->where('rating_period_id !=', $periodId);
+		$this->db->order_by('rating_period_id', 'ASC');
+		if (!$result = $this->_result('stimulations')) return false;
+		$data = array_merge($result, array_fill(0, 4, end($result)));
+		
+		$countItems = count($data);
+		$stimulations = 0;
+		foreach ($data as $row) {
+			$stimulations += $row['stimulation'];
+		}
+		
+		return round(($stimulations / $countItems), 2);
+	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	private function _getMentorsData($periodId = false, $userId = false) {
+		$this->db->select('COUNT(mentor_id) AS mentor');
+		$this->db->where([/*'period_id !=' => $periodId, */'mentor_id' => $userId, 'done !=' => 'null']);
+		$this->db->order_by('period_id', 'ASC');
+		$this->db->group_by('period_id');
+		if (!$result = $this->_result('mentors_requests')) return false;
+		$data = array_merge($result, array_fill(0, 4, end($result)));
+		
+		$countItems = count($data);
+		$mentors = 0;
+		foreach ($data as $row) {
+			$mentors += $row['mentor'];
+		}
+		
+		return round(($mentors / $countItems), 2);
+	}
+	
+	
 	
 	
 	

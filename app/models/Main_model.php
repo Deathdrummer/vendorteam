@@ -1,6 +1,6 @@
 <? defined('BASEPATH') OR exit('Доступ к скрипту запрещен');
 
-class Main_model extends CI_Model {
+class Main_model extends My_Model {
 	
 	
 	public function __construct() {

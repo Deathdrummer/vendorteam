@@ -6,7 +6,7 @@ class Operator_model extends MY_Model {
 	
 	public function __construct() {
 		parent::__construct();
-		$this->operatorId = $this->session->userdata('operator_id');
+		$this->operatorId = get_cookie('operator_id'); //$this->session->userdata('operator_id');
 	}
 	
 	

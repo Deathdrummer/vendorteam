@@ -63,8 +63,7 @@
 								<div id="accountStatics">
 									{% set stCounter = 1 %}
 									{% for staticId, static in statics %}
-										
-										<div accountstatic="{{staticId}}" class="static{% if stCounter %} active{% endif %}" title="{% if static.main %}Основной{% endif %}{% if static.lider %} Лидер{% endif %}">
+										<div accountstatic="{{staticId}}"{% if staticId in set_rating_statics|keys %}ratingstatic="{{static.name}}|{{static.icon}}"{% endif %} class="static{% if stCounter %} active{% endif %}" title="{% if static.main %}Основной{% endif %}{% if static.lider %} Лидер{% endif %}">
 											<div class="static__icon">
 												<img src="{{base_url()}}public/filemanager/{{static.icon}}" alt="">
 											</div>
@@ -75,6 +74,9 @@
 												{% if static.lider %}<svg class="lider"><use xlink:href="#crown"></use></svg>{% endif %}
 												{% if static.main %}<i class="fa fa-home main"></i>{% endif %}
 											</div>
+											{% if staticId in set_rating_statics|keys %}
+												<div class="static__ratingnotify" title="Необходимо заполнить статистику по рейтингам!"><i class="fa fa-exclamation-circle"></i></div>
+											{% endif %}
 										</div>
 										{% set stCounter = 0 %}
 									{% endfor %}
@@ -102,7 +104,7 @@
 																<div class="staticusers noselect">
 																	{% for friend in friends[staticId]|sortusers %}
 																		<div class="staticuser" userid="{{friend.id}}">
-																			<div class="staticuser__image" style="background-image: url({{base_url('public/images/')}}{% if friend.avatar %}users/{{friend.avatar}}{% else %}user_mini.jpg{% endif %})">
+																			<div class="staticuser__image" style="background-image: url('{{base_url('public/images/users/'~friend.avatar)|is_file('public/images/user_mini.jpg')}}')">
 																				<div class="staticuser__stat {#online#}"></div>
 																			</div>
 																			<div class="staticuser__name mr-auto">
@@ -129,6 +131,7 @@
 																		<button newraid="{{staticId}}">Создать рейд</button>
 																		<button setcompound="{{staticId}}|1">Коэфф.</button>
 																		<button setkeys="{{staticId}}|1">Ключи</button>
+																		{% if id in [2,21] %}<button setrating="{{staticId}}|1">Рейтинги</button>{% endif %}
 																	{% else %}
 																		<button setcompound="{{staticId}}|0">Коэффициенты</button>
 																		<button setkeys="{{staticId}}|0">Ключи</button>
@@ -136,7 +139,7 @@
 																</div>
 															</div>
 														</div>
-														<div class="col-7" hidden> <!-- hidden убрать -->
+														{#<div class="col-7">
 															<div class="messages">
 																<div class="messages__block">
 																	<div class="message">
@@ -184,7 +187,7 @@
 																	</div>
 																</div>
 															</div>
-														</div>
+														</div>#}
 													</div>		
 												</div>
 											</div> <!--  -->	
@@ -204,7 +207,7 @@
 																{% for message in feed_messages[staticId] %}
 																	<div class="news_item">
 																		<div class="news_item__image">
-																			<img src="{{base_url('public/')}}{% if message.icon %}{{'filemanager/'~message.icon}}{% else %}images/news.jpg{% endif %}" alt="{{message.title}}">
+																			<img src="{{base_url('public/filemanager/'~message.icon)|is_file('public/images/deleted.jpg')}}" alt="{{message.title}}" title="{{message.title}}">
 																		</div>
 																		<div class="news_item__content">
 																			<h3>{{message.title}}</h3>

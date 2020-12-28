@@ -30,10 +30,15 @@
 				<li><span title="Следующее звание">След. зв.:</span> <strong>{{rank.next_rank.next_rank}}</strong> <sup>({{rank.next_rank.count_days}} дн.)</sup></li>
 			{% endif %}
 			<li><span>Резерв:</span> <strong>{{deposit|number_format(2, '.', ' ')}} руб.</strong></li>
+			
+			{% if id in [2,21] %}
+				<li myrating class="pointer"><span>Рейтинг:</span> <strong>{{rating|default('Нет рейтинга')}}</strong></li>
+			{% endif %}
+			
 			<li>
-				<div class="row">
+				<div class="row gutters-5 justifн-content-evenly">
 					{% if statistics_setting[main_static]['access'] == 1 %}
-					<div class="col">
+					<div class="col-3">
 						<a class="link" showstatistics title="Посмотреть статистику">
 							<div class="icon icon_stat"></div>
 							<div>
@@ -45,7 +50,7 @@
 					{% endif %}
 					
 					{% if is_lider %}
-					<div class="col">
+					<div class="col-3">
 						<a class="link" href="{{raidliderreport_setting}}" target="_blank" title="Перейти к отчету">
 							<div class="icon icon_table"></div>
 							<div>
@@ -57,7 +62,7 @@
 					{% endif %}
 					
 					{% if not access or access.links.paydata %}
-					<div class="col">
+					<div class="col-3">
 						<a class="link" href="{{paydataformlink_setting}}" target="_blank" title="Заполнить форму">
 							<div class="icon icon_table"></div>
 							<div>
@@ -67,6 +72,17 @@
 						</a>
 					</div>
 					{% endif %}
+
+					{#{% if not access or access.links.mentors %}
+					<div class="col-3">
+						<a class="link" title="Мой рейтинг">
+							<div class="icon icon_table"></div>
+							<div>
+								<span>Рейтинг</span>
+							</div>
+						</a>
+					</div>
+					{% endif %}#}
 				</div>
 			</li>
 		</ul>

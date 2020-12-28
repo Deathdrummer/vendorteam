@@ -9,14 +9,14 @@ class Admin extends MY_Controller {
 		$this->load->model(['admin_model', 'reports_model', 'users_model']);
 		
 		$token = $this->admin_model->getSettings('token');
-		$sesToken = $this->session->userdata('token');
-		if ($token != $sesToken && $this->session->userdata('token')) $this->logout();
+		$sesToken = get_cookie('token'); //$this->session->userdata('token');
+		if ($token != $sesToken && get_cookie('token')/*$this->session->userdata('token')*/) $this->logout();
 	}
 	
 	
 	
 	public function index() {
-		if ($this->session->userdata('token') == false) {
+		if (get_cookie('token')/*$this->session->userdata('token')*/ == false) {
 			$this->auth();
 		} else {
 			$data['date'] = date('Y');
@@ -36,7 +36,7 @@ class Admin extends MY_Controller {
 		if ($this->input->server('REQUEST_METHOD') == 'POST' && !empty($this->input->post('login')) && !empty($this->input->post('password'))) {
 			$token = $this->admin_model->getSettings('token');
 			if ($token == md5($this->input->post('login').$this->input->post('password'))) {
-				$this->session->set_userdata('token', $token);
+				set_cookie('token', $token, 31536000); //$this->session->set_userdata('token', $token);
 				redirect('admin');
 			} else {
 				$this->twig->display($this->viewsPath.'auth', ['error' => true]);
@@ -55,7 +55,7 @@ class Admin extends MY_Controller {
 	 * @return 
 	 */
 	public function logout() {
-		$this->session->unset_userdata('token');
+		delete_cookie('token'); //$this->session->unset_userdata('token');
 		redirect('admin');
 	}
 	
@@ -149,11 +149,14 @@ class Admin extends MY_Controller {
 				$data['statics'] = $this->admin_model->getStatics();
 				$data['ranks'] = $this->admin_model->getRanks();
 				$data['roles'] = $this->admin_model->getRoles();
+				$data['classes'] = $this->admin_model->getClasses();
 				$data['accounts_access'] = $this->admin_model->getAccountsAccess(false);
 				$data['raiders_colors'] = $this->admin_model->getRaidersColors();
 				$data['users'] = ['new' => [], 'verify' => [], 'deleted' => []];
 				$data['deposit_users'] = [];
 				$data['deposit'] = ['global' => 0, 'statics' => []];
+				$data['deposit_history'] = $this->admin_model->globalDepositHistoryGet();
+				
 				
 				$usersStatics = [];
 				
@@ -220,10 +223,22 @@ class Admin extends MY_Controller {
 			case 'roles':
 				$data['roles'] = $this->admin_model->getRoles();
 				break;
+			
+			case 'classes':
+				$data['classes'] = $this->admin_model->getClasses();
+				break;
+			
+			case 'mentors':
+				$data['mentors_requests'] = $this->admin_model->getMentorsRequests();
+				break;
 				
 			case 'raids_types':
 				$data['raids_types'] = $this->admin_model->getRaidsTypes();
 				$data['keys_types'] = $this->admin_model->getKeysTypes();
+				break;
+			
+			case 'ratings':
+				
 				break;
 				
 			case 'offtime':
@@ -493,6 +508,9 @@ class Admin extends MY_Controller {
 	
 	
 	
+	
+	
+	
 	/**
 	 * Пометить пользователя как "удален"
 	 * @param 
@@ -514,10 +532,26 @@ class Admin extends MY_Controller {
 	 */
 	public function deposit_update() {
 		if (! $this->input->is_ajax_request()) return false;
-		$depositData = $this->input->post('deposit');
-		if ($this->users_model->depositUpdate($depositData)) echo 1;
+		if (!$depositData = $this->input->post('deposit')) exit('0');
+		
+		if ($this->users_model->depositUpdate($depositData)) {
+			$globalHistoryData = [];
+			foreach ($depositData as $item) {
+				$globalHistoryData[] = [
+					'user_id'	=> $item['id'],
+					'summ'		=> ($item['deposit_origin'] - $item['deposit']),
+					'date'		=> time(),
+					'reason'	=> 1
+				];
+			}
+			
+			$this->admin_model->globalDepositHistoryAdd($globalHistoryData, true);
+			echo 1;
+		}
 		echo 0;
 	}
+	
+	
 	
 	
 	
@@ -600,6 +634,52 @@ class Admin extends MY_Controller {
 		if (! $this->input->is_ajax_request()) return false;
 		$id = $this->input->post('id');
 		echo $this->admin_model->removeRoles($id);
+	}
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Получить список статиков участника
+	 * @param ID пользователя
+	 * @return HTML
+	 */
+	public function get_users_classes() {
+		$userId = $this->input->post('user_id');
+		$newSet = $this->input->post('newset');
+		$userClasses = $this->users_model->getUsersClasses($userId);
+		echo $this->twig->render($this->viewsPath.'render/user_classes', ['classes' => $userClasses, 'newset' => $newSet]);
+	}
+	
+	
+	
+	/**
+	 * Задать классы пользователя
+	 * @param 
+	 * @return 
+	 */
+	public function set_user_classes() {
+		if (! $this->input->is_ajax_request()) return false;
+		$postData = bringTypes($this->input->post());
+		echo $this->users_model->setUserClasses($postData['user_id'], $postData['user_classes']);
+	}
+	
+	
+	
+	
+	public function classes_add() {
+		if (! $this->input->is_ajax_request()) return false;
+		$postData = array_filter($this->input->post('classes'), function($val) {return $val['name'] != '';});
+		echo $this->admin_model->addClasses(bringTypes($postData));
+	}
+	
+	public function classes_remove() {
+		if (! $this->input->is_ajax_request()) return false;
+		$id = $this->input->post('id');
+		echo $this->admin_model->removeClasses($id);
 	}
 	
 	
@@ -1373,6 +1453,387 @@ class Admin extends MY_Controller {
 	
 	
 	
+	
+	
+	
+	
+	
+	/**
+	 * Наставничество
+	 * @param 
+	 * @return 
+	 */
+	public function mentors($action = false) {
+		if (!$this->input->is_ajax_request() || !$action) return false;
+		$postData = bringTypes($this->input->post());
+		switch ($action) {
+			case 'change_stat': // сменить статус заявки
+				if (!$this->admin_model->changeMentorsRequestStat($postData['id'], $postData['stat'])) exit('0');
+				echo '1';
+				break;
+				
+				
+			case 'get_pay_blank': // отправить заяку на оплату
+				$requestData = $this->admin_model->getRequestPayData($postData['id']);
+				echo $this->twig->render('views/admin/render/mentors_request_pay.tpl', $requestData);
+				break;
+			
+			case 'set_to_pay': // отправить заяку на оплату
+				if (!$this->admin_model->addRequestToPay($postData)) exit('0');
+				echo '1';
+				break;
+			
+			default:
+				break;
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Рейтинги
+	 * @param 
+	 * @return 
+	 */
+	public function ratings($action = false) {
+		if (!$this->input->is_ajax_request() || !$action) return false;
+		$postData = bringTypes($this->input->post());
+		$this->load->model('ratings_model', 'ratings');
+		switch ($action) {
+			case 'get_periods': // получить список периодов
+				$ratingsPeriods = $this->ratings->getPeriods();
+				echo $this->twig->render('views/admin/render/ratings/periods_list.tpl', ['ratings_periods' => $ratingsPeriods]);
+				break;
+			
+			case 'new_period': // новый период
+				$this->load->model('reports_model');
+				$reportsPeriods = $this->ratings->getReportsPeriods();
+				echo $this->twig->render('views/admin/render/ratings/periods_new.tpl', ['reports_periods' => $reportsPeriods]);
+				break;
+			
+			case 'add_period': // добавить период
+				$this->ratings->addPeriod($postData);
+				$ratingsPeriods = $this->ratings->getPeriods();
+				echo $this->twig->render('views/admin/render/ratings/periods_list.tpl', ['ratings_periods' => $ratingsPeriods]);
+				break;
+			
+			case 'set_active_period': // задать активный период
+				if ($this->ratings->setActivePeriod($postData['id'])) exit('0');
+				echo '1';
+				break;
+				
+			case 'get_report': // получить отчет
+				$periodInfo = $this->ratings->getPeriodsInfo($postData['period_id']);
+				$report = $this->ratings->getReport($postData['period_id']);
+				$statics = $this->admin_model->getStatics(true);
+				$data = [
+					'report' 	=> $report,
+					'statics' 	=> $statics,
+					'info'		=> $periodInfo
+				];
+				echo $this->twig->render('views/admin/render/ratings/ratings_report.tpl', $data);
+				break;
+			
+			case 'save_report': // Сохранить отчет
+				if (!$this->ratings->saveReport($postData['data'])) exit('0');
+				echo '1';
+				break;
+			
+			case 'get_users_list': // Получить список участников для выставления данных
+				$data['users'] = $this->ratings->getUsers();
+				$data['statics'] = $this->admin_model->getStatics(true);
+				echo $this->twig->render('views/admin/render/ratings/users_list.tpl', $data);
+				break;
+			
+			case 'history_add': // записать данные в историю
+				$history = [];
+				foreach ($postData['history'] as $item) {
+					$history[] = [
+						'from'	=> $item['from'],
+						'to'	=> $item['to'],
+						'type'	=> $item['type'],
+						'data'	=> $item['data']
+					];
+				}
+				$stat = $this->ratings->addToRatingHistory($history, true);
+				if (!$stat) exit('0');
+				echo '1';
+				break;
+			
+			case 'get_rating_history': // Получить список истории
+				$data['history']['coeffs'] = $this->ratings->getRatingHistory($postData, 'coeffs');
+				$data['history']['others'] = $this->ratings->getRatingHistory($postData, 'others');
+				echo $this->twig->render('views/admin/render/ratings/history.tpl', $data);
+				break;
+			
+			case 'get_statistics': // Получить статистику заполнения коэффиентов
+				$data['statics'] = $this->admin_model->getStatics();
+				$data['periods'] = $this->ratings->getPeriods('ASC');
+				$data['statistics'] = $this->ratings->getRatingStatistics();
+				echo $this->twig->render('views/admin/render/ratings/statistics.tpl', $data);
+				break;
+			
+			case 'notify_raidliders': // Отправить оповещениея рейд-лидерам
+				if (!$this->ratings->notifyRaidliders($postData['period_id'])) exit('0');
+				echo '1';
+				break;
+				
+			
+			
+			
+			
+			default:
+				break;
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Выговоры
+	 * @param 
+	 * @return 
+	 */
+	public function reprimands($action = false) {
+		if (!$this->input->is_ajax_request() || !$action) return false;
+		$postData = bringTypes($this->input->post());
+		$this->load->model(['reprimands_model' => 'reprimands', 'ratings_model' => 'ratings']);
+		switch ($action) {
+			case 'get_list': // получить список Форс мажорных выходных
+				$list = $this->reprimands->get($postData['user_id']);
+				echo $this->twig->render('views/admin/render/ratings/reprimands/list.tpl', ['list' => $list]);
+				break;
+			
+			case 'new': // новый Форс мажорный выходной
+				echo $this->twig->render('views/admin/render/ratings/reprimands/form.tpl');
+				break;
+			
+			case 'add':
+				if (!$this->reprimands->add($postData)) exit('0');
+				$userId = arrTakeItem($postData, 'user_id');
+				$postData['date'] = strtotime($postData['date']);
+				$stat = $this->ratings->addToRatingHistory([
+					'from' 		=> 0,
+					'to' 		=> $userId,
+					'type' 		=> 5,
+					'data' 		=> $postData,
+					'status'	=> 1
+				]);
+				
+				if (!$stat) exit('0');
+				echo '1';
+				break;
+			
+			case 'edit':
+				$data = $this->reprimands->getItem($postData['id']);
+				echo $this->twig->render('views/admin/render/ratings/reprimands/form.tpl', $data);
+				break;
+			
+			case 'update':
+				if (!$this->reprimands->update($postData)) exit('0');
+				$userId = arrTakeItem($postData, 'user_id');
+				$postData['date'] = strtotime($postData['date']);
+				$stat = $this->ratings->addToRatingHistory([
+					'from' 		=> 0,
+					'to' 		=> $userId,
+					'type' 		=> 5,
+					'data' 		=> $postData,
+					'status'	=> 2
+				]);
+				
+				if (!$stat) exit('0');
+				echo '1';
+				break;
+			
+			case 'remove_form':
+				echo $this->twig->render('views/admin/render/ratings/reprimands/remove_form.tpl');
+				break;
+			
+			 case 'remove': // ID, message
+			 	$itemData = $this->reprimands->getItem($postData['id']);
+			 	
+			 	if (!$this->reprimands->remove($postData['id'])) exit('0');
+			 	$itemData['data'] = [
+			 		'message' 	=> $postData['message'],
+			 		'date' 		=> $itemData['date']
+			 	];
+			 	$stat = $this->ratings->addToRatingHistory([
+					'from' 		=> 0,
+					'to' 		=> $itemData['user_id'],
+					'type' 		=> 5,
+					'data' 		=> $itemData['data'],
+					'status'	=> -1
+				]);
+				
+				if (!$stat) exit('0');
+				echo '1';
+			 	break;
+				
+			
+			default:
+				break;
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Форс мажорные выходные
+	 * @param 
+	 * @return 
+	 */
+	public function forcemajeure($action = false) {
+		if (!$this->input->is_ajax_request() || !$action) return false;
+		$postData = bringTypes($this->input->post());
+		$this->load->model(['forcemajeure_model' => 'forcemajeure', 'ratings_model' => 'ratings']);
+		switch ($action) {
+			case 'get_list': // получить список Форс мажорных выходных
+				$list = $this->forcemajeure->get($postData['user_id']);
+				echo $this->twig->render('views/admin/render/ratings/forcemajeure/list.tpl', ['list' => $list]);
+				break;
+			
+			case 'new': // новый Форс мажорный выходной
+				echo $this->twig->render('views/admin/render/ratings/forcemajeure/form.tpl');
+				break;
+			
+			case 'add':
+				if (!$this->forcemajeure->add($postData)) exit('0');
+				$userId = arrTakeItem($postData, 'user_id');
+				$postData['date'] = strtotime($postData['date']);
+				$stat = $this->ratings->addToRatingHistory([
+					'from' 		=> 0,
+					'to' 		=> $userId,
+					'type' 		=> 6,
+					'data' 		=> $postData,
+					'status'	=> 1
+				]);
+				
+				if (!$stat) exit('0');
+				echo '1';
+				break;
+			
+			case 'edit':
+				$data = $this->forcemajeure->getItem($postData['id']);
+				echo $this->twig->render('views/admin/render/ratings/forcemajeure/form.tpl', $data);
+				break;
+			
+			case 'update':
+				if (!$this->forcemajeure->update($postData)) exit('0');
+				$userId = arrTakeItem($postData, 'user_id');
+				$postData['date'] = strtotime($postData['date']);
+				$stat = $this->ratings->addToRatingHistory([
+					'from' 		=> 0,
+					'to' 		=> $userId,
+					'type' 		=> 6,
+					'data' 		=> $postData,
+					'status'	=> 2
+				]);
+				
+				if (!$stat) exit('0');
+				echo '1';
+				break;
+			
+			case 'remove_form':
+				echo $this->twig->render('views/admin/render/ratings/forcemajeure/remove_form.tpl');
+				break;
+			
+			 case 'remove': // ID, message
+			 	$itemData = $this->forcemajeure->getItem($postData['id']);
+			 	
+			 	if (!$this->forcemajeure->remove($postData['id'])) exit('0');
+			 	$itemData['data'] = [
+			 		'message' 	=> $postData['message'],
+			 		'date' 		=> $itemData['date']
+			 	];
+			 	$stat = $this->ratings->addToRatingHistory([
+					'from' 		=> 0,
+					'to' 		=> $itemData['user_id'],
+					'type' 		=> 6,
+					'data' 		=> $itemData['data'],
+					'status'	=> -1
+				]);
+				
+				if (!$stat) exit('0');
+				echo '1';
+			 	break;
+			
+			default:
+				break;
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Выговоры
+	 * @param 
+	 * @return 
+	 */
+	public function stimulation($action = false) {
+		if (!$this->input->is_ajax_request() || !$action) return false;
+		$postData = bringTypes($this->input->post());
+		$this->load->model(['stimulation_model' => 'stimulation', 'ratings_model' => 'ratings']);
+		switch ($action) {
+			case 'get_form': // получить список Форс мажорных выходных
+				$data = $this->stimulation->get($postData['user_id']) ?: $postData;
+				echo $this->twig->render('views/admin/render/ratings/stimulation/form.tpl', $data ?: []);
+				break;
+			
+			case 'set':
+				if (($status = $this->stimulation->set($postData)) === false) exit('0');
+				$userId = arrTakeItem($postData, 'user_id');
+				
+				toLog($postData, true);
+				
+				
+				$stat = $this->ratings->addToRatingHistory([
+					'from' 		=> 0,
+					'to' 		=> $userId,
+					'type' 		=> 7,
+					'data' 		=> $postData,
+					'status' 	=> $status
+				]);
+				
+				if (!$stat) exit('0');
+				echo '1';
+				break;
+			
+			default:
+				break;
+		}
+	}
 	
 	
 	

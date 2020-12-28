@@ -45,7 +45,6 @@ jQuery(document).ready(function($) {
 	// - параметры 
 	// - callback 
 	renderSection = function() {
-		
 		$('#sectionWait').addClass('visible');
 		
 		var params = {},
@@ -121,6 +120,7 @@ jQuery(document).ready(function($) {
 			$('.scroll').ddrScrollTable();
 			
 			$('#sectionWait').removeClass('visible');
+			$(document).trigger('renderSection');
 			if (callback) callback();
 		}, 'html').fail(function(e) {
 			notify('Системная ошибка!', 'error');

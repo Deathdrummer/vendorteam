@@ -10,18 +10,17 @@ class Account extends MY_Controller {
 	public function __construct() {
 		parent::__construct();
 		
-		$this->load->model(['account_model', 'admin_model']);
-		$this->userId = $this->session->userdata('id');
+		$this->load->model(['account_model' => 'account', 'admin_model' => 'admin']);
+		$this->userId = get_cookie('id'); //$this->session->userdata();
 		if (!$this->isset_user() || $this->is_deleted_user()) {
-			$this->session->unset_userdata('id');
+			delete_cookie('id'); //$this->session->unset_userdata('id');
 			if (!$this->input->is_ajax_request()) redirect();
 			else exit('0');
 		}
 		
-		$this->settings = $this->admin_model->getSettings();
-		$this->userData = $this->account_model->getUserData();
+		$this->settings = $this->admin->getSettings();
+		$this->userData = $this->account->getUserData();
 	}
-	
 	
 	
 	
@@ -31,6 +30,10 @@ class Account extends MY_Controller {
 		// вставляем SVG спрайт
 		$this->userData['svg_sparite'] = getSprite('public/svg/sprite.svg');
 		
+		$this->userData['set_rating_statics'] = $this->account->getRatingNotifications();
+		
+		$this->account->getUserRating();
+		
 		$this->userData['is_user_info'] = 1;
 		if ($this->userData['avatar'] == '' || is_null($this->userData['avatar']) || $this->userData['avatar'] == 'deleted.jpg' || $this->userData['nickname'] == '') {
 			$this->userData['is_user_info'] = 0;
@@ -39,12 +42,13 @@ class Account extends MY_Controller {
 		$this->userData['is_verify_user'] = $this->is_verify_user();
 		$this->userData['is_lider'] = $this->is_lider();
 		$this->userData['deposit'] = $this->get_deposit();
+		$this->userData['rating'] = $this->account->getUserRating(true);
 		$this->userData['rank'] = $this->get_rank_data();
 		$this->userData['pay_method'] = $this->get_pay_method();
 		$this->userData['role'] = $this->get_role();
 		$this->userData['friends'] = $this->get_friends();
 		$this->userData['agreement'] = $this->get_agreement_stat();
-		$this->userData['feed_messages'] = $this->admin_model->getFeedMessagesStatic(array_keys($this->userData['statics']));
+		$this->userData['feed_messages'] = $this->admin->getFeedMessagesStatic(array_keys($this->userData['statics']));
 		
 		$outData = array_merge((array)$this->userData, (array)$this->settings);
 		
@@ -60,7 +64,8 @@ class Account extends MY_Controller {
 	 * @return 
 	 */
 	public function logout() {
-		$this->session->unset_userdata('id');
+		delete_cookie('id'); //$this->session->unset_userdata('id');
+		delete_cookie('token'); //$this->session->unset_userdata('token');
 		redirect();
 	}
 	
@@ -78,13 +83,13 @@ class Account extends MY_Controller {
 		$data['svg_sparite'] = getSprite('public/svg/sprite.svg');
 		
 		$data['chapters'] = false;
-		if ($firstData = $this->admin_model->getGuideChapters()) {
+		if ($firstData = $this->admin->getGuideChapters()) {
 			foreach ($firstData as $fkey => $first) {
-				if (!$secondData = $this->admin_model->getGuideChapters($first['id'])) continue;
+				if (!$secondData = $this->admin->getGuideChapters($first['id'])) continue;
 				foreach ($secondData as $skey => $second) {
-					if (!$thirdData = $this->admin_model->getGuideChapters($second['id'])) continue;
+					if (!$thirdData = $this->admin->getGuideChapters($second['id'])) continue;
 					foreach ($thirdData as $tkey => $third) {
-						if (!$forthData = $this->admin_model->getGuideChapters($third['id'])) continue;
+						if (!$forthData = $this->admin->getGuideChapters($third['id'])) continue;
 						$thirdData[$tkey]['children'] = $forthData;
 					}
 					$secondData[$skey]['children'] = $thirdData;
@@ -108,7 +113,7 @@ class Account extends MY_Controller {
 	 */
 	public function get_guide_chapter() {
 		$id = $this->input->post('id');
-		$data = $this->admin_model->getGuideChapter($id);
+		$data = $this->admin->getGuideChapter($id);
 		echo $data['content'];
 	}
 	
@@ -157,7 +162,7 @@ class Account extends MY_Controller {
 		if (isset($postData['user_color']) && $postData['user_color']) {
 			$upData['color'] = $postData['user_color'];
 		} 
-		if ($upData) $this->account_model->setAccountData($upData);
+		if ($upData) $this->account->setAccountData($upData);
 		
 		
 		if ($avatar['error'] == 0) {
@@ -185,7 +190,7 @@ class Account extends MY_Controller {
 				exit(json_encode($error));
 	        } 
 	        
-        	$this->account_model->setAccountData(['avatar' => $this->upload->data('file_name')]);
+        	$this->account->setAccountData(['avatar' => $this->upload->data('file_name')]);
 
 			$this->load->library('image_lib', [
 				'image_library' 	=> 'gd2',
@@ -226,7 +231,7 @@ class Account extends MY_Controller {
 	 * @return 
 	 */
 	public function isset_user() {
-		return $this->account_model->issetUser();
+		return $this->account->issetUser();
 	} 
 	
 	
@@ -236,7 +241,7 @@ class Account extends MY_Controller {
 	 * @return 
 	 */
 	public function is_verify_user() {
-		return $this->account_model->isVerifyUser();
+		return $this->account->isVerifyUser();
 	} 
 	
 	
@@ -247,7 +252,7 @@ class Account extends MY_Controller {
 	 * @return 
 	 */
 	public function is_deleted_user() {
-		return $this->account_model->isDeletedUser();
+		return $this->account->isDeletedUser();
 	} 
 	
 	
@@ -302,7 +307,7 @@ class Account extends MY_Controller {
 	 * @return 
 	 */
 	public function get_raiders_colors() {
-		$raidersColors = $this->account_model->getRaidersColors();
+		$raidersColors = $this->account->getRaidersColors();
 		$attrName = $this->input->post('attr') ?: false;
 		echo $this->twig->render('views/account/render/raiders_colors', ['raiders_colors' => $raidersColors, 'attr' => $attrName]);
 	}
@@ -338,8 +343,23 @@ class Account extends MY_Controller {
 	 * @return 
 	 */
 	public function get_deposit() {
-		return $this->account_model->getDeposit();
+		return $this->account->getDeposit();
 	}
+	
+	
+	
+	
+	/**
+	 * Получить Рейтинг пользователя
+	 * @param 
+	 * @return 
+	 */
+	public function get_rating() {
+		$rating = $this->account->getUserRating();
+		$rating['rating_desc'] = $this->settings['rating_desc_setting'];
+		echo $this->twig->render('views/account/render/rating', $rating);
+	}
+	
 	
 	
 	
@@ -351,8 +371,8 @@ class Account extends MY_Controller {
 	 * @return 
 	 */
 	public function get_rank_data() {
-		$rankName = $this->account_model->getRankData();
-		$nextRank = $this->account_model->getNextRankData();
+		$rankName = $this->account->getRankData();
+		$nextRank = $this->account->getNextRankData();
 		
 		return [
 			'rank_name' => $rankName,
@@ -370,7 +390,7 @@ class Account extends MY_Controller {
 	 * @return 
 	 */
 	public function get_pay_method() {
-		$nextRank = $this->account_model->getPayMethod();
+		$nextRank = $this->account->getPayMethod();
 	}
 	
 	
@@ -383,7 +403,7 @@ class Account extends MY_Controller {
 	 * @return 
 	 */
 	public function get_role() {
-		return $this->account_model->getRoleName();
+		return $this->account->getRoleName();
 	}
 	
 	
@@ -397,9 +417,9 @@ class Account extends MY_Controller {
 	 */
 	public function get_agreement_stat() {
 		if (! $this->input->is_ajax_request()) {
-			return $this->account_model->getAgreementStat();
+			return $this->account->getAgreementStat();
 		} else {
-			echo $this->account_model->getAgreementStat() ? 0 : 1;
+			echo $this->account->getAgreementStat() ? 0 : 1;
 		}
 	}
 	
@@ -413,7 +433,7 @@ class Account extends MY_Controller {
 	 * @return 
 	 */
 	public function get_important_info() {
-		$info = $this->admin_model->getSettings('important_info') ?: '';
+		$info = $this->admin->getSettings('important_info') ?: '';
 		echo $this->twig->render('views/account/render/important_info', ['info' => $info]);
 	}
 	
@@ -430,9 +450,9 @@ class Account extends MY_Controller {
 	public function get_agreement_data($ajax = true) {
 		$data = '';
 		if ($this->is_lider()) {
-			$agreementData = $this->admin_model->getSettings('agreement_liders');
+			$agreementData = $this->admin->getSettings('agreement_liders');
 		} else {
-			$agreementData = $this->admin_model->getSettings('agreement');
+			$agreementData = $this->admin->getSettings('agreement');
 		}
 		
 		if (!$ajax) return $agreementData;
@@ -451,7 +471,7 @@ class Account extends MY_Controller {
 	 */
 	public function set_agreement_stat() {
 		$stat = $this->input->post('stat');
-		echo $this->account_model->setAgreementStat($stat);
+		echo $this->account->setAgreementStat($stat);
 	}
 	
 	
@@ -465,7 +485,7 @@ class Account extends MY_Controller {
 	 */
 	public function get_info() {
 		$agreement = $this->get_agreement_data(false);
-		$info = $this->admin_model->getSettings('important_info');
+		$info = $this->admin->getSettings('important_info');
 		$isLider = $this->is_lider();
 		
 		foreach ($info as $k => $item) {
@@ -495,7 +515,7 @@ class Account extends MY_Controller {
 	 */
 	public function get_settings() {
 		if (!$this->input->is_ajax_request()) return false;
-		echo json_encode($this->admin_model->getSettings());
+		echo json_encode($this->admin->getSettings());
 	}
 	
 	
@@ -508,7 +528,7 @@ class Account extends MY_Controller {
 	 * @return array [static ID => data]
 	 */
 	public function get_friends() {
-		$friends = $this->account_model->getUsers(false, ['verification' => 1, 'deleted' => 0/*, 'agreement' => 1*/], false, true);
+		$friends = $this->account->getUsers(false, ['verification' => 1, 'deleted' => 0/*, 'agreement' => 1*/], false, true);
 		return $friends;
 	}
 	
@@ -525,8 +545,8 @@ class Account extends MY_Controller {
 	public function get_new_raid_data() {
 		$this->load->model('users_model');
 		$postData = $this->input->post();
-		$staticUsers = $this->account_model->getUsers($postData['static'], ['verification' => 1, 'deleted' => 0/*, 'agreement' => 1*/], true);
-		$raidsTypes = $this->account_model->getRaidsTypes();
+		$staticUsers = $this->account->getUsers($postData['static'], ['verification' => 1, 'deleted' => 0/*, 'agreement' => 1*/], true);
+		$raidsTypes = $this->account->getRaidsTypes();
 		$adminUsers = $this->getAdminUsers();
 		$offtimeUsers = $this->users_model->getOfftimeUsers($postData['static']);
 		echo $this->twig->render('views/account/render/new_raid', ['users' => $staticUsers, 'offtime_users' => $offtimeUsers, 'admin_users' => $adminUsers, 'raids_types' => $raidsTypes, 'period' => $postData['period']]);
@@ -545,8 +565,8 @@ class Account extends MY_Controller {
 		$this->load->model('users_model');
 		$postData = $this->input->post();
 
-		$staticUsers = $this->account_model->getUsers($postData['static'], ['verification' => 1, 'deleted' => 0/*, 'agreement' => 1*/], true);
-		$keysTypes = $this->account_model->getKeysTypes();
+		$staticUsers = $this->account->getUsers($postData['static'], ['verification' => 1, 'deleted' => 0/*, 'agreement' => 1*/], true);
+		$keysTypes = $this->account->getKeysTypes();
 		$adminUsers = $this->getAdminUsers();
 		$offtimeUsers = $this->users_model->getOfftimeUsers($postData['static']);
 		echo $this->twig->render('views/account/render/new_key', [
@@ -586,8 +606,8 @@ class Account extends MY_Controller {
 	public function get_users_to_compound() {
 		if (!$this->input->is_ajax_request()) return false;
 		$postData = $this->input->post();
-		$data = $this->account_model->getUsersToCompound($postData);
-		$raidsTypes = $this->admin_model->getRaidsTypes();
+		$data = $this->account->getUsersToCompound($postData);
+		$raidsTypes = $this->admin->getRaidsTypes();
 		echo $this->twig->render('views/account/render/compound_users', ['compounds_data' => $data['compounds_data'], 'raids' => $data['raids'], 'is_lider' => $postData['is_lider'], 'raids_types' => $raidsTypes]);
 	}
 	
@@ -602,10 +622,10 @@ class Account extends MY_Controller {
 	public function get_users_to_keys() {
 		if (!$this->input->is_ajax_request()) return false;
 		$postData = $this->input->post();
-		$data = $this->account_model->getUsersToKeys($postData);
+		$data = $this->account->getUsersToKeys($postData);
 		echo $this->twig->render('views/account/render/keys_users', [
 			'keys_data' 		=> $data['keys_data'],
-			'keys_types' 		=> $this->account_model->getKeysTypes(),
+			'keys_types' 		=> $this->account->getKeysTypes(),
 			'keys' 				=> $data['keys'],
 			'summ_koeff'		=> $data['summ_koeff'], 
 			'all_summ_koeff'	=> $data['all_summ_koeff'], 
@@ -622,7 +642,7 @@ class Account extends MY_Controller {
 	 */
 	public function get_raids_types() {
 		if (!$this->input->is_ajax_request()) return false;
-		echo json_encode($this->account_model->getRaidsTypes());
+		echo json_encode($this->account->getRaidsTypes());
 	}
 	
 	
@@ -637,7 +657,7 @@ class Account extends MY_Controller {
 	public function add_raid() {
 		if (!$this->input->is_ajax_request()) return false;
 		$postData = bringTypes($this->input->post());
-		echo json_encode($this->account_model->addRaid($postData));
+		echo json_encode($this->account->addRaid($postData));
 	}
 	
 	
@@ -650,7 +670,7 @@ class Account extends MY_Controller {
 	public function add_key() {
 		if (!$this->input->is_ajax_request()) return false;
 		$postData = bringTypes($this->input->post());
-		echo json_encode($this->account_model->addKey($postData));
+		echo json_encode($this->account->addKey($postData));
 	}
 	
 	
@@ -666,7 +686,7 @@ class Account extends MY_Controller {
 	public function edit_key_data() {
 		if (!$this->input->is_ajax_request()) return false;
 		$data = $this->input->post();
-		if ($this->account_model->editKeyKoeff($data['koeffs']) && $this->account_model->editKeyTypes($data['k_types'])) echo '1';
+		if ($this->account->editKeyKoeff($data['koeffs']) && $this->account->editKeyTypes($data['k_types'])) echo '1';
 		else echo 0;
 	}
 	
@@ -686,10 +706,10 @@ class Account extends MY_Controller {
 		$data = bringTypes($this->input->post());
 	
 		
-		$this->account_model->editRaidKoeff(json_decode($data['koeffs'], true));
-		$this->account_model->editRaidTypes(json_decode($data['r_types'], true));
+		$this->account->editRaidKoeff(json_decode($data['koeffs'], true));
+		$this->account->editRaidTypes(json_decode($data['r_types'], true));
 		
-		echo json_encode($this->account_model->setCompound($data['compound_users'], $data['period_id'], $data['static_id']));
+		echo json_encode($this->account->setCompound($data['compound_users'], $data['period_id'], $data['static_id']));
 	}	
 	
 	
@@ -706,7 +726,7 @@ class Account extends MY_Controller {
 	 */
 	public function get_active_period($static = false) {
 		if (!$static = $this->input->post('static')) return false;
-		$activeperiod = $this->account_model->getActiveReportsPeriod($static);
+		$activeperiod = $this->account->getActiveReportsPeriod($static);
 		echo json_encode($activeperiod);
 	}
 	
@@ -722,7 +742,7 @@ class Account extends MY_Controller {
 	 */
 	public function get_operators() {
 		if (!$this->input->is_ajax_request()) return false;
-		$operators = $this->account_model->getOperators();
+		$operators = $this->account->getOperators();
 		echo $this->twig->render('views/account/render/operators_list', ['operators' => $operators]);
 	}
 	
@@ -750,7 +770,7 @@ class Account extends MY_Controller {
 		if (!$this->input->is_ajax_request()) return false;
 		$data = $this->input->post();
 		$data['from'] = $this->userData['id'];
-		if ($this->account_model->operatorSendMess($data)) exit('1');
+		if ($this->account->operatorSendMess($data)) exit('1');
 		echo json_encode('0');
 	}
 	
@@ -794,7 +814,7 @@ class Account extends MY_Controller {
 			'pay'		=> $paySelf
 		];
 		
-		$data['statistics']['lider'] = $this->account_model->statisticsGet($staticMain);
+		$data['statistics']['lider'] = $this->account->statisticsGet($staticMain);
 		$data['statistics']['customer'] = false;
 
 		if ($customerId = $this->settings['statistics_setting'][$staticMain]['customer']['id']) {
@@ -833,6 +853,51 @@ class Account extends MY_Controller {
 	
 	
 	
+	/**
+	 * Наставничество
+	 * @param 
+	 * @return 
+	 */
+	public function mentors($action = false) {
+		if (!$this->input->is_ajax_request() || !$action) return false;
+		$postData = bringTypes($this->input->post());
+		switch ($action) {
+			case 'get':
+				//toLog($this->userData);
+				$mentors = $this->account->getMentors();
+				echo $this->twig->render('views/account/render/mentors.tpl', ['mentors' => $mentors]);
+				break;
+			
+			case 'show_classes': //отобразить классы ментора
+				echo $this->twig->render('views/account/render/mentors_classes.tpl', ['classes' => json_decode($postData['classes'], true)]);
+				break;
+			
+			case 'add_request': // кинуть заявку
+				$this->load->model('users_model');
+				$mainStaticId = $this->users_model->getMainStaticId($postData['mentor_id']);
+				
+				$addRequestData = [
+					'user_id'		=> $this->userData['id'],
+					'user_static'	=> $this->userData['main_static'],
+					'mentor_id'		=> $postData['mentor_id'],
+					'mentor_static'	=> $mainStaticId,
+					'class'			=> $postData['class_id'],
+					'date'			=> time()
+				];
+				
+				if (!$this->account->addMentorsRequest($addRequestData)) exit('0');
+				echo '1';
+				break;
+			
+			default:
+				break;
+		}
+	}
+	
+	
+	
+	
+	
 	
 	
 	
@@ -849,12 +914,12 @@ class Account extends MY_Controller {
 		
 		switch ($action) {
 			case 'main':
-				$gameIds = $this->account_model->personagesGetGamesIds() ?: [];
+				$gameIds = $this->account->personagesGetGamesIds() ?: [];
 				echo $this->twig->render('views/account/render/personages/main.tpl', ['games_ids' => $gameIds]);
 				break;
 			
 			case 'get':
-				$personages = $this->account_model->personagesGet(false, true) ?: [];
+				$personages = $this->account->personagesGet(false, true) ?: [];
 				echo $this->twig->render('views/account/render/personages/list.tpl', ['personages' => $personages]);
 				break;
 			
@@ -865,7 +930,7 @@ class Account extends MY_Controller {
 			case 'save':
 				$fields = $this->input->post('fields');
 				$fieldsToItem = $this->input->post('fields_to_item');
-				if ($insertId = $this->account_model->personagesSave($fields)) {
+				if ($insertId = $this->account->personagesSave($fields)) {
 					$fieldsToItem['id'] = $insertId; 
 					echo $this->twig->render('views/account/render/personages/saved.tpl', $fieldsToItem);
 				} else echo '';
@@ -874,13 +939,13 @@ class Account extends MY_Controller {
 			case 'update':
 				$fields = $this->input->post('fields');
 				$id = $this->input->post('id');
-				if ($this->account_model->personagesUpdate($id, $fields)) echo '1';
+				if ($this->account->personagesUpdate($id, $fields)) echo '1';
 				else echo '';
 				break;
 			
 			case 'remove':
 				$id = $this->input->post('id');
-				if ($this->account_model->personagesRemove($id)) {
+				if ($this->account->personagesRemove($id)) {
 					echo '1';
 				} else echo '0'; 
 				break;
@@ -905,8 +970,8 @@ class Account extends MY_Controller {
 	 */
 	public function get_payment_requests() {
 		$paymentRequestsData = [];
-		if ($getPaymentRequests = $this->account_model->getPaymentRequests()) {
-			$statics = $this->admin_model->getStatics();
+		if ($getPaymentRequests = $this->account->getPaymentRequests()) {
+			$statics = $this->admin->getStatics();
 			
 			$paymentRequestsList = array_map(function($item) use ($statics) {
 				$item['static_name'] = isset($statics[$item['static']]) ? $statics[$item['static']]['name'] : 'Статик удален';
@@ -922,13 +987,13 @@ class Account extends MY_Controller {
 			$paymentRequestsData['paid'] = isset($paymentRequestsData['paid']) ? array_slice($paymentRequestsData['paid'], 0, 100) : false;
 		}
 		
-		$usersListPay = $this->admin_model->getUsersListPay($this->userData['id']);
+		$usersListPay = $this->admin->getUsersListPay($this->userData['id']);
 		
 		echo $this->twig->render('views/account/render/payment_requests.tpl', [
 			'payment_requests_list' 	=> $paymentRequestsData,
 			'payment_requests_titles' 	=> ['nopaid' => 'Не рассчитаны', 'paid' => 'Рассчитаны'],
 			'users_list_pay'			=> $usersListPay,
-			'fields_pay_setting'		=> $this->admin_model->getSettings('fields_pay')
+			'fields_pay_setting'		=> $this->admin->getSettings('fields_pay')
 		]);
 	}
 	
@@ -954,6 +1019,81 @@ class Account extends MY_Controller {
 		else echo '';
 	}
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//------------------------------------------------------------------------------------------- рейтинг
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	 */
+	public function get_users_for_rating() {
+		if (!$this->input->is_ajax_request()) return false;
+		$staticId = $this->input->post('static_id');
+		if (!$activeRatingsPeriodsData = $this->account->getActiveRatingsPeriod(true)) exit('');
+		
+		if ($savedData = $this->account->getSavedRatingsdata($activeRatingsPeriodsData['id'], $staticId)) {
+			$data = $this->account->getPeriodsInfo($staticId, $activeRatingsPeriodsData);
+			$data['users'] = $this->account->getUsersForRating($staticId);
+			$data['visits'] = setArrKeyFromField($savedData, 'user_id', false, 'visits');
+			$data['saved'] = setArrKeyFromField($savedData, 'user_id', false, 'activity, skill');
+			
+			$data['ratings_period'] = $activeRatingsPeriodsData['id'];
+			$data['static_id'] = $staticId;
+			
+		} else {
+			$data = $this->account->getPeriodsInfo($staticId, $activeRatingsPeriodsData);
+			$data['users'] = $this->account->getUsersForRating($staticId);
+			$data['visits'] = $this->account->getUserVisitsRate(['static_id' => $staticId, 'period' => $activeRatingsPeriodsData]);
+			$data['ratings_period'] = $activeRatingsPeriodsData['id'];
+			$data['static_id'] = $staticId;
+		}
+		
+		echo $this->twig->render('views/account/render/users_for_rating.tpl', $data);
+	}
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	 */
+	public function save_data_for_rating() {
+		if (!$this->input->is_ajax_request()) return false;
+		$data = $this->input->post();
+		if (!$this->account->saveDataForRating($data)) exit('0');
+		echo '1';
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Напомнить о выставлении коэффициентов для рейтинга
+	 * @param 
+	 * @return 
+	*/
+	public function get_rating_notifications() {
+		if (!$this->input->is_ajax_request()) return false;
+		$data = $this->input->post();
+		echo $this->twig->render('views/account/render/rating_notifications.tpl', $data);
+	}
 	
 	
 	

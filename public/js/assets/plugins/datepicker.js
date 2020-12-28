@@ -13,9 +13,6 @@ datePicker = function(startSelector, endSelector, range, destroy) {
     }
     $(startSelector).prop('disabled', false).attr('readonly', '');
     
-    
-    
-    
     if(destroy) $(startSelector).datepicker("destroy").attr('date', '').val('');
     
     if(endSelector != undefined) {

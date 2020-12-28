@@ -157,6 +157,15 @@ class MY_Controller extends CI_Controller {
 			
 		});
 		
+		
+		$this->twig->addFilter('padej', function($num, $variants = ['день', 'дня', 'дней'], $variantsEng = ['day', 'day', 'days']) {
+			$lang = get_cookie('language') ?: 'ru';
+			$v = $lang == 'ru' ? $variants : $variantsEng;
+			if (in_array($num, explode(' ', '11 12 13 14')) || in_array(substr($num, -1), explode(' ', '5 6 7 8 9 0'))) return $v[2];
+			elseif (in_array(substr($num, -1), explode(' ', '2 3 4'))) return $v[1];
+			elseif (substr($num, -1) == '1') return $v[0];
+		});
+		
 		$this->twig->addFilter('postfix', function($fileName, $postfix) {
 			if (! $fileName || ! $postfix) return '';
 			$fileData = explode('.', $fileName);
@@ -179,6 +188,7 @@ class MY_Controller extends CI_Controller {
 		$this->twig->addFilter('chunk', function($arr, $size, $preserveKeys = false) {
 			return array_chunk($arr, $size, $preserveKeys);
 		});
+		
 		
 		$this->twig->addFilter('chunktoparts', function($arr, $parts, $preserveKeys = false) {
 			$size = ceil(count($arr) / $parts);
@@ -204,7 +214,8 @@ class MY_Controller extends CI_Controller {
 		
 		
 		$this->twig->addFilter('is_file', function($filename, $nofile = '') {
-			return is_file($filename) ? $filename : $nofile;
+			$file = preg_replace('/https?:\/\/\w+.\w{2,4}\//', '', $filename);
+			return is_file($file) ? $filename : $nofile;
 		});
 		
 		$this->twig->addFilter('trimstring', function($string, $length = 10, $end = '...') {

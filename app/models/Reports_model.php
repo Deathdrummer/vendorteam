@@ -1,13 +1,14 @@
 <? defined('BASEPATH') OR exit('Доступ к скрипту запрещен');
-class Reports_model extends CI_Model {
+
+class Reports_model extends My_Model {
 	
 	private $userData = false;
 	
 	public function __construct() {
 		parent::__construct();
-		if ($this->session->has_userdata('id')) {
+		if (get_cookie('id')/*$this->session->has_userdata('id')*/) {
 			$this->load->model('account_model');
-			$this->userData = $this->account_model->getUserData($this->session->userdata('id'));
+			$this->userData = $this->account_model->getUserData(get_cookie('id')/*$this->session->userdata('id')*/);
 		}
 	}
 	
@@ -436,7 +437,7 @@ class Reports_model extends CI_Model {
 		extract($constants);
 		$response = [];
 		$raidUsers = $this->_getRaidUsers($pData['period_id']);
-		$compoundsData = $this->_getCompoundsData($pData['period_id']); 
+		$compoundsData = $this->_getCompoundsData($pData['period_id']);
 		
 		$this->load->model('admin_model');
 		$defaultDepositPercent = $this->admin_model->getSettings('default_deposit_percent_setting'); // процент депозита по-умолчанию
@@ -1015,6 +1016,7 @@ class Reports_model extends CI_Model {
 	public function getReportsPeriods($onlyOpened = false) {
 		$this->db->where('rp.archive !=', 1);
 		if ($onlyOpened) $this->db->where('rp.closed !=', 1);
+		$this->db->order_by('rp.id', 'DESC');
 		$query = $this->db->get('reports_periods rp');
 		return $query->result_array();
 	}
@@ -1559,6 +1561,99 @@ class Reports_model extends CI_Model {
 	
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Получить данные для оплаты окладов
+	 * @param 
+	 * @return 
+	*/
+	public function getCoeffsToSalary($periodId = false) {
+		if (!$periodId) return false;
+		
+		$this->db->select('r.static_id, ru.rate, ru.user_id');
+		$this->db->join('raids r', 'r.id = ru.raid_id');
+		$this->db->where(['r.period_id' => $periodId, 'r.is_key' => 0]);
+		if (!$result = $this->_result('raid_users ru')) return false;
+		
+		$data = [];
+		foreach ($result as $item) {
+			if (!isset($data[$item['static_id']][$item['user_id']])) $data[$item['static_id']][$item['user_id']] = 0;
+			$data[$item['static_id']][$item['user_id']] += $item['rate'];
+		}
+		
+		$final = [];
+		foreach ($data as $static => $row) {
+			$final[$static]['max_coeff'] = max($row);
+			$final[$static]['count_users'] = count($row);
+		}
+		
+		return $final;
+	}
+	
+	
+	
+	
+	
+	/**
+	 * Сформировать и отправить данные для оплаты в "заявки на оплату"
+	 * @param 
+	 * @return 
+	*/
+	public function getSalaryOrders($data = false) {
+		if (!$data['period_id'] || !$data['data']) return false;
+		
+		$order = arrTakeItem($data, 'order');
+		$comment = arrTakeItem($data, 'comment');
+		$periodId = arrTakeItem($data, 'period_id');
+		$coeffsData = setArrKeyFromField(arrTakeItem($data, 'data'), 'static_id');
+		$statics = array_keys($coeffsData);
+		
+		$this->db->select('r.static_id, ru.rate, ru.user_id');
+		$this->db->join('raids r', 'r.id = ru.raid_id');
+		$this->db->where(['r.period_id' => $periodId, 'r.is_key' => 0]);
+		$this->db->where_in('r.static_id', $statics);
+		if (!$result = $this->_result('raid_users ru')) return false;
+		
+		$data = []; $usersIds = [];
+		foreach ($result as $item) {
+			if (!isset($data[$item['static_id']][$item['user_id']])) $data[$item['static_id']][$item['user_id']] = 0;
+			$data[$item['static_id']][$item['user_id']] += $item['rate'];
+			$usersIds[] = $item['user_id'];
+		}
+		
+		$this->load->model('users_model');
+		$usersData = $this->users_model->getUsers(['where' => ['us.main' => 1], 'where_in' => ['field' => 'u.id', 'values' => $usersIds]]);
+		$usersData = setArrKeyFromField($usersData, 'id', 'nickname, avatar, payment');
+		
+		$insData = [];
+		foreach ($data as $staticId => $users) {
+			foreach ($users as $userId => $coeffSumm) {
+				if ($coeffSumm <= 0) continue;
+				$insData[] = [
+					'user_id'	=> $userId,
+					'nickname' 	=> $usersData[$userId]['nickname'],
+					'avatar' 	=> $usersData[$userId]['avatar'],
+					'payment' 	=> $usersData[$userId]['payment'],
+					'static' 	=> $staticId,
+					'order' 	=> $order,
+					'summ' 		=> $coeffSumm > $coeffsData[$staticId]['coeff'] ? $coeffsData[$staticId]['summ'] : round(($coeffsData[$staticId]['summ'] / $coeffsData[$staticId]['coeff']) * $coeffSumm),
+					'comment' 	=> $comment,
+					'date'		=> time()
+				];
+			}	
+		}
+		
+		return $insData;
+	}
 	
 	
 	

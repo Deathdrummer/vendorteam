@@ -74,7 +74,7 @@ class Offtime extends MY_Controller {
 		
 		$data['offtime_dates'] = getDatesRange(($startDatePoint - 604800), 28, 'day'); // 604800 показывать предыдущую неделю
 		$data['disabled'] = $this->offtime_model->getOfftimeDisabled();
-		$data['user_id'] = $this->session->userdata('id');
+		$data['user_id'] = get_cookie('id'); //$this->session->userdata('id');
 		$data['statics_names'] = $this->admin_model->getStatics(true);
 		$data['static'] = $static;
 		$data['location'] = $this->admin_model->getStaticLocation($static);

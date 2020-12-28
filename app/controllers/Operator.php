@@ -9,14 +9,14 @@ class Operator extends MY_Controller {
 	public function __construct() {
 		parent::__construct();
 		$this->load->model(['admin_model', 'operator_model', 'reports_model']);
-		$this->operatorId = $this->session->userdata('operator_id');
+		$this->operatorId = get_cookie('operator_id'); //$this->session->userdata('operator_id');
 		$this->operatorData = $this->operator_model->getOperatorData();
 	}
 	
 	
 	
 	public function index() {
-		if ($this->session->userdata('operator_id') == false) {
+		if (get_cookie('operator_id')/*$this->session->userdata('operator_id')*/ == false) {
 			$this->auth();
 		} else {
 			if (!$this->operatorData) $this->logout();
@@ -46,7 +46,7 @@ class Operator extends MY_Controller {
 			$decodePass = $this->encryption->decrypt($operatorAuthData['password']);
 			
 			if ($decodePass == $this->input->post('password')) {
-				$this->session->set_userdata('operator_id', $operatorAuthData['id']);
+				set_cookie('operator_id', $operatorAuthData['id'], 31536000); //$this->session->set_userdata('operator_id', $operatorAuthData['id']);
 				redirect('operator');
 			} else {
 				$this->twig->display('views/operator/auth', ['auth' => 1, 'auth_error' => 1]);
@@ -65,7 +65,7 @@ class Operator extends MY_Controller {
 	 * @return 
 	 */
 	public function logout() {
-		$this->session->unset_userdata('operator_id');
+		delete_cookie('operator_id'); //$this->session->unset_userdata('operator_id');
 		redirect('operator');
 	}
 	

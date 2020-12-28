@@ -3,10 +3,10 @@ const 	domain			= 'vendorteam.loc', // прописать домен
 
 		{src, dest, parallel, series, watch} = require('gulp'),
 		browserSync    	= require('browser-sync').create(),
-		babel			= require('gulp-babel');
+		babel			= require('gulp-babel'),
+		order			= require('gulp-order'),
 		gulpUtil      	= require('gulp-util'),
 		sass           	= require('gulp-sass'),
-		sass.compiler 	= require('node-sass'),
 		connectPhp     	= require('gulp-connect-php'),
 		concat         	= require('gulp-concat'),
 		uglify         	= require('gulp-uglify'),
@@ -26,6 +26,8 @@ const 	domain			= 'vendorteam.loc', // прописать домен
 		args        	= require('yargs').argv, // gulp t(название функции) --env(переменная) [аргументы]
 		dirTree 		= require("directory-tree"),
 		publicDirs		= dirTree('../public/views/').children; // директории public
+		
+		sass.compiler 	= require('node-sass');
 		
 
 
@@ -54,7 +56,7 @@ function startWatch() {
 		var jsDirs = [];
 		watchDirs.forEach(function(dir) {
 			var dirName = dir.name || dir;
-			watch('../public/js/'+dirName+'.js').on('change', browserSync.reload);;	
+			watch('../public/js/'+dirName+'.js').on('change', browserSync.reload);
 			watch(['../public/views/'+dirName+'/**/*.tpl']).on('change', browserSync.reload);
 		});
 	} else {
@@ -74,7 +76,7 @@ async function build() {
 	await src(['../index.php', '../.htaccess']).pipe(dest('../'+prodDir));
 	await src('../public/css/plugins.min.css').pipe(cleanCSS()).pipe(dest('../'+prodDir+'/public/css'));
 	await src('../public/js/plugins.min.js')
-	.pipe(babel())
+	//.pipe(babel())
 	.pipe(uglify().on('error', function(err) {
 		gulpUtil.log(gulpUtil.colors.red('[Error]'), err.toString());
 		this.emit('end');
@@ -82,7 +84,7 @@ async function build() {
 	.pipe(dest('../'+prodDir+'/public/js'));
 	
 	await src(['../public/js/assets/common.js', '../public/js/assets/functions.js'])
-	.pipe(babel())
+	//.pipe(babel())
 	.pipe(uglify().on('error', function(err) {
 		gulpUtil.log(gulpUtil.colors.red('[Error]'), err.toString());
 		this.emit('end');
@@ -101,7 +103,7 @@ async function build() {
 		src(['../public/views/'+dirName+'/**/*.tpl']).pipe(dest('../'+prodDir+'/public/views/'+dirName));
 		src('../public/css/'+dirName+'.min.css').pipe(cleanCSS()).pipe(dest('../'+prodDir+'/public/css/'));
 		src('../public/js/'+dirName+'.js')
-		.pipe(babel())
+		//.pipe(babel())
 		.pipe(uglify().on('error', function(err) {
 			gulpUtil.log(gulpUtil.colors.red('[Error]'), err.toString());
 			this.emit('end');
@@ -150,17 +152,20 @@ function pluginsCss() {
 	.pipe(browserSync.stream());
 }
 
+
+
 // JS Скрипты: js
 function pluginsJs() {
-	return src([
-		'../public/js/assets/plugins/jquery/jquery-3.2.1.min.js',
-		'../public/js/assets/plugins/jquery/jquery.migrate.js',
-		'../public/js/assets/plugins/jquery/ui/**/*.js',
-		'../public/js/assets/plugins/jquery/**/*.js',
-		'../public/js/assets/plugins/**/*.js'
-	])
+	return src('../public/js/assets/plugins/**/*.js')
+	.pipe(order([
+		'jquery/jquery-3.2.1.min.js',
+		'jquery/jquery.migrate.js',
+		'jquery/ui/**/*.js',
+		'jquery/**/*.js',
+		'**/*.js'
+	]))
 	.pipe(concat('plugins.min.js'))
-	.pipe(babel({compact: false}))
+	//.pipe(babel({compact: false}))
 	.pipe(dest('../public/js'))
 	.pipe(browserSync.stream());
 }

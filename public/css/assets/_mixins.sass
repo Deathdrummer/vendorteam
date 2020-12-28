@@ -155,8 +155,11 @@
 	
 	
 	&::-webkit-resizer
-		background-color: #000
-		border-radius: w0x
+		display: none
+		width: 0px
+		height: 0px
+		background: transparent
+		border-radius: $borderRadius
 
 
 
@@ -243,22 +246,27 @@
 			
 		
 	input
+		background: none
+		background-color: #fefefe
+		border: none
+		font-size: 14px
 		appearance: none
 		border-radius: 2px
-		border: 1px solid #a7acaf
-		background: #fff
-		height: 30px
+		height: 34px
 		padding-right: 25px
 		padding-left: 4px
 		transition: border-color 0.16s
 		color: #666
 		width: 100%
-		min-width: 160px
 		cursor: pointer
 		
-		
+	
 	&.focused
-		border-color: darken(#a7acaf, 30%) !important
+		border-color: darken(#d0d6da, 8%)
+		box-shadow: 0 4px 10px -1px rgba(68, 86, 101, 0.4)
+		
+		label
+			background-color: darken(#82909e, 8%)
 		
 		&::after
 			color: darken(#c4c8cc, 30%) !important
@@ -318,6 +326,15 @@
 		max-height: 100vh
 		font-size: 14px
 		padding: 0 4px
+		
+		&[resizey]
+			resize: vertical
+		
+		&[resizex]
+			resize: horizontal
+		
+		&[noresize]
+			resize: none
 
 
 
@@ -703,6 +720,7 @@
 	border-radius: 3px
 	text-transform: uppercase
 	transition: background-color 0.16s
+	
 	@if $styles
 		@each $param, $val in $styles
 			#{$param}: $val
@@ -805,6 +823,17 @@
 		&:active
 			background-color: darken(#466580, 20%)
 			transition: background-color 0s
+	
+	&.pay
+		background-color: #65a25b
+		
+		&:hover
+			background-color: darken(#65a25b, 7%)
+		
+		&:active
+			background-color: darken(#65a25b, 20%)
+			transition: background-color 0s
+	
 	
 	
 	&.done

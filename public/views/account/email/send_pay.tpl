@@ -67,7 +67,7 @@
 	</style>
 	
 	
-	<title>WOW | Новая заявка</title>
+	<title>Vendorteam | Новая заявка</title>
 </head>
 <body>
 	

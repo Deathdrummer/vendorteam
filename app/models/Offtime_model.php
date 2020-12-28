@@ -1,14 +1,14 @@
 <? defined('BASEPATH') OR exit('Доступ к скрипту запрещен');
 
-class Offtime_model extends CI_Model {
+class Offtime_model extends My_Model {
 	
 	private $userData = false;
 	
 	public function __construct() {
 		parent::__construct();
-		if ($this->session->has_userdata('id')) {
+		if (get_cookie('id')/*$this->session->has_userdata('id')*/) {
 			$this->load->model('account_model');
-			$this->userData = $this->account_model->getUserData($this->session->userdata('id'));
+			$this->userData = $this->account_model->getUserData(get_cookie('id')/*$this->session->userdata('id')*/);
 		}
 	}
 	
@@ -310,7 +310,7 @@ class Offtime_model extends CI_Model {
 		$periodEnd = strtotime(date('Y-m-d', strtotime('first day of next month')));
 		
 		$this->db->where([
-			'user_id' 	=> $this->session->userdata('id'),
+			'user_id' 	=> get_cookie('id'), //$this->session->userdata('id'),
 			'date >=' 	=> $periodStart,
 			'date <' 	=> $periodEnd
 		]);

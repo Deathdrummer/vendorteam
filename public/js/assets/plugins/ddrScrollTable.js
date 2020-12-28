@@ -24,7 +24,11 @@ $.fn.ddrScrollTable = function(scrollStep, scrollSpeed, enableMouseScroll, fixEl
 	
 	$(block).scroll(function(e) {
 		var scrTop = $(this).scrollTop();
-		$(fixElem).css('transform', 'translateY('+scrTop+'px)');
+		$(fixElem).css({
+			'transform': 'translateY('+scrTop+'px)',
+			'position': 'relative',
+			'z-index': 99999
+		});
 	});
 	
 	$(block).mousedown(function(e) {

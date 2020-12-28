@@ -49,21 +49,22 @@
 													<tr>
 														<td></td>
 														{% if tabid == 'verifyUsers' or tabid == 'newUsers' %}<td class="nowidth" title="Цвет">Цвет</td>{% endif %}
-														<td{% if sort_field == 'u.nickname' %} class="active"{% endif %}>Никнейм <i class="fa fa-sort" userssortfield="u.nickname" sortorder="{{sort_order}}"></i></td>
+														<td class="w150px{% if sort_field == 'u.nickname' %} active{% endif %}">Никнейм <i class="fa fa-sort" userssortfield="u.nickname" sortorder="{{sort_order}}"></i></td>
 														<td class="nowrap{% if sort_field == 'us.lider' %} active{% endif %}">Лидер <i class="fa fa-sort" userssortfield="us.lider" sortorder="{{sort_order}}"></i></td>
 														<td class="nowrap{% if sort_field == 'u.agreement' %} active{% endif %}" title="Соглашение">Согл. <i class="fa fa-sort" userssortfield="u.agreement" sortorder="{{sort_order}}"></i></td>
-														<td{% if sort_field == 'u.rank' %} class="active"{% endif %}>Звание <i class="fa fa-sort" userssortfield="u.rank" sortorder="{{sort_order}}"></i></td>
-														<td{% if sort_field == 'u.email' %} class="active"{% endif %}>E-mail <i class="fa fa-sort" userssortfield="u.email" sortorder="{{sort_order}}"></i></td>
-														<td{% if sort_field == 'u.reg_date' %} class="active"{% endif %}>Дата регистрации <i class="fa fa-sort" userssortfield="u.reg_date" sortorder="{{sort_order}}"></i></td>
-														<td>Стаж</td>
-														<td>Средство платежа</td>
+														<td class="w140px{% if sort_field == 'u.rank' %} active{% endif %}">Звание <i class="fa fa-sort" userssortfield="u.rank" sortorder="{{sort_order}}"></i></td>
+														<td class="w150px{% if sort_field == 'u.email' %} active{% endif %}">E-mail <i class="fa fa-sort" userssortfield="u.email" sortorder="{{sort_order}}"></i></td>
+														<td class="w156px{% if sort_field == 'u.reg_date' %} active{% endif %}">Дата регистрации <i class="fa fa-sort" userssortfield="u.reg_date" sortorder="{{sort_order}}"></i></td>
+														<td class="nowidth">Стаж дн.</td>
+														<td class="w150px">Средство платежа</td>
 														<td{% if sort_field == 'u.deposit' %} class="active"{% endif %}>Резерв <i class="fa fa-sort" userssortfield="u.deposit" sortorder="{{sort_order}}"></i></td>
 														<td class="nowrap" title="Процент отчисления в депозит">Пр.от.</td>
 														<!-- <td>Ранг</td> -->
-														<td{% if sort_field == 'u.role' %} class="active"{% endif %}>Роль <i class="fa fa-sort" userssortfield="u.role" sortorder="{{sort_order}}"></i></td>
-														<td>Доступ</td>
-														<td>Статики</td>
-														{% if tabid == 'verifyUsers' %}<td title="Персонажи">Персон.</td>{% endif %}
+														<td class="w100px{% if sort_field == 'u.role' %} active{% endif %}">Роль <i class="fa fa-sort" userssortfield="u.role" sortorder="{{sort_order}}"></i></td>
+														<td class="w100px">Доступ</td>
+														<td class="nowidth">Статики</td>
+														<td class="nowidth">Классы</td>
+														{% if tabid == 'verifyUsers' %}<td class="nowidth" title="Персонажи">Персон.</td>{% endif %}
 														{% if tabid == 'deletedUsers' %}<td class="nowidth" title="Восстановить участника">Восст.</td>{% endif %}
 														<td class="nowidth" {% if tabid == 'newUsers' %}colspan="2{% endif %}">Опции</td>
 													</tr>
@@ -119,11 +120,11 @@
 																<div class="number short">
 																	<input type="number" showrows class="user_stage" value="{{user.stage|default(0)}}">
 																</div>
-																<span class="ml-1">дн.</span>
+																<span class="ml-1"></span>
 															</td>
 															<td class="nowidth">
 																<div class="text">
-																	<input type="text" class="user_payment wpx70" value="{{user.payment}}">
+																	<input type="text" class="user_payment" value="{{user.payment}}">
 																</div>
 															</td>
 															<td class="nowidth">
@@ -136,19 +137,6 @@
 																	<input type="number" showrows class="user_deposit_percent" value="{{user.deposit_percent|default(0)}}">
 																</div>
 															</td>
-															
-															{#<td class="nowidth">
-																<div class="select">
-																	<select class="user_access_level">
-																		<option value="" selected="" disabled="">Задать</option>
-																		{% for id, level in access_levels %}
-																			<option value="{{id}}">{{level.name}}</option>
-																		{% endfor %}
-																	</select>
-																	<div class="select__caret"></div>
-																</div>
-															</td>
-															<td>{{user.access_level_name|default('не задан')}}</td>#}
 															<td class="nowidth">
 																{% if roles|length > 0 %}
 																	<div class="select wpx40">
@@ -181,29 +169,35 @@
 															</td>
 															<td class="nowidth center">
 																<input type="hidden" class="user_statics" value="{{user.static}}">
-																<div class="buttons notop">
+																<div class="buttons inline notop">
 																	<button class="alt" setuserstatics="{{user.id}}" title="Задать статики"><i class="fa fa-th-list"></i></button>
+																</div>
+															</td>
+															<td class="nowidth center">
+																<input type="hidden" class="user_classes" value="{{user.class}}">
+																<div class="buttons inline notop">
+																	<button class="alt" setuserclasses="{{user.id}}" title="Задать классы"><i class="fa fa-th-list"></i></button>
 																</div>
 															</td>
 															{% if tabid == 'newUsers' %}
 																<td class="nowidth center">
-																	<div class="buttons notop">
+																	<div class="buttons inline notop">
 																		<button class="large update" setuserdata="{{user.id}}" title="Подтвердить"><i class="fa fa-check"></i></button>
 																	</div>
 																</td>
 																<td class="nowidth center">
-																	<div class="buttons notop">
+																	<div class="buttons inline notop">
 																		<button class="remove large" deleteuser="{{user.id}}"{% if tabid == 'deletedUsers' %} disabled{% endif %} title="Удалить"><i class="fa fa-trash"></i></button>
 																	</div>
 																</td>
 															{% elseif tabid == 'verifyUsers' %}
 																<td class="nowidth center">
-																	<div class="buttons notop">
+																	<div class="buttons inline notop">
 																		<button class="alt" setuserpersonages="{{user.id}}" title="Утвердить персонажей"><i class="fa fa-th-list"></i></button>
 																	</div>
 																</td>
 																<td class="nowidth center">
-																	<div class="buttons notop">
+																	<div class="buttons inline notop">
 																		<button class="remove large" deleteuser="{{user.id}}"{% if tabid == 'deletedUsers' %} disabled{% endif %} title="Удалить"><i class="fa fa-trash"></i></button>
 																	</div>
 																</td>
@@ -215,7 +209,7 @@
 																	</div>
 																</td>
 																<td class="nowidth center">
-																	<div class="buttons notop">
+																	<div class="buttons inline notop">
 																		<button class="large" setuserdata="{{user.id}}" title="Обновить"><i class="fa fa-repeat"></i></button>
 																	</div>
 																</td>
@@ -245,70 +239,106 @@
 
 				<h4 class="mb-2">Общий Резерв: <strong>{{deposit['global']|number_format(2, '.', ' ')}}</strong> руб.</h4>
 				
-				<div style="width: 700px;">
-					<div class="d-flex align-items-center justify-content-between">
-						<h4>Резерв по статикам:</h4>
-						<div class="buttons mb10px">
-							<button id="depositUsersList" disabled>Сохранить</button>
+				<div class="row">
+					<div class="col-6">
+						<div class="d-flex align-items-center justify-content-between">
+							<h4>Резерв по статикам:</h4>
+							<div class="buttons mb10px">
+								<button id="depositUsersList" disabled>Сохранить</button>
+							</div>
 						</div>
-					</div>
-					
-					
-					
-					<div id="depositTables">
-						<table>
-							<thead class="main">
-								<tr class="h40px">
-									<td colspan="2"><h4>Статик</h4></td>
-									<td class="w250px">Средство платежа</td>
-									<td class="w150px"><h4>Резерв</h4></td>
-								</tr>
-							</thead>
-						</table>
-						{% for stId, deposit in deposit['statics'] %}
+						
+						
+						
+						<div id="depositTables">
 							<table>
-								<thead class="hover">
-									<tr class="h50px">
-										<td colspan="2"><h4>{% if stId == 0 %}Статик не задан{% else %}{{statics[stId]['name']|default('Статик удален')}}{% endif %}</h4></td>
-										<td class="w250px"></td>
-										<td class="w150px"><h4>{{deposit|number_format(2, '.', ' ')}} руб.</h4></td>
+								<thead class="main">
+									<tr class="h40px">
+										<td colspan="2"><h4>Статик</h4></td>
+										<td class="w250px">Средство платежа</td>
+										<td class="w150px"><h4>Резерв</h4></td>
 									</tr>
 								</thead>
-								<tbody hidden deposituserslist>
-									{% for user in deposit_users[stId] %}
-										<tr>
-											<td class="nowidth nopadding noheight">
-												{% if user.avatar %}
-													<div class="avatar mini" style="background-image: url('{{base_url('public/images/users/mini/'~user.avatar)}}')" title="{{user.nickname}}"></div>
-												{% elseif user.deleted %}
-													<div class="avatar mini" style="background-image: url({{base_url('public/images/deleted_mini.jpg')}})" title="Нет аватарки"></div>
-												{% else %}
-													<div class="avatar mini" style="background-image: url({{base_url('public/images/user_mini.jpg')}})" title="Нет аватарки"></div>
-												{% endif %}
-											</td>
-											<td class="noheight">{{user.nickname|default('Не задан')}}</td>
-											<td>
-												<div class="text">
-													<input type="text" class="deposit_user_payment" value="{{user.payment}}">
-												</div>
-											</td>
-											<td class="noheight">
-												<div class="number">
-													<input type="hidden" class="deposit_user_id" value="{{user.id}}">
-													<input type="number" class="deposit_user_deposit" value="{{user.deposit|default(0)}}">
-												</div>
-												<span>руб.</span>
-											</td>
-										</tr>
-									{% endfor %}
-								</tbody>
 							</table>
-						{% endfor %}
+							{% for stId, deposit in deposit['statics'] %}
+								<table>
+									<thead class="hover">
+										<tr class="h50px">
+											<td colspan="2"><h4>{% if stId == 0 %}Статик не задан{% else %}{{statics[stId]['name']|default('Статик удален')}}{% endif %}</h4></td>
+											<td class="w250px"></td>
+											<td class="w150px"><h4>{{deposit|number_format(2, '.', ' ')}} руб.</h4></td>
+										</tr>
+									</thead>
+									<tbody hidden deposituserslist>
+										{% for user in deposit_users[stId] %}
+											<tr>
+												<td class="nowidth nopadding noheight">
+													{% if user.avatar %}
+														<div class="avatar mini" style="background-image: url('{{base_url('public/images/users/mini/'~user.avatar)}}')" title="{{user.nickname}}"></div>
+													{% elseif user.deleted %}
+														<div class="avatar mini" style="background-image: url({{base_url('public/images/deleted_mini.jpg')}})" title="Нет аватарки"></div>
+													{% else %}
+														<div class="avatar mini" style="background-image: url({{base_url('public/images/user_mini.jpg')}})" title="Нет аватарки"></div>
+													{% endif %}
+												</td>
+												<td class="noheight">{{user.nickname|default('Не задан')}}</td>
+												<td>
+													<div class="text">
+														<input type="text" class="deposit_user_payment" value="{{user.payment}}">
+													</div>
+												</td>
+												<td class="noheight">
+													<div class="number">
+														<input type="hidden" class="deposit_user_id" value="{{user.id}}">
+														<input type="number" class="deposit_user_deposit" originval="{{user.deposit|default(0)}}" value="{{user.deposit|default(0)}}">
+													</div>
+													<span>руб.</span>
+												</td>
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							{% endfor %}
+						</div>
 					</div>
-					
+					<div class="col-6">
+						<div class="d-flex align-items-center justify-content-end h57px">
+							<h4>Выплаты из общего резерва:</h4>
+						</div>
+						
+						<table id="globalDeposit">
+							<thead class="main">
+								<tr class="h40px">
+									<td class="nowidth"></td>
+									<td class="w180px">Никнейм</td>
+									<td>Причина</td>
+									<td class="w100px">Сумма</td>
+									<td class="w130px">Дата</td>
+									<td class="w50px">Статус</td>
+								</tr>
+							</thead>
+							<tbody>
+								{% if deposit_history %}
+									{% for item in deposit_history %}
+										<tr>
+											<td class="nopadding"><div class="avatar" style="background-image: url('{{base_url('public/images/users/mini/'~item.avatar)}}')"></div></td>
+											<td>{{item.nickname}}</td>
+											<td>{{item.reason}}</td>
+											<td>{{item.summ|number_format(2, '.', ' ')}} р.</td>
+											<td>{{item.date|d}}</td>
+											<td>{{item.stat}}</td>
+										</tr>	
+									{% endfor %}
+								{% else %}
+									<tr>
+										<td colspan="6"><p class="empty center">нет данных</p></td>
+									</tr>	
+								{% endif %}
+							</tbody>
+						</table>
+					</div>
 				</div>
 				
-					
 				
 					
 				
@@ -467,8 +497,6 @@ $(document).ready(function() {
 			}
 		});
 	});
-	
-	
 	
 	
 	
@@ -677,6 +705,96 @@ $(document).ready(function() {
 			});
 		});
 	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//-------------------------------------------------------------- Задать классы пользователя
+	$('#users').on(tapEvent, '[setuserclasses]', function() {
+		$(this).removeClass('error');
+		var thisUserRow = $(this).closest('tr'),
+			thisUserId = $(this).attr('setuserclasses');
+			thisInput = $(this).closest('td').find('input.user_statics'),
+			thisUserName = $(thisUserRow).find('.user_nickname').val();
+			
+		popUp({
+			title: '<small>Классы: <strong>'+thisUserName+'</strong></small>',
+		    width: 500,
+		    //buttons: [{id: 'buildUserStatics', title: 'Применить'}],
+		    //closeButton: 'Закрыть',
+		}, function(userClassesWin) {
+			userClassesWin.wait();
+			newSet = thisInput.val() ? JSON.parse(thisInput.val()) : false;
+			
+			$.post('/admin/get_users_classes', {user_id: thisUserId, newset: newSet}, function(html) {
+				if (html) {
+					userClassesWin.setData(html);
+				} else {
+					userClassesWin.setData('<p class="empty center">Нет данных</p>');
+				}
+				userClassesWin.wait(false);
+				
+				$('#userClasses').on('change', 'input[type="checkbox"]', function() {
+					var thisStaticId = $(this).attr('classpart') || $(this).attr('classmentor'),
+						thisItem = $(this)[0].hasAttribute('classpart') ? 'part' : 'mentor',
+						classPart = $('[classpart="'+thisStaticId+'"]'),
+						classMentor = $('[classmentor="'+thisStaticId+'"]');
+					
+					if (thisItem == 'part' && $(classPart).is(':checked') == false) {
+						$(classMentor).removeAttrib('checked');
+					}
+					
+					if (thisItem == 'mentor' && $(classMentor).is(':checked')) {
+						$(classPart).setAttrib('checked');
+					}
+					
+					userClassesWin.wait();
+					var classPartData = {},
+						classMentorData = {};
+					$('[usersclasseschecks]').each(function() {
+						var classPart = $(this).find('[classpart]'),
+							classMentor = $(this).find('[classmentor]'),
+							classPartId = $(classPart).attr('classpart'),
+							classMentorId = $(classMentor).attr('classmentor'),
+							classPartChecked = $(classPart).is(':checked') ? 1 : 0,
+							classMentorChecked = $(classMentor).is(':checked') ? 1 : 0;
+						
+						classPartData[classPartId] = classPartChecked;
+						classMentorData[classMentorId] = classMentorChecked;
+					});
+					
+					
+					$.post('/admin/set_user_classes', {
+						user_id: thisUserId,
+						user_classes: {part: classPartData, mentor: classMentorData}
+					}, function(stat) {
+						if (stat) $(thisInput).val(JSON.stringify({part: classPartData, mentor: classMentorData}));
+						else $(thisInput).val('');
+						userClassesWin.wait(false);
+						//userStaticsWin.close();
+					}, 'json').fail(function(e) {
+						userClassesWin.wait(false);
+						notify('Системная ошибка!', 'error');
+						showError(e);
+					});
+				});
+				
+			}, 'html').fail(function(e) {
+				notify('Системная ошибка!', 'error');
+				showError(e);
+			});
+		});
+	});
+	
+	
+	
 	
 	
 	
@@ -957,11 +1075,13 @@ $(document).ready(function() {
 			$('[deposituserslist]').find('tr.changed').each(function() {
 				var thisUserId = parseFloat($(this).find('.deposit_user_id').val()),
 					thisPayment = $(this).find('.deposit_user_payment').val(),
-					thisDeposit = parseFloat($(this).find('.deposit_user_deposit').val());
+					thisDeposit = parseFloat($(this).find('.deposit_user_deposit').val()),
+					thisDepositOrigin = parseFloat($(this).find('[originval]').attr('originval'));
 				depositUpdateData.push({
 					id: thisUserId,
 					payment: thisPayment,
-					deposit: thisDeposit
+					deposit: thisDeposit,
+					deposit_origin: thisDepositOrigin
 				});
 			});
 			

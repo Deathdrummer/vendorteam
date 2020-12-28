@@ -48,6 +48,7 @@
 								<div class="col-auto">
 									<strong>Ссылки</strong>
 									<div><label for="links{{id}}_1"><input type="checkbox"{% if accounts_access[id]['access']['links']['paydata'] %} checked{% endif %} name="accounts_access[{{id}}][access][links][paydata]" value="1" id="links{{id}}_1"> Платежные данные</label></div>
+									<div><label for="links{{id}}_2"><input type="checkbox"{% if accounts_access[id]['access']['links']['mentors'] %} checked{% endif %} name="accounts_access[{{id}}][access][links][mentors]" value="1" id="links{{id}}_2"> Наставники</label></div>
 								</div>
 								
 								<div class="col-auto ml-auto">
