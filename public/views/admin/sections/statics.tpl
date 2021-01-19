@@ -32,6 +32,14 @@
 							<div class="checkbox"><input type="checkbox"{% if statics[id]['stopstage'] %} checked{% endif %} name="statics[{{id}}][stopstage]" value="1"></div>
 							<span class="w3"></span>
 							
+							<strong class="ml4">Группа:</strong>
+							<div class="select">
+								<select name="statics[{{id}}][group]">
+									<option value="1"{% if statics[id]['group'] == 1 %} selected{% endif %}>Рейды</option>
+									<option value="2"{% if statics[id]['group'] == 2 %} selected{% endif %}>Группа</option>
+								</select>
+							</div>
+							
 							{% include form~'field.tpl' with {'label': 'Процент начисления в депозит', 'name': 'statics|'~id~'|deposit_percent', 'postfix': 0, 'class': 'w6', 'inline': 1} %}
 							
 							<div class="buttons right ml-auto">

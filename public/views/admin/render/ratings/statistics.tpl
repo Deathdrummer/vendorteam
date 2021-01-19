@@ -40,7 +40,7 @@
 						<tr class="h45px">
 							{% for period in periods %}
 								<td class="text-center">
-									{% if period.id in statistics[stId] %}<i class="fa fa-check"></i></td>{% else %}-{% endif %}
+									{% if period.id in statistics[stId] %}<div class="buttons inline center"><button class="button small" showkoeffsreport="{{stId}}" title="Посмотреть отчет"><i class="fa fa-check"></i></button></div>{% else %}-{% endif %}
 								</td>
 							{% endfor %}
 							<td></td>

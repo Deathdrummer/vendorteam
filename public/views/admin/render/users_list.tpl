@@ -58,8 +58,20 @@
 						<input type="text" id="paymentRequestOrder" autocomplete="off"/>
 					</div>
 					<div class="payment_request_form__item">
-						<label for="paymentRequestSumm">Сумма</label>
-						<input type="text" class="number" value="0" id="paymentRequestSumm" autocomplete="off"/> <span>руб.</span>
+						<div class="row align-items-end">
+							<div class="col-auto">
+								<label for="paymentRequestSumm">Сумма</label>
+								<input type="text" class="number" value="0" id="paymentRequestSumm" autocomplete="off"/> <span>руб.</span>
+							</div>
+							<div class="col-auto">
+								<label>Удержать в депозит</label>
+								<div class="checkblock">
+									<input type="checkbox" id="paymentRequestToDeposit">
+									<label for="paymentRequestToDeposit"></label>
+								</div>
+							</div>
+						</div>
+								
 					</div>
 					<div class="payment_request_form__item">
 						<label for="paymentRequestComment">Комментарий</label>

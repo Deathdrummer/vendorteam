@@ -22,6 +22,7 @@ class Users_model extends MY_Model {
 		$like = isset($params['like']) ? $params['like'] : false;
 		$orderField = isset($params['field']) ? $params['field'] : false;
 		$orderType = isset($params['order']) ? $params['order'] : false;
+		$returnFields = isset($params['fields']) ? $params['fields'] : false;
 		
 		$this->db->select('u.*, us.lider, us.static_id AS static');
 		$this->db->join('users_statics us', 'us.user_id = u.id', 'LEFT OUTER');
@@ -37,7 +38,9 @@ class Users_model extends MY_Model {
 		
 		$query = $this->db->get('users u');
 		if (!$usersData = $query->result_array()) return false;
-			
+		
+		if ($returnFields) $usersData = setArrKeyFromField($usersData, false, $returnFields);
+		
 		return $usersData ?: false;
 	}
 	
@@ -538,6 +541,34 @@ class Users_model extends MY_Model {
 	
 	
 	
+	
+	
+	
+	/**
+	 * Задать / обновить депозит участников
+	 * @param 
+	 * @return 
+	*/
+	public function setUsersDeposit($data = false) {
+		if (!$data) return false;
+		
+		$usersIds = array_keys($data);
+		
+		$this->db->where_in('id', $usersIds);
+		$this->db->select('id, deposit');
+		if (!$tableData = $this->_result('users')) return false;
+		
+		$updateData = [];
+		foreach ($tableData as $user) {
+			$updateData[] = [
+				'id' 		=> $user['id'],
+				'deposit'	=> (float)$user['deposit'] + (float)$data[$user['id']]
+			];
+		}
+		
+		if ($this->db->update_batch('users', $updateData, 'id')) return true;
+		return false;
+	}
 	
 	
 	

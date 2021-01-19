@@ -170,6 +170,8 @@ class Ratings_model extends My_Model {
 		$stimulation = $this->stimulation->getFromPeriod($ratingPeriodId);
 		$mentors = $this->_getMentorsPeriodList($ratingPeriodId);
 		
+		
+		
 		$this->db->select('rd.*, u.nickname, u.avatar, ra.name AS role, ro.name AS rank');
 		$this->db->join('users u', 'u.id = rd.user_id', 'LEFT OUTER');
 		$this->db->join('roles ro', 'u.role = ro.id', 'LEFT OUTER');
@@ -201,8 +203,9 @@ class Ratings_model extends My_Model {
 		$this->db->select('mentor_id, COUNT(id) AS mentor');
 		$this->db->where(['period_id' => $periodId, 'done !=' => 'null']);
 		$this->db->group_by('mentor_id');
-		if (!$result = $this->_result('mentors_requests')) return false;
+		if (!$result = $this->_result('mentors_requests')) return [];
 		$data = setArrKeyFromField($result, 'mentor_id');
+		toLog($data);
 		return $data;
 	}
 	
@@ -312,8 +315,7 @@ class Ratings_model extends My_Model {
 	 * Получить список пользователей статиков, вернуть пользователей по главному статику в котором состоит участник 
 	 * @return array users[static => users]
 	*/
-	public function getUsers() {
-		
+	public function getUsers($data = false) {
 		$ratingsPeriodId = $this->getActiveRatingsPeriodId();
 		$select = '';
 		if ($ratingsPeriodId) {
@@ -327,6 +329,13 @@ class Ratings_model extends My_Model {
 		$this->db->where('u.deleted', 0);
 		$this->db->where('u.verification', 1);
 		$this->db->where('us.main', 1);
+		
+		
+		if (isset($data['search']) && $data['search']) $this->db->like('u.nickname', $data['search'], 'both');
+		
+		/*if (isset($data['offset']) && $data['offset']) $this->db->limit($limit, ($limit * $data['offset']));
+		else $this->db->limit($limit);*/
+		
 		$query = $this->db->get('users u');
 		if (!$response = $query->result_array()) return false;
 		
@@ -434,7 +443,6 @@ class Ratings_model extends My_Model {
 		
 		
 		$this->db->select('static_id, '.$this->groupConcat('period_id', 'period_id', 'periods'));
-		//$this->db->where('period_id', $ratingsPeriodId);
 		$this->db->group_by('static_id');
 		//$this->db->order_by('periods', 'DESC');
 		if (!$result = $this->_result($this->ratingsDataTable)) return false;

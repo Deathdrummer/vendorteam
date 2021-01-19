@@ -372,6 +372,7 @@ class Operator extends MY_Controller {
 	public function get_main_report($params = false) {
 		if (!$this->input->is_ajax_request() && !$params) return false;
 		$postData = $params ?: $this->input->post();
+		if ($params) $postData['variant'] = 1;
 		
 		if (isset($postData['pattern_id'])) {
 			$data = $this->operator_model->getMainReportPatterns($postData['pattern_id']);
@@ -412,10 +413,12 @@ class Operator extends MY_Controller {
 	 * @param 
 	 * @return 
 	 */
-	private function _buildMainReport($data) {
+	private function _buildMainReport($data = false) {
+		if (!$data) return false;
+		$constants = $this->constants[1];
 		return [
 			'raids'		=> $this->reports_model->getRaids($data),
-			'report'	=> $this->reports_model->buildReportPaymentsData($this->constants, $data, false)
+			'report'	=> $this->reports_model->buildReportPaymentsData($constants, $data, false)
 		];
 	}
 	

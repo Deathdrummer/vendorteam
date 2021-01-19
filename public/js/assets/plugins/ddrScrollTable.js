@@ -27,7 +27,7 @@ $.fn.ddrScrollTable = function(scrollStep, scrollSpeed, enableMouseScroll, fixEl
 		$(fixElem).css({
 			'transform': 'translateY('+scrTop+'px)',
 			'position': 'relative',
-			'z-index': 99999
+			'z-index': 999
 		});
 	});
 	

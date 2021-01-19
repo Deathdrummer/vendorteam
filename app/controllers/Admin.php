@@ -607,13 +607,21 @@ class Admin extends MY_Controller {
 	
 	
 	
-	
-	
 	public function ranks_add() {
 		if (! $this->input->is_ajax_request()) return false;
+		if (!$postData = $this->input->post('ranks')) exit('');
+		
 		$postData = array_filter($this->input->post('ranks'), function($val) {return $val['name'] != '';});
-		echo $this->admin_model->addRanks(bringTypes($postData));
+		
+		$data = [];
+		foreach ($postData as $id => $item) {
+			if ($item['name'] == '') continue;
+			$item['coefficient'] = json_encode($item['coefficient']);
+			$data[$id] = $item;
+		}
+		echo $this->admin_model->addRanks(bringTypes($data));
 	}
+	
 	
 	public function ranks_remove() {
 		if (! $this->input->is_ajax_request()) return false;
@@ -1411,27 +1419,58 @@ class Admin extends MY_Controller {
 			
 			case 'set_checkout':
 				$data = $postData['data'];
+				$toDeposit = $postData['to_deposit'];
 				$usersIds = array_column($data, 'user_id') ?: [];
 				$this->load->model('users_model');
-				$usersData = $this->users_model->getUsers(['where' => ['us.main' => 1], 'where_in' => ['field' => 'u.id', 'values' => $usersIds]]);
+				$usersData = $this->users_model->getUsers(['where' => ['us.main' => 1], 'where_in' => ['field' => 'u.id', 'values' => $usersIds], 'fields' => 'id, nickname, avatar, payment, deposit, static, lider']);
 				$usersData = setArrKeyFromField($usersData, 'id', true);
 				
+				if ($toDeposit) {
+					$staticsData = $this->admin_model->getStatics();
+					$percentToDeposit = $this->admin_model->getSettings('payment_equests_deposit_percent');
+				}
+				
 				$orders = [];
-				foreach ($data as $item) {
+				$toDepositData = [];
+				foreach ($data as $user) {
+					if ($toDeposit) {
+						$userStatic = $usersData[$user['user_id']]['static'];
+						$userLider = $usersData[$user['user_id']]['lider'];
+						$userDeposit = $usersData[$user['user_id']]['deposit'];
+						
+						
+						$limit = $userLider ? $staticsData[$userStatic]['cap_lider'] : $staticsData[$userStatic]['cap_simple']; // лимит депозита
+						$canSetToDeposit = $limit - $userDeposit > 0 ? $limit - $userDeposit : 0;
+						
+						$summToDeposit = ($user['summ'] / 100) * $percentToDeposit; // сумма в депозит
+						
+						$summToDeposit = $canSetToDeposit >= $summToDeposit ? $summToDeposit : $canSetToDeposit;
+						$summToOrder = $user['summ'] - $summToDeposit; // сумма в оплату
+						
+						$toDepositData[$user['user_id']] = $summToDeposit; 
+					} else {
+						$summToOrder = $user['summ'];
+						$summToDeposit = 0;
+					}
+						
+					
+					
 					$orders[] = [
-						'user_id'	=> $item['user_id'],
-						'nickname' 	=> $usersData[$item['user_id']]['nickname'],
-						'avatar' 	=> $usersData[$item['user_id']]['avatar'],
-						'payment' 	=> $usersData[$item['user_id']]['payment'],
-						'static' 	=> $usersData[$item['user_id']]['static'],
-						'order' 	=> $item['order'],
-						'summ' 		=> $item['summ'],
-						'comment' 	=> $item['comment'],
-						'date'		=> time()
+						'user_id'		=> $user['user_id'],
+						'nickname' 		=> $usersData[$user['user_id']]['nickname'],
+						'avatar' 		=> $usersData[$user['user_id']]['avatar'],
+						'payment' 		=> $usersData[$user['user_id']]['payment'],
+						'static' 		=> $usersData[$user['user_id']]['static'],
+						'order' 		=> $user['order'],
+						'summ' 			=> $summToOrder, // $user['summ']
+						'to_deposit'	=> $summToDeposit,
+						'comment' 		=> $user['comment'],
+						'date'			=> time()
 					];
 				}
 
 				if (!$this->reports_model->insertUsersOrders($orders)) exit('0');
+				if ($toDeposit) $this->users_model->setUsersDeposit($toDepositData);
 				echo json_encode('1');
 				break;
 			
@@ -1554,13 +1593,14 @@ class Admin extends MY_Controller {
 				break;
 			
 			case 'get_users_list': // Получить список участников для выставления данных
-				$data['users'] = $this->ratings->getUsers();
+				$data['users'] = $this->ratings->getUsers($postData);
 				$data['statics'] = $this->admin_model->getStatics(true);
 				echo $this->twig->render('views/admin/render/ratings/users_list.tpl', $data);
 				break;
 			
 			case 'history_add': // записать данные в историю
 				$history = [];
+				
 				foreach ($postData['history'] as $item) {
 					$history[] = [
 						'from'	=> $item['from'],
@@ -1577,6 +1617,7 @@ class Admin extends MY_Controller {
 			case 'get_rating_history': // Получить список истории
 				$data['history']['coeffs'] = $this->ratings->getRatingHistory($postData, 'coeffs');
 				$data['history']['others'] = $this->ratings->getRatingHistory($postData, 'others');
+				$data = [];
 				echo $this->twig->render('views/admin/render/ratings/history.tpl', $data);
 				break;
 			
@@ -1592,14 +1633,47 @@ class Admin extends MY_Controller {
 				echo '1';
 				break;
 				
+			case 'get_coeffs_info': // Получить информацию по коэффициентам
+				$this->load->model('account_model', 'account');
+				$staticId = $postData['static_id'];
+				if (!$activeRatingsPeriodsData = $this->account->getActiveRatingsPeriod(true)) exit('');
+				
+				if ($savedData = $this->account->getSavedRatingsdata($activeRatingsPeriodsData['id'], $staticId)) {
+					$data = $this->account->getPeriodsInfo($staticId, $activeRatingsPeriodsData);
+					$data['users'] = $this->account->getUsersForRating($staticId);
+					$data['visits'] = setArrKeyFromField($savedData, 'user_id', false, 'visits');
+					$data['saved'] = setArrKeyFromField($savedData, 'user_id', false, 'activity, skill');
+					
+					$data['ratings_period'] = $activeRatingsPeriodsData['id'];
+					$data['static_id'] = $staticId;
+					
+				} else {
+					$data = $this->account->getPeriodsInfo($staticId, $activeRatingsPeriodsData);
+					$data['users'] = $this->account->getUsersForRating($staticId);
+					$data['visits'] = $this->account->getUserVisitsRate(['static_id' => $staticId, 'period' => $activeRatingsPeriodsData]);
+					$data['ratings_period'] = $activeRatingsPeriodsData['id'];
+					$data['static_id'] = $staticId;
+				}
+				
+				echo $this->twig->render('views/account/render/users_for_rating.tpl', $data);
+				break;
 			
-			
+			case 'correct_coeffs_info': // Скорректировать информацию по коэффициентам
+				$this->load->model('account_model', 'account');
+				if (!$this->account->saveDataForRating($postData)) exit('0');
+				echo '1';
+				break;	
 			
 			
 			default:
 				break;
 		}
 	}
+	
+	
+	
+	
+	
 	
 	
 	
@@ -1814,9 +1888,6 @@ class Admin extends MY_Controller {
 			case 'set':
 				if (($status = $this->stimulation->set($postData)) === false) exit('0');
 				$userId = arrTakeItem($postData, 'user_id');
-				
-				toLog($postData, true);
-				
 				
 				$stat = $this->ratings->addToRatingHistory([
 					'from' 		=> 0,

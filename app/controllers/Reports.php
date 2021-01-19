@@ -2,19 +2,9 @@
 
 class Reports extends MY_Controller {
 	
-	protected $constants;
-	
 	public function __construct() {
 		parent::__construct();
 		$this->load->model(['reports_model', 'admin_model', 'account_model']);
-		
-		$constData = $this->admin_model->getSettings('constants');
-		$this->constants = [
-			'cVisits' 			=> $constData['visits'],
-			'cPersons' 			=> $constData['persons'],
-			'cEffectiveness'	=> $constData['effectiveness'],
-			'cFine' 			=> $constData['fine']
-		];
 	}
 	
 	
@@ -46,7 +36,6 @@ class Reports extends MY_Controller {
 			$data['statics'] = is_array($userData['statics']) ? array_keys($userData['statics']) : null;
 		}
 		
-		
 		$mainReportData = $this->buildMainReport($data);
 		$mainReportData['pattern_id'] = isset($postData['pattern_id']) ? $postData['pattern_id'] : null;
 		$mainReportData['to_user'] = isset($postData['to_user']) ? $userData['id'] : false;
@@ -66,10 +55,12 @@ class Reports extends MY_Controller {
 	 * @param 
 	 * @return 
 	 */
-	private function buildMainReport($data) {
+	private function buildMainReport($data = false) {
+		if (!$data) return false;
+		$constants = $this->constants[$data['variant']];
 		return [
 			'raids'		=> $this->reports_model->getRaids($data),
-			'report'	=> $this->reports_model->buildReportPaymentsData($this->constants, $data, false)
+			'report'	=> $this->reports_model->buildReportPaymentsData($constants, $data, false)
 		];
 	}
 	
@@ -102,7 +93,7 @@ class Reports extends MY_Controller {
 		if (!$this->input->is_ajax_request()) return false;
 		$postData = $this->input->post();
 		$postData['cash'] = json_decode($postData['cash'], true);
-		$this->reports_model->saveMainReportPattern($postData, $this->constants);
+		$this->reports_model->saveMainReportPattern($postData, $this->constants[$postData['variant']]);
 		echo 1;
 	}
 	
@@ -118,7 +109,7 @@ class Reports extends MY_Controller {
 	public function get_main_reports_patterns() {
 		if (!$this->input->is_ajax_request()) return false;
 		$postData = $this->input->post();
-		if (!$reportsPatterns = $this->reports_model->getMainReportPatterns(null, $postData, 2)) exit('');
+		if (!$reportsPatterns = $this->reports_model->getMainReportPatterns(null, $postData, (isset($postData['to_user']) && $postData['to_user'] ? 2 : 0))) exit('');
 		
 		if (isset($postData['to_user']) && $postData['to_user']) {
 			$toUserData = [];
@@ -247,6 +238,20 @@ class Reports extends MY_Controller {
 			'edit' 		=> $edit
 		]);
 	}
+	
+	
+	
+	/**
+	 * Получить список вариантов отчета
+	 * @param 
+	 * @return 
+	 */
+	public function get_report_variants() {
+		echo $this->twig->render('views/admin/render/reports_variants.tpl');
+	}
+	
+	
+	
 	
 	
 	
@@ -572,23 +577,49 @@ class Reports extends MY_Controller {
 		if (!$this->input->is_ajax_request()) return false;
 		$data = $this->input->post();
 		$this->load->model('users_model');
-		$usersData = $this->users_model->getUsers(['where' => ['us.main' => 1], 'where_in' => ['field' => 'u.id', 'values' => $data['users']]]);
+		$usersData = $this->users_model->getUsers(['where' => ['us.main' => 1], 'where_in' => ['field' => 'u.id', 'values' => $data['users']], 'fields' => 'id, nickname, avatar, payment, deposit, static, lider']);
 		
-		$orders = array_map(function($item) use ($data) {
-			return [
-				'user_id'	=> $item['id'],
-				'nickname' 	=> $item['nickname'],
-				'avatar' 	=> $item['avatar'],
-				'payment' 	=> $item['payment'],
-				'static' 	=> $item['static'],
-				'order' 	=> $data['order'],
-				'summ' 		=> $data['summ'],
-				'comment' 	=> $data['comment'],
-				'date'		=> time()
+		if ($data['to_deposit']) {
+			$staticsData = $this->admin_model->getStatics();
+			$percentToDeposit = $this->admin_model->getSettings('payment_equests_deposit_percent');
+		}
+		
+		$orders = [];
+		$toDepositData = [];
+		foreach ($usersData as $user) {
+			if ($data['to_deposit']) {
+				$limit = $user['lider'] ? $staticsData[$user['static']]['cap_lider'] : $staticsData[$user['static']]['cap_simple']; // лимит депозита
+				$canSetToDeposit = $limit - $user['deposit'] > 0 ? $limit - $user['deposit'] : 0;
+				
+				$summToDeposit = ($data['summ'] / 100) * $percentToDeposit; // сумма в депозит
+				
+				$summToDeposit = $canSetToDeposit >= $summToDeposit ? $summToDeposit : $canSetToDeposit;
+				$summToOrder = $data['summ'] - $summToDeposit; // сумма в оплату
+				
+				$toDepositData[$user['id']] = $summToDeposit; 
+			} else {
+				$summToOrder = $data['summ'];
+				$summToDeposit = 0;
+			}
+			
+			
+			$orders[] = [
+				'user_id'		=> $user['id'],
+				'nickname' 		=> $user['nickname'],
+				'avatar' 		=> $user['avatar'],
+				'payment' 		=> $user['payment'],
+				'static' 		=> $user['static'],
+				'order' 		=> $data['order'],
+				'summ' 			=> $summToOrder,
+				'to_deposit' 	=> $summToDeposit,
+				'comment' 		=> $data['comment'],
+				'date'			=> time()
 			];
-		}, $usersData);
+		}
+		
 		
 		if (!$this->reports_model->insertUsersOrders($orders)) exit('0');
+		if ($data['to_deposit']) $this->users_model->setUsersDeposit($toDepositData);
 		echo json_encode('1');
 	}
 	
@@ -689,6 +720,27 @@ class Reports extends MY_Controller {
 	
 	
 	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function calc_salary_orders() {
+		if (!$this->input->is_ajax_request()) return false;
+		$data = bringTypes($this->input->post());
+		if (!$orders = $this->reports_model->getSalaryOrders($data)) exit('');
+		
+		$calcData = [];
+		$statics = $this->admin_model->getStatics(true);
+		foreach ($orders as $item) {
+			$static = arrTakeItem($item, 'static');
+			$calcData[$static][] = $item;
+		}
+		
+		echo $this->twig->render('views/admin/render/salary/calc.tpl', ['data' => $calcData, 'statics' => $statics]);
+	}
+	
+	
+	
 	
 	/**
 	 * @param 
@@ -697,7 +749,7 @@ class Reports extends MY_Controller {
 	public function set_salary_orders() {
 		if (!$this->input->is_ajax_request()) return false;
 		$data = bringTypes($this->input->post());
-		$orders = $this->reports_model->getSalaryOrders($data);
+		if (!$orders = $this->reports_model->getSalaryOrders($data, true)) exit('0');
 		if (!$this->reports_model->insertUsersOrders($orders)) exit('0');
 		echo '1';
 	}

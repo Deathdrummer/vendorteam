@@ -410,6 +410,7 @@ class Admin_model extends My_Model {
 	 * @return [static id => static name] или [static id => static data]
 	 */
 	public function getStatics($nameOnly = false, $staticId = null) {
+		$this->db->order_by('id', 'ASC');
 		$query = $this->db->get('statics');
 		if (!$response = $query->result_array()) return false;
 		$data = [];
@@ -593,8 +594,20 @@ class Admin_model extends My_Model {
 		if ($sortAsPeriod) $this->db->order_by('period', 'ASC');
 		$query = $this->db->get('ranks');
 		if (!$ranksData = $query->result_array()) return [];
-		if ($setIdAsKey) $ranksData = setArrKeyFromField($ranksData, 'id');
-		return $ranksData;
+		
+		
+		if ($setIdAsKey) {
+			$data = [];
+			foreach ($ranksData as $item) {
+				$id = arrTakeItem($item, 'id');
+				$item['coefficient'] = json_decode($item['coefficient'], true);
+				$data[$id] = $item;
+			}
+		} else {
+			$data = $ranksData;
+		}
+		
+		return $data;
 	}
 	
 	

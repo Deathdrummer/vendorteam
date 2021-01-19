@@ -339,12 +339,17 @@
 					<fieldset>
 						<legend>Константы для расчетов и отчета</legend>
 						
-						
-						{% include form~'field.tpl' with {'label': 'Константа для посещения', 'name': 'constants|visits', 'class': 'w20', 'type': 'number', 'step': '0.001'} %}
-						{% include form~'field.tpl' with {'label': 'Константа для персонажей', 'name': 'constants|persons', 'class': 'w20', 'type': 'number', 'step': '0.001'} %}
-						{% include form~'field.tpl' with {'label': 'Константа для эффективности', 'name': 'constants|effectiveness', 'class': 'w20', 'type': 'number', 'step': '0.001'} %}
-						{% include form~'field.tpl' with {'label': 'Константа для штрафов', 'name': 'constants|fine', 'class': 'w20', 'type': 'number', 'step': '0.001'} %}
-						
+						<div class="row">
+							{% for variant in 1..2 %}
+								<div class="col-auto">
+									<small>Вариант {{variant}}</small>
+									{% include form~'field.tpl' with {'label': 'Посещения', 'name': 'constants|'~variant~'|visits', 'class': 'w100', 'type': 'number', 'step': '0.001'} %}
+									{% include form~'field.tpl' with {'label': 'Персонажи', 'name': 'constants|'~variant~'|persons', 'class': 'w100', 'type': 'number', 'step': '0.001'} %}
+									{% include form~'field.tpl' with {'label': 'Эффективность', 'name': 'constants|'~variant~'|effectiveness', 'class': 'w100', 'type': 'number', 'step': '0.001'} %}
+									{% include form~'field.tpl' with {'label': 'Штрафы', 'name': 'constants|'~variant~'|fine', 'class': 'w100', 'type': 'number', 'step': '0.001'} %}
+								</div>
+							{% endfor %}
+						</div>
 					</fieldset>
 				</div>
 				
@@ -362,6 +367,13 @@
 						<legend>Процент отчисления в депозит по-умолчанию</legend>
 						
 						{% include form~'field.tpl' with {'label': 'Процент', 'name': 'default_deposit_percent', 'class': 'w10', 'type': 'number', 'step': '1'} %}
+					
+					</fieldset>
+					
+					<fieldset>
+						<legend>Процент отчисления в депозит в заявках на оплату</legend>
+						
+						{% include form~'field.tpl' with {'label': 'Процент', 'name': 'payment_equests_deposit_percent', 'class': 'w10', 'type': 'number', 'step': '1'} %}
 					
 					</fieldset>
 				</div>

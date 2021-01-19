@@ -50,9 +50,20 @@
 		</table>
 	</div>
 	
-	<div class="popup__field mb-3">
-		<label><span>Номер заказа</span></label>
-		<input type="text" id="salesOrder" placeholder="Номер заказа">
+	<div class="row">
+		<div class="col-auto">
+			<div class="popup__field mb-3">
+				<label><span>Номер заказа</span></label>
+				<input type="text" id="salesOrder" placeholder="Номер заказа">
+			</div>
+		</div>
+		<div class="col-auto">
+			<span>Удержать в депозит</span>
+			<div class="checkblock">
+				<input type="checkbox" id="paymentRequestToDeposit">
+				<label for="paymentRequestToDeposit"></label>
+			</div>
+		</div>
 	</div>
 	
 	<div class="popup__textarea">

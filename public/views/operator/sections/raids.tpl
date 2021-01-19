@@ -57,7 +57,7 @@ $(document).ready(function() {
 		
 		if(stat) {
 			contentWait();
-			getAjaxHtml('operator/get_main_report', {cash: staticsCash, period_id: periodId}, function(html) {
+			getAjaxHtml('operator/get_main_report', {cash: staticsCash, period_id: periodId, variant: 1}, function(html) {
 				$('#mainReport').html(html);
 				$('[id^="tabstatic"]:first').addClass('active');
 				$('[tabid^="tabstatic"]:first').addClass('visible');
@@ -175,24 +175,25 @@ $(document).ready(function() {
 					if ($(html).find('table tbody tr').length == limit) {
 						reportPatternsWin.setButtons([{id: 'getEarlyPatterns', title: 'Показать более ранние'}]);
 					}
+					
+					$('#getEarlyPatterns').on(tapEvent, function() {
+						reportPatternsWin.wait();
+						offset += limit;
+						getAjaxHtml('operator/get_main_reports_patterns', {limit: limit, offset: offset}, function(html, stat) {
+							if (stat) $('#reportPatternsList').html(html);
+							else {
+								$('#getEarlyPatterns').prop('disabled', true);
+								notify('Это самые последние сохраненные отчеты!', 'info');
+							} 
+						}, function() {
+							reportPatternsWin.wait(false);
+						});
+					});
 				} 
 			}, function() {
 				reportPatternsWin.wait(false);
 			});	
 			
-			$('#getEarlyPatterns').on(tapEvent, function() {
-				reportPatternsWin.wait();
-				offset += limit;
-				getAjaxHtml('operator/get_main_reports_patterns', {limit: limit, offset: offset}, function(html, stat) {
-					if (stat) $('#reportPatternsList').html(html);
-					else {
-						$('#getEarlyPatterns').prop('disabled', true);
-						notify('Это самые последние сохраненные отчеты!', 'info');
-					} 
-				}, function() {
-					reportPatternsWin.wait(false);
-				});
-			});
 		});
 	});
 	

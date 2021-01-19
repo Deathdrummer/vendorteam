@@ -29,12 +29,12 @@
 							</td>
 						{% endif %}
 						
-						<td class="nowidth"><div class="buttons"><button title="Выбрать период" chooseperiod="{{period.id}}"><i class="fa fa-check"></i></button></div></td>
+						<td class="nowidth"><div class="buttons"><button title="Выбрать период" chooseperiod="{{period.id}}"><i class="fa fa-calculator"></i></button></div></td>
 						
 						{% if edit %}
 							<td class="nowidth">
 								<div class="buttons">
-									<button setperiodstarttime="{{period.id}}"><i class="fa fa-clock-o"></i></button>
+									<button setperiodstarttime="{{period.id}}" title="Задать время активации"><i class="fa fa-clock-o"></i></button>
 								</div>
 							</td>
 						{% endif %}

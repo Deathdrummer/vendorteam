@@ -50486,6 +50486,8 @@ table {
           border-color: #b9c2c8;
           -webkit-box-shadow: 0 4px 10px -1px rgba(68, 86, 101, 0.4);
                   box-shadow: 0 4px 10px -1px rgba(68, 86, 101, 0.4); }
+        table tbody tr td .select.small select {
+          height: 26px; }
         table tbody tr td .select__caret {
           position: absolute;
           height: 14px;
@@ -50642,6 +50644,8 @@ table {
                       box-shadow: 0 4px 10px -1px rgba(68, 86, 101, 0.4); }
               table tbody tr td ul li .number.focused label {
                 background-color: #6c7c8b; }
+            table tbody tr td ul li .number.small input {
+              height: 26px; }
             table tbody tr td ul li .number label {
               display: block;
               margin: 0;
@@ -51465,6 +51469,8 @@ table {
                   box-shadow: 0 4px 10px -1px rgba(68, 86, 101, 0.4); }
           .orders__item li .field.focused label {
             background-color: #6c7c8b; }
+        .orders__item li .field.small input {
+          height: 26px; }
         .orders__item li .field label {
           display: block;
           margin: 0;

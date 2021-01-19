@@ -17,7 +17,9 @@
 						<div>
 							{% include form~'field.tpl' with {'label': 'Звание', 'name': 'ranks|'~id~'|name', 'placeholder': 'Название', 'postfix': 0, 'class': 'w20', 'inline': 1} %}
 							{% include form~'field.tpl' with {'label': 'Период присвоения (дн.)', 'type': 'number', 'name': 'ranks|'~id~'|period', 'postfix': 0, 'placeholder': 'Дней', 'class': 'w12', 'inline': 1} %}
-							{% include form~'field.tpl' with {'label': 'Коэффициент для формул', 'type': 'number', 'step': 0.01, 'name': 'ranks|'~id~'|coefficient', 'postfix': 0, 'placeholder': 'число', 'class': 'w12', 'inline': 1} %}
+							{% include form~'field.tpl' with {'label': 'Сдельный отчёт', 'type': 'number', 'step': 0.01, 'name': 'ranks|'~id~'|coefficient|1', 'postfix': 0, 'placeholder': 'Коэффициент', 'class': 'w12', 'inline': 1} %}
+							{% include form~'field.tpl' with {'label': 'Премиальный отчёт', 'type': 'number', 'step': 0.01, 'name': 'ranks|'~id~'|coefficient|2', 'postfix': 0, 'placeholder': 'Коэффициент', 'class': 'w12', 'inline': 1} %}
+							
 							<div class="buttons right ml-auto">
 								<button class="remove fieldheight remove_rank" data-id="{{id}}" title="Удалить Звание"><i class="fa fa-trash"></i></button>
 							</div>

@@ -60,6 +60,7 @@ class Operator_model extends MY_Model {
 		if (!$periodId) {
 			//$this->db->where('saved !=', 1);
 			$this->db->where('archive !=', 1);
+			$this->db->order_by('id', 'DESC');
 			$query = $this->db->get('reports_periods');
 			return $query->result_array();
 		}
@@ -141,7 +142,7 @@ class Operator_model extends MY_Model {
 	 * @return массив 
 	 */
 	public function getMainReportPatterns($patternId = null, $limOffs = null, $isKey = 0) {
-		$this->db->select('rp.id, rp.name AS report_name, rp.period_id, rp.is_key, rps.static, rps.cash');
+		$this->db->select('rp.id, rp.variant, rp.name AS report_name, rp.period_id, rp.is_key, rps.static, rps.cash');
 		if ($patternId) $this->db->where('rp.id', $patternId);
 		
 		$this->db->join('reports_patterns_statics rps', 'rp.id = rps.report_pattern_id');
@@ -159,6 +160,7 @@ class Operator_model extends MY_Model {
 			$newData[$itemId]['report_name'] = $item['report_name'];
 			$newData[$itemId]['period_id'] = $item['period_id'];
 			$newData[$itemId]['is_key'] = $item['is_key'];
+			$newData[$itemId]['variant'] = $item['variant'];
 			$newData[$itemId]['cash'][$item['static']] = $item['cash'];
 		}
 		

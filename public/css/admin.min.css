@@ -360,7 +360,7 @@ ul {
   ul li {
     list-style: none; }
 
-.noselect, .main .section .tabstitles, .main fieldset .item.disabled, .main fieldset .item .file > div, table tbody > tr.deleted, table tbody > tr > td .buttons button, table tbody > tr > td .buttons .button, .popup__form_item > div__item {
+.noselect, .main .section .tabstitles, .main fieldset .item.disabled, .main fieldset .item .file > div, table tbody > tr.deleted, table tbody > tr > td .buttons button, table tbody > tr > td .buttons .button, .popup .tabstitles, .popup__form_item > div__item {
   touch-callout: none;
   -webkit-user-select: none;
      -moz-user-select: none;
@@ -48830,6 +48830,110 @@ html::-webkit-resizer {
       border-radius: 3px; }
       .main fieldset legend:empty::after {
         content: "контент"; }
+    .main fieldset .select {
+      position: relative;
+      display: inline-block;
+      border: 1px solid #d0d6da;
+      -webkit-transition: border-color 0.16s, -webkit-box-shadow 0.16s;
+      transition: border-color 0.16s, -webkit-box-shadow 0.16s;
+      -o-transition: border-color 0.16s, box-shadow 0.16s;
+      transition: border-color 0.16s, box-shadow 0.16s;
+      transition: border-color 0.16s, box-shadow 0.16s, -webkit-box-shadow 0.16s; }
+      .main fieldset .select.focused {
+        border-color: #b9c2c8;
+        -webkit-box-shadow: 0 4px 10px -1px rgba(68, 86, 101, 0.4);
+                box-shadow: 0 4px 10px -1px rgba(68, 86, 101, 0.4); }
+      .main fieldset .select.small select {
+        height: 26px; }
+      .main fieldset .select__caret {
+        position: absolute;
+        height: 14px;
+        width: 14px;
+        right: 6px;
+        top: calc(50% - 7px);
+        font-size: 14px;
+        color: #c4c8cc;
+        pointer-events: none; }
+        .main fieldset .select__caret::after {
+          position: absolute;
+          top: 0;
+          content: "▼";
+          display: inline-block;
+          line-height: 100%;
+          height: 100%;
+          -webkit-transition: color 0.16s;
+          -o-transition: color 0.16s;
+          transition: color 0.16s; }
+      .main fieldset .select select {
+        -webkit-appearance: none;
+           -moz-appearance: none;
+                appearance: none;
+        border-radius: 2px;
+        border: none;
+        background: #fff;
+        height: 34px;
+        padding-right: 25px;
+        padding-left: 4px;
+        -webkit-transition: border-color 0.16s;
+        -o-transition: border-color 0.16s;
+        transition: border-color 0.16s;
+        color: #666;
+        width: 100%;
+        cursor: pointer; }
+        .main fieldset .select select.error ~ .select__caret::after {
+          color: #f55; }
+        .main fieldset .select select:focus {
+          border-color: #5a6063; }
+          .main fieldset .select select:focus ~ .select__caret::after {
+            color: #737c84; }
+        .main fieldset .select select option {
+          background-color: #fff; }
+          .main fieldset .select select option[disabled] {
+            background: #ccc; }
+    .main fieldset .field {
+      display: inline-block;
+      vertical-align: top;
+      border: 1px solid #d0d6da;
+      width: 100%;
+      overflow: hidden;
+      border-radius: 3px;
+      -webkit-transition: border-color 0.16s, -webkit-box-shadow 0.16s;
+      transition: border-color 0.16s, -webkit-box-shadow 0.16s;
+      -o-transition: border-color 0.16s, box-shadow 0.16s;
+      transition: border-color 0.16s, box-shadow 0.16s;
+      transition: border-color 0.16s, box-shadow 0.16s, -webkit-box-shadow 0.16s; }
+      .main fieldset .field.focused {
+        border-color: #b9c2c8;
+        -webkit-box-shadow: 0 4px 10px -1px rgba(68, 86, 101, 0.4);
+                box-shadow: 0 4px 10px -1px rgba(68, 86, 101, 0.4); }
+        .main fieldset .field.focused label {
+          background-color: #6c7c8b; }
+      .main fieldset .field.small input {
+        height: 26px; }
+      .main fieldset .field label {
+        display: block;
+        margin: 0;
+        font-size: 0;
+        padding: 6px 4px;
+        background-color: #82909e;
+        -webkit-transition: background-color 0.16s;
+        -o-transition: background-color 0.16s;
+        transition: background-color 0.16s; }
+        .main fieldset .field label span {
+          display: inline-block;
+          font-size: 13px;
+          line-height: 13px;
+          color: #fff; }
+      .main fieldset .field input {
+        background: none;
+        background-color: #fefefe;
+        border: none;
+        width: 100%;
+        font-size: 14px;
+        height: 34px;
+        padding: 0 4px; }
+        .main fieldset .field input[type="color"] {
+          cursor: pointer; }
     .main fieldset .item + .item:not(.inline) {
       margin-top: 1rem; }
     .main fieldset .item.inline {
@@ -48865,6 +48969,8 @@ html::-webkit-resizer {
                 box-shadow: 0 4px 10px -1px rgba(68, 86, 101, 0.4); }
         .main fieldset .item .field.focused label {
           background-color: #6c7c8b; }
+      .main fieldset .item .field.small input {
+        height: 26px; }
       .main fieldset .item .field label {
         display: block;
         margin: 0;
@@ -49183,6 +49289,8 @@ html::-webkit-resizer {
         border-color: #b9c2c8;
         -webkit-box-shadow: 0 4px 10px -1px rgba(68, 86, 101, 0.4);
                 box-shadow: 0 4px 10px -1px rgba(68, 86, 101, 0.4); }
+      .main fieldset .item .select.small select {
+        height: 26px; }
       .main fieldset .item .select__caret {
         position: absolute;
         height: 14px;
@@ -49619,6 +49727,8 @@ table {
             border-color: #b9c2c8;
             -webkit-box-shadow: 0 4px 10px -1px rgba(68, 86, 101, 0.4);
                     box-shadow: 0 4px 10px -1px rgba(68, 86, 101, 0.4); }
+          table tbody > tr > td .select.small select {
+            height: 26px; }
           table tbody > tr > td .select__caret {
             position: absolute;
             height: 14px;
@@ -50921,6 +51031,8 @@ table {
               box-shadow: 0 4px 10px -1px rgba(68, 86, 101, 0.4); }
       .popup__field.focused label {
         background-color: #6c7c8b; }
+    .popup__field.small input {
+      height: 26px; }
     .popup__field label {
       display: block;
       margin: 0;
@@ -50998,6 +51110,8 @@ table {
       border-color: #b9c2c8;
       -webkit-box-shadow: 0 4px 10px -1px rgba(68, 86, 101, 0.4);
               box-shadow: 0 4px 10px -1px rgba(68, 86, 101, 0.4); }
+    .popup__select.small select {
+      height: 26px; }
     .popup__select__caret {
       position: absolute;
       height: 14px;
@@ -51044,75 +51158,36 @@ table {
         .popup__select select option[disabled] {
           background: #ccc; }
   .popup__checkbox {
-    display: inline-block;
-    vertical-align: top;
-    overflow: hidden;
-    border-radius: 3px; }
-    .popup__checkbox > label {
-      display: inline-block;
-      margin: 0;
-      font-size: 0;
-      padding: 6px 4px;
-      border: 1px solid #d0d6da;
-      border-radius: 3px;
-      background-color: #82909e; }
-      .popup__checkbox > label span {
-        display: inline-block;
-        font-size: 13px;
-        line-height: 13px;
-        color: #fff; }
-    .popup__checkbox_items {
-      display: block;
-      width: 100%;
-      word-spacing: 6px;
-      margin-top: 10px; }
-      .popup__checkbox_items_item {
+    display: inline-block; }
+    .popup__checkbox label {
+      position: relative;
+      margin-bottom: 0; }
+      .popup__checkbox label:hover ~ label::after {
+        color: #10262d; }
+    .popup__checkbox input[type="checkbox"], .popup__checkbox input[type="radio"] {
+      display: none; }
+      .popup__checkbox input[type="checkbox"] ~ label::after, .popup__checkbox input[type="radio"] ~ label::after {
+        content: "\f096";
+        position: relative;
+        top: 0;
+        font: normal normal normal 14px/1 FontAwesome;
+        font-size: 24px;
         display: block;
-        word-spacing: normal; }
-        .popup__checkbox_items_item_block {
-          display: -webkit-box;
-          display: -webkit-flex;
-          display: -moz-box;
-          display: -ms-flexbox;
-          display: flex; }
-          .popup__checkbox_items_item_block label {
-            margin-bottom: 0; }
-            .popup__checkbox_items_item_block label:first-of-type span {
-              border-radius: 3px 0 0 3px; }
-            .popup__checkbox_items_item_block label:last-of-type span {
-              border-radius: 0 3px 3px 0; }
-            .popup__checkbox_items_item_block label input {
-              display: none; }
-              .popup__checkbox_items_item_block label input:checked ~ span {
-                background-color: #7793ab;
-                color: #fff; }
-            .popup__checkbox_items_item_block label span {
-              cursor: pointer;
-              display: block;
-              width: 40px;
-              height: 40px;
-              background-color: #e0e0e0;
-              -webkit-transition: background-color 0.16s;
-              -o-transition: background-color 0.16s;
-              transition: background-color 0.16s;
-              display: -webkit-box;
-              display: -webkit-flex;
-              display: -moz-box;
-              display: -ms-flexbox;
-              display: flex;
-              -webkit-box-align: center;
-              -webkit-align-items: center;
-                 -moz-box-align: center;
-                  -ms-flex-align: center;
-                      align-items: center;
-              -webkit-box-pack: center;
-              -webkit-justify-content: center;
-                 -moz-box-pack: center;
-                  -ms-flex-pack: center;
-                      justify-content: center;
-              color: #b1b1b1; }
-              .popup__checkbox_items_item_block label span:hover {
-                background-color: #d2d7db; }
+        width: 22px;
+        cursor: pointer;
+        z-index: 999; }
+      .popup__checkbox input[type="checkbox"]:checked ~ label::after, .popup__checkbox input[type="radio"]:checked ~ label::after {
+        content: "\f046";
+        color: #3a6577;
+        left: 2px; }
+      .popup__checkbox input[type="checkbox"]:disabled:not(:checked) ~ label::after, .popup__checkbox input[type="radio"]:disabled:not(:checked) ~ label::after {
+        content: "\f096";
+        color: #aaa;
+        cursor: default; }
+      .popup__checkbox input[type="checkbox"]:disabled:checked ~ label::after, .popup__checkbox input[type="radio"]:disabled:checked ~ label::after {
+        content: "\f046";
+        color: #9a9d9e;
+        cursor: default; }
   .popup__textarea {
     display: inline-block;
     vertical-align: top;
@@ -51201,6 +51276,72 @@ table {
       .popup__scrollblock li.choosed {
         background-color: #9fd8f1;
         color: #0c4a65; }
+  .popup .tabstitles {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    border: 1px solid #d9dee2;
+    background-color: #e8eaed;
+    padding-left: 0;
+    height: 40px;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+       -moz-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    border-radius: 3px;
+    margin-bottom: 2rem; }
+    .popup .tabstitles li {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -moz-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+         -moz-box-align: center;
+          -ms-flex-align: center;
+              align-items: center;
+      list-style: none;
+      font-size: 14px;
+      line-height: 16px;
+      text-align: center;
+      height: 100%;
+      padding-left: 15px;
+      padding-right: 15px;
+      cursor: pointer;
+      max-width: 250px;
+      -webkit-transition: background-color 0.16s;
+      -o-transition: background-color 0.16s;
+      transition: background-color 0.16s; }
+      .popup .tabstitles li:not(:last-of-type) {
+        border-right: 1px solid #c8ced4; }
+      .popup .tabstitles li.active {
+        background-color: #728291;
+        color: #fff; }
+      .popup .tabstitles li:hover:not(.active) {
+        background-color: #dfe3e6; }
+    .popup .tabstitles.sub {
+      height: 30px; }
+      .popup .tabstitles.sub li {
+        font-size: 12px;
+        line-height: 12px;
+        padding-left: 6px;
+        padding-right: 6px;
+        max-width: 200px; }
+  .popup .tabscontent > * {
+    display: none; }
+    .popup .tabscontent > *.visible {
+      display: block; }
+    .popup .tabscontent > * h3 {
+      margin-bottom: 2rem;
+      font-size: 20px;
+      line-height: 20px;
+      color: #47515b;
+      text-transform: uppercase;
+      line-height: 20px; }
 
 .popup__form_item {
   display: -webkit-box;
@@ -51287,6 +51428,8 @@ table {
                 box-shadow: 0 4px 10px -1px rgba(68, 86, 101, 0.4); }
         .popup__form_item > div .field.focused label {
           background-color: #6c7c8b; }
+      .popup__form_item > div .field.small input {
+        height: 26px; }
       .popup__form_item > div .field label {
         display: block;
         margin: 0;
@@ -51325,6 +51468,8 @@ table {
         border-color: #b9c2c8;
         -webkit-box-shadow: 0 4px 10px -1px rgba(68, 86, 101, 0.4);
                 box-shadow: 0 4px 10px -1px rgba(68, 86, 101, 0.4); }
+      .popup__form_item > div .select.small select {
+        height: 26px; }
       .popup__form_item > div .select__caret {
         position: absolute;
         height: 14px;
@@ -51442,6 +51587,8 @@ table {
               box-shadow: 0 4px 10px -1px rgba(68, 86, 101, 0.4); }
       .popup__form_item .number.focused label {
         background-color: #6c7c8b; }
+    .popup__form_item .number.small input {
+      height: 26px; }
     .popup__form_item .number label {
       display: block;
       margin: 0;
@@ -52345,6 +52492,8 @@ table {
             box-shadow: 0 4px 10px -1px rgba(68, 86, 101, 0.4); }
     .payment_request_block .field.focused label {
       background-color: #6c7c8b; }
+  .payment_request_block .field.small input {
+    height: 26px; }
   .payment_request_block .field label {
     display: block;
     margin: 0;
@@ -52693,6 +52842,8 @@ table {
               box-shadow: 0 4px 10px -1px rgba(68, 86, 101, 0.4); }
       .payment_request_form__item input.focused label {
         background-color: #6c7c8b; }
+    .payment_request_form__item input.small input {
+      height: 26px; }
     .payment_request_form__item input label {
       display: block;
       margin: 0;
@@ -52923,112 +53074,8 @@ table {
     display: block;
     font-size: 14px;
     color: #aaa; }
-  .periods_activate_block .date {
-    position: relative;
-    display: inline-block;
-    margin-right: 10px; }
-    .periods_activate_block .date::after {
-      content: "\f073";
-      font: normal normal normal 14px/1 FontAwesome;
-      position: absolute;
-      right: 6px;
-      top: calc(50% - 7px);
-      color: #c4c8cc;
-      pointer-events: none;
-      -webkit-transition: color 0.16s;
-      -o-transition: color 0.16s;
-      transition: color 0.16s; }
-    .periods_activate_block .date input {
-      background: none;
-      background-color: #fefefe;
-      border: none;
-      font-size: 14px;
-      -webkit-appearance: none;
-         -moz-appearance: none;
-              appearance: none;
-      border-radius: 2px;
-      height: 34px;
-      padding-right: 25px;
-      padding-left: 4px;
-      -webkit-transition: border-color 0.16s;
-      -o-transition: border-color 0.16s;
-      transition: border-color 0.16s;
-      color: #666;
-      width: 100%;
-      cursor: pointer; }
-    .periods_activate_block .date.focused {
-      border-color: #b9c2c8;
-      -webkit-box-shadow: 0 4px 10px -1px rgba(68, 86, 101, 0.4);
-              box-shadow: 0 4px 10px -1px rgba(68, 86, 101, 0.4); }
-      .periods_activate_block .date.focused label {
-        background-color: #6c7c8b; }
-      .periods_activate_block .date.focused::after {
-        color: #737c84 !important; }
-    .periods_activate_block .date input {
-      font-size: 16px;
-      height: 36px;
-      width: 200px; }
-  .periods_activate_block .select {
-    position: relative;
-    display: inline-block;
-    border: 1px solid #d0d6da;
-    -webkit-transition: border-color 0.16s, -webkit-box-shadow 0.16s;
-    transition: border-color 0.16s, -webkit-box-shadow 0.16s;
-    -o-transition: border-color 0.16s, box-shadow 0.16s;
-    transition: border-color 0.16s, box-shadow 0.16s;
-    transition: border-color 0.16s, box-shadow 0.16s, -webkit-box-shadow 0.16s; }
-    .periods_activate_block .select.focused {
-      border-color: #b9c2c8;
-      -webkit-box-shadow: 0 4px 10px -1px rgba(68, 86, 101, 0.4);
-              box-shadow: 0 4px 10px -1px rgba(68, 86, 101, 0.4); }
-    .periods_activate_block .select__caret {
-      position: absolute;
-      height: 14px;
-      width: 14px;
-      right: 6px;
-      top: calc(50% - 7px);
-      font-size: 14px;
-      color: #c4c8cc;
-      pointer-events: none; }
-      .periods_activate_block .select__caret::after {
-        position: absolute;
-        top: 0;
-        content: "▼";
-        display: inline-block;
-        line-height: 100%;
-        height: 100%;
-        -webkit-transition: color 0.16s;
-        -o-transition: color 0.16s;
-        transition: color 0.16s; }
-    .periods_activate_block .select select {
-      -webkit-appearance: none;
-         -moz-appearance: none;
-              appearance: none;
-      border-radius: 2px;
-      border: none;
-      background: #fff;
-      height: 34px;
-      padding-right: 25px;
-      padding-left: 4px;
-      -webkit-transition: border-color 0.16s;
-      -o-transition: border-color 0.16s;
-      transition: border-color 0.16s;
-      color: #666;
-      width: 100%;
-      cursor: pointer; }
-      .periods_activate_block .select select.error ~ .select__caret::after {
-        color: #f55; }
-      .periods_activate_block .select select:focus {
-        border-color: #5a6063; }
-        .periods_activate_block .select select:focus ~ .select__caret::after {
-          color: #737c84; }
-      .periods_activate_block .select select option {
-        background-color: #fff; }
-        .periods_activate_block .select select option[disabled] {
-          background: #ccc; }
-    .periods_activate_block .select select {
-      height: 36px;
-      font-size: 16px; }
+  .periods_activate_block .popup__select {
+    font-size: 16px; }
   .periods_activate_block button {
     display: -webkit-inline-box;
     display: -webkit-inline-flex;
@@ -53247,6 +53294,8 @@ table {
             box-shadow: 0 4px 10px -1px rgba(68, 86, 101, 0.4); }
     .ratingusers .field.focused label {
       background-color: #6c7c8b; }
+  .ratingusers .field.small input {
+    height: 26px; }
   .ratingusers .field label {
     display: block;
     margin: 0;

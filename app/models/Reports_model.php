@@ -24,20 +24,20 @@ class Reports_model extends My_Model {
 	 */
 	public function getRaids($pData = [], $isKey = 0) {
 		if (!isset($pData['period_id'])) return [];
+		$periodIds = isJson($pData['period_id']) ? json_decode($pData['period_id'], true) : $pData['period_id'];
 		
 		$this->db->select('r.id AS raid_id, rt.name AS raid_type, r.date, s.id AS static_id, s.name AS static_name, ru.rate');
 		$this->db->join('statics s', 's.id = r.static_id', 'left outer');
 		$this->db->join('raids_types rt', 'rt.id = r.type', 'left outer');
 		$this->db->join('raid_users ru', 'ru.raid_id = r.id');
 		
-		$this->db->where('r.period_id', $pData['period_id']);
+		$this->db->where_in('r.period_id', $periodIds);
 		$this->db->where('r.is_key', $isKey);
 		if (!is_null($pData['statics'])) $this->db->where_in('r.static_id', $pData['statics']);
 		$this->db->order_by('r.date', 'ASC');
 		
 		$query = $this->db->get('raids r');
 		if (!$response = $query->result_array()) return [];
-		
 		
 		$result = [];
 		foreach ($response as $k => $item) {
@@ -117,7 +117,7 @@ class Reports_model extends My_Model {
 	 * @return массив 
 	 */
 	public function getMainReportPatterns($patternId = null, $limOffs = null, $isKey = 0) {
-		$this->db->select('rp.id, rp.name AS report_name, rp.period_id, rp.is_key, rps.static, rps.cash');
+		$this->db->select('rp.id, rp.variant, rp.name AS report_name, rp.period_id, rp.is_key, rps.static, rps.cash');
 		if ($patternId) $this->db->where('rp.id', $patternId);
 		
 		$this->db->join('reports_patterns_statics rps', 'rp.id = rps.report_pattern_id');
@@ -133,8 +133,9 @@ class Reports_model extends My_Model {
 		foreach ($response as $k => $item) {
 			$itemId = $item['id'];
 			$newData[$itemId]['report_name'] = $item['report_name'];
-			$newData[$itemId]['period_id'] = $item['period_id'];
+			$newData[$itemId]['period_id'] = json_decode($item['period_id'], true);
 			$newData[$itemId]['is_key'] = $item['is_key'];
+			$newData[$itemId]['variant'] = $item['variant'];
 			$newData[$itemId]['cash'][$item['static']] = $item['cash'];
 		}
 		
@@ -181,7 +182,8 @@ class Reports_model extends My_Model {
 		$periodId = $data['period_id'];
 		$this->db->insert('reports_patterns', [
 			'name' 			=> $data['name'],
-			'period_id' 	=> $data['period_id']
+			'period_id' 	=> $data['period_id'],
+			'variant'		=> $data['variant']
 		]);
 		$lastPatternId = $this->db->insert_id();
 		
@@ -235,10 +237,11 @@ class Reports_model extends My_Model {
 		if ($usersRanks = $query->result_array()) {
 			$usersRanksData = [];
 			foreach ($usersRanks as $user) {
+				$coeff = json_decode($user['rank_coefficient'], true);
 				$usersRanksData[] = [
 					'report_pattern_id'	=> $lastPatternId,
 					'user_id'			=> $user['user_id'],
-					'rank_coefficient'	=> $user['rank_coefficient']
+					'rank_coefficient'	=> $coeff[$data['variant']]
 				];
 			}
 			$this->db->insert_batch('reports_patterns_ranks', $usersRanksData);
@@ -332,11 +335,11 @@ class Reports_model extends My_Model {
 	 * @param 
 	 * @return 
 	 */
-	private function _getRaidUsers($periodId = null, $isKey = 0) {
-		if (is_null($periodId)) return [];
+	private function _getRaidUsers($periodsIds = null, $isKey = 0) {
+		if (is_null($periodsIds)) return [];
 		$this->db->select('ru.id, ru.rate, ru.raid_id, ru.user_id, r.static_id');
 		$this->db->join('raids r', 'ru.raid_id = r.id', 'LEFT OUTER');
-		$this->db->where('r.period_id', $periodId);
+		$this->db->where_in('r.period_id', $periodsIds);
 		$this->db->where('r.is_key', $isKey);
 		$queryRu = $this->db->get('raid_users ru');
 		if (!$resultRu = $queryRu->result_array()) return [];
@@ -354,9 +357,9 @@ class Reports_model extends My_Model {
 	 * @param 
 	 * @return 
 	 */
-	private function _getCompoundsData($periodId = null) {
-		if (is_null($periodId)) return [];
-		$this->db->where('period_id', $periodId);
+	private function _getCompoundsData($periodsIds = null) {
+		if (is_null($periodsIds)) return [];
+		$this->db->where_in('period_id', $periodsIds);
 		$cDQuery = $this->db->get('compounds_data');
 		if (!$cDResponse = $cDQuery->result_array()) return [];
 		$compoundsData = [];
@@ -435,9 +438,11 @@ class Reports_model extends My_Model {
 	public function buildReportPaymentsData($constants = null, $pData = null, $toExport = false) {
 		if (is_null($constants) || empty($pData['cash']) || !isset($pData['period_id'])) return false;
 		extract($constants);
+		$periodsIds = isJson($pData['period_id']) ? json_decode($pData['period_id'], true) : $pData['period_id'];
+		
 		$response = [];
-		$raidUsers = $this->_getRaidUsers($pData['period_id']);
-		$compoundsData = $this->_getCompoundsData($pData['period_id']);
+		$raidUsers = $this->_getRaidUsers($periodsIds);
+		$compoundsData = $this->_getCompoundsData($periodsIds);
 		
 		$this->load->model('admin_model');
 		$defaultDepositPercent = $this->admin_model->getSettings('default_deposit_percent_setting'); // процент депозита по-умолчанию
@@ -447,9 +452,9 @@ class Reports_model extends My_Model {
 		//---------------------------------------------------------- Формирование отчета "налету"
 		if (!isset($pData['pattern_id'])) {
 			$this->db->select('u.id AS user_id, u.color, u.nickname, u.deposit, u.deposit_percent, u.deleted, s.name AS static_name, s.cap_simple, s.cap_lider, s.deposit_percent AS sdp, r.name AS rank_name, r.coefficient AS rank_coefficient, us.lider, us.static_id AS static');
-			$this->db->join('users_statics us', 'us.user_id = u.id', 'left outer');
-			$this->db->join('statics s', 's.id = us.static_id', 'left outer');
-			$this->db->join('ranks r', 'u.rank = r.id', 'left outer');
+			$this->db->join('users_statics us', 'us.user_id = u.id', 'LEFT OUTER');
+			$this->db->join('statics s', 's.id = us.static_id', 'LEFT OUTER');
+			$this->db->join('ranks r', 'u.rank = r.id', 'LEFT OUTER');
 			//$this->db->where('u.deleted', 0); //========================================================
 			$this->db->order_by('us.static_id ASC, us.lider DESC, u.nickname ASC');
 			$query = $this->db->get('users u');
@@ -457,20 +462,26 @@ class Reports_model extends My_Model {
 			$resultUsers = sortUsers($resultUsers); // сортировка участников по именам (сначала русские потом англ.)
 			
 			
+			//toLog($resultUsers, true);
 			
 			
 			// Добавление списка рейдов к массиву участников
 			foreach ($resultUsers as $key => $user) {
+				$coeff = json_decode($user['rank_coefficient'], true);
+				$resultUsers[$key]['rank_coefficient'] = $coeff[$pData['variant']];
+				
 				if (!isset($raidUsers[$user['static']][$user['user_id']]) && $user['deleted'] == 0) continue; 
 				if (!isset($raidUsers[$user['static']][$user['user_id']]) && $user['deleted'] == 1) unset($resultUsers[$key]);
 				else $resultUsers[$key]['raids'] = $raidUsers[$user['static']][$user['user_id']]['raids'];
 			}
 			
 			
+			
 			// static id => сумма коэффициентов периода
 			$koeffPeriodSumm = [];
 			foreach ($resultUsers as $user) {
 				if (empty($user['raids'])) continue;
+				
 				$personesCount = isset($compoundsData[$user['static']][$user['user_id']]) ? $compoundsData[$user['static']][$user['user_id']]['persones_count'] : 0;
 				$effectiveness = isset($compoundsData[$user['static']][$user['user_id']]) ? $compoundsData[$user['static']][$user['user_id']]['effectiveness'] : 0;
 				$fine = isset($compoundsData[$user['static']][$user['user_id']]) ? $compoundsData[$user['static']][$user['user_id']]['fine'] : 0;
@@ -515,6 +526,10 @@ class Reports_model extends My_Model {
 				$deposit = $user['deposit'];
 				$toDeposit = $deposit < $depositLimit ? ($depositLimit - $deposit >= $percentFromPayment ? round($percentFromPayment, 2) : round($depositLimit - $deposit, 2)) : 0;
 				
+				
+				
+				
+				
 				$response[$user['static']]['cash'] = $pData['cash'][$user['static']];
 				$response[$user['static']]['static_name'] = $user['static_name'];
 				$response[$user['static']]['users'][$user['user_id']] = [
@@ -537,10 +552,9 @@ class Reports_model extends My_Model {
 			}
 			
 			if ($response) ksort($response);
+			
 			return $response;
 		}
-		
-		
 		
 		
 		
@@ -573,8 +587,6 @@ class Reports_model extends My_Model {
 			if (!isset($raidUsers[$user['static']][$user['user_id']]) && $user['deleted'] == 1) unset($resultUsers[$key]);
 			else $resultUsers[$key]['raids'] = $raidUsers[$user['static']][$user['user_id']]['raids'];
 		}
-		
-		
 		
 		// static id => сумма коэффициентов периода
 		$koeffPeriodSumm = [];
@@ -1017,6 +1029,7 @@ class Reports_model extends My_Model {
 		$this->db->where('rp.archive !=', 1);
 		if ($onlyOpened) $this->db->where('rp.closed !=', 1);
 		$this->db->order_by('rp.id', 'DESC');
+		$this->db->limit(50);
 		$query = $this->db->get('reports_periods rp');
 		return $query->result_array();
 	}
@@ -1608,10 +1621,11 @@ class Reports_model extends My_Model {
 	 * @param 
 	 * @return 
 	*/
-	public function getSalaryOrders($data = false) {
+	public function getSalaryOrders($data = false, $setUsersDeposit = false) {
 		if (!$data['period_id'] || !$data['data']) return false;
 		
 		$order = arrTakeItem($data, 'order');
+		$toDeposit = arrTakeItem($data, 'to_deposit');
 		$comment = arrTakeItem($data, 'comment');
 		$periodId = arrTakeItem($data, 'period_id');
 		$coeffsData = setArrKeyFromField(arrTakeItem($data, 'data'), 'static_id');
@@ -1631,28 +1645,59 @@ class Reports_model extends My_Model {
 		}
 		
 		$this->load->model('users_model');
-		$usersData = $this->users_model->getUsers(['where' => ['us.main' => 1], 'where_in' => ['field' => 'u.id', 'values' => $usersIds]]);
-		$usersData = setArrKeyFromField($usersData, 'id', 'nickname, avatar, payment');
+		$usersData = $this->users_model->getUsers(['where' => ['us.main' => 1], 'where_in' => ['field' => 'u.id', 'values' => $usersIds], 'fields' => 'id, nickname, avatar, payment, deposit, static, lider']);
+		$usersData = setArrKeyFromField($usersData, 'id', true);
 		
-		$insData = [];
+		if ($toDeposit) {
+			$staticsData = $this->admin_model->getStatics();
+			$percentToDeposit = $this->admin_model->getSettings('payment_equests_deposit_percent');
+		}
+		
+		
+		$orders = [];
+		$toDepositData = [];
 		foreach ($data as $staticId => $users) {
 			foreach ($users as $userId => $coeffSumm) {
 				if ($coeffSumm <= 0) continue;
-				$insData[] = [
-					'user_id'	=> $userId,
-					'nickname' 	=> $usersData[$userId]['nickname'],
-					'avatar' 	=> $usersData[$userId]['avatar'],
-					'payment' 	=> $usersData[$userId]['payment'],
-					'static' 	=> $staticId,
-					'order' 	=> $order,
-					'summ' 		=> $coeffSumm > $coeffsData[$staticId]['coeff'] ? $coeffsData[$staticId]['summ'] : round(($coeffsData[$staticId]['summ'] / $coeffsData[$staticId]['coeff']) * $coeffSumm),
-					'comment' 	=> $comment,
-					'date'		=> time()
+				
+				$summ = $coeffSumm > $coeffsData[$staticId]['coeff'] ? $coeffsData[$staticId]['summ'] : round(($coeffsData[$staticId]['summ'] / $coeffsData[$staticId]['coeff']) * $coeffSumm);
+				
+				if ($toDeposit) {
+					$userStatic = $usersData[$userId]['static'];
+					$userLider = $usersData[$userId]['lider'];
+					$userDeposit = $usersData[$userId]['deposit'];
+					
+					$limit = $userLider ? $staticsData[$userStatic]['cap_lider'] : $staticsData[$userStatic]['cap_simple']; // лимит депозита
+					$canSetToDeposit = $limit - $userDeposit > 0 ? $limit - $userDeposit : 0;
+					
+					$summToDeposit = ($summ / 100) * $percentToDeposit; // сумма в депозит
+					
+					$summToDeposit = $canSetToDeposit >= $summToDeposit ? $summToDeposit : $canSetToDeposit;
+					$summToOrder = $summ - $summToDeposit; // сумма в оплату
+					
+					$toDepositData[$userId] = $summToDeposit; 
+				} else {
+					$summToOrder = $summ;
+					$summToDeposit = 0;
+				}
+				
+				$orders[] = [
+					'user_id'		=> $userId,
+					'nickname' 		=> $usersData[$userId]['nickname'],
+					'avatar' 		=> $usersData[$userId]['avatar'],
+					'payment' 		=> $usersData[$userId]['payment'],
+					'static' 		=> $staticId,
+					'order' 		=> $order,
+					'summ' 			=> $summToOrder,
+					'to_deposit'	=> $summToDeposit,
+					'comment' 		=> $comment,
+					'date'			=> time()
 				];
 			}	
 		}
 		
-		return $insData;
+		if ($toDeposit && $setUsersDeposit) $this->users_model->setUsersDeposit($toDepositData);
+		return $orders;
 	}
 	
 	

@@ -19,12 +19,14 @@ class MY_Controller extends CI_Controller {
 		parent::__construct();
 		$this->load->model('admin_model');
 		$constData = $this->admin_model->getSettings('constants');
-		$this->constants = [
-			'cVisits' 			=> $constData['visits'],
-			'cPersons' 			=> $constData['persons'],
-			'cEffectiveness'	=> $constData['effectiveness'],
-			'cFine' 			=> $constData['fine']
-		];
+		foreach ($constData as $variant => $data) {
+			$this->constants[$variant] = [
+				'cVisits' 			=> $data['visits'],
+				'cPersons' 			=> $data['persons'],
+				'cEffectiveness'	=> $data['effectiveness'],
+				'cFine' 			=> $data['fine']
+			];
+		}
 		
 		$this->minutes = range(0, 55, 5);
 		
@@ -127,7 +129,17 @@ class MY_Controller extends CI_Controller {
 				'title' => 'Персонажи',
 				'desc' 	=> 'Доступ к усверждению и редактированию персонажей',
 				'icon'	=> 'optin-monster'
-			]  
+			],
+			15 => [
+				'id'	=> 'ratings',
+				'url'	=> 'ratings',
+				'title' => 'Форс мажор, Выговоры, Стимулирование',
+				'desc' 	=> 'Доступ к модерации "Форс мажор, Выговоры, Стимулирование"',
+				'icon'	=> 'optin-monster'
+			] 
+			
+			
+			
 		];
 
 

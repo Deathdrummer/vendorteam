@@ -343,11 +343,15 @@ if ( ! function_exists('dateToNumeric')) {
 
 if (!function_exists('setArrKeyFromField')) {
     /**
-     * @param Подставляет поле массива в качестве ключа
+     * Подставляет поле массива в качестве ключа
+     * @param входящий массив
+     * @param поле для ключа 
+     * @param сохранить ли поля для ключа в значениях
+     * @param вернуть определенные поля (можно обойти preserveField и сразу задать returnFields)       
      * @return array
      */
-    function setArrKeyFromField($array = null, $field = null, $preserveField = false, $returnFields = false) {
-        if (is_null($array) || empty($array) || !is_array($array) || is_null($field)) return false;
+    function setArrKeyFromField($array = null, $field = false, $preserveField = false, $returnFields = false) {
+        if (!is_array($array) || empty($array)) return false;
         if (!is_bool($preserveField) ) {
             $returnFields = $preserveField;
             $preserveField = false;
@@ -356,7 +360,7 @@ if (!function_exists('setArrKeyFromField')) {
         
         $newArr = [];
         foreach ($array as $key => $val) {
-            $newKey = $val[$field];
+            $newKey = $field ? $val[$field] : $key;
             if (!$preserveField) unset($val[$field]);
             if ($returnFields) {
                 if (count($returnFields) == 1) $newArr[$newKey] = $val[reset($returnFields)];

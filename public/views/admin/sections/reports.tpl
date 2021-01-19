@@ -27,6 +27,8 @@
 						<button id="periodsButton" class="fieldheight" title="Периоды"><i class="fa fa-calculator"></i></button>
 						
 						<button id="setMainReport" class="fieldheight alt ml-5" title="Сформировать отчет"><i class="fa fa-bar-chart"></i></button>
+						<input type="hidden" id="reportVariant" value="">
+						
 						<button id="reportPatternsButton" class="fieldheight alt" title="Отчеты"><i class="fa fa-list-alt"></i></button>
 						<button id="saveMainReport" class="fieldheight alt" title="Сохранить отчет"><i class="fa fa-save"></i></button>
 					</div>
@@ -34,7 +36,7 @@
 				
 				<div class="item inline"><h3 id="mainReportTitle"></h3></div>
 				
-				<div id="mainReport" class="reports"></div>
+				<div id="mainReport" class="reports mt-3"></div>
 			</fieldset>
 		</div>
 		
@@ -149,6 +151,7 @@
 											<td class="nowrap" paymentrequestsort="payment">Способ оплаты <i class="fa fa-sort"></i></td>
 											<td class="nowrap" paymentrequestsort="order">№ заказа <i class="fa fa-sort"></i></td>
 											<td class="nowrap" paymentrequestsort="summ">Сумма заказа <i class="fa fa-sort"></i></td>
+											<td>Удержано в резерв</td>
 											<td>Комментарий</td>
 											<td>Дата</td>
 											<td class="w1">Расчет</td>
@@ -180,6 +183,7 @@
 												<td>{{item.payment}}</td>
 												<td>{{item.order}}</td>
 												<td class="nowrap">{{item.summ|number_format(2, '.', ' ')}} <small>руб.</small></td>
+												<td class="nowrap">{{item.to_deposit|number_format(2, '.', ' ')}} <small>руб.</small></td>
 												<td><small>{{item.comment}}</small></td>
 												<td class="nowrap">{{item.date|d}} {{item.date|t}}</td>
 												<td class="square_block center">
@@ -220,7 +224,7 @@
 				
 				<div class="item inline"><h3 id="keysReportTitle"></h3></div>
 				
-				<div id="keysReport" class="reports"></div>
+				<div id="keysReport" class="reports mt-3"></div>
 			</fieldset>
 		</div>
 		
@@ -263,13 +267,36 @@ $(document).ready(function() {
 		}
 		
 		if(stat) {
-			getAjaxHtml('reports/get_main_report', {cash: staticsCash, period_id: periodId}, function(html) {
-				$('#mainReport').html(html);
-				$('#mainReport').ready(function() {
-					$('.scroll').ddrScrollTable();
+			popUp({
+				title: 'Выбрать вариант отчета',
+			    width: 500,
+			    closeButton: 'Отмена',
+			}, function(reportVariantWin) {
+				reportVariantWin.wait();
+				getAjaxHtml('reports/get_report_variants', function(html) {
+					reportVariantWin.setData(html);
+					
+					$('[choosereportrariant]').on(tapEvent, function() {
+						reportVariantWin.wait();
+						var reportVariant = $(this).attr('choosereportrariant');
+						
+						if(stat) {
+							getAjaxHtml('reports/get_main_report', {cash: staticsCash, period_id: periodId, variant: reportVariant}, function(html) {
+								$('#mainReport').html(html);
+								$('#mainReport').ready(function() {
+									$('.scroll').ddrScrollTable();
+									$('#mainReportTitle').text('');
+								});
+								$('[id^="tabstatic"]:first').addClass('active');
+								$('[tabid^="tabstatic"]:first').addClass('visible');
+								$('#reportVariant').val(reportVariant);
+								reportVariantWin.close();
+							});
+						}
+					});
+				}, function() {
+					reportVariantWin.wait(false);
 				});
-				$('[id^="tabstatic"]:first').addClass('active');
-				$('[tabid^="tabstatic"]:first').addClass('visible');
 			});
 		}
 	});
@@ -296,13 +323,26 @@ $(document).ready(function() {
 					$('#staticsCash').html(html);
 					$('#staticsCash').find('input').number(true, 0, '.', ' ');
 					
+					var checkedStat = true,
+						checks = $('#staticsCash').find('[choosestatictodeposit]');
+					$('#staticsDepositCheckAll').on(tapEvent, function() {
+						checkedStat = !checkedStat;
+						
+						$(checks).each(function() {
+							if (checkedStat) $(this).setAttrib('checked');
+							else $(this).removeAttrib('checked');
+						});
+					});
+					
 					$('#setStaticsCashButton').on(tapEvent, function() {
 						var staticsCash = {};
-						$('#staticsCash').find('input').each(function() {
-							var staticId = $(this).attr('static'),
-								staticValue = parseInt($(this).val());
+						$('#staticsCash').find('[choosestatictodeposit]:checked').each(function() {
+							var thisInput = $(this).closest('tr').find('input[static]');
+								staticId = $(thisInput).attr('static'),
+								staticValue = parseInt($(thisInput).val());
 							staticsCash[staticId] = staticValue;
 						});
+						
 						$('#staticsCashData').val(JSON.stringify(staticsCash));
 						staticsCashWin.close();
 						$('#setStaticsCash').addClass('done');
@@ -321,6 +361,262 @@ $(document).ready(function() {
 			});
 		});
 	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	// ------------------------------------------------ Периоды
+	var periodsWin, currentPeriodToTime, setPeriodStartTime; 
+	$('#periodsButton').on(tapEvent, function() {
+		$(this).removeClass('error fail');
+		popUp({
+			title: 'Периоды',
+		    width: 700,
+		    buttons: [{id: 'newPeriod', title: 'Новый период', disabled: true, class: 'alt'}, {id: 'choosePeriods', title: 'Выбрать периоды', disabled: true}],
+		    buttonsOnTop: true
+		}, function(pRWin) {
+			periodsWin = pRWin;
+			periodsWin.wait();
+			
+			getAjaxHtml('reports/get_reports_periods', {edit: 1}, function(html) {
+				periodsWin.setData(html);
+				
+				$('#choosePeriods').on(tapEvent, function() {
+					$('#choosenPeriodId').val(JSON.stringify(choosenPeriods));
+					if (choosenPeriods.length > 1) notify('Периоды выбраны!');
+					else notify('Период выбран!');
+					$('#periodsButton').addClass('done');
+					periodsWin.close();
+				});
+				
+				
+				
+				//---------------------------------------- Задать время активации периода
+				setPeriodStartTime = new jBox('Tooltip', {
+					attach: '[setperiodstarttime]',
+					trigger: 'click',
+					addClass: 'setperiodstarttime',
+					outside: 'x',
+					ignoreDelay: true,
+					zIndex: 1000,
+					position: {
+					  x: 'right',
+					  y: 'center'
+					}
+				});
+				
+				$('.popup').scroll(function() {
+					setPeriodStartTime.close();
+				});
+					
+				
+				$('#newPeriod').prop('disabled', false);
+				$('#choosePeriods').prop('disabled', false);
+			}, function() {
+				periodsWin.wait(false);
+			});
+			
+			$('#newPeriod').on(tapEvent, function() {
+				$.post('/reports/new_period', function(html) {
+					$('#periodsList tbody').prepend(html);
+					
+					$('#periodsList tbody').find('.saveperiod').off(tapEvent);
+					$('#periodsList tbody').find('.saveperiod').on(tapEvent, function() {
+						var thisRow = $(this).closest('tr'),
+							thisName = $(thisRow).find('input').val();
+						
+						if (thisName != '') {
+							$.post('/reports/save_period', {name: thisName}, function(periodId) {
+								if (periodId) {
+									notify('Период успешно сохранен!');
+									
+									var html = '<td>'+thisName+'</td>';
+										html += '<td class="nowidth"><div class="buttons"><button class="remove" title="Удалить период" periodtoarchive="'+periodId+'"><i class="fa fa-trash"></i></button></div></td>';
+										html += '<td class="nowidth"><div class="buttons"><button title="Выбрать период" chooseperiod="'+periodId+'"><i class="fa fa-calculator"></i></button></div></td>';
+										html += '<td class="nowidth">';
+										html += 	'<div class="buttons">';
+										html += 		'<button setperiodstarttime="'+periodId+'" title="Задать время активации"><i class="fa fa-clock-o"></i></button>';
+										html += 	'</div>'
+										html += '</td>';
+										html += '<td class="nowidth center">';
+										html += 	'<div class="checkblock">';
+										html += 		'<input id="actualperiod'+periodId+'" setactualperiod="'+periodId+'|u" name="setactiveperiodu" type="radio">';
+										html += 		'<label for="actualperiod'+periodId+'"></label>';
+										html += 	'</div>';
+										html += '</td>';
+										html += '<td class="nowidth center">';
+										html += 	'<div class="checkblock">';
+										html += 		'<input id="actualperiod'+periodId+'" setactualperiod="'+periodId+'|e" name="setactiveperiode" type="radio">';
+										html += 		'<label for="actualperiod'+periodId+'"></label>';
+										html += 	'</div>';
+										html += '</td>';
+										html += '<td class="nowidth center">';
+										html += 	'<div class="checkblock">';
+										html += 		'<input id="actualperiod'+periodId+'" setactualperiod="'+periodId+'|a" name="setactiveperioda" type="radio">';
+										html += 		'<label for="actualperiod'+periodId+'"></label>';
+										html += 	'</div>';
+										html += '</td>';
+										html += '<td class="nowidth center">';
+										html += 	'<div class="checkblock">';
+										html += 		'<input id="closedperiod'+periodId+'" closeperiod="'+periodId+'" type="checkbox">';
+										html += 		'<label for="closedperiod'+periodId+'"></label>';
+										html += 	'</div>';
+										html += '</td>';
+									$(thisRow).html(html);
+								}
+							});
+						} else {
+							notify('Ошибка! Название не может быть пустым!', 'error');
+							$(thisRow).find('input').addClass('error');
+						}	
+					});
+				}, 'html').fail(function(e) {
+					showError(e);
+					notify('Системная ошибка!', 'error');
+				});
+			});
+		});
+	});
+	
+	
+	
+	
+	
+	//---------------------------------------- Выбрать период
+	var choosenPeriods = [];
+	$('body').off(tapEvent, '[chooseperiod]').on(tapEvent, '[chooseperiod]', function() {
+		var thisId = parseInt($(this).attr('chooseperiod'));
+		if ($(this).hasClass('done')) {
+			$(this).removeClass('pay done');
+			choosenPeriods.splice(choosenPeriods.indexOf(thisId), 1);
+		} else {
+			choosenPeriods.push(thisId);
+			$(this).addClass('pay done');
+		}
+		console.log(choosenPeriods);
+		
+	});
+	
+	
+	
+	$('body').off(tapEvent, '[activateperiods]').on(tapEvent, '[activateperiods]', function() {
+		var data = [],
+			items = $(this).closest('.periods_activate_block').children('div.changed:not(.button)');
+		if (items.length) {
+			$(items).each(function() {
+				var zone = parseInt($(this).attr('zone')),
+					time = $(this).find('.activate_periods_time').val() || null,
+					date = $(this).find('[date]').attr('date') || null;
+				data.push({
+					zone: zone,
+					date: date,
+					time: time
+				});
+			});
+			$.post('/reports/set_timer_activate_periods', {data: data, period: currentPeriodToTime}, function(response) {
+				if (response == 1) {
+					notify('Активация периодов успешно задана!');
+					setPeriodStartTime.close();
+					$('body').find('[setperiodstarttime]').removeClass('opened');
+				} else if (response == 2) {
+					notify('Необходимо задать данные', 'info');
+				} else {
+					notify('Ошибка! Активация периодов не задана!', 'error');
+				}
+			});
+		} else {
+			notify('Необходимо задать данные', 'info');
+		}	
+	});
+	
+	
+	$('body').on(tapEvent, function(e) {
+		if ($('[setperiodstarttime]:hover').length == 0 && $('body').find('.setperiodstarttime:visible').length > 0 && $('body').find('.setperiodstarttime:hover').length == 0 && $('body').find('.ui-datepicker:hover').length == 0) {
+			setPeriodStartTime.close();
+			$('body').find('[setperiodstarttime]').removeClass('opened');
+		}
+	});
+	
+	
+	
+	
+	
+	$('body').off(tapEvent, '[setperiodstarttime]').on(tapEvent, '[setperiodstarttime]', function() {
+		var thisItem = this;
+		currentPeriodToTime = $(thisItem).attr('setperiodstarttime');
+		if (!$(thisItem).hasClass('opened')) {
+			$('body').find('[setperiodstarttime]').removeClass('opened');
+			$(thisItem).addClass('opened');
+			setPeriodStartTime.open({ajax: {
+				url: '/reports/get_periods_activate_block',
+				data: {period: currentPeriodToTime},
+				reload: true
+			}});
+		} else {
+			$(thisItem).removeClass('opened');
+			setPeriodStartTime.close();
+		}
+	});
+	
+	
+	
+	$('body').off(tapEvent, '[setactualperiod]').on(tapEvent, '[setactualperiod]', function() {
+		var data = $(this).attr('setactualperiod').split('|'),
+			thisPeriodId = data[0],
+			thisZone = data[1];
+		
+		$.post('/reports/set_active_period', {id: thisPeriodId, zone: thisZone}, function(response) {
+			if (response) notify('Период активирован!');
+			else notify('Период не активирован!', 'error');
+		}, 'json').fail(function(e) {
+			showError(e);
+			notify('Системная ошибка!', 'error');
+		});
+	});
+	
+	
+	$('body').off(tapEvent, '[closeperiod]').on(tapEvent, '[closeperiod]', function() {
+		var thisPeriodId = $(this).attr('closeperiod');
+		
+		$.post('/reports/close_period', {id: thisPeriodId}, function(response) {
+			if (response) notify('Статус изменен!');
+			else notify('Статус не изменен!', 'error');
+		}, 'json').fail(function(e) {
+			showError(e);
+			notify('Системная ошибка!', 'error');
+		});
+	});
+	
+	
+	$('body').off(tapEvent, '[periodtoarchive]').on(tapEvent, '[periodtoarchive]', function() {
+		var thisItem = this,
+			thisPeriodId = $(thisItem).attr('periodtoarchive');
+			
+		periodsWin.dialog('<p>Вы действительно хотите удалить период?</p>', 'Да', 'Отмена', function() {
+			$.post('/reports/period_to_archive', {id: thisPeriodId}, function(response) {
+				if (response) {
+					$(thisItem).closest('tr').remove();
+				 	notify('Период помещен в архив!');
+				 	periodsWin.dialog(false);
+				} else notify('Ошибка перемещения в архив!', 'error');
+			}, 'json').fail(function(e) {
+				showError(e);
+				notify('Системная ошибка!', 'error');
+			});
+		});
+	});
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -452,11 +748,13 @@ $(document).ready(function() {
 	$('#saveMainReport').on(tapEvent, function() {
 		var staticsCash = $('#staticsCashData').val(),
 			periodId = $('#choosenPeriodId').val(),
+			reportVariant = $('#reportVariant').val()
 			stat = true;
 		
 		$('#setStaticsCash, #choosenPeriodId').removeClass('error');
 		if (staticsCash == '') {stat = false; $('#setStaticsCash').addClass('fail error');}
 		if (periodId == '') {stat = false; $('#periodsButton').addClass('fail error');}
+		if (!reportVariant) {stat = false; notify('Необходимо выбрать вариант отчета!', 'error')}
 		
 		if (stat) {
 			var html = '<div class="popup__form_item">';
@@ -483,7 +781,8 @@ $(document).ready(function() {
 						$.post('/reports/save_main_report_pattern', {
 							name: reportName,
 							cash: staticsCash,
-							period_id: periodId
+							period_id: periodId,
+							variant: reportVariant
 						}, function(response) {
 							if (response) notify('Данные успешно сохранены!');
 							savePatternWin.close();
@@ -583,218 +882,6 @@ $(document).ready(function() {
 	
 	
 	
-	
-	
-	
-	// ------------------------------------------------ Периоды
-	var periodsWin; 
-	$('#periodsButton').on(tapEvent, function() {
-		$(this).removeClass('error fail');
-		popUp({
-			title: 'Периоды',
-		    width: 700,
-		    buttons: [{id: 'newPeriod', title: 'Новый период', disabled: true}]
-		}, function(pRWin) {
-			periodsWin = pRWin;
-			periodsWin.wait();
-			
-			getAjaxHtml('reports/get_reports_periods', {edit: 1}, function(html) {
-				periodsWin.setData(html);
-				
-				//---------------------------------------- Выбрать период
-				$('[chooseperiod]').on(tapEvent, function() {
-					var thisId = $(this).attr('chooseperiod');
-					$('#choosenPeriodId').val(thisId);
-					notify('Период выбран!');
-					$('#periodsButton').addClass('done');
-					periodsWin.close();
-				});
-				
-				
-				
-				//---------------------------------------- Задать время активации периода
-				var currentPeriodToTime;
-				var setPeriodStartTime = new jBox('Tooltip', {
-					attach: '[setperiodstarttime]',
-					trigger: 'click',
-					addClass: 'setperiodstarttime',
-					outside: 'x',
-					ignoreDelay: true,
-					zIndex: 1000,
-					position: {
-					  x: 'right',
-					  y: 'center'
-					}
-				});
-					
-				
-				
-				$('[setperiodstarttime]').on(tapEvent, function() {
-					var thisItem = this;
-					currentPeriodToTime = $(thisItem).attr('setperiodstarttime');
-					if (!$(thisItem).hasClass('opened')) {
-						$('body').find('[setperiodstarttime]').removeClass('opened');
-						$(thisItem).addClass('opened');
-						setPeriodStartTime.open({ajax: {
-							url: '/reports/get_periods_activate_block',
-							data: {period: currentPeriodToTime},
-							reload: true
-						}});
-					} else {
-						$(thisItem).removeClass('opened');
-						setPeriodStartTime.close();
-					}
-				});
-				
-				
-				$('body').off(tapEvent, '[activateperiods]').on(tapEvent, '[activateperiods]', function() {
-					var data = [],
-						items = $(this).closest('.periods_activate_block').children('div.changed:not(.button)');
-					if (items.length) {
-						$(items).each(function() {
-							var zone = parseInt($(this).attr('zone')),
-								time = $(this).find('.activate_periods_time').val() || null,
-								date = $(this).find('[date]').attr('date') || null;
-							data.push({
-								zone: zone,
-								date: date,
-								time: time
-							});
-						});
-						$.post('/reports/set_timer_activate_periods', {data: data, period: currentPeriodToTime}, function(response) {
-							if (response == 1) {
-								notify('Активация периодов успешно задана!');
-								setPeriodStartTime.close();
-								$('body').find('[setperiodstarttime]').removeClass('opened');
-							} else if (response == 2) {
-								notify('Необходимо задать данные', 'info');
-							} else {
-								notify('Ошибка! Активация периодов не задана!', 'error');
-							}
-						});
-					} else {
-						notify('Необходимо задать данные', 'info');
-					}	
-				});
-				
-				
-				$('body').on(tapEvent, function(e) {
-					if ($('[setperiodstarttime]:hover').length == 0 && $('body').find('.setperiodstarttime:visible').length > 0 && $('body').find('.setperiodstarttime:hover').length == 0 && $('body').find('.ui-datepicker:hover').length == 0) {
-						setPeriodStartTime.close();
-						$('body').find('[setperiodstarttime]').removeClass('opened');
-					}
-				});
-				
-				$('#newPeriod').prop('disabled', false);
-			}, function() {
-				periodsWin.wait(false);
-			});
-			
-			$('#newPeriod').on(tapEvent, function() {
-				$.post('/reports/new_period', function(html) {
-					$('#periodsList tbody').append(html);
-					
-					$('#periodsList tbody').find('.saveperiod').off(tapEvent);
-					$('#periodsList tbody').find('.saveperiod').on(tapEvent, function() {
-						var thisRow = $(this).closest('tr'),
-							thisName = $(thisRow).find('input').val();
-						
-						if (thisName != '') {
-							$.post('/reports/save_period', {name: thisName}, function(periodId) {
-								if (periodId) {
-									notify('Период успешно сохранен!');
-									
-									var html = '<td>'+thisName+'</td>';
-										html += '<td class="nowidth"><div class="buttons"><button class="remove" title="Удалить период" periodtoarchive="'+periodId+'"><i class="fa fa-trash"></i></button></div></td>';
-										html += '<td class="nowidth"><div class="buttons"><button title="Выбрать период" chooseperiod="'+periodId+'"><i class="fa fa-check-square-o"></i></button></div></td>';
-										html += '<td class="nowidth center">';
-										html += 	'<div class="checkblock">';
-										html += 		'<input id="actualperiod{{period.id}}" setactualperiod="'+periodId+'|u" name="setactiveperiodu" type="radio">';
-										html += 		'<label for="actualperiod{{period.id}}"></label>';
-										html += 	'</div>';
-										html += '</td>';
-										html += '<td class="nowidth center">';
-										html += 	'<div class="checkblock">';
-										html += 		'<input id="actualperiod{{period.id}}" setactualperiod="'+periodId+'|e" name="setactiveperiode" type="radio">';
-										html += 		'<label for="actualperiod{{period.id}}"></label>';
-										html += 	'</div>';
-										html += '</td>';
-										html += '<td class="nowidth center">';
-										html += 	'<div class="checkblock">';
-										html += 		'<input id="actualperiod{{period.id}}" setactualperiod="'+periodId+'|a" name="setactiveperioda" type="radio">';
-										html += 		'<label for="actualperiod{{period.id}}"></label>';
-										html += 	'</div>';
-										html += '</td>';
-										html += '<td class="nowidth center">';
-										html += 	'<div class="checkblock">';
-										html += 		'<input id="closedperiod{{period.id}}" closeperiod="'+periodId+'" type="checkbox">';
-										html += 		'<label for="closedperiod{{period.id}}"></label>';
-										html += 	'</div>';
-										html += '</td>';
-									$(thisRow).html(html);
-								}
-							});
-						} else {
-							notify('Ошибка! Название не может быть пустым!', 'error');
-							$(thisRow).find('input').addClass('error');
-						}	
-					});
-				}, 'html').fail(function(e) {
-					showError(e);
-					notify('Системная ошибка!', 'error');
-				});
-			});
-		});
-	});
-	
-	
-	
-	
-	$('body').off(tapEvent, '[setactualperiod]').on(tapEvent, '[setactualperiod]', function() {
-		var data = $(this).attr('setactualperiod').split('|'),
-			thisPeriodId = data[0],
-			thisZone = data[1];
-		
-		$.post('/reports/set_active_period', {id: thisPeriodId, zone: thisZone}, function(response) {
-			if (response) notify('Период активирован!');
-			else notify('Период не активирован!', 'error');
-		}, 'json').fail(function(e) {
-			showError(e);
-			notify('Системная ошибка!', 'error');
-		});
-	});
-	
-	
-	$('body').off(tapEvent, '[closeperiod]').on(tapEvent, '[closeperiod]', function() {
-		var thisPeriodId = $(this).attr('closeperiod');
-		
-		$.post('/reports/close_period', {id: thisPeriodId}, function(response) {
-			if (response) notify('Статус изменен!');
-			else notify('Статус не изменен!', 'error');
-		}, 'json').fail(function(e) {
-			showError(e);
-			notify('Системная ошибка!', 'error');
-		});
-	});
-	
-	
-	$('body').off(tapEvent, '[periodtoarchive]').on(tapEvent, '[periodtoarchive]', function() {
-		var thisItem = this,
-			thisPeriodId = $(thisItem).attr('periodtoarchive');
-			
-		periodsWin.dialog('<p>Вы действительно хотите удалить период?</p>', 'Да', 'Отмена', function() {
-			$.post('/reports/period_to_archive', {id: thisPeriodId}, function(response) {
-				if (response) {
-					$(thisItem).closest('tr').remove();
-				 	notify('Период помещен в архив!');
-				 	periodsWin.dialog(false);
-				} else notify('Ошибка перемещения в архив!', 'error');
-			}, 'json').fail(function(e) {
-				showError(e);
-				notify('Системная ошибка!', 'error');
-			});
-		});
-	});
 	
 	
 	
@@ -1030,7 +1117,7 @@ $(document).ready(function() {
 				
 				//--------------------------------------------------- Оформить заявку
 				$('#setPaymentRequest').on(tapEvent, function() {
-					var stat = true, users = [], order, summ, comment;
+					var stat = true, users = [], order, summ, comment, toDeposit;
 					if ($('#paymentRequestChoosenUsers').find('[paymentrequestchoosenuser]').length == 0) {
 						$('#paymentRequestChoosenUsers').addClass('error');
 						notify('Необходимо указать участников.', 'error');
@@ -1058,9 +1145,10 @@ $(document).ready(function() {
 						
 						order = $('#paymentRequestOrder').val();
 						summ = $('#paymentRequestSumm').val();
+						toDeposit = $('#paymentRequestToDeposit').is(':checked');
 						comment = $('#paymentRequestComment').val();
 						
-						$.post('/reports/set_users_orders', {users: users, order: order, summ: summ, comment: comment}, function(response) {	
+						$.post('/reports/set_users_orders', {users: users, order: order, summ: summ, to_deposit: toDeposit, comment: comment}, function(response) {	
 							if (response) {
 								notify('Заявка успешно оформлена!');
 								pRNewWin.close();
@@ -1071,6 +1159,7 @@ $(document).ready(function() {
 							renderSection({field: getSortField(), order: getSortOrder()});
 						}, 'json').fail(function(e) {
 							notify('Системная ошибка!', 'error');
+							pRNewWin.wait(false);
 							showError(e);
 						});
 					}	
@@ -1242,14 +1331,14 @@ $(document).ready(function() {
 					salaryWin.wait();
 					getAjaxHtml('reports/get_salary_form', {period_id: id, period_title: title}, function(html) {
 						salaryWin.setWidth(600);
-						salaryWin.setButtons([{id : 'setSalary', title: 'Рассчитать'}], 'Отмена');
+						salaryWin.setButtons([{id : 'calcSalary', title: 'Рассчитать'}], 'Отмена');
 						salaryWin.setData(html);
 						
 						$('#salaryStatics').ddrScrollTable();
-						
 						$('[salarysumm]').number(true, 0, ',', ' ');
 						
-						$('#setSalary').on(tapEvent, function() {
+						
+						$('#calcSalary').on(tapEvent, function() {
 							var stat = true;
 							
 							if ($('#salaryFormStatics').find('[choosedstatic]:checked').length == 0) {
@@ -1274,6 +1363,7 @@ $(document).ready(function() {
 							var data = [],
 								salesOrder = $('#salesOrder').val(),
 								salesComment = $('#salesComment').val(),
+								toDeposit = $('#paymentRequestToDeposit').is(':checked'),
 								salaryCoeffErrors = false,
 								salarySummErrors = false;
 							
@@ -1311,21 +1401,36 @@ $(document).ready(function() {
 								notify('Необходимо корректно прописать сумму!', 'error');
 							}
 							
+							
+							
 							if (stat) {
 								salaryWin.wait();
-								$.post('/reports/set_salary_orders', {period_id: id, data: data, order: salesOrder, comment: salesComment}, function(response) {
-									if (response) {
-										salaryWin.close();
-									} else {
-										salaryWin.wait(false);
-										notify('Ошибка формирования заявки!', 'error');
-									}
-								}).fail(function(e) {
+								getAjaxHtml('reports/calc_salary_orders', {period_id: id, data: data, order: salesOrder, comment: salesComment, to_deposit: toDeposit}, function(html) {
+									salaryWin.setWidth(1000);
+									salaryWin.setData(html);
+									salaryWin.setButtons([{id : 'setSalary', title: 'Сформировать заявки'}], 'Отмена');
+									
+									$('#setSalary').on(tapEvent, function() {
+										salaryWin.wait();
+										$.post('/reports/set_salary_orders', {period_id: id, data: data, order: salesOrder, comment: salesComment, to_deposit: toDeposit}, function(response) {
+											if (response) {
+												salaryWin.close();
+												notify('Заявки успешно оформлены!');
+											} else {
+												salaryWin.wait(false);
+												notify('Ошибка формирования заявки!', 'error');
+											}
+										}).fail(function(e) {
+											salaryWin.wait(false);
+											showError(e);
+											notify('Системная ошибка!', 'error');
+										});	
+									});
+								}, function() {
 									salaryWin.wait(false);
-									showError(e);
-									notify('Системная ошибка!', 'error');
 								});	
 							}
+							
 						});
 						
 					}, function() {
@@ -1544,7 +1649,8 @@ $(document).ready(function() {
 											// -------------------- Оформить
 											if (thisButtonId == 'paymentRequestsSetFromTemp') {
 												if ($('#paymentRequestTempChoosen').children().length > 0) {
-													$.post('/admin/paymentrequests/set_checkout', {data: tempDataToCheckout}, function(response) {
+													var toDeposit = $('#paymentRequestToDeposit').is(':checked');
+													$.post('/admin/paymentrequests/set_checkout', {to_deposit: toDeposit, data: tempDataToCheckout}, function(response) {
 														if (response) {
 															notify('Заявки на оплату оформлены успешно!');
 														} else {

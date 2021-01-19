@@ -7,6 +7,7 @@
 		wrapToClose: true,
 		buttons: false,
 		closeButton: false,
+		buttonsOnTop: false,
 		winClass: false,
 	}, settings);
 	
@@ -35,7 +36,8 @@
 	html +=             '<h5 class="text-overflow">'+ops.title+'</h5>';
 	html +=         '</div>';
 	}
-	html +=         '<div class="popup__content">'+(ops.html ? ops.html : '')+'</div>';
+	
+	if (!ops.buttonsOnTop) html += '<div class="popup__content">'+(ops.html ? ops.html : '')+'</div>';
 	
 	if(ops.closeButton || ops.buttons) {
 	html +=         '<div class="popup__buttons">';
@@ -51,6 +53,8 @@
 	}            
 	html +=         '</div>';
 	}
+	
+	if (ops.buttonsOnTop) html += '<div class="popup__content">'+(ops.html ? ops.html : '')+'</div>';
 	
 	html +=     '</div>';
 	html += '</div>';
@@ -125,6 +129,17 @@
 	}
 	
 	
+	
+	
+	
+	function _getWinHeight() {
+		return $('#'+popUpId).outerHeight();
+	}
+	
+	
+	function _getWinPosition() {
+		return $('#'+popUpId).parent('.popup').scrollTop();
+	}
 	
 	
 	
@@ -224,6 +239,26 @@
 					dhtml += 	'</div>';
 					dhtml += '</div>';
 				$('.popup__window').prepend(dhtml);
+				
+				
+				
+				var winH = $(window).height(),
+					popupH = _getWinHeight(),
+					winPos = _getWinPosition(),
+					dialogH = $('#'+popUpId).find('.popupdialog').outerHeight();
+				
+				if (popupH > winH) {
+					$('#'+popUpId).find('.popupdialog').css('top', 'calc(50vh - '+(dialogH / 2)+'px + '+winPos+'px)');
+				} else {
+					$('#'+popUpId).find('[ddrpopupdialog]').css('align-items', 'center');
+				}
+				
+				$('#'+popUpId).parent('.popup').scroll(function() {
+					winPos = _getWinPosition();
+					$('#'+popUpId).find('.popupdialog').css('top', 'calc(50vh - '+(dialogH / 2)+'px + '+winPos+'px)');
+				});
+				
+				
 				
 				$('#popupDialogN'+popUpId).on(tapEvent, function() {
 					$('#'+popUpId).find('.popup__dialog').remove();

@@ -52,7 +52,7 @@
 	
 	.popup__dialog {
 		display: flex;
-		align-items: center;
+		align-items: flex-start;
 		justify-content: center;
 		position: absolute;
 		top: 0;
@@ -62,6 +62,7 @@
 		z-index: 1003;
 	}	
 		.popupdialog {
+			position: relative;
 			min-width: 200px;
 			max-width: 400px;
 		}	

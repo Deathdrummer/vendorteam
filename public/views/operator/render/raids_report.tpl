@@ -83,7 +83,11 @@
 												{% if pattern_id %}
 													{{userData['raids'][raidId]['rate']|default('-')}}
 												{% else %}
-													<input type="number" step="0.1" min="0" showrows editraidkoeff="{{userData['raids'][raidId]['id']}}|{{userId}}|{{raidId}}" class="w45px" value="{{userData['raids'][raidId]['rate']|default(0)}}">
+													{% if userData['raids'][raidId] %}
+														<input type="number" step="0.1" min="0" showrows editraidkoeff="{{userData['raids'][raidId]['id']}}|{{userId}}|{{raidId}}" class="w45px" value="{{userData['raids'][raidId]['rate']|default(0)}}">
+													{% else %}
+														-
+													{% endif %}
 												{% endif %}
 											</td>
 										{% endfor %}
@@ -118,11 +122,11 @@
 						<tbody>
 							{% for userId, userData in static.users %}
 								<tr>
-									<td class="nowidth center">{{userData.koeff_summ}}</td>
-									<td class="nowidth center">{{userData.persones_count}}</td>
-									<td class="nowidth center">{{userData.effectiveness}}</td>
-									<td class="nowidth center">{{userData.fine}}</td>
-									<td class="nowidth center">{{userData.period_koeff|round(3)}}</td>
+									<td class="nowidth center">{% if userData['raids'] %}{{userData.koeff_summ}}{% else %}-{% endif %}</td>
+									<td class="nowidth center">{% if userData['raids'] %}{{userData.persones_count}}{% else %}-{% endif %}</td>
+									<td class="nowidth center">{% if userData['raids'] %}{{userData.effectiveness}}{% else %}-{% endif %}</td>
+									<td class="nowidth center">{% if userData['raids'] %}{{userData.fine}}{% else %}-{% endif %}</td>
+									<td class="nowidth center">{% if userData['raids'] %}{{userData.period_koeff|round(3)}}{% else %}-{% endif %}</td>
 									<td class="nowidth"><span class="nowrap">{{userData.payment|number_format(2, '.', ' ')}} р.</span></td>
 									<td><span class="nowrap">{{userData.to_deposit|number_format(2, '.', ' ')}} р.</span></td>
 									<td><strong class="nowrap">{{userData.final_payment|number_format(2, '.', ' ')}} р.</strong></td>
