@@ -4,9 +4,47 @@
 	</div>
 	
 	
-	<div class="section__buttons" id="sectionButtons">
-		<button id="usersSave" title="Сохранить"><i class="fa fa-save"></i></button>
+	
+	<div class="row gutters-6 align-items-center mb-3">
+		<div class="col-auto">
+			<div class="section__buttons mb-0" id="sectionButtons">
+				<button id="usersSave" title="Сохранить"><i class="fa fa-save"></i></button>
+			</div>
+		</div>
+		<div class="col-auto">
+			<div class="field small">
+				<input type="text" id="searchUsersField" placeholder="Введите никнейм">
+			</div>
+		</div>
+		<div class="col-auto">
+			<div class="buttons notop">
+				<button class="small" id="setSearchFromUsers">Поиск</button>
+			</div>
+		</div>
+		<div class="col-auto">
+			<div class="buttons notop">
+				<button class="small remove" disabled id="resetSearchFromUsers">Сбросить</button>
+			</div>
+		</div>
+		<div class="col-auto ml-auto">
+			<span>Группировка:</span>
+		</div>
+		<div class="col-auto">
+			<div class="select small">
+				<select id="staticsGroup">
+					<option value="">Все</option>
+					<option value="1">Рейды</option>
+					<option value="2">Группа</option>
+					<option value="3">Инактив</option>
+				</select>
+				<div class="select__caret"></div>
+			</div>
+		</div>
 	</div>
+	
+	
+	
+			
 	
 
 
@@ -31,7 +69,7 @@
 									{% endif %}
 									{% for sId, sData in statics %}
 										{% if udata[sId] is defined and sId in access_statics|keys %}
-											<li id="tab{{sId}}">{{statics[sId]['name']|default('Статик не задан')}}</li>
+											<li id="tab{{sId}}" group="{{statics[sId]['group']}}">{{statics[sId]['name']|default('Статик не задан')}}</li>
 										{% endif %}
 									{% endfor %}
 								</ul>
@@ -52,7 +90,7 @@
 																<td class="nowrap{% if sort_field == 'u.agreement' %} active{% endif %}" title="Соглашение">Согл. <i class="fa fa-sort" userssortfield="u.agreement" sortorder="{{sort_order}}"></i></td>
 																<td{% if sort_field == 'u.rank' %} class="active"{% endif %}>Звание <i class="fa fa-sort" userssortfield="u.rank" sortorder="{{sort_order}}"></i></td>
 																<td{% if sort_field == 'u.email' %} class="active"{% endif %}>E-mail <i class="fa fa-sort" userssortfield="u.email" sortorder="{{sort_order}}"></i></td>
-																<td{% if sort_field == 'u.reg_date' %} class="active"{% endif %}>Дата регистрации <i class="fa fa-sort" userssortfield="u.reg_date" sortorder="{{sort_order}}"></i></td>
+																<td class="w160px{% if sort_field == 'u.reg_date' %} active{% endif %}">Дата регистрации <i class="fa fa-sort" userssortfield="u.reg_date" sortorder="{{sort_order}}"></i></td>
 																<td>Стаж</td>
 																<!-- <td>Ранг</td> -->
 																<td{% if sort_field == 'u.role' %} class="active"{% endif %}>Роль <i class="fa fa-sort" userssortfield="u.role" sortorder="{{sort_order}}"></i></td>
@@ -62,9 +100,9 @@
 															</tr>
 														</thead>
 														
-														<tbody>
+														<tbody userslistrows>
 															{% for k, user in usersData %}
-																<tr userid="{{user.id}}" staticid="{{staticId}}">
+																<tr userid="{{user.id}}" staticid="{{staticId}}"{% if user.nickname %} usernickname="{{user.nickname}}"{% endif %}>
 																	<td class="nowidth nopadding">
 																		{% if user.avatar %}
 																			<div class="avatar" style="background-image: url('{{base_url('public/images/users/mini/'~user.avatar)}}')" title="{{user.nickname}}"></div>
@@ -205,6 +243,118 @@
 
 <script type="text/javascript"><!--
 $(document).ready(function() {
+	
+	
+	
+	//------------------------------------------------------------ Выбор группы
+	var groupFromCache = lscache.get('staticsGroupOperator');
+	if (groupFromCache) {
+		$('#staticsGroup').find('option[value="'+groupFromCache+'"]').setAttrib('selected');
+		$('[group]:not([group="'+groupFromCache+'"])').setAttrib('hidden');
+		$('.tabstitles.sub').find('li').removeClass('active');
+		$('.tabstitles.sub').find('li:visible:first').addClass('active');
+		var tabId = $('.tabstitles.sub').find('li:visible:first').attr('id');
+		
+		$('.tabstitles.sub').siblings('.tabscontent').children('div').removeClass('visible');
+		$('.tabstitles.sub').siblings('.tabscontent').children('div[tabid="'+tabId+'"]').addClass('visible');
+	} 
+	
+	$('#staticsGroup').on('change', function() {
+		var group = $('#staticsGroup').val() || false;
+		lscache.set('staticsGroupOperator', group);
+		$('[group]').removeAttrib('hidden');
+		if (group) {
+			$('[group]:not([group="'+group+'"])').setAttrib('hidden');
+			$('.tabstitles.sub').find('li').removeClass('active');
+			$('.tabstitles.sub').find('li:visible:first').addClass('active');
+			var tabId = $('.tabstitles.sub').find('li:visible:first').attr('id');
+			
+			$('.tabstitles.sub').siblings('.tabscontent').children('div').removeClass('visible');
+			$('.tabstitles.sub').siblings('.tabscontent').children('div[tabid="'+tabId+'"]').addClass('visible');
+		} else {
+			$('.tabstitles.sub').find('li').removeClass('active');
+			$('.tabstitles.sub').find('li:first').addClass('active');
+			var tabId = $('.tabstitles.sub').find('li:visible:first').attr('id');
+			
+			$('.tabstitles.sub').siblings('.tabscontent').children('div').removeClass('visible');
+			$('.tabstitles.sub').siblings('.tabscontent').children('div[tabid="'+tabId+'"]').addClass('visible');
+		}
+	});
+	
+	
+	
+	
+	
+	
+	//------------------------------------------------------------ Поиск по участникам
+	$('#setSearchFromUsers').on(tapEvent, function() {
+		var searchNickname = $('#searchUsersField').val();
+		
+		if (!searchNickname) $('#searchUsersField').addClass('error');
+		else {
+			$('.tabstitles.sub').children().removeAttrib('hidden');
+			$('[userslistrows], [deposituserslist]').find('tr').each(function() {
+				var thisRow = this;
+				var thisnickName = $(this).attr('usernickname');
+				var patt = new RegExp(searchNickname, 'im');
+				if (!patt.test(thisnickName)) {
+					$(thisRow).setAttrib('hidden');
+				} else {
+					$(thisRow).removeAttrib('hidden');
+				}
+			});
+			
+						
+			$('[userslistrows]').each(function() {
+				if ($(this).children().not('[hidden]').length == 0) {
+					var id = $(this).closest('[tabid]').attr('tabid');
+					$(this).closest('.tabscontent').siblings('.tabstitles.sub').find('#'+id).setAttrib('hidden');
+				}
+			});
+			
+			$('.tabstitles.sub').find('li').removeClass('active');
+			$('.tabstitles.sub').find('li:visible:first').addClass('active');
+			var tabId = $('.tabstitles.sub').find('li:visible:first').attr('id');
+			
+			$('.tabstitles.sub').siblings('.tabscontent').children('div').removeClass('visible');
+			$('.tabstitles.sub').siblings('.tabscontent').children('div[tabid="'+tabId+'"]').addClass('visible');
+			
+			$('#resetSearchFromUsers').removeAttrib('disabled');
+		}	
+	});
+	
+	$('#resetSearchFromUsers').on(tapEvent, function() {
+		$('[userslistrows], [deposituserslist]').find('tr').each(function() {
+			$(this).removeAttrib('hidden');
+		});
+		$('.tabstitles.sub').children().removeAttrib('hidden');
+		$('#searchUsersField').val('');
+		
+		$('.tabstitles.sub').find('li').removeClass('active');
+		$('.tabstitles.sub').find('li:visible:first').addClass('active');
+		var tabId = $('.tabstitles.sub').find('li:visible:first').attr('id');
+		
+		$('.tabstitles.sub').siblings('.tabscontent').children('div').removeClass('visible');
+		$('.tabstitles.sub').siblings('.tabscontent').children('div[tabid="'+tabId+'"]').addClass('visible');
+		
+		
+		$('#resetSearchFromUsers').setAttrib('disabled');
+	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	$('#usersSection').find('.user_deposit').number(true, 2, '.', ' ');
 	

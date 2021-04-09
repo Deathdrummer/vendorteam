@@ -39,6 +39,9 @@ class Reports_model extends My_Model {
 		$query = $this->db->get('raids r');
 		if (!$response = $query->result_array()) return [];
 		
+		
+		
+		
 		$result = [];
 		foreach ($response as $k => $item) {
 			$sId = $item['static_id'] ?: 0;
@@ -179,7 +182,6 @@ class Reports_model extends My_Model {
 	 * @return массив 
 	 */
 	public function saveMainReportPattern($data, $constants) {
-		$periodId = $data['period_id'];
 		$this->db->insert('reports_patterns', [
 			'name' 			=> $data['name'],
 			'period_id' 	=> $data['period_id'],
@@ -202,13 +204,14 @@ class Reports_model extends My_Model {
 		
 		$paymentsData = $this->buildReportPaymentsData($constants, [
 			'cash' 			=> $data['cash'],
-			'period_id' 	=> $data['period_id']
+			'period_id' 	=> $data['period_id'],
+			'variant' 		=> $data['variant']
 		]);
 		
 		if ($paymentsData) {
 			$usersPaymentsData = []; $usersStaticsData = []; 
-			foreach ($paymentsData as $staticId => $data) {
-				foreach($data['users'] as $userId => $userData) {
+			foreach ($paymentsData as $staticId => $payments) {
+				foreach($payments['users'] as $userId => $userData) {
 					$usersPaymentsData[] = [
 						'report_pattern_id'	=> $lastPatternId,
 						'static_id' 		=> $staticId,
@@ -248,7 +251,7 @@ class Reports_model extends My_Model {
 		}
 		
 		// Автоматически закрываем период после сохранения отчета
-		return $this->closePeriod($periodId, true, true);
+		return $this->closePeriod($data['period_id'], true, true);
 	}
 	
 	
@@ -364,11 +367,30 @@ class Reports_model extends My_Model {
 		if (!$cDResponse = $cDQuery->result_array()) return [];
 		$compoundsData = [];
 		foreach ($cDResponse as $item) {
-			$compoundsData[$item['static_id']][$item['user_id']] = [
+			
+			if (!isset($compoundsData[$item['static_id']][$item['user_id']]['persones_count'])) {
+				$compoundsData[$item['static_id']][$item['user_id']]['persones_count'] = $item['persones_count'];
+			} else {
+				$compoundsData[$item['static_id']][$item['user_id']]['persones_count'] += $item['persones_count'];
+			}
+			
+			if (!isset($compoundsData[$item['static_id']][$item['user_id']]['fine'])) {
+				$compoundsData[$item['static_id']][$item['user_id']]['fine'] = $item['fine'];
+			} else {
+				$compoundsData[$item['static_id']][$item['user_id']]['fine'] += $item['fine'];
+			}
+			
+			if (!isset($compoundsData[$item['static_id']][$item['user_id']]['effectiveness'])) {
+				$compoundsData[$item['static_id']][$item['user_id']]['effectiveness'] = $item['effectiveness'];
+			} else {
+				$compoundsData[$item['static_id']][$item['user_id']]['effectiveness'] += $item['effectiveness'];
+			}
+			
+			/*$compoundsData[$item['static_id']][$item['user_id']] = [
 				'persones_count'	=> $item['persones_count'],
 				'effectiveness'		=> $item['effectiveness'],
 				'fine'				=> $item['fine']
-			];
+			];*/
 		}
 		return $compoundsData;
 	}
@@ -437,6 +459,7 @@ class Reports_model extends My_Model {
 	 */
 	public function buildReportPaymentsData($constants = null, $pData = null, $toExport = false) {
 		if (is_null($constants) || empty($pData['cash']) || !isset($pData['period_id'])) return false;
+		
 		extract($constants);
 		$periodsIds = isJson($pData['period_id']) ? json_decode($pData['period_id'], true) : $pData['period_id'];
 		
@@ -460,9 +483,6 @@ class Reports_model extends My_Model {
 			$query = $this->db->get('users u');
 			if (!$resultUsers = $query->result_array()) return $response;
 			$resultUsers = sortUsers($resultUsers); // сортировка участников по именам (сначала русские потом англ.)
-			
-			
-			//toLog($resultUsers, true);
 			
 			
 			// Добавление списка рейдов к массиву участников
@@ -1025,9 +1045,10 @@ class Reports_model extends My_Model {
 	 * @param только открытые периоды
 	 * @return 
 	 */
-	public function getReportsPeriods($onlyOpened = false) {
+	public function getReportsPeriods($onlyOpened = false, $showToVisits = false) {
 		$this->db->where('rp.archive !=', 1);
 		if ($onlyOpened) $this->db->where('rp.closed !=', 1);
+		if ($showToVisits) $this->db->where('rp.to_visits', 1);
 		$this->db->order_by('rp.id', 'DESC');
 		$this->db->limit(50);
 		$query = $this->db->get('reports_periods rp');
@@ -1089,6 +1110,34 @@ class Reports_model extends My_Model {
 			$this->db->update('reports_periods', $update);
 		}
 	}
+	
+	
+	
+	
+	
+	/**
+	 * Период для "мои почещения"
+	 * @param ID периода
+	 * @return void
+	 */
+	public function periodToVisits($periodId, $saved = false, $onlyClose = false) {
+		$this->db->where('id', $periodId);
+		$query = $this->db->get('reports_periods');
+		$update = [];
+		if ($response = $query->row_array()) {
+			if ($response['to_visits'] == 0) $update['to_visits'] = 1;
+			else $update['to_visits'] = 0;
+		}
+		
+		if ($update) {
+			$this->db->where('id', $periodId);
+			$this->db->update('reports_periods', $update);
+		}
+	}
+	
+	
+	
+	
 	
 	
 	
@@ -1621,7 +1670,7 @@ class Reports_model extends My_Model {
 	 * @param 
 	 * @return 
 	*/
-	public function getSalaryOrders($data = false, $setUsersDeposit = false) {
+	public function getSalaryOrders($data = false, $setUsersDeposit = false, $withTotal = false) {
 		if (!$data['period_id'] || !$data['data']) return false;
 		
 		$order = arrTakeItem($data, 'order');
@@ -1650,13 +1699,14 @@ class Reports_model extends My_Model {
 		
 		if ($toDeposit) {
 			$staticsData = $this->admin_model->getStatics();
-			$percentToDeposit = $this->admin_model->getSettings('payment_equests_deposit_percent');
+			$percentToDeposit = $this->admin_model->getSettings('payment_requests_deposit_percent');
 		}
 		
 		
 		$orders = [];
 		$toDepositData = [];
 		foreach ($data as $staticId => $users) {
+			$total[$staticId] = 0;
 			foreach ($users as $userId => $coeffSumm) {
 				if ($coeffSumm <= 0) continue;
 				
@@ -1681,6 +1731,8 @@ class Reports_model extends My_Model {
 					$summToDeposit = 0;
 				}
 				
+				$total[$staticId] += $summToOrder;
+				
 				$orders[] = [
 					'user_id'		=> $userId,
 					'nickname' 		=> $usersData[$userId]['nickname'],
@@ -1697,7 +1749,7 @@ class Reports_model extends My_Model {
 		}
 		
 		if ($toDeposit && $setUsersDeposit) $this->users_model->setUsersDeposit($toDepositData);
-		return $orders;
+		return $orders ? ($withTotal ? ['orders' => $orders, 'total' => $total] : $orders) : false;
 	}
 	
 	

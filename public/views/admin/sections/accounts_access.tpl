@@ -30,6 +30,7 @@
 									<div><label for="nav{{id}}_7"><input type="checkbox"{% if accounts_access[id]['access']['nav']['vacation'] %} checked{% endif %} name="accounts_access[{{id}}][access][nav][vacation]" value="1" id="nav{{id}}_7"> Отпуск</label></div>
 									<div><label for="nav{{id}}_8"><input type="checkbox"{% if accounts_access[id]['access']['nav']['personages'] %} checked{% endif %} name="accounts_access[{{id}}][access][nav][personages]" value="1" id="nav{{id}}_8"> Мои персонажи</label></div>
 									<div><label for="nav{{id}}_9"><input type="checkbox"{% if accounts_access[id]['access']['nav']['paymentorders'] %} checked{% endif %} name="accounts_access[{{id}}][access][nav][paymentorders]" value="1" id="nav{{id}}_9"> Мои заявки</label></div>
+									<div><label for="nav{{id}}_10"><input type="checkbox"{% if accounts_access[id]['access']['nav']['visitsrate'] %} checked{% endif %} name="accounts_access[{{id}}][access][nav][visitsrate]" value="1" id="nav{{id}}_10"> Моя посещаемость</label></div>
 								</div>
 								
 								<div class="col-auto">

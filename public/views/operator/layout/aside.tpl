@@ -27,8 +27,15 @@
 					{% if id in access and item.url %}
 						<li id="{{item.id}}" url="{{item.url}}" hash="{{item.hash}}" title="{{item.desc}}">
 							<i class="fa fa-{{item.icon|default('bars')}}"></i>
-							<span>{{item.title}}</span>
+							<span>{% if id == 15 %}Форс мажор, Выговоры, Стимулирование{% else %}{{item.title}}{% endif %}</span>
 						</li>
+						
+						{% if id == 15 %}
+							<li id="resigns" url="resigns" hash="resigns" title="Управление заявками на увольнение">
+								<i class="fa fa-{{item.icon|default('bars')}}"></i>
+								<span>Заявки на увольнение</span>
+							</li>
+						{% endif %}
 					{% endif %}
 				{% endfor %}
 				<li id="messages" url="messages" hash="messages" title="Главная страница"><i class="fa fa-envelope"></i><span>Сообщения</span></li>

@@ -198,7 +198,7 @@ $(document).ready(function() {
 	
 	
 	
-	//---------------------------------------- Выход из личного кабинета
+	//----------------------------------------------------------------------------------- Выход из личного кабинета
 	$('[logout]').on(tapEvent, function() {
 		popUp({
 			title: 'Выход из личного кабинета',
@@ -214,6 +214,103 @@ $(document).ready(function() {
 			});
 		});
 	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//----------------------------------------------------------------------------------- Уволиться
+	$('[resign]').on(tapEvent, function() {
+		popUp({
+			title: 'Заявка на увольнение',
+		    width: 600,
+		    buttons: [{id: 'setResign', title: 'Отправить заявку'}],
+		    closeButton: 'Отмена'
+		}, function(resignWin) {
+			resignWin.wait();
+			getAjaxHtml('account/resign/get_form', function(html) {
+				resignWin.setData(html);
+				
+				var d = new Date();
+	
+				$('#chooseResignDate').datepicker({
+			        dateFormat:         'd M yy г.',
+			        //yearRange:          "2020:"+(new Date().getFullYear() + 1),
+			        numberOfMonths:     1,
+			        changeMonth:        true,
+			        changeYear:         true,
+			        monthNamesShort:    ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября', 'декабря'],
+			        monthNames:         ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь', 'декабрь'],
+			        dayNamesMin:        ['вс','пн','вт','ср','чт','пт','сб',],
+			        firstDay:           1,
+			        minDate:            d,
+			        //maxDate:          	'+1m',
+			        
+			        onSelect: function(stringDate, dateObj) {
+			        	$.post('account/resign/calc_enddate', {date: dateObj.currentDay+'-'+(dateObj.currentMonth+1)+'-'+dateObj.currentYear}, function(date) {
+			        		$('#resignCurrentDate').val(date.current_date);
+			        		$('#resignLastday').text(date.last_date_format);
+			        		$('#resignLastDate').val(date.last_date);
+			        	}, 'json').fail(function(e) {
+							notify('Системная ошибка!', 'error');
+							showError(e);
+						});
+			        } 
+			    });
+			    
+			    
+			    
+			    $('#setResign').on(tapEvent, function() {
+			    	var resignDate = $('#resignCurrentDate'),
+			    		lastDate = $('#resignLastDate'),
+			    		reason = $('#resignReason'),
+			    		comment = $('#resignComment'),
+			    		stat = true;
+			    		
+		    		if (!reason.val()) {
+		    			$(reason).addClass('error');
+		    			stat = false;
+		    		}
+		    		
+		    		if (!comment.val()) {
+		    			$(comment).addClass('error');
+		    			stat = false;
+		    		}
+
+		    		
+		    		if (stat) {
+		    			resignWin.wait();
+		    			$.post('account/resign/set_resign', {date_resign: resignDate.val(), date_last: lastDate.val(), reason: reason.val(), comment: comment.val()}, function(response) {
+			    			if (response) {
+			    				notify('Заявка успешно отправлена!');
+			    				resignWin.close();
+			    			} else {
+			    				resignWin.wait(false);
+			    				notify('Ошибка отправки заявки!', 'error');
+			    			}
+			        	}, 'json').fail(function(e) {
+							notify('Системная ошибка!', 'error');
+							showError(e);
+						});
+		    		} else {
+		    			notify('Необходимо заполнить все поля!', 'error');
+		    		}
+			    });
+			    
+			    
+			    
+				
+			}, function() {
+				resignWin.wait(false);
+			});
+		});
+	});
+	
+	
 	
 	
 	
@@ -2038,7 +2135,7 @@ $(document).ready(function() {
 	
 	
 	
-	
+	//--------------------------------------------------- Мои персонажи
 	$('[getpersonages]').on(tapEvent, function() {
 		
 		popUp({
@@ -2199,7 +2296,7 @@ $(document).ready(function() {
 	
 	
 	
-	
+	//--------------------------------------------------- Мои заявки
 	$('[paymentorders]').on(tapEvent, function() {
 		popUp({
 			title: 'Заявки на оплату',
@@ -2214,7 +2311,6 @@ $(document).ready(function() {
 			getAjaxHtml('account/get_payment_requests', function(html) {
 				$('#paymentRequestsWin').html(html);
 			}, function() {
-				
 				$('.tabstitles li:first').addClass('active');
 				$('.tabscontent > *:first').addClass('visible');
 				$('.tabstitles li').on(tapEvent, function() {
@@ -2222,7 +2318,60 @@ $(document).ready(function() {
 				});
 			});
 		});
-	});	
+	});
+	
+	
+	
+	
+	
+	
+	
+	//--------------------------------------------------- Моя посещаемость
+	$('[visitsrate]').on(tapEvent, function() {
+		popUp({
+			title: 'Моя посещаемость',
+		    width: 400,
+		    height: false,
+		    html: '<div id="visitsRateWin"></div>',
+		    wrapToClose: true,
+		    winClass: 'account',
+		    buttons: false,
+		    closeButton: false,
+		}, function(visitsRateWin) {
+			visitsRateWin.wait();
+			
+			getAjaxHtml('account/get_reports_periods', {attr: 'chooseperiodtovisits', 'only_opened': false, 'to_visits': true}, function(html) {
+				$('#visitsRateWin').html(html);
+			}, function() {
+				visitsRateWin.wait(false);
+			});
+			
+			
+			$('#visitsRateWin').on(tapEvent, '[chooseperiodtovisits]', function() {
+				visitsRateWin.wait();
+				var visitsPeriodId = $(this).attr('chooseperiodtovisits');
+				
+				getAjaxHtml('account/get_visits_coeffs', {period_id: visitsPeriodId}, function(html) {
+					visitsRateWin.setWidth(1300);
+					visitsRateWin.setData(html, false, function() {
+						visitsRateWin.correctPosition();
+					});
+				}, function() {
+					visitsRateWin.wait(false);
+				});
+			});
+			
+		});
+	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

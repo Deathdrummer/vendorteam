@@ -85,6 +85,30 @@ class Users_model extends MY_Model {
 	
 	
 	
+	
+	/**
+	 * Получить ID участников заданного статика
+	 * @param static ID
+	 * @return array
+	*/
+	public function getUsersFromStatic($staticId = false, $onlyMain = false) {
+		if (!$staticId) return false;
+		$this->db->select('user_id');
+		$this->db->where('static_id', $staticId);
+		if ($onlyMain) $this->db->where('main', 1);
+		if (!$result = $this->_result('users_statics')) return false;
+		$staticUsers = array_column($result, 'user_id');
+		return $staticUsers;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	/**
 	 * Получить ID главного статика участника
 	 * @param 

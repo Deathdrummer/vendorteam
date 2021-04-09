@@ -48408,6 +48408,226 @@ body::-webkit-resizer {
     .square_block .forbidden.disabled i {
       color: #ced2d6 !important; }
 
+.buttons {
+  margin-top: 0.8rem;
+  font-size: 0;
+  word-spacing: 0;
+  text-align: left; }
+  .buttons.inline {
+    display: inline-block; }
+  .buttons.notop {
+    margin-top: 0; }
+  .buttons.minspace {
+    word-spacing: 4px; }
+  .buttons.right {
+    text-align: right; }
+  .buttons button, .buttons .button {
+    display: inline-block;
+    display: -webkit-inline-box;
+    display: -webkit-inline-flex;
+    display: -moz-inline-box;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+       -moz-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    vertical-align: top;
+    font-size: 14px;
+    word-spacing: normal;
+    background-color: #4296bb;
+    border: none;
+    cursor: pointer;
+    color: #fff;
+    height: 34px;
+    padding-left: 15px;
+    padding-right: 15px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    -webkit-transition: background-color 0.16s;
+    -o-transition: background-color 0.16s;
+    transition: background-color 0.16s; }
+    .buttons button > *, .buttons .button > * {
+      margin: auto; }
+    .buttons button:hover, .buttons .button:hover {
+      background-color: #3981a1; }
+    .buttons button:active, .buttons .button:active {
+      background-color: #275a70;
+      -webkit-transition: background-color 0s;
+      -o-transition: background-color 0s;
+      transition: background-color 0s; }
+    .buttons button.large, .buttons .button.large {
+      font-size: 16px;
+      height: 40px;
+      padding-left: 30px;
+      padding-right: 30px; }
+    .buttons button.small, .buttons .button.small {
+      font-size: 12px;
+      height: 26px;
+      padding-left: 15px;
+      padding-right: 15px; }
+    .buttons button.fieldheight, .buttons .button.fieldheight {
+      height: 60px;
+      min-width: 60px; }
+      .buttons button.fieldheight i, .buttons .button.fieldheight i {
+        font-size: 24px; }
+    .buttons button.remove:not(:disabled), .buttons .button.remove:not(:disabled) {
+      background-color: #c54747 !important; }
+      .buttons button.remove:not(:disabled):hover, .buttons .button.remove:not(:disabled):hover {
+        background-color: #b13838 !important; }
+      .buttons button.remove:not(:disabled):active, .buttons .button.remove:not(:disabled):active {
+        background-color: #7e2828 !important;
+        -webkit-transition: none !important;
+        -o-transition: none !important;
+        transition: none !important; }
+    .buttons button:disabled, .buttons button.disabled, .buttons .button:disabled, .buttons .button.disabled {
+      background-color: #bbbbbb !important;
+      cursor: default !important;
+      -webkit-transition: background-color 0s !important;
+      -o-transition: background-color 0s !important;
+      transition: background-color 0s !important; }
+
+@keyframes shake {
+  from, to {
+    -webkit-transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0);
+    background-color: #c54747; }
+  10%, 30%, 50%, 70%, 90% {
+    -webkit-transform: translate3d(-3px, 0, 0);
+            transform: translate3d(-3px, 0, 0); }
+  20%, 40%, 60%, 80% {
+    -webkit-transform: translate3d(3px, 0, 0);
+            transform: translate3d(3px, 0, 0); } }
+
+@-webkit-keyframes shakedis {
+  from, to {
+    -webkit-transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0);
+    background-color: #bbbbbb; }
+  10%, 30%, 50%, 70%, 90% {
+    -webkit-transform: translate3d(-3px, 0, 0);
+            transform: translate3d(-3px, 0, 0); }
+  20%, 40%, 60%, 80% {
+    -webkit-transform: translate3d(3px, 0, 0);
+            transform: translate3d(3px, 0, 0); } }
+
+@keyframes shakedis {
+  from, to {
+    -webkit-transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0);
+    background-color: #bbbbbb; }
+  10%, 30%, 50%, 70%, 90% {
+    -webkit-transform: translate3d(-3px, 0, 0);
+            transform: translate3d(-3px, 0, 0); }
+  20%, 40%, 60%, 80% {
+    -webkit-transform: translate3d(3px, 0, 0);
+            transform: translate3d(3px, 0, 0); } }
+    .buttons button.error, .buttons .button.error {
+      -webkit-animation: shake 0.8s;
+              animation: shake 0.8s;
+      background-color: #c54747; }
+      .buttons button.error:disabled.error, .buttons .button.error:disabled.error {
+        -webkit-animation: shakedis 0.8s;
+                animation: shakedis 0.8s; }
+      .buttons button.error:hover, .buttons .button.error:hover {
+        background-color: #b13838; }
+      .buttons button.error:active, .buttons .button.error:active {
+        background-color: #7e2828;
+        -webkit-transition: background-color 0s;
+        -o-transition: background-color 0s;
+        transition: background-color 0s; }
+    .buttons button.alt, .buttons .button.alt {
+      background-color: #466580; }
+      .buttons button.alt:hover, .buttons .button.alt:hover {
+        background-color: #395369; }
+      .buttons button.alt:active, .buttons .button.alt:active {
+        background-color: #22313e;
+        -webkit-transition: background-color 0s;
+        -o-transition: background-color 0s;
+        transition: background-color 0s; }
+    .buttons button.pay, .buttons .button.pay {
+      background-color: #65a25b; }
+      .buttons button.pay:hover, .buttons .button.pay:hover {
+        background-color: #578b4e; }
+      .buttons button.pay:active, .buttons .button.pay:active {
+        background-color: #3c6136;
+        -webkit-transition: background-color 0s;
+        -o-transition: background-color 0s;
+        transition: background-color 0s; }
+    .buttons button.done, .buttons .button.done {
+      position: relative; }
+      .buttons button.done:disabled::before, .buttons .button.done:disabled::before {
+        -webkit-box-shadow: 0 0 0 3px #bbbbbb;
+                box-shadow: 0 0 0 3px #bbbbbb; }
+      .buttons button.done:disabled::after, .buttons .button.done:disabled::after {
+        color: #bbbbbb; }
+      .buttons button.done::before, .buttons .button.done::before {
+        content: '';
+        position: absolute;
+        top: -10px;
+        right: -6px;
+        width: 26px;
+        height: 26px;
+        background-color: #fff;
+        border-radius: 50%;
+        -webkit-box-shadow: 0 0 0 3px #4296bb;
+                box-shadow: 0 0 0 3px #4296bb; }
+      .buttons button.done::after, .buttons .button.done::after {
+        content: '\f00c';
+        position: absolute;
+        top: -8px;
+        right: -4px;
+        font: normal normal normal 14px/1 FontAwesome;
+        font-size: 22px;
+        color: #00a900; }
+      .buttons button.done:not(.fieldheight)::before, .buttons .button.done:not(.fieldheight)::before {
+        top: -8px;
+        right: -4px;
+        width: 16px;
+        height: 16px; }
+      .buttons button.done:not(.fieldheight)::after, .buttons .button.done:not(.fieldheight)::after {
+        top: -7px;
+        right: -3px;
+        font-size: 14px; }
+    .buttons button.fail, .buttons .button.fail {
+      position: relative; }
+      .buttons button.fail:disabled::before, .buttons .button.fail:disabled::before {
+        -webkit-box-shadow: 0 0 0 3px #bbbbbb;
+                box-shadow: 0 0 0 3px #bbbbbb; }
+      .buttons button.fail:disabled::after, .buttons .button.fail:disabled::after {
+        color: #bbbbbb; }
+      .buttons button.fail::before, .buttons .button.fail::before {
+        content: '';
+        position: absolute;
+        top: -10px;
+        right: -6px;
+        width: 26px;
+        height: 26px;
+        background-color: #fff;
+        border-radius: 50%;
+        -webkit-box-shadow: 0 0 0 3px #c54747;
+                box-shadow: 0 0 0 3px #c54747; }
+      .buttons button.fail::after, .buttons .button.fail::after {
+        content: '\f00d';
+        position: absolute;
+        top: -9px;
+        right: -1.5px;
+        font: normal normal normal 14px/1 FontAwesome;
+        font-size: 22px;
+        color: #a90000; }
+      .buttons button.fail:not(.fieldheight)::before, .buttons .button.fail:not(.fieldheight)::before {
+        top: -8px;
+        right: -4px;
+        width: 16px;
+        height: 16px; }
+      .buttons button.fail:not(.fieldheight)::after, .buttons .button.fail:not(.fieldheight)::after {
+        top: -7px;
+        right: -1px;
+        font-size: 14px; }
+    .buttons button.nowrap, .buttons .button.nowrap {
+      white-space: nowrap; }
+
 .popup::-webkit-scrollbar {
   width: 10px;
   height: 10px; }
@@ -49011,18 +49231,6 @@ body::-webkit-resizer {
     -webkit-transform: translate3d(0, 0, 0);
             transform: translate3d(0, 0, 0);
     background-color: #c54747; }
-  10%, 30%, 50%, 70%, 90% {
-    -webkit-transform: translate3d(-3px, 0, 0);
-            transform: translate3d(-3px, 0, 0); }
-  20%, 40%, 60%, 80% {
-    -webkit-transform: translate3d(3px, 0, 0);
-            transform: translate3d(3px, 0, 0); } }
-
-@-webkit-keyframes shakedis {
-  from, to {
-    -webkit-transform: translate3d(0, 0, 0);
-            transform: translate3d(0, 0, 0);
-    background-color: #bbbbbb; }
   10%, 30%, 50%, 70%, 90% {
     -webkit-transform: translate3d(-3px, 0, 0);
             transform: translate3d(-3px, 0, 0); }

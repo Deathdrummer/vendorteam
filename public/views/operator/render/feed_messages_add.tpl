@@ -26,7 +26,7 @@
 	
 	<div class="newsfeed__content">
 		<label><span>Содержание новости</span></label>
-		<textarea editor rows="12"></textarea>
+		<textarea editor new class="w100" rows="12"></textarea>
 	</div>
 	
 	<div class="newsfeed__buttons">

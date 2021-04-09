@@ -14,6 +14,7 @@
 		<li id="fieldsComplaints">Поля для предложений и жалоб</li>
 		<li id="usersListPay">Список "Заказ Оплаты"</li>
 		<li id="usersListComplaints">Список "Предложения и Жалобы"</li>
+		<li id="resignsList">Заявки на увольнение</li>
 		<li id="constants">Константы</li>
 		<li id="agreement">Договор</li>
 		<li id="importantInfo">Важная информация</li>
@@ -74,6 +75,14 @@
 				
 				{% include form~'field.tpl' with {'label': 'Ширина окна', 'name': 'popup_width', 'class': 'w10'} %}
 				{% include form~'textarea.tpl' with {'label': 'Текст во всплывающей форме заполнения данных пользователем', 'name': 'new_user_popup_text', 'class': 'w50'} %}
+				
+			</fieldset>
+			
+			
+			<fieldset>
+				<legend>Заявки на увольнение</legend>
+				
+				{% include form~'textarea.tpl' with {'label': 'Текст во всплывающей форме заяки на увольнение', 'name': 'resign_popup_text', 'class': 'w50'} %}
 				
 			</fieldset>
 			
@@ -213,7 +222,7 @@
 									
 									<tbody>
 										{% for kf, field in list %}
-											<tr>
+											<tr class="pointer">
 												<input type="hidden" class="field_pay_id" value="{{field.user_id}}">
 												<td class="field_pay_nickname">{{field.nickname}}</td>
 												<td class="field_pay_static">{{field.static}}</td>
@@ -324,6 +333,119 @@
 		
 		
 		
+		<div tabid="resignsList">
+			<h3>Заявки на увольнение</h3>
+			
+			<ul class="tabstitles sub">
+				<li id="tabResignsActual">Актуальные</li>
+				<li id="tabResignsArchive">Архив</li>
+			</ul>
+			
+			<div class="tabscontent">
+				<div tabid="tabResignsActual">
+					<table>
+						<thead>
+							<tr>
+								<td></td>
+								<td class="w200px">Никнейм</td>
+								<td class="w200px">Статик</td>
+								<td>Причина увольнения</td>
+								<td>Что изменить</td>
+								<td class="w150px">Дата регистрации аккаунта</td>
+								<td class="w150px">Дата подачи заявки</td>
+								<td class="w150px">Дата для увольнения</td>
+								<td class="w150px">Последний рабочий день</td>
+								<td class="w60px">Статус</td>
+							</tr>
+						</thead>
+						<tbody>
+							{% if resigns[1] %}
+								{% for item in resigns[1] %}
+									<tr>
+										<td class="nopadding nowidth"><div class="avatar" style="background-image: url('{{base_url('public/images/users/mini/'~item.avatar)}}');"></div></td>
+										<td>{{item.nickname}}</td>
+										<td>{{item.static}}</td>
+										<td><small>{{item.reason|raw}}</small></td>
+										<td><small>{{item.comment|raw}}</small></td>
+										<td>{{item.date_reg|d}}</td>
+										<td>{{item.date_add|d}} <p>в {{item.date_add|t}}</p></td>
+										<td>{{item.date_resign|d}}</td>
+										<td>{{item.date_last|d}}</td>
+										<td class="access_block center">
+											{% if item.stat %}
+												<div resign="0" class="success" data-id="{{item.id}}" title="Уволен"></div>
+											{% else %}
+												<div resign="1" class="forbidden" data-id="{{item.id}}" title="не уволен"></div>
+											{% endif %}
+										</td>
+									</tr>
+								{% endfor %}
+							{% else %}
+								<tr><td colspan="10"><p class="empty center">Нет данных</p></td></tr>
+							{% endif %}
+						</tbody>
+					</table>	
+				</div>
+				<div tabid="tabResignsArchive">
+					<table>
+						<thead>
+							<tr>
+								<td></td>
+								<td class="w200px">Никнейм</td>
+								<td class="w200px">Статик</td>
+								<td>Причина увольнения</td>
+								<td>Что изменить</td>
+								<td class="w150px">Дата регистрации аккаунта</td>
+								<td class="w150px">Дата подачи заявки</td>
+								<td class="w150px">Дата для увольнения</td>
+								<td class="w150px">Последний рабочий день</td>
+								<td class="w150px">Дата одобрения заявки</td>
+								<td class="w150px">Подтвердил увольнение</td>
+							</tr>
+						</thead>
+						<tbody>
+							{% if resigns[0] %}
+								{% for item in resigns[0] %}
+									<tr>
+										<td class="nopadding nowidth"><div class="avatar" style="background-image: url('{{base_url('public/images/users/mini/'~item.avatar)}}');"></div></td>
+										<td>{{item.nickname}}</td>
+										<td>{{item.static}}</td>
+										<td><small>{{item.reason|raw}}</small></td>
+										<td><small>{{item.comment|raw}}</small></td>
+										<td>{{item.date_reg|d}}</td>
+										<td>{{item.date_add|d}} <p>в {{item.date_add|t}}</p></td>
+										<td>{{item.date_resign|d}}</td>
+										<td>{{item.date_last|d}}</td>
+										<td>{{item.date_success|d}} <p>в {{item.date_success|t}}</p></td>
+										<td>
+											{% if item.from is same as(0) %}
+												Администратор
+											{% else %}
+												<small>Оператор:</small>
+												{{item.from}}
+											{% endif %}
+										</td>
+										{#<td class="access_block center">
+											{% if item.stat %}
+												<div resign="0" class="success" data-id="{{item.id}}" title="Уволен"></div>
+											{% else %}
+												<div resign="1" class="forbidden" data-id="{{item.id}}" title="не уволен"></div>
+											{% endif %}
+										</td>#}
+									</tr>
+								{% endfor %}
+							{% else %}
+								<tr><td colspan="11"><p class="empty center">Нет данных</p></td></tr>
+							{% endif %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		
+		
+		
+		
 		<div tabid="constants">
 			<h3>Константы</h3>
 			
@@ -340,13 +462,13 @@
 						<legend>Константы для расчетов и отчета</legend>
 						
 						<div class="row">
-							{% for variant in 1..2 %}
+							{% for k, variant in ['Сдельный отчет', 'Премиальный отчет'] %}
 								<div class="col-auto">
-									<small>Вариант {{variant}}</small>
-									{% include form~'field.tpl' with {'label': 'Посещения', 'name': 'constants|'~variant~'|visits', 'class': 'w100', 'type': 'number', 'step': '0.001'} %}
-									{% include form~'field.tpl' with {'label': 'Персонажи', 'name': 'constants|'~variant~'|persons', 'class': 'w100', 'type': 'number', 'step': '0.001'} %}
-									{% include form~'field.tpl' with {'label': 'Эффективность', 'name': 'constants|'~variant~'|effectiveness', 'class': 'w100', 'type': 'number', 'step': '0.001'} %}
-									{% include form~'field.tpl' with {'label': 'Штрафы', 'name': 'constants|'~variant~'|fine', 'class': 'w100', 'type': 'number', 'step': '0.001'} %}
+									<small>{{variant}}</small>
+									{% include form~'field.tpl' with {'label': 'Посещения', 'name': 'constants|'~(k+1)~'|visits', 'class': 'w100', 'type': 'number', 'step': '0.001'} %}
+									{% include form~'field.tpl' with {'label': 'Персонажи', 'name': 'constants|'~(k+1)~'|persons', 'class': 'w100', 'type': 'number', 'step': '0.001'} %}
+									{% include form~'field.tpl' with {'label': 'Эффективность', 'name': 'constants|'~(k+1)~'|effectiveness', 'class': 'w100', 'type': 'number', 'step': '0.001'} %}
+									{% include form~'field.tpl' with {'label': 'Штрафы', 'name': 'constants|'~(k+1)~'|fine', 'class': 'w100', 'type': 'number', 'step': '0.001'} %}
 								</div>
 							{% endfor %}
 						</div>
@@ -373,7 +495,7 @@
 					<fieldset>
 						<legend>Процент отчисления в депозит в заявках на оплату</legend>
 						
-						{% include form~'field.tpl' with {'label': 'Процент', 'name': 'payment_equests_deposit_percent', 'class': 'w10', 'type': 'number', 'step': '1'} %}
+						{% include form~'field.tpl' with {'label': 'Процент', 'name': 'payment_requests_deposit_percent', 'class': 'w10', 'type': 'number', 'step': '1'} %}
 					
 					</fieldset>
 				</div>
@@ -402,7 +524,7 @@
 								{% include form~'textarea.tpl' with {'label': 'Выговоры', 'name': 'rating_coeffs|reprimands', 'placeholder': 'коэффициент:баллы / перенос строки'} %}
 							</div>
 							<div class="col-12 col-md-6 col-lg-3">
-								{% include form~'textarea.tpl' with {'label': 'Форс мажорные выходныые', 'name': 'rating_coeffs|forcemajeure', 'placeholder': 'коэффициент:баллы / перенос строки'} %}
+								{% include form~'textarea.tpl' with {'label': 'Форс мажорные выходные', 'name': 'rating_coeffs|forcemajeure', 'placeholder': 'коэффициент:баллы / перенос строки'} %}
 							</div>
 							<div class="col-12 col-md-6 col-lg-3">
 								{% include form~'textarea.tpl' with {'label': 'Стимулирование', 'name': 'rating_coeffs|stimulations', 'placeholder': 'коэффициент:баллы / перенос строки'} %}
@@ -725,7 +847,7 @@ $(document).ready(function() {
 			pay1 = $(thisTr).find('td.field_pay_1').text();
 		
 		popUp({
-			title: 'Новая заявка на оплату',
+			title: 'Заявка на оплату',
 		    width: 400,
 		    height: 300,
 		    wrapToClose: true,
@@ -741,7 +863,7 @@ $(document).ready(function() {
 				
 				//--------------------------------------------------- Оформить заявку
 				$('#setPaymentRequest').on(tapEvent, function() {
-					var stat = true, users = [], order, summ, comment;
+					var stat = true, users = [], order, summ, toDeposit, comment;
 					if ($('#paymentRequestChoosenUsers').find('[paymentrequestchoosenuser]').length == 0) {
 						$('#paymentRequestChoosenUsers').addClass('error');
 						notify('Необходимо указать участников.', 'error');
@@ -769,9 +891,10 @@ $(document).ready(function() {
 						
 						order = $('#paymentRequestOrder').val();
 						summ = $('#paymentRequestSumm').val();
+						toDeposit = $('#paymentRequestToDeposit').val();
 						comment = $('#paymentRequestComment').val();
 						
-						$.post('/reports/set_users_orders', {users: users, order: order, summ: summ, comment: comment}, function(response) {	
+						$.post('/reports/set_users_orders', {users: users, order: order, summ: summ, to_deposit: toDeposit, comment: comment}, function(response) {	
 							if (response) {
 								notify('Заявка успешно оформлена!');
 								pRNewWin.close();
@@ -846,6 +969,41 @@ $(document).ready(function() {
 			}, function() {
 				pRNewWin.wait(false);
 			});
+		});
+	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//------------------------- Изменить статус "Заявки на увольнение"
+	$('body').off(tapEvent, '[resign]').on(tapEvent, '[resign]', function() {
+		var thisItem = this,
+			id = $(thisItem).data('id'),
+			stat = $(thisItem).attr('resign');
+		
+		$.post('/admin/change_resign_stat', {id: id, from: 'admin', stat: stat}, function(response) {
+			if (response) {
+				if (stat === '1') {
+					$(thisItem).attr('resign', '0').removeClass('forbidden').addClass('success').attr('title', 'уволен');
+				} else {
+					$(thisItem).attr('resign', '1').removeClass('success').addClass('forbidden').attr('title', 'не уволен');
+				}
+				notify('Статус изменен!');
+			} else {
+				notify('Ошибка!', 'error');
+			}
+		}).fail(function(e) {
+			showError(e);	
+			notify('Системная ошибка!', 'error');
 		});
 	});
 	

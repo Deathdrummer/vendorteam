@@ -50,12 +50,11 @@ class Offtime_model extends My_Model {
 	 * @return 
 	 */
 	public function setRolesLimits($data) {
-		$query = $this->db->get('offtime_limits');
-		$response = $query->result_array();
+		$tData = $this->_result('offtime_limits');
 		
 		$tableData = [];
-		if ($response) {
-			foreach ($response as $item) {
+		if ($tData) {
+			foreach ($tData as $item) {
 				$tableData[$item['role'].'|'.$item['static']] = [
 					'id' 	=> $item['id'],
 					'limit' => $item['limit']
@@ -127,18 +126,33 @@ class Offtime_model extends My_Model {
 		$periodEnd = strtotime(date('Y-m-d', strtotime('first day of next month', $data['date']) - 86400));
 		$data['date'] = strtotime(date('Y-m-d', $data['date']));
 		
-		$roleLimit = $this->getRolesLimits($data['static']);
-		$roleLimit = isset($roleLimit[$data['role']]) ? $roleLimit[$data['role']] : 0;
+		$rolesLimits = $this->getRolesLimits($data['static']);
+		$roleLimit = isset($rolesLimits[$data['role']]) ? $rolesLimits[$data['role']] : 0;
+		$staticLimit = isset($rolesLimits[0]) ? $rolesLimits[0] : 0;
 		
 		
+		
+		// лимит на роль в день
 		$this->db->where([
 			'static' 	=> $data['static'],
 			'role' 		=> $data['role'],
 			'date' 		=> $data['date']
 		]);
 		$countRolesUsersOfDay = $this->db->count_all_results('offtime_users');
+		if ($countRolesUsersOfDay >= $roleLimit) {
+			return false;
+		}
 		
-		if ($countRolesUsersOfDay >= $roleLimit) return false;
+		
+		// лимит на все роли одного статика в день
+		$this->db->where([
+			'static' 	=> $data['static'],
+			'date' 		=> $data['date']
+		]);
+		$countStaticUsersOfDay = $this->db->count_all_results('offtime_users');
+		if ($countStaticUsersOfDay >= $staticLimit) {
+			return false;
+		} 
 		
 		
 		$this->db->where([

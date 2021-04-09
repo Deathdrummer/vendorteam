@@ -62,7 +62,7 @@ class Account extends MY_Controller {
 	 * Выйти из личного кабинета
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function logout() {
 		delete_cookie('id'); //$this->session->unset_userdata('id');
 		delete_cookie('token'); //$this->session->unset_userdata('token');
@@ -73,10 +73,72 @@ class Account extends MY_Controller {
 	
 	
 	
+	
+	
+	
+	/**
+	 * Увольнение
+	 * @param 
+	 * @return 
+	*/
+	public function resign($action = false) {
+		if (!$this->input->is_ajax_request() || !$action) return false;
+		$postData = bringTypes($this->input->post());
+		switch ($action) {
+			case 'get_form':
+				$date = strtotime('+14 day', time());
+				$data = [
+					'current_date'			=> date('Y-m-d', time()),
+					'current_date_format'	=> date('j', time()).' '.$this->monthes[date('n', time())].' '.date('Y', time()).' г.',
+					'last_date'				=> date('Y-m-d', $date),
+					'last_date_format'		=> date('j', $date).' '.$this->monthes[date('n', $date)].' '.date('Y', $date).' г.',
+				];
+				$data['resign_text'] = isset($this->settings['resign_popup_text_setting']) ? $this->settings['resign_popup_text_setting'] : '';
+				echo $this->twig->render('views/account/render/resign_form', $data);
+				break;
+			
+			case 'calc_enddate':
+				$date = strtotime('+14 day', strtotime($postData['date']));
+				$data = [
+					'current_date'			=> date('Y-m-d', strtotime($postData['date'])),
+					'last_date'				=> date('Y-m-d', $date),
+					'last_date_format'		=> date('j', $date).' '.$this->monthes[date('n', $date)].' '.date('Y', $date).' г.',
+				];
+				echo json_encode($data);
+				break;
+			
+			case 'set_resign':
+				$data = [
+					'user_id'		=> $this->userData['id'],
+					'reason'		=> $postData['reason'],
+					'comment'		=> $postData['comment'],
+					'date_add'		=> time(),
+					'date_resign'	=> strtotime($postData['date_resign']),
+					'date_last'		=> strtotime($postData['date_last'])
+				];
+				
+				if (!$this->account->setResign($data)) exit('0');
+				echo '1';
+				break;
+			
+			default:
+				break;
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	/**
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function guides() {
 		$data = [];
 		// вставляем SVG спрайт
@@ -591,8 +653,12 @@ class Account extends MY_Controller {
 	public function get_reports_periods() {
 		if (!$this->input->is_ajax_request()) return false;
 		$this->load->model('reports_model');
-		$reportsPeriods = $this->reports_model->getReportsPeriods(true);
-		echo $this->twig->render('views/account/render/reports_periods.tpl', ['periods' => $reportsPeriods]);
+		$post = bringTypes($this->input->post());
+		$attr = isset($post['attr']) ? $post['attr'] : null;
+		$onlyOpened = isset($post['only_opened']) ? $post['only_opened'] : true;
+		$showToVisits = isset($post['to_visits']) ? $post['to_visits'] : false;
+		$reportsPeriods = $this->reports_model->getReportsPeriods($onlyOpened, $showToVisits);
+		echo $this->twig->render('views/account/render/reports_periods.tpl', ['periods' => $reportsPeriods, 'attr' => $attr]);
 	}
 	
 	
@@ -908,7 +974,7 @@ class Account extends MY_Controller {
 	 * Функция работы с персонажами
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function personages($action = false) {
 		if (!$this->input->is_ajax_request() || !$action) return false;
 		
@@ -967,7 +1033,7 @@ class Account extends MY_Controller {
 	/**
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function get_payment_requests() {
 		$paymentRequestsData = [];
 		if ($getPaymentRequests = $this->account->getPaymentRequests()) {
@@ -1010,7 +1076,7 @@ class Account extends MY_Controller {
 	 * Изменить цвет пользователя
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function change_user_color() {
 		if (!$this->input->is_ajax_request()) return false;
 		$data = $this->input->post();
@@ -1038,7 +1104,7 @@ class Account extends MY_Controller {
 	/**
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function get_users_for_rating() {
 		if (!$this->input->is_ajax_request()) return false;
 		$staticId = $this->input->post('static_id');
@@ -1069,7 +1135,7 @@ class Account extends MY_Controller {
 	/**
 	 * @param 
 	 * @return 
-	 */
+	*/
 	public function save_data_for_rating() {
 		if (!$this->input->is_ajax_request()) return false;
 		$data = $this->input->post();
@@ -1095,6 +1161,35 @@ class Account extends MY_Controller {
 		echo $this->twig->render('views/account/render/rating_notifications.tpl', $data);
 	}
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Получить коэффициенты посещаемости
+	 * @param 
+	 * @return 
+	*/
+	public function get_visits_coeffs() {
+		if (!$this->input->is_ajax_request()) return false;
+		$periodId = $this->input->post('period_id');
+		$accountStatics = isset($this->userData['statics']) ? array_keys($this->userData['statics']) : false;
+		if (!$accountStatics) exit('0');
+		
+		$data = [];
+		foreach ($accountStatics as $static) {
+			$data[$static] = $this->account->getVisitsCoeffs(['period_id' => $periodId, 'static_id' => $static]);
+		}
+		
+		$raidsTypes = $this->admin->getRaidsTypes();
+		
+		echo $this->twig->render('views/account/render/visits_coeffs', ['coeffs_data' => $data, 'raids_types' => $raidsTypes, 'statics' => $this->userData['statics']]);
+	}
 	
 	
 	

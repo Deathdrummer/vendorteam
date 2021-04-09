@@ -142,6 +142,7 @@ class Admin extends MY_Controller {
 				$data['users_list_pay'] = $this->admin_model->getUsersListPay();
 				$data['users_list_complaints'] = $this->admin_model->getUsersListComplaints();
 				$data['users_list_more'] = false;
+				$data['resigns'] = $this->admin_model->getResigns();
 				break;
 			
 			case 'users':
@@ -309,7 +310,6 @@ class Admin extends MY_Controller {
 						$data['payment_requests_list'][$paid][] = $item;
 					}
 					$data['payment_requests_list']['paid'] = isset($data['payment_requests_list']['paid']) ? array_slice($data['payment_requests_list']['paid'], 0, 100) : false;
-					$data['payment_requests_titles'] = ['nopaid' => 'Не рассчитаны', 'paid' => 'Рассчитаны'];
 				}
 				break;
 			
@@ -1418,7 +1418,7 @@ class Admin extends MY_Controller {
 				break;
 			
 			case 'set_checkout':
-				$data = $postData['data'];
+				$data = bringTypes($postData['data']);
 				$toDeposit = $postData['to_deposit'];
 				$usersIds = array_column($data, 'user_id') ?: [];
 				$this->load->model('users_model');
@@ -1427,7 +1427,7 @@ class Admin extends MY_Controller {
 				
 				if ($toDeposit) {
 					$staticsData = $this->admin_model->getStatics();
-					$percentToDeposit = $this->admin_model->getSettings('payment_equests_deposit_percent');
+					$percentToDeposit = $this->admin_model->getSettings('payment_requests_deposit_percent');
 				}
 				
 				$orders = [];
@@ -1574,6 +1574,13 @@ class Admin extends MY_Controller {
 				if ($this->ratings->setActivePeriod($postData['id'])) exit('0');
 				echo '1';
 				break;
+			
+			case 'set_referencepoint_period': // задать точку отсчета для расчета рейтинга
+				if ($this->ratings->setReferencepointPeriod($postData['id'])) exit('0');
+				echo '1';
+				break;
+				
+				
 				
 			case 'get_report': // получить отчет
 				$periodInfo = $this->ratings->getPeriodsInfo($postData['period_id']);
@@ -1904,6 +1911,23 @@ class Admin extends MY_Controller {
 			default:
 				break;
 		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	 */
+	public function change_resign_stat() {
+		$postData = bringTypes($this->input->post());
+		if (!$this->admin_model->changeResignStat($postData)) exit('0');
+		echo '1'; 
 	}
 	
 	

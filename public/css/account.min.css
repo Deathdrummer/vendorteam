@@ -49079,7 +49079,22 @@ body.body_start::-webkit-resizer {
       cursor: default; }
   .leftblock__logout {
     margin-top: 10px;
-    text-align: left; }
+    text-align: left;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -webkit-justify-content: space-between;
+       -moz-box-pack: justify;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
+    -webkit-box-align: end;
+    -webkit-align-items: flex-end;
+       -moz-box-align: end;
+        -ms-flex-align: end;
+            align-items: flex-end; }
     .leftblock__logout button, .leftblock__logout a {
       margin: 0;
       margin-top: 10px;
@@ -49092,26 +49107,13 @@ body.body_start::-webkit-resizer {
       -webkit-transition: color 0.16s;
       -o-transition: color 0.16s;
       transition: color 0.16s; }
-      @media screen and (min-width: 576px) {
-        .leftblock__logout button, .leftblock__logout a {
-          font-size: 18px;
-          line-height: 18px; } }
-      @media screen and (min-width: 768px) {
-        .leftblock__logout button, .leftblock__logout a {
-          font-size: 18px;
-          line-height: 18px; } }
-      @media screen and (min-width: 992px) {
-        .leftblock__logout button, .leftblock__logout a {
-          font-size: 18px;
-          line-height: 18px; } }
-      @media screen and (min-width: 1590px) {
-        .leftblock__logout button, .leftblock__logout a {
-          font-size: 18px;
-          line-height: 18px; } }
       .leftblock__logout button i, .leftblock__logout a i {
         margin-right: 4px; }
       .leftblock__logout button:hover, .leftblock__logout a:hover {
         color: #54e9ff; }
+      .leftblock__logout button.small, .leftblock__logout a.small {
+        font-size: 14px;
+        line-height: 14px; }
   .leftblock__nav {
     height: 100%; }
     .leftblock__nav ul {
@@ -52920,3 +52922,9 @@ body.body_start::-webkit-resizer {
     .ratings table td small {
       font-size: 14px;
       color: #9893a7; }
+
+.resign__lastdate {
+  margin-top: 9px;
+  font-size: 14px; }
+  .resign__lastdate_empty {
+    color: #aaa; }

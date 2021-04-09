@@ -434,7 +434,8 @@ class Account_model extends My_Model {
 	 * @param 
 	 * @return 
 	*/
-	public function getUsersToCompound($data) {
+	public function getUsersToCompound($data = false) {
+		if (!$data) return false;
 		$this->db->select('cd.user_id, cd.persones_count, cd.effectiveness, cd.fine');
 		$this->db->where(['cd.period_id' => $data['period_id'], 'cd.static_id' => $data['static_id']]);
 		$queryCd = $this->db->get('compounds_data cd');
@@ -475,6 +476,67 @@ class Account_model extends My_Model {
 		
 		return ['compounds_data' => array_replace_recursive($resData, $rData), 'raids' => $raids];
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Получить коэффициенты посещений
+	 * @param 
+	 * @return 
+	*/
+	public function getVisitsCoeffs($data = false) {
+		if (!$data) return false;
+		$this->db->select('cd.user_id, cd.persones_count, cd.effectiveness, cd.fine');
+		$this->db->where(['cd.period_id' => $data['period_id'], 'cd.static_id' => $data['static_id']]);
+		$queryCd = $this->db->get('compounds_data cd');
+		
+		$resData = [];
+		$respCd = [];
+		if ($respCd = $queryCd->result_array()) {
+			$respCd = setArrKeyFromField($respCd, 'user_id');
+		}
+		
+		$this->db->select('u.id, u.avatar, u.nickname, u.color');
+		$this->db->join('users_statics us', 'us.user_id = u.id');
+		$this->db->where(['us.static_id' => $data['static_id'], 'verification' => 1, 'deleted' => 0]);
+		$queryU = $this->db->get('users u');
+		if (!$respU = $queryU->result_array()) return false;
+		$respU = setArrKeyFromField($respU, 'id');
+		
+		$resData = array_replace_recursive($respU, array_intersect_key($respCd, $respU));
+		
+		
+		$this->db->select('ru.id, r.id AS raid_id, r.date, ru.user_id, ru.rate, rt.name');
+		$this->db->where(['r.period_id' => $data['period_id'], 'r.static_id' => $data['static_id'], 'r.is_key' => 0]);
+		$this->db->join('raid_users ru', 'ru.raid_id = r.id');
+		$this->db->join('raids_types rt', 'rt.id = r.type', 'left outer');
+		$queryR = $this->db->get('raids r');
+		
+		$rData = []; $raids = [];
+		foreach ($queryR->result_array() as $item) {
+			$raids[$item['raid_id']] = [
+				'name' => $item['name'],
+				'date' => $item['date'],
+			];
+			$rData[$item['user_id']]['raids'][$item['raid_id']] = ['id' => $item['id'], 'rate' => $item['rate']];
+			
+			if (!isset($rData[$item['user_id']]['rate_summ'])) $rData[$item['user_id']]['rate_summ'] = $item['rate'];
+			else $rData[$item['user_id']]['rate_summ'] += $item['rate']; 
+		}
+		
+		return ['coeffs' => array_replace_recursive($resData, $rData), 'raids' => $raids];
+	}
+	
+	
+	
+	
+	
 	
 	
 	
@@ -1203,6 +1265,8 @@ class Account_model extends My_Model {
 	
 	
 	
+	
+	
 	/**
 	 * Получить коэффициент посещения за год, где коэффициент больше 0.5
 	 * @param static_id - ID статика, возвращает массив ID участника => коэффициент
@@ -1211,49 +1275,74 @@ class Account_model extends My_Model {
 	 * @return mixed
 	*/
 	public function getUserVisitsRate($params = []) {
-		$staticUsers = false;
-		if (isset($params['static_id'])) {
-			$this->db->select('user_id');
-			$this->db->where('static_id', $params['static_id']);
-			$query = $this->db->get('users_statics');
-			if (!$result = $query->result_array()) return false;
-			$staticUsers = array_column($result, 'user_id');
+		$this->load->model('ratings_model', 'ratings');
+		if (!$periods = $this->ratings->getRatingsReportsPeriods()) return []; // all & last
+		
+		$all = $this->_getRates($periods['all'], $params);
+		$last = $this->_getRates($periods['last'], $params, true);
+		
+		$intersect = array_intersect_key($all, $last);
+		$keysOnlyAll = array_diff_key($all, $intersect);
+		$keysOnlyLast = array_diff_key($last, $intersect);
+		
+		$mergeData = [];
+		if ($intersect) {
+			foreach ($intersect as $userId => $rates) {
+				if (isset($last[$userId])) $mergeData[$userId] = array_merge($rates, $last[$userId]);
+			}
+		}
+			
+		$mergeData = array_replace($mergeData, $keysOnlyAll, $keysOnlyLast);
+		
+		$finalData = [];
+		foreach ($mergeData as $userId => $rates) {
+			$countItems = count($rates);
+			$countmatch = array_filter($rates, function($item) {return $item > 0;});
+			$finalData[$userId] = $countItems ? round(count($countmatch) / ($countItems / 100), 2) : 0;
 		}
 		
-		$yearAgo = strtotime('-1 year', $params['period']['visits_date']);
-		$this->db->select('ru.user_id, ru.rate');
-		$this->db->where('r.date >=', $yearAgo);
 		
+		if (isset($params['user_id'])) return $finalData[$params['user_id']];
+		return $finalData;
+	}
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Получить коэффициенты посещений
+	 * @param 
+	 * @return 
+	*/
+	private function _getRates($periods = false, $params = [], $x5 = false) {
+		if (!$periods) return [];
+		$staticUsers = false;
+		if (isset($params['static_id'])) {
+			$this->load->model('users_model', 'users');
+			$staticUsers = $this->users->getUsersFromStatic($params['static_id'], true);
+		}
+		
+		$this->db->select('ru.user_id, ru.rate');
+		$this->db->join('raid_users ru', 'ru.raid_id = r.id');
+		$this->db->where('r.static_id', $params['static_id']);
+		$this->db->where_in('r.period_id', $periods);
 		if (!$params) $this->db->where('ru.user_id', $this->userData['id']);
 		elseif ($staticUsers) $this->db->where_in('ru.user_id', $staticUsers);
 		elseif (isset($params['user_id'])) $this->db->where('ru.user_id', $params['user_id']); 
 		
-		$this->db->join('raid_users ru', 'ru.raid_id = r.id');
-		$query = $this->db->get('raids r');
-		$result = $query->result_array();
+		if (!$result = $this->_result('raids r')) return [];
 		
-		$data = [];
+		$data = $staticUsers ? array_fill_keys($staticUsers, []) : []; 
 		foreach ($result as $item) {
-			$data[$item['user_id']][] = $item['rate'];
+			if ($x5) for ($i = 0; $i < 5; $i++) $data[$item['user_id']][] = $item['rate'];
+			else $data[$item['user_id']][] = $item['rate'];
 		}
 		
-
-		//$result = array_column($result, 'rate');
-		
-		foreach ($data as $userId => $rates) {
-			$countItems = count($rates);
-			$countmatch = 0;
-			foreach($rates as $item) {
-				if ($item > 0.5) $countmatch += 1;
-			}
-			
-			$percent[$userId] = round($countmatch / ($countItems / 100), 2);
-		}
-		
-		if (isset($params['user_id'])) return $percent[$params['user_id']];
-		return $percent;
+		return $data;
 	}
-	
 	
 	
 	
@@ -1494,6 +1583,28 @@ class Account_model extends My_Model {
 		$finalData['rating'] = array_sum($finalData);
 		return $finalData;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	 */
+	public function setResign($data = false) {
+		if (!$data) return false;
+		if (!$this->db->insert('resign', $data)) return false;
+		return true;
+	}
+	
+	
 	
 	
 	

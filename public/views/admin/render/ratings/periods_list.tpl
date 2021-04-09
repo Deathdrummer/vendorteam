@@ -3,8 +3,8 @@
 		<tr>
 			<td>Название</td>
 			<td>Периоды</td>
-			<td class="w150px" title="Дата отсчета коэффициента посещений">Отсчет коэфф. пос.</td>
 			<td class="nowidth" title="Активировать период">Актив.</td>
+			<td class="nowidth" title="Точка отсчета для расчета рейтинга периода">Отсч..</td>
 			<td class="nowidth" title="Уведомить">Увед.</td>
 			<td class="nowidth">Отчет</td>
 		</tr>
@@ -25,13 +25,16 @@
 							<p class="empty">Нет данных</p>
 						{% endif %}
 					</td>
-					<td>
-						{{period.visits_date|d}}
-					</td>
 					<td class="center">
 						<div class="checkblock" title="Активировать период">
 							<input id="activeperiod{{period.id}}" setactiveperiod="{{period.id}}"{% if period.active %} checked{% endif %} name="setactiveperiod" type="radio">
 							<label for="activeperiod{{period.id}}"></label>
+						</div>
+					</td>
+					<td class="center">
+						<div class="checkblock" title="Задать точку отсчета для расчета рейтинга">
+							<input id="referencepoint{{period.id}}" setreferencepoint="{{period.id}}"{% if period.referencepoint %} checked{% endif %} name="setreferencepoint" type="radio">
+							<label for="referencepoint{{period.id}}"></label>
 						</div>
 					</td>
 					<td>

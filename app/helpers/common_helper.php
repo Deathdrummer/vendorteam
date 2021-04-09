@@ -70,11 +70,11 @@ if (!function_exists('getSprite')) {
 if (!function_exists('isJson')) {
     /**
      * Является ли формат строки JSON
-     * @param 
-     * @return 
+     * @param строка
+     * @return bool
     */
     function isJson($string) {
-        if (!is_string($string)) return false;
+        if (is_array($string) || !is_string($string) || is_numeric($string) || is_integer($string) || is_bool($string)) return false;
         json_decode($string);
         return (json_last_error() == JSON_ERROR_NONE);
     }
@@ -544,7 +544,7 @@ if ( ! function_exists('bringTypes')) {
         $resData = [];
         foreach($inpArray as $key => $val) {
             if(is_string($val)) $val = trim($val);
-            if(! is_array($val)) {
+            if(!is_array($val)) {
                 if((is_bool($val) && $val === false) || $val === 'false' || $val === 'FALSE') $resData[$key] = false;
                 elseif((is_bool($val) && $val === true) || $val === 'true' || $val === 'TRUE') $resData[$key] = true;
                 elseif(is_null($val) || $val === 'null' || $val === 'NULL' || $val === null || $val === NULL || $val === '' || preg_match('/^\s+$/', $val)) $resData[$key] = null;

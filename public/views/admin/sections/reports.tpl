@@ -30,7 +30,7 @@
 						<input type="hidden" id="reportVariant" value="">
 						
 						<button id="reportPatternsButton" class="fieldheight alt" title="Отчеты"><i class="fa fa-list-alt"></i></button>
-						<button id="saveMainReport" class="fieldheight alt" title="Сохранить отчет"><i class="fa fa-save"></i></button>
+						<button id="saveMainReport" class="fieldheight alt" disabled title="Сохранить отчет"><i class="fa fa-save"></i></button>
 					</div>
 				</div>
 				
@@ -135,13 +135,14 @@
 					<legend>Список заявок</legend>
 					
 					<ul class="tabstitles sub">
-						{% for paid in payment_requests_list|keys %}
-							<li id="paymentRequestsPaid{{paid}}">{{payment_requests_titles[paid]}}</li>	
-						{% endfor %}
-					</ul>	
+						<li id="paymentRequestsPaidnopaid" class="active">Не рассчитаны</li>	
+						<li id="paymentRequestsPaidpaid">Рассчитаны</li>	
+					</ul>
+						
 					<div class="tabscontent">
-						{% for paid, items in payment_requests_list %}
-							<div tabid="paymentRequestsPaid{{paid}}">
+						{% for payStat in ['nopaid', 'paid'] %}
+							{% set items = payment_requests_list[payStat] %}
+							<div tabid="paymentRequestsPaid{{payStat}}">
 								<table id="paymentRequestsList">
 									<thead>
 										<tr>
@@ -184,7 +185,7 @@
 												<td>{{item.order}}</td>
 												<td class="nowrap">{{item.summ|number_format(2, '.', ' ')}} <small>руб.</small></td>
 												<td class="nowrap">{{item.to_deposit|number_format(2, '.', ' ')}} <small>руб.</small></td>
-												<td><small>{{item.comment}}</small></td>
+												<td><small style="word-break: break-all; white-space: pre-wrap;">{{item.comment}}</small></td>
 												<td class="nowrap">{{item.date|d}} {{item.date|t}}</td>
 												<td class="square_block center">
 													{% if item.paid %}
@@ -247,7 +248,6 @@ $(document).ready(function() {
 	//------------------------------------------------------------------------------------------------ 1 Отчет
 	
 	
-	
 	// ------------------------Сформировать первый отчет
 	$('#setMainReport').on(tapEvent, function() {
 		var staticsCash = $('#staticsCashData').val(),
@@ -291,6 +291,7 @@ $(document).ready(function() {
 								$('[tabid^="tabstatic"]:first').addClass('visible');
 								$('#reportVariant').val(reportVariant);
 								reportVariantWin.close();
+								$('#saveMainReport').removeAttrib('disabled');
 							});
 						}
 					});
@@ -347,6 +348,7 @@ $(document).ready(function() {
 						staticsCashWin.close();
 						$('#setStaticsCash').addClass('done');
 						notify('Бюджет статиков задан!');
+						$('#saveMainReport').setAttrib('disabled');
 					});
 					
 				} else {
@@ -372,9 +374,10 @@ $(document).ready(function() {
 	
 	
 	// ------------------------------------------------ Периоды
-	var periodsWin, currentPeriodToTime, setPeriodStartTime; 
+	var periodsWin, currentPeriodToTime, setPeriodStartTime, choosenPeriods; 
 	$('#periodsButton').on(tapEvent, function() {
 		$(this).removeClass('error fail');
+		choosenPeriods = [];
 		popUp({
 			title: 'Периоды',
 		    width: 700,
@@ -393,6 +396,7 @@ $(document).ready(function() {
 					else notify('Период выбран!');
 					$('#periodsButton').addClass('done');
 					periodsWin.close();
+					$('#saveMainReport').setAttrib('disabled');
 				});
 				
 				
@@ -468,6 +472,12 @@ $(document).ready(function() {
 										html += 		'<label for="closedperiod'+periodId+'"></label>';
 										html += 	'</div>';
 										html += '</td>';
+										html += '<td class="nowidth center">';
+										html += 	'<div class="checkblock">';
+										html += 		'<input id="toVisitsPeriod'+periodId+'" choosetovisits="'+periodId+'" type="checkbox">';
+										html += 		'<label for="toVisitsPeriod'+periodId+'"></label>';
+										html += 	'</div>';
+										html += '</td>';
 									$(thisRow).html(html);
 								}
 							});
@@ -489,7 +499,6 @@ $(document).ready(function() {
 	
 	
 	//---------------------------------------- Выбрать период
-	var choosenPeriods = [];
 	$('body').off(tapEvent, '[chooseperiod]').on(tapEvent, '[chooseperiod]', function() {
 		var thisId = parseInt($(this).attr('chooseperiod'));
 		if ($(this).hasClass('done')) {
@@ -592,6 +601,24 @@ $(document).ready(function() {
 			notify('Системная ошибка!', 'error');
 		});
 	});
+	
+	
+	
+	$('body').off(tapEvent, '[choosetovisits]').on(tapEvent, '[choosetovisits]', function() {
+		var thisPeriodId = $(this).attr('choosetovisits');
+		
+		$.post('/reports/period_to_visits', {id: thisPeriodId}, function(response) {
+			if (response) notify('Статус изменен!');
+			else notify('Статус не изменен!', 'error');
+		}, 'json').fail(function(e) {
+			showError(e);
+			notify('Системная ошибка!', 'error');
+		});
+	});
+	
+	
+	
+	
 	
 	
 	$('body').off(tapEvent, '[periodtoarchive]').on(tapEvent, '[periodtoarchive]', function() {
@@ -1264,6 +1291,7 @@ $(document).ready(function() {
 	
 	// --------------------------------------- Заявки на оплату: изменить статус выплаты
 	$('body').off(tapEvent, '[prpaydone]').on(tapEvent, '[prpaydone]', function() {
+		console.log('prpaydone');
 		serPrPayDone(this);
 	});
 	

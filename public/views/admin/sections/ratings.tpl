@@ -153,7 +153,7 @@ var koeffHistory = [];
 
 $('#ratingPeriods').on(tapEvent, function() {
 	popUp({
-		title: 'Периоды',
+		title: 'Рейтинговые отчеты',
 		//buttons: [{id: 'newRatingPeriod', title: 'Новый период'}],
 		closeButton: 'Закрыть',
 		winClass: false,
@@ -161,7 +161,7 @@ $('#ratingPeriods').on(tapEvent, function() {
 		function openPeriods() {
 			ratingsReportsWin.wait();
 			getAjaxHtml('admin/ratings/get_periods', function(html) {
-				ratingsReportsWin.setTitle('Периоды');
+				ratingsReportsWin.setTitle('Рейтинговые отчеты');
 				ratingsReportsWin.setWidth(700);
 				ratingsReportsWin.setButtons([{id: 'newRatingPeriod', title: 'Новый период'}], 'Закрыть');
 				ratingsReportsWin.setData(html);
@@ -177,6 +177,25 @@ $('#ratingPeriods').on(tapEvent, function() {
 							tabForceMajeureLoaded = false;
 						} else {
 							notify('Ошибка активации периода!', 'error');
+						}
+						ratingsReportsWin.wait(false);
+					}).fail(function(e) {
+						notify('Системная ошибка!', 'error');
+						showError(e);
+					});
+				});
+				
+				
+				
+				$('[setreferencepoint]').on('change', function() {
+					ratingsReportsWin.wait();
+					var periodId = $(this).attr('setreferencepoint');
+					$.post('/admin/ratings/set_referencepoint_period', {id: periodId}, function(response) {
+						if (response) {
+							notify('Точка отсчета успешно задана!');
+							tabForceMajeureLoaded = false;
+						} else {
+							notify('Ошибка установки точки отсчета!', 'error');
 						}
 						ratingsReportsWin.wait(false);
 					}).fail(function(e) {
@@ -247,8 +266,6 @@ $('#ratingPeriods').on(tapEvent, function() {
 						ratingsReportsWin.setButtons([{id: 'addRatingPeriod', title: 'Создать'}], 'Отмена');
 						ratingsReportsWin.setWidth(500);
 						
-						datePicker('#newRatingsPeriodDate');
-						
 						var choosedPeriods = [];
 						$('[periodid]').on(tapEvent, function() {
 							var thisItem = this,
@@ -285,11 +302,11 @@ $('#ratingPeriods').on(tapEvent, function() {
 								stat = false;
 							}
 							
-							if (!$('#newRatingsPeriodDate').attr('date')) {
+							/*if (!$('#newRatingsPeriodDate').attr('date')) {
 								$('#newRatingsPeriodDate').addClass('error');
 								notify('Необходимо указать дату отсчета посещений!', 'error');
 								stat = false;
-							}
+							}*/
 							
 							
 							if (stat) {
@@ -298,7 +315,7 @@ $('#ratingPeriods').on(tapEvent, function() {
 									ratingsReportsWin.wait();
 									$.post('/admin/ratings/add_period', {
 										title: $('#newratingPeriodTitle').val(),
-										visits_date: $('#newRatingsPeriodDate').attr('date'),
+										//visits_date: $('#newRatingsPeriodDate').attr('date'),
 										periods: choosedPeriods
 									}, function() {
 										ratingsReportsWin.wait(false);

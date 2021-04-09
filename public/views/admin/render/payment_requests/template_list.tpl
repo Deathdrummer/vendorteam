@@ -72,7 +72,7 @@
 						<input type="text" id="paymentRequestTempOrder" autocomplete="off"/>
 					</div>
 					<div class="payment_request_form__item">
-						<label>Удержать в депозит</label>
+						<label>Удержать в резерв</label>
 						<div class="checkblock">
 							<input type="checkbox" id="paymentRequestToDeposit">
 							<label for="paymentRequestToDeposit"></label>

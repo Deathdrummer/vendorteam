@@ -206,7 +206,7 @@ class Operator extends MY_Controller {
 			
 			case 'newsfeed':
 				$data['statics'] = $this->admin_model->getStatics(true);
-				$data['feed_messages'] = $this->admin_model->getFeedMessages();
+				$data['feed_messages'] = $this->admin_model->getFeedMessages(2);
 				
 				break;
 			
@@ -326,6 +326,9 @@ class Operator extends MY_Controller {
 				$data['game_ids'] = $this->admin_model->personagesGetGameIds(true);
 				$data['personages'] = $this->admin_model->personagesGet();	
 				break;
+			
+			case 'resigns':
+				$data['resigns'] = $this->admin_model->getResigns();
 			
 			default: 
 				break;	

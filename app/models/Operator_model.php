@@ -271,11 +271,29 @@ class Operator_model extends MY_Model {
 		if (!$cDResponse = $cDQuery->result_array()) return [];
 		$compoundsData = [];
 		foreach ($cDResponse as $item) {
-			$compoundsData[$item['static_id']][$item['user_id']] = [
+			if (!isset($compoundsData[$item['static_id']][$item['user_id']]['persones_count'])) {
+				$compoundsData[$item['static_id']][$item['user_id']]['persones_count'] = $item['persones_count'];
+			} else {
+				$compoundsData[$item['static_id']][$item['user_id']]['persones_count'] += $item['persones_count'];
+			}
+			
+			if (!isset($compoundsData[$item['static_id']][$item['user_id']]['fine'])) {
+				$compoundsData[$item['static_id']][$item['user_id']]['fine'] = $item['fine'];
+			} else {
+				$compoundsData[$item['static_id']][$item['user_id']]['fine'] += $item['fine'];
+			}
+			
+			if (!isset($compoundsData[$item['static_id']][$item['user_id']]['effectiveness'])) {
+				$compoundsData[$item['static_id']][$item['user_id']]['effectiveness'] = $item['effectiveness'];
+			} else {
+				$compoundsData[$item['static_id']][$item['user_id']]['effectiveness'] += $item['effectiveness'];
+			}
+			
+			/*$compoundsData[$item['static_id']][$item['user_id']] = [
 				'persones_count'	=> $item['persones_count'],
 				'effectiveness'		=> $item['effectiveness'],
 				'fine'				=> $item['fine']
-			];
+			];*/
 		}
 		return $compoundsData;
 	}

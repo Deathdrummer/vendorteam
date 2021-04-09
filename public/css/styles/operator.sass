@@ -138,6 +138,42 @@ body
 
 
 
+
+
+
+.buttons
+	margin-top: 0.8rem
+	font-size: 0
+	word-spacing: 0
+	text-align: left
+	
+	&.inline
+		display: inline-block
+	
+	&.notop
+		margin-top: 0
+		
+	&.minspace
+		word-spacing: 4px
+	
+	&.right
+		text-align: right
+	
+	button, .button
+		display: inline-block
+		+btn()
+		
+		&.nowrap
+			white-space: nowrap
+
+
+
+
+
+
+
+
+
 .popup
 	+scrollbar(#cec7d4, #a38eb7)
 	

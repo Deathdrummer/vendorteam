@@ -5,12 +5,12 @@
 	</div>
 </div>	
 
-<div class="mb20px">
+{#<div class="mb20px">
 	<span class="d-block">Дата отсчета посещений:</span>
 	<div class="popup__field popup__field_date w273px">
 		<input type="text" autocomplete="off" id="newRatingsPeriodDate">
 	</div>
-</div>	
+</div>#}
 
 
 <div class="d-flex justify-content-between align-items-center">

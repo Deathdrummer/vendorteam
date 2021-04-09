@@ -29,7 +29,7 @@
 					</td>
 					<td class="nowidth center">
 						<div class="buttons inline">
-							<a class="button" target="_self" href="reports/{% if is_key %}export_keys_payments{% else %}export_payments{% endif %}/{{id}}" download="{{pattern.report_name}}.csv" title="Экспортировать отчет"><i class="fa fa-download"></i></a>
+							<a class="button" target="_self" href="reports/{% if is_key %}export_keys_payments{% else %}export_payments{% endif %}/{{id}}/{{pattern.variant}}" download="{{pattern.report_name}}.csv" title="Экспортировать отчет"><i class="fa fa-download"></i></a>
 						</div>
 					</td>
 					<td class="nowidth center">

@@ -139,9 +139,9 @@ class Reports extends MY_Controller {
 	 * @param ID паттерна
 	 * @return 
 	 */
-	public function export_payments($patternId) {
+	public function export_payments($patternId, $variant = 1) {
 		$pData = $this->reports_model->getMainReportPatterns($patternId);
-		$dataToExport = $this->reports_model->buildReportPaymentsData($this->constants, $pData, true);
+		$dataToExport = $this->reports_model->buildReportPaymentsData($this->constants[$variant], $pData, true);
 		setHeadersToDownload('application/octet-stream', 'windows-1251');
 		echo $dataToExport;
 	}
@@ -351,8 +351,23 @@ class Reports extends MY_Controller {
 	}
 	
 	
+	
 	/**
-	 * Закрыть период
+	 * Показать период в "мои посещения"
+	 * @param 
+	 * @return 
+	 */
+	public function period_to_visits() {
+		$periodId = $this->input->post('id');
+		$this->reports_model->periodToVisits($periodId);
+		echo 1;
+	}
+	
+	
+	
+	
+	/**
+	 * Период в архив
 	 * @param 
 	 * @return 
 	 */
@@ -567,7 +582,6 @@ class Reports extends MY_Controller {
 	}
 	
 	
-	
 	/**
 	 * Добавить заявки на оплату
 	 * @param 
@@ -575,19 +589,19 @@ class Reports extends MY_Controller {
 	 */
 	public function set_users_orders() {
 		if (!$this->input->is_ajax_request()) return false;
-		$data = $this->input->post();
+		$data = bringTypes($this->input->post());
 		$this->load->model('users_model');
 		$usersData = $this->users_model->getUsers(['where' => ['us.main' => 1], 'where_in' => ['field' => 'u.id', 'values' => $data['users']], 'fields' => 'id, nickname, avatar, payment, deposit, static, lider']);
 		
-		if ($data['to_deposit']) {
+		if (isset($data['to_deposit']) && $data['to_deposit']) {
 			$staticsData = $this->admin_model->getStatics();
-			$percentToDeposit = $this->admin_model->getSettings('payment_equests_deposit_percent');
+			$percentToDeposit = $this->admin_model->getSettings('payment_requests_deposit_percent');
 		}
 		
 		$orders = [];
 		$toDepositData = [];
 		foreach ($usersData as $user) {
-			if ($data['to_deposit']) {
+			if (isset($data['to_deposit']) && $data['to_deposit']) {
 				$limit = $user['lider'] ? $staticsData[$user['static']]['cap_lider'] : $staticsData[$user['static']]['cap_simple']; // лимит депозита
 				$canSetToDeposit = $limit - $user['deposit'] > 0 ? $limit - $user['deposit'] : 0;
 				
@@ -619,7 +633,7 @@ class Reports extends MY_Controller {
 		
 		
 		if (!$this->reports_model->insertUsersOrders($orders)) exit('0');
-		if ($data['to_deposit']) $this->users_model->setUsersDeposit($toDepositData);
+		if (isset($data['to_deposit']) && $data['to_deposit']) $this->users_model->setUsersDeposit($toDepositData);
 		echo json_encode('1');
 	}
 	
@@ -727,16 +741,16 @@ class Reports extends MY_Controller {
 	public function calc_salary_orders() {
 		if (!$this->input->is_ajax_request()) return false;
 		$data = bringTypes($this->input->post());
-		if (!$orders = $this->reports_model->getSalaryOrders($data)) exit('');
+		if (!$orders = $this->reports_model->getSalaryOrders($data, false, true)) exit('');
 		
 		$calcData = [];
 		$statics = $this->admin_model->getStatics(true);
-		foreach ($orders as $item) {
+		foreach ($orders['orders'] as $item) {
 			$static = arrTakeItem($item, 'static');
 			$calcData[$static][] = $item;
 		}
 		
-		echo $this->twig->render('views/admin/render/salary/calc.tpl', ['data' => $calcData, 'statics' => $statics]);
+		echo $this->twig->render('views/admin/render/salary/calc.tpl', ['data' => $calcData, 'total' => $orders['total'], 'statics' => $statics]);
 	}
 	
 	

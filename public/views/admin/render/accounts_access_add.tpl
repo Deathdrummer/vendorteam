@@ -15,6 +15,7 @@
 				<div><label for="nav_new_{{index}}_7"><input type="checkbox" name="accounts_access[new_{{index}}][access][nav][vacation]" value="1" id="nav_new_{{index}}_7"> Отпуск</label></div>
 				<div><label for="nav_new_{{index}}_8"><input type="checkbox" name="accounts_access[new_{{index}}][access][nav][personages]" value="1" id="nav_new_{{index}}_8"> Мои персонажи</label></div>
 				<div><label for="nav_new_{{index}}_9"><input type="checkbox" name="accounts_access[new_{{index}}][access][nav][paymentorders]" value="1" id="nav_new_{{index}}_9"> Мои заявки</label></div>
+				<div><label for="nav_new_{{index}}_10"><input type="checkbox" name="accounts_access[new_{{index}}][access][nav][visitsrate]" value="1" id="nav_new_{{index}}_10"> Моя посещаемость</label></div>
 			</div>
 			
 			<div class="col-auto">

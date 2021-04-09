@@ -58,7 +58,7 @@
 			</div>
 		</div>
 		<div class="col-auto">
-			<span>Удержать в депозит</span>
+			<span>Удержать в резерв</span>
 			<div class="checkblock">
 				<input type="checkbox" id="paymentRequestToDeposit">
 				<label for="paymentRequestToDeposit"></label>

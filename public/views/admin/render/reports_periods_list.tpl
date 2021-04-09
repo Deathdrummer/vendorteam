@@ -13,6 +13,7 @@
 					<td class="nowrap" title="Активный (Европа)">Актив. Е</td>
 					<td class="nowrap" title="Активный (Америка)">Актив. А</td>
 					<td class="nowrap" title="Закрыт">Закр.</td>
+					<td class="nowrap" title="Отобразить для 'Мои посещения'">Посещ.</td>
 				{% endif %}
 			</tr>
 		</thead>
@@ -62,6 +63,12 @@
 								<div class="checkblock">
 									<input id="closedperiod{{period.id}}" closeperiod="{{period.id}}"{% if period.closed %} checked{% endif %} type="checkbox">
 									<label for="closedperiod{{period.id}}"></label>
+								</div>
+							</td>
+							<td class="nowidth center">
+								<div class="checkblock">
+									<input id="toVisitsPeriod{{period.id}}" choosetovisits="{{period.id}}"{% if period.to_visits %} checked{% endif %} type="checkbox">
+									<label for="toVisitsPeriod{{period.id}}"></label>
 								</div>
 							</td>	
 						{% endif %}

@@ -20,11 +20,13 @@ class Admin_model extends My_Model {
 	 * @param 
 	 * @return 
 	 */
-	public function saveSettings($post) {
+	public function saveSettings($post = false) {
+		if (!$post) return 0;
 		$return = 1;
+		$post = bringTypes($post);
 		
 		foreach ($post as $param => $value) {
-			if (is_array($value)) $post[$param] = json_encode(bringTypes($value));
+			if (is_array($value)) $post[$param] = json_encode($value);
 		}
 		
 		
@@ -49,9 +51,11 @@ class Admin_model extends My_Model {
 			} 
 		}
 		
+		$oldData = bringTypes($oldData);
+		
 		//$removeFields = array_diff_key($oldData, $post);
 		$newFields = array_diff_key($post, $oldData);
-		$updateFields = array_diff($post, $oldData);
+		$updateFields = array_diff_assoc($post, $oldData);
 		
 		
 		/*$deleteOldFields = [];
@@ -70,7 +74,7 @@ class Admin_model extends My_Model {
 			$insertNewFields[] = [
 				'param' => $param,
 				'value' => $value,
-				'json'	=> $this->isJson($value) ? 1 : 0
+				'json'	=> isJson($value) ? 1 : 0
 			];
 			unset($updateFields[$param]);
 		}
@@ -83,6 +87,8 @@ class Admin_model extends My_Model {
 			];
 		}
 		
+		
+		
 		if (!empty($insertNewFields)) $this->db->insert_batch('settings', $insertNewFields);
 		
 		
@@ -92,7 +98,7 @@ class Admin_model extends My_Model {
 			$updateNewFields[] = [
 				'param' => $param,
 				'value' => $value,
-				'json'	=> $this->isJson($value) ? 1 : 0
+				'json'	=> isJson($value) ? 1 : 0
 			];
 		}
 		
@@ -139,7 +145,7 @@ class Admin_model extends My_Model {
 		
 		$settingsData = [];
 		foreach ($result as $k => $item) {
-			if ($item['json'] && $this->isJson($item['value'])) {
+			if ($item['json'] && isJson($item['value'])) {
 				$settingsData[$item['param']] = json_decode($item['value'], true);
 			} else {
 				$settingsData[$item['param']] = $item['value'];
@@ -234,19 +240,6 @@ class Admin_model extends My_Model {
 		return 2;
 	}
 	
-	
-	
-	
-	
-	/**
-	 * Является ли формат строки JSON
-	 * @param 
-	 * @return 
-	 */
-	private function isJson($string) {
-		json_decode($string);
-		return (json_last_error() == JSON_ERROR_NONE);
-	}
 	
 	
 	
@@ -1052,10 +1045,10 @@ class Admin_model extends My_Model {
 	
 	/**
 	 * Получить сообщения для ленты новостей
-	 * @param 
+	 * @param лимит новостей для каждого статика
 	 * @return 
 	 */
-	public function getFeedMessages() {
+	public function getFeedMessages($limit = false) {
 		$this->db->order_by('id', 'DESC');
 		$query = $this->db->get('feed_messages');
 		$data = [];
@@ -1064,6 +1057,11 @@ class Admin_model extends My_Model {
 				$static = $item['static'];
 				unset($item['static']);
 				$data[$static][] = $item;
+			}
+			if ($limit) {
+				foreach ($data as $static => $news) {
+					$data[$static] = array_slice($news, 0, $limit);
+				}
 			}
 		}
 		
@@ -1920,6 +1918,60 @@ class Admin_model extends My_Model {
 	
 	
 	
+	
+	
+	
+	
+	
+	//------------------------------------------------------------------------------------- Заявки на увольнение
+	
+	/**
+	 * Получить список заявок
+	 * @param 
+	 * @return 
+	 */
+	public function getResigns() {
+		if (!$resignsList = $this->_result('resign')) return false;
+		$this->load->model('users_model', 'users');
+		$userIds = array_unique(array_column($resignsList, 'user_id'));
+		
+		$usersData = $this->users->getUsers(['where_in' => ['field' => 'u.id', 'values' => $userIds], 'where' => ['us.main' => 1]]);
+		$usersData = setArrKeyFromField($usersData, 'id');
+		$statics = $this->getStatics();
+		$operators = $this->getOperators();
+		
+		$finaData = [];
+		foreach ($resignsList as $k => $item) {
+			$item['nickname'] = $usersData[$item['user_id']]['nickname'];
+			$item['date_reg'] = $usersData[$item['user_id']]['reg_date'];
+			$item['avatar'] = $usersData[$item['user_id']]['avatar'];
+			$item['static'] = $statics[$usersData[$item['user_id']]['static']]['name'];
+			if ($item['stat'] == 0) $item['from'] = $item['from'] != 0 ? $operators[$item['from']]['nickname'] : 0;
+			$finaData[$item['stat']][] = $item;
+		}
+		
+		return $finaData;
+	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * Изменить статус заявки
+	 * @param 
+	 * @return 
+	 */
+	public function changeResignStat($data = false) {
+		if (!$data) return false;
+		$this->db->where('id', $data['id']);
+		$from = $data['from'] == 'admin' ? 0 : $data['from'];
+		$update = ['stat' => $data['stat'], 'from' => $from];
+		if ($data['stat'] == 0) $update['date_success'] = time();
+		if (!$this->db->update('resign', $update)) return false;
+		return true;
+	}
 	
 	
 	

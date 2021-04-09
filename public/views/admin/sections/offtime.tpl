@@ -19,6 +19,7 @@
 				<table>
 					<thead>
 						<tr>
+							<td>Общее кол-во выходных:</td>
 							{% for role in roles %}
 								<td>Роль: {{role.name}}</td>
 							{% endfor %}
@@ -27,6 +28,22 @@
 					</thead>
 					<tbody>
 						<tr>
+							<td>
+								<ul>
+									<li>
+										<span>Статик</span>
+										<span>Лимит</span>
+									</li>
+									{% for staticId, static in statics %}
+										<li>
+											<span>{{static.name}}</span>
+											<div class="number">
+												<input type="number" min="0" name="offtime_limits[0][{{staticId}}]" value="{{roles_limits[0][staticId]|default(0)}}">
+											</div>
+										</li>
+									{% endfor %}
+								</ul>
+							</td>
 							{% for roleId, role in roles %}
 								<td>
 									<ul>

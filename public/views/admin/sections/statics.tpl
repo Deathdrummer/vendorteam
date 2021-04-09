@@ -37,6 +37,7 @@
 								<select name="statics[{{id}}][group]">
 									<option value="1"{% if statics[id]['group'] == 1 %} selected{% endif %}>Рейды</option>
 									<option value="2"{% if statics[id]['group'] == 2 %} selected{% endif %}>Группа</option>
+									<option value="3"{% if statics[id]['group'] == 3 %} selected{% endif %}>Инактив</option>
 								</select>
 							</div>
 							

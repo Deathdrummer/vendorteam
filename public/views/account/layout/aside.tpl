@@ -89,6 +89,7 @@
 		
 		<div class="leftblock__logout">
 			<button logout title="Выйти из личного кабинета"><i class="fa fa-sign-out"></i>Выход</button>
+			<button class="small" resign title="Создать заявку на увольнение"><i class="fa fa-user-times"></i>Уволиться</button>
 		</div>
 		
 	</div>
@@ -111,6 +112,7 @@
 					{% endif %}
 					{% if not access or access.nav.personages %}<li getpersonages><svg><use xlink:href="#weekend"></use></svg><span>Мои персонажи</span></li>{% endif %}
 					{% if not access or access.nav.paymentorders %}<li paymentorders><svg><use xlink:href="#weekend"></use></svg><span>Мои заявки</span></li>{% endif %}
+					{% if not access or access.nav.visitsrate %}<li visitsrate><svg><use xlink:href="#weekend"></use></svg><span>Моя посещаемость</span></li>{% endif %}
 				</ul>	
 			{% endif %}
 		</div>

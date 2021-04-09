@@ -39,7 +39,7 @@
 								<td class="text-center"><strong stimulation>{{user.stimulation|default('-')}}</strong></td>
 								<td></td>
 								<td class="w150px center">
-									<div class="buttons notop">
+									<div class="buttons nowrap notop">
 										<button class="w45px pay" title="Стимулирование" setstimulation="{{user.id}}"><i class="fa fa-thumbs-o-up"></i></button>
 										<button class="w45px" title="Форс мажор" setforcemajeure="{{user.id}}"><i class="fa fa-bolt"></i></button>
 										<button class="w45px remove" title="Выговоры" setreprimand="{{user.id}}"><i class="fa fa-exclamation-triangle"></i></button>

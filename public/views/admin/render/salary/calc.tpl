@@ -27,6 +27,11 @@
 						</tr>
 					{% endfor %}
 				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="6" class="right">Общая сумма: <strong>{{total[stId]|number_format(2, '.', ' ')}} р.</strong></td>
+					</tr>
+				</tfoot>
 			</table>	
 		</div>
 	{% endfor %}

@@ -250,7 +250,7 @@
 				if (popupH > winH) {
 					$('#'+popUpId).find('.popupdialog').css('top', 'calc(50vh - '+(dialogH / 2)+'px + '+winPos+'px)');
 				} else {
-					$('#'+popUpId).find('[ddrpopupdialog]').css('align-items', 'center');
+					$('#'+popUpId).find('.popup__dialog').css('align-items', 'center');
 				}
 				
 				$('#'+popUpId).parent('.popup').scroll(function() {

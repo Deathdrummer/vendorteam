@@ -64,16 +64,48 @@ class Ratings_model extends My_Model {
 	
 	
 	/**
-	 * @param 
+	 * Получить список периодов отчетов
+	 * @param
 	 * @return 
 	*/
 	public function getReportsPeriods() {
 		$this->db->select('id, name');
 		$this->db->order_by('id', 'DESC');
 		$this->db->limit(50);
-		$query = $this->db->get('reports_periods');
-		return $query->result_array();
+		if (!$data = $this->_result('reports_periods')) return false;
+		return $data;
 	}
+	
+	
+	
+	
+	
+	/**
+	 * Получить список периодов отчетов неактиыных рейтингов рейтингов
+	 * @param
+	 * @return array ID периодов all & last
+	*/
+	public function getRatingsReportsPeriods() {
+		$this->db->select('id, reports_periods, active, referencepoint');
+		$this->db->order_by('id', 'ASC');
+		if (!$result = $this->_result('ratings_periods')) return false;
+		
+		$data = []; $preItems = true;
+		foreach ($result as $item) {
+			if ($item['referencepoint'] == 0 && $preItems) continue;
+			if ($item['active'] == 1) break;
+			$preItems = false;
+			$data[$item['id']] = json_decode($item['reports_periods'], true);
+		}
+		
+		if (!$data) return false;
+		
+		$lastRPeriod = array_pop($data);
+		$allRPeriods = $data ? call_user_func_array('array_merge', $data) : [];
+		
+		return ['last' => $lastRPeriod, 'all' => $allRPeriods];
+	}
+	
 	
 	
 	
@@ -89,7 +121,6 @@ class Ratings_model extends My_Model {
 		$insData = [
 			'title' 			=> $postData['title'],
 			'reports_periods' 	=> json_encode($postData['periods']),
-			'visits_date'		=> strtotime($postData['visits_date']),
 			'date' 				=> time()
 		];
 		if (!$this->db->insert($this->ratingsPeriodsTable, $insData)) return false;
@@ -123,31 +154,20 @@ class Ratings_model extends My_Model {
 	
 	
 	
-	
-	
-	
 	/**
-	 * Сохранить период
+	 * Задать точку отсчета для расчета рейтинга
 	 * @param 
 	 * @return 
 	*/
-	/*public function savePeriod($ratingPeriodId = false) {
+	public function setReferencepointPeriod($ratingPeriodId = false) {
 		if (!$ratingPeriodId) return false;
-		$this->load->model(['reprimands_model' => 'reprimands', 'forcemajeure_model' => 'forcemajeure', 'stimulation_model' => 'stimulation']);
-		
-		$forcemajeure = $this->forcemajeure->getFromPeriod($ratingPeriodId);
-		$reprimands = $this->reprimands->getFromPeriod($ratingPeriodId);
-		$stimulation = $this->stimulation->getFromPeriod($ratingPeriodId);
-		
-		$this->db->where('period_id', $ratingPeriodId);
-		if (!$result = $this->_result($this->ratingsDataTable)) return false;
-		$ratingsData = setArrKeyFromField($result, 'user_id', true);
-		
-		$ratingsData = array_replace_recursive($ratingsData, $forcemajeure, $reprimands, $stimulation);
-		
-		if (!$this->db->update_batch($this->ratingsDataTable, $ratingsData, 'id')) return false;
+		$this->db->update($this->ratingsPeriodsTable, ['referencepoint' => 0]);
+		$this->db->where('id', $ratingPeriodId);
+		if (!$this->db->update($this->ratingsPeriodsTable, ['referencepoint' => 1])) return false;
 		return true;
-	}*/
+	}
+	
+	
 	
 	
 	
@@ -169,8 +189,6 @@ class Ratings_model extends My_Model {
 		$reprimands = $this->reprimands->getFromPeriod($ratingPeriodId);
 		$stimulation = $this->stimulation->getFromPeriod($ratingPeriodId);
 		$mentors = $this->_getMentorsPeriodList($ratingPeriodId);
-		
-		
 		
 		$this->db->select('rd.*, u.nickname, u.avatar, ra.name AS role, ro.name AS rank');
 		$this->db->join('users u', 'u.id = rd.user_id', 'LEFT OUTER');
@@ -205,7 +223,6 @@ class Ratings_model extends My_Model {
 		$this->db->group_by('mentor_id');
 		if (!$result = $this->_result('mentors_requests')) return [];
 		$data = setArrKeyFromField($result, 'mentor_id');
-		toLog($data);
 		return $data;
 	}
 	

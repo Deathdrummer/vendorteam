@@ -52,7 +52,7 @@
 										
 										<div class="newsfeed__content">
 											<label>Содержание новости</label>
-											<textarea editor rows="12">{{message.message}}</textarea>
+											<textarea editor class="w100" rows="12">{{message.message}}</textarea>
 										</div>
 										
 										<div class="newsfeed__buttons">
@@ -76,14 +76,24 @@
 
 <script type="text/javascript"><!--
 $(document).ready(function() {
-	initEditors($('[tabid]:visible').find('[editor]'));
+	
+	
+	
+	$('[editor]').on(tapEvent, function() {
+		if (!$(this).hasClass('summernote_activated')) {
+			initEditors(this);
+		}
+	});
+	
+	
+	//initEditors($('[tabid]:visible').find('[editor]'));
 	
 	$('body').off(tapEvent, '[feedmessageadd]').on(tapEvent, '[feedmessageadd]', function() {
 		var thisStatic = $(this).attr('feedmessageadd');
 		getAjaxHtml('operator/newsfeed_add', {static_id: thisStatic}, function(html) {
 			$('#feedMessagesBlock'+thisStatic).prepend(html);
 		}, function() {
-			initEditors($('[tabid]:visible').find('[editor]'));
+			initEditors($('[editor][new]'));
 		});
 	});
 	
@@ -92,9 +102,9 @@ $(document).ready(function() {
 	});
 	
 	
-	onChangeTabs(function(thisItemTitle, thisItemContent) {
+	/*onChangeTabs(function(thisItemTitle, thisItemContent) {
 		initEditors($(thisItemContent).find('[editor]'));
-	});
+	});*/
 	
 	
 	

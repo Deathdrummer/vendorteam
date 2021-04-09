@@ -40,6 +40,7 @@
 						<option value="">Все</option>
 						<option value="1">Рейды</option>
 						<option value="2">Группа</option>
+						<option value="3">Инактив</option>
 					</select>
 					<div class="select__caret"></div>
 				</div>
@@ -636,6 +637,7 @@ $(document).ready(function() {
 		
 		if (!searchNickname) $('#searchUsersField').addClass('error');
 		else {
+			$('.tabstitles.sub').children().removeAttrib('hidden');
 			$('[userslistrows], [deposituserslist]').find('tr').each(function() {
 				var thisRow = this;
 				var thisnickName = $(this).attr('usernickname');
@@ -647,6 +649,21 @@ $(document).ready(function() {
 				}
 			});
 			
+						
+			$('[userslistrows]').each(function() {
+				if ($(this).children().not('[hidden]').length == 0) {
+					var id = $(this).closest('[tabid]').attr('tabid');
+					$(this).closest('.tabscontent').siblings('.tabstitles.sub').find('#'+id).setAttrib('hidden');
+				}
+			});
+			
+			$('.tabstitles.sub').find('li').removeClass('active');
+			$('.tabstitles.sub').find('li:visible:first').addClass('active');
+			var tabId = $('.tabstitles.sub').find('li:visible:first').attr('id');
+			
+			$('.tabstitles.sub').siblings('.tabscontent').children('div').removeClass('visible');
+			$('.tabstitles.sub').siblings('.tabscontent').children('div[tabid="'+tabId+'"]').addClass('visible');
+			
 			$('#resetSearchFromUsers').removeAttrib('disabled');
 		}	
 	});
@@ -655,7 +672,17 @@ $(document).ready(function() {
 		$('[userslistrows], [deposituserslist]').find('tr').each(function() {
 			$(this).removeAttrib('hidden');
 		});
+		$('.tabstitles.sub').children().removeAttrib('hidden');
 		$('#searchUsersField').val('');
+		
+		$('.tabstitles.sub').find('li').removeClass('active');
+		$('.tabstitles.sub').find('li:visible:first').addClass('active');
+		var tabId = $('.tabstitles.sub').find('li:visible:first').attr('id');
+		
+		$('.tabstitles.sub').siblings('.tabscontent').children('div').removeClass('visible');
+		$('.tabstitles.sub').siblings('.tabscontent').children('div[tabid="'+tabId+'"]').addClass('visible');
+		
+		
 		$('#resetSearchFromUsers').setAttrib('disabled');
 	});
 	
