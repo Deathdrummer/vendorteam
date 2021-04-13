@@ -85,7 +85,7 @@ class Account_model extends My_Model {
 	 * @return array [static => data] или data
 	*/
 	public function getUsers($currentStatic = false, $where = false, $self = false, $fullInfo = false) {
-		$this->db->select('u.id, u.nickname, u.avatar, u.color, us.static_id');
+		$this->db->select('u.id, u.nickname, u.avatar, u.color, us.static_id, EXISTS (SELECT 1 FROM resign r WHERE r.user_id = u.id AND r.date_last > '.time().') AS is_resign');
 		if ($fullInfo) {
 			$this->db->select('ra.name AS role, ro.name AS rank');
 			$this->db->join('roles ro', 'u.role = ro.id');
@@ -97,7 +97,6 @@ class Account_model extends My_Model {
 		if (!$currentStatic && $this->userData['statics']) $this->db->where_in('us.static_id', array_keys($this->userData['statics']));
 		else $this->db->where('us.static_id', $currentStatic);
 		//$this->db->order_by('nickname', 'ASC');
-		
 		$query = $this->db->get('users u');
 		if (!$response = $query->result_array()) return false;
 		
@@ -446,7 +445,8 @@ class Account_model extends My_Model {
 			$respCd = setArrKeyFromField($respCd, 'user_id');
 		}
 		
-		$this->db->select('u.id, u.avatar, u.nickname, u.color');
+		
+		$this->db->select('u.id, u.avatar, u.nickname, u.color, EXISTS (SELECT 1 FROM resign r WHERE r.user_id = u.id AND r.date_last > '.time().') AS is_resign');
 		$this->db->join('users_statics us', 'us.user_id = u.id');
 		$this->db->where(['us.static_id' => $data['static_id'], 'verification' => 1, 'deleted' => 0]);
 		$queryU = $this->db->get('users u');
@@ -549,7 +549,7 @@ class Account_model extends My_Model {
 	 * @return 
 	*/
 	public function getUsersToKeys($data) {
-		$this->db->select('u.id, u.avatar, u.nickname, u.color');
+		$this->db->select('u.id, u.avatar, u.nickname, u.color, EXISTS (SELECT 1 FROM resign r WHERE r.user_id = u.id AND r.date_last > '.time().') AS is_resign');
 		$this->db->join('users_statics us', 'us.user_id = u.id');
 		$this->db->where(['us.static_id' => $data['static_id'], 'verification' => 1, 'deleted' => 0]);
 		$queryU = $this->db->get('users u');
@@ -1406,7 +1406,7 @@ class Account_model extends My_Model {
 	*/
 	public function getUsersForRating($staticId = false) {
 		if (!$staticId) return false;
-		$this->db->select('u.id, u.nickname, u.avatar, ra.name AS role, ro.name AS rank');
+		$this->db->select('u.id, u.nickname, u.avatar, ra.name AS role, ro.name AS rank, EXISTS (SELECT 1 FROM resign r WHERE r.user_id = u.id AND r.date_last > '.time().') AS is_resign');
 		$this->db->join('users_statics us', 'us.user_id = u.id');
 		$this->db->join('roles ro', 'u.role = ro.id', 'LEFT OUTER');
 		$this->db->join('ranks ra', 'u.rank = ra.id', 'LEFT OUTER');

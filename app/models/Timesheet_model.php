@@ -43,6 +43,33 @@ class Timesheet_model extends My_Model {
 	
 	
 	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	 */
+	public function copyTimesheetPeriod($data = false) {
+		if (!$data) return false;
+		$this->db->where('period', $data['period_id']);
+		if (!$copiedData = $this->_result('timesheet')) return false;
+		
+		$this->db->insert('timesheet_periods', ['name' => $data['name'], 'start_date' => $data['start_date']]);
+		$newPeriodId = $this->db->insert_id();
+		
+		$dataToCopy = [];
+		foreach ($copiedData as $item) {
+			unset($item['id']);
+			$item['period'] = $newPeriodId;
+			$dataToCopy[] = $item;
+		}
+		
+		if (!$this->db->insert_batch('timesheet', $dataToCopy)) return false;
+		return true;
+	}
+	
+	
+	
 	/**
 	 * Удалить период расписания
 	 * @param 
@@ -91,7 +118,11 @@ class Timesheet_model extends My_Model {
 		$query = $this->db->get('timesheet t');
 		$response = $query->result_array();
 		
-		$timesheet['statics'] = $this->admin_model->getStatics(false, $staticId);
+		$stData = $this->admin_model->getStatics(false, $staticId);
+		if ($staticId) $timesheet['statics'][$staticId] = $stData;
+		else $timesheet['statics'] = $stData;
+		
+		
 		
 		$timesheet['timesheet'] = [];
 		if ($response) {

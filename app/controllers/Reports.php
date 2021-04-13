@@ -780,6 +780,126 @@ class Reports extends MY_Controller {
 	
 	
 	
+	//----------------------------------------------------------------------------------------------------------------------------- Дополнительные выплаты
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function get_addictpay_form() {
+		if (!$this->input->is_ajax_request()) return false;
+		$data['statics'] = $this->admin_model->getStatics();
+		echo $this->twig->render('views/admin/render/addictpay/form.tpl', $data);
+	}
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function calc_addictpay() {
+		$post = $this->input->post();
+		$this->load->model('users_model');
+		$usersData = $this->users_model->getUsers(['where_in' => ['field' => 'us.static_id', 'values' => $post['statics'], 'where' => ['us.main' => 1, 'u.deleted' => 0, 'u.verification' => 1]]]);
+		
+		$ranks = $this->admin_model->getRanks();
+		$statics = $this->admin_model->getStatics();
+		
+		$users = []; $totals = [];
+		foreach ($usersData as $user) {
+			$toDeposit = $post['to_deposit'] ? (((int)$ranks[$user['rank']]['additional_pay'] / 100) * (int)$statics[$user['static']]['deposit_percent']) : 0; // сумма в депозит
+			$summ = $post['to_deposit'] ? ((int)$ranks[$user['rank']]['additional_pay'] - $toDeposit) : (int)$ranks[$user['rank']]['additional_pay'];
+			
+			if (!isset($totals[$user['static']]) && $user['agreement']) $totals[$user['static']] = $summ;
+			elseif ($user['agreement']) $totals[$user['static']] += $summ;
+			
+			$users[$user['static']][] = [
+				'user_id'		=> $user['id'],
+				'nickname' 		=> $user['nickname'],
+				'agreement' 	=> $user['agreement'],
+				'avatar' 		=> $user['avatar'],
+				'rank' 			=> $ranks[$user['rank']]['name'],
+				'summ' 			=> $summ,
+				'to_deposit'	=> $toDeposit
+			];
+		}
+		
+		$data['users_data'] = $users;
+		$data['statics'] = $statics;
+		$data['totals'] = $totals;
+		
+
+		echo $this->twig->render('views/admin/render/addictpay/orders.tpl', $data);
+	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * Отправить в заявки на оплаты
+	 * @param 
+	 * @return 
+	*/
+	public function set_addictpay_orders() {
+		if (!$this->input->is_ajax_request()) return false;
+		$data = bringTypes($this->input->post());
+		if (!$data['users']) exit('0');
+		
+		$usersIds = array_column($data['users'], 'user');
+		$this->load->model('users_model');
+		$usersData = $this->users_model->getUsers(['where_in' => ['field' => 'u.id', 'values' => $usersIds, 'where' => ['us.main' => 1, 'u.deleted' => 0, 'u.verification' => 1]]]);
+		$usersData = setArrKeyFromField($usersData, 'id');
+		
+		
+		$orders = []; $toDepositData = [];
+		foreach ($data['users'] as $user) {
+			$toDepositData[$user['user']] = $user['to_deposit']; 
+			
+			$orders[] = [
+				'user_id'		=> $user['user'],
+				'nickname' 		=> $usersData[$user['user']]['nickname'],
+				'avatar' 		=> $usersData[$user['user']]['avatar'],
+				'payment' 		=> $usersData[$user['user']]['payment'],
+				'static' 		=> $usersData[$user['user']]['static'],
+				'order' 		=> $data['order'],
+				'summ' 			=> $user['summ'],
+				'to_deposit' 	=> $user['to_deposit'],
+				'comment' 		=> $data['comment'],
+				'date'			=> time()
+			];
+		}
+		
+		if (!$this->reports_model->insertUsersOrders($orders)) exit('0');
+		if ($data['to_deposit']) $this->users_model->setUsersDeposit($toDepositData);
+		echo '1';
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

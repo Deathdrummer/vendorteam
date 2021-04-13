@@ -2,6 +2,9 @@
 
 class Cron extends MY_Controller {
 	
+	// fastVPS: /usr/bin/wget -O /dev/null "http://vendorteam.ru/controller/function"
+	
+	
 	public function __construct() {
 		parent::__construct();
 	}
@@ -16,6 +19,7 @@ class Cron extends MY_Controller {
 	 */
 	public function update_users_ranks() {
 		if (!$this->_isCliRequest()) redirect();
+		toLog('update_users_ranks');
 		$this->load->model('users_model');
 		$usersList = $this->users_model->setRanksToUsers();
 	}
@@ -30,6 +34,7 @@ class Cron extends MY_Controller {
 	 */
 	public function change_activate_periods_stat() {
 		if (!$this->_isCliRequest()) redirect();
+		toLog('change_activate_periods_stat');
 		$this->load->model('reports_model');
 		if (!$data = $this->reports_model->getTimerActivatePeriods()) return false;
 		$now = time();
@@ -49,6 +54,7 @@ class Cron extends MY_Controller {
 	 */
 	public function set_users_stages() {
 		if (!$this->_isCliRequest()) redirect();
+		toLog('set_users_stages');
 		$this->load->model(['users_model', 'admin_model']);
 		if (!$statics = $this->admin_model->getStatics()) return false;
 		$staticsIds = [];
@@ -68,6 +74,24 @@ class Cron extends MY_Controller {
 		}
 		
 		if ($updateUsers) $this->db->update_batch('users', $updateUsers, 'id');
+	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * Переместить уволенных участников в статик инактив
+	 * @param 
+	 * @return 
+	 */
+	public function replace_resign_users() {
+		if (!$this->_isCliRequest()) redirect();
+		toLog('replace_resign_users');
+		$this->load->model(['users_model', 'admin_model']);
+		$resignUsersIds = $this->users_model->getResignUsersIds(true);
+		$this->users_model->replaceResignUsers($resignUsersIds, 33);
 	}
 	
 	

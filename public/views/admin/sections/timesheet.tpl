@@ -75,6 +75,7 @@ $(document).ready(function() {
 				$('#timesheetPeriodsList tbody').find('td[colspan="4"]').parent('tr').remove();
 			}
 			$('#timesheetPeriodsList tbody').append(html);
+			
 			$('#timesheetPeriodsList tbody').find('.saveTimesheetPeriod').on(tapEvent, function() {
 				var thisRow = $(this).closest('tr'),
 					thisName = $(thisRow).find('input').val(),
@@ -92,12 +93,59 @@ $(document).ready(function() {
 								html += '<td class="nowidth"><div class="buttons"><button title="Выбрать период" choosetimesheetperiod="'+periodId+'"><i class="fa fa-check"></i></button></div></td>';
 							$(thisRow).html(html);
 						}
+					}).fail(function(e) {
+						showError(e);
+						notify('Системная ошибка!', 'error');
 					});
 				} else {
 					notify('Ошибка! Название не может быть пустым!', 'error');
 					$(thisRow).find('input').addClass('error');
 				}	
 			});
+			
+			
+			$('#timesheetPeriodsList tbody').find('.copyTimesheetPeriod').on(tapEvent, function() {
+				var thisRow = $(this).closest('tr'),
+					thisName = $(thisRow).find('input').val(),
+					thisStartDate = $(thisRow).find('select').val(),
+					thisStartDateText = $(thisRow).find('select').children('option:selected').text();
+				
+				if (thisName != '') {
+					timesheetPeriodsWin.wait();
+					getAjaxHtml('timesheet/get_timesheet_periods', {to_user: 1, attr: 'chooseperiodtocopy'}, function(html) {
+						timesheetPeriodsWin.setData(html);
+						timesheetPeriodsWin.setTitle('Скопировать период');
+						timesheetPeriodsWin.removeButtons();
+						timesheetPeriodsWin.wait(false);
+					}, function() {
+						
+						$('[chooseperiodtocopy]').on(tapEvent, function() {
+							timesheetPeriodsWin.wait(false);
+							var periodId = $(this).attr('chooseperiodtocopy');
+							$.post('/timesheet/copy_timesheet_period', {period_id: periodId, name: thisName, start_date: thisStartDate}, function(response) {
+								if (response) {
+									timesheetPeriodsWin.close();
+									notify('Расписание успешно скопировано!');
+								} else {
+									timesheetPeriodsWin.wait(false);
+									notify('Ошибка! При копировании расписания произошла ошибка!', 'error');
+								}
+							}).fail(function(e) {
+								showError(e);
+								notify('Системная ошибка!', 'error');
+							});
+						});
+					});
+				} else {
+					notify('Ошибка! Название не может быть пустым!', 'error');
+					$(thisRow).find('input').addClass('error');
+				}	
+			});
+			
+			
+			
+			
+			
 		}, 'html').fail(function(e) {
 			notify('Системная ошибка!', 'error');
 			timesheetPeriodsWin.wait(false);

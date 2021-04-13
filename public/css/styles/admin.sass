@@ -2643,5 +2643,57 @@ p
 		+scrollbar(#f6f6f6, #ccc, 6px)
 		overflow-y: scroll
 		
+
+
+
+
+
+
+
+.resign
+	&__name
+		font-size: 18px
+	
+	&__avatar
+		img
+			width: 100%
+	
+	&__static
+		display: flex
+		align-items: center
+		margin-bottom: 15px
 		
+		> div
+			width: 60px
+			height: 60px
+			margin-right: 8px
+			background:		
+				repeat: no-repeat
+				size: contain
+				position: center center
+		> p
+			margin-bottom: 0
+			font-size: 14px
+		
+	&__info
+		li
+			font-size: 14px
+			
+			strong
+				margin-right: 10px
+				
+				&::after
+					content: ':'
+					
+			
+			+ li
+				margin-top: 15px
+		
+	
+	&__textblock
+		margin-top: 40px
+		
+		p
+			font-size: 14px
+			white-space: pre-wrap
 		

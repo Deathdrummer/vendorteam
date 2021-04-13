@@ -23,6 +23,7 @@
 						<div class="ratinguser" userid="{{u.id}}">
 							<div class="ratinguser__image" style="background-image: url('{{base_url('public/images/users/'~u.avatar)|is_file('public/images/user_mini.jpg')}}')">
 								<div class="ratinguser__stat {#online#}"></div>
+								{% if u.is_resign %}<div class="ratinguser__resign" title="Увольняется"></div>{% endif %}
 							</div>
 							<div class="ratinguser__name mr-auto">
 								<strong>{{u.nickname}}</strong>

@@ -1,7 +1,4 @@
 {% if report_statics %}
-	
-	
-	
 	<table>
 		<thead>
 			<tr>

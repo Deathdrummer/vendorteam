@@ -1,6 +1,51 @@
 <?
 
 
+
+
+
+
+if (!function_exists('arrRestructure')) {
+    /**
+     * Перебор многомерного массива с коллбэк функцией для каждого элемента
+     * @param массив
+     * @param поля для реструктуризации. Строка или массив
+     * @param Удалить ли поля. По-умолчанию - нет
+     * @return реструктурированный массив
+    */
+    function arrRestructure($array = false, $regroupFields = false, $removeFields = false) {
+        if (!$array || !$regroupFields) return false;
+        if (!is_array($regroupFields)) $regroupFields = preg_split("/,\s+/", $regroupFields);
+        
+        $restructArr = [];
+        $path = '';
+        $unset = '';
+        
+        foreach ($regroupFields as $field) {
+            $path .= "[\$item['".$field."']]";
+            if ($removeFields) $unset .= "\$values['".$field."'], ";
+        }
+        
+        $unset = rtrim($unset, ', ');
+        
+        foreach ($array as $item) {
+            $values = $item;
+            if ($removeFields) eval("unset($unset);");
+            eval("return \$restructArr$path"."[] = \$values;");
+        }
+            
+        return $restructArr ?: false;
+    }
+}
+
+
+
+
+
+
+
+
+
 if (!function_exists('formatArray')) {
     /**
      * Сформировать массив

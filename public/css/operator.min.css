@@ -52787,3 +52787,47 @@ table {
           font-size: 0.9em; }
         .guides > ul li ul ul {
           padding-left: 16px; }
+
+.resign__name {
+  font-size: 18px; }
+
+.resign__avatar img {
+  width: 100%; }
+
+.resign__static {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+     -moz-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  margin-bottom: 15px; }
+  .resign__static > div {
+    width: 60px;
+    height: 60px;
+    margin-right: 8px;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center center; }
+  .resign__static > p {
+    margin-bottom: 0;
+    font-size: 14px; }
+
+.resign__info li {
+  font-size: 14px; }
+  .resign__info li strong {
+    margin-right: 10px; }
+    .resign__info li strong::after {
+      content: ':'; }
+  .resign__info li + li {
+    margin-top: 15px; }
+
+.resign__textblock {
+  margin-top: 40px; }
+  .resign__textblock p {
+    font-size: 14px;
+    white-space: pre-wrap; }

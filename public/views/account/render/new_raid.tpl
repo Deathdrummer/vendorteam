@@ -42,7 +42,7 @@
 										{% for k, user in usersPart %}
 											<tr{% if user.id in offtime_users %} class="offtime" title="На выходном"{% endif %}>
 												<td class="w1">
-													<div class="image" style="background-image: url('public/images/{% if user.avatar %}users/mini/{{user.avatar}}{% else %}user_mini.jpg{% endif %}')"></div>
+													<div class="image" style="background-image: url('public/images/{% if user.avatar %}users/mini/{{user.avatar}}{% else %}user_mini.jpg{% endif %}')">{% if user.is_resign %}<div class="resign" title="Увольняется"></div>{% endif %}</div>
 												</td>
 												<td><p>{{user.nickname}}</p></td>
 												<td class="w40px text-center">

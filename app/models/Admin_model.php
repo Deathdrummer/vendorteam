@@ -1975,4 +1975,27 @@ class Admin_model extends My_Model {
 	
 	
 	
+	/**
+	 * @param 
+	 * @return 
+	 */
+	public function showResign($id = false) {
+		if (!$id) return false;
+		$this->db->where('id', $id);
+		if (!$data = $this->_row('resign')) return false;
+		$this->load->model('users_model');
+		$userData = $this->users_model->getUsers(['where' => ['u.id' => $data['user_id'], 'us.main' => 1]]);
+		
+		$static = $this->getStatics(false, $userData[0]['static']);
+		
+		$data['nickname'] = $userData[0]['nickname'];
+		$data['avatar'] = $userData[0]['avatar'];
+		$data['reg_date'] = $userData[0]['reg_date'];
+		$data['static'] = $static;
+		
+		return $data;
+	}
+	
+	
+	
 }

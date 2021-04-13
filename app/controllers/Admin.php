@@ -1921,6 +1921,7 @@ class Admin extends MY_Controller {
 	
 	
 	/**
+	 * Изменить статус увольнения
 	 * @param 
 	 * @return 
 	 */
@@ -1931,6 +1932,20 @@ class Admin extends MY_Controller {
 	}
 	
 	
+	
+	
+	
+	
+	/**
+	 * Показать информацию об увольнении
+	 * @param 
+	 * @return 
+	 */
+	public function show_resign() {
+		$id = $this->input->post('id');
+		$data['resign'] = $this->admin_model->showResign($id);
+		echo $this->twig->render('views/admin/render/resign_info.tpl', $data);
+	}
 	
 	
 	

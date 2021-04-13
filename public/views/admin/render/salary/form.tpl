@@ -58,10 +58,12 @@
 			</div>
 		</div>
 		<div class="col-auto">
-			<span>Удержать в резерв</span>
-			<div class="checkblock">
-				<input type="checkbox" id="paymentRequestToDeposit">
-				<label for="paymentRequestToDeposit"></label>
+			<div class="d-flex align-items-center">
+				<span class="mr-2">Удержать в резерв</span>
+				<div class="checkblock">
+					<input type="checkbox" id="paymentRequestToDeposit">
+					<label for="paymentRequestToDeposit"></label>
+				</div>
 			</div>
 		</div>
 	</div>

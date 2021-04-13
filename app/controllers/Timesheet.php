@@ -32,13 +32,13 @@ class Timesheet extends MY_Controller {
 	 */
 	public function get_timesheet_periods() {
 		$toUser = $this->input->post('to_user');
+		$attr = $this->input->post('attr') ?: null;
 		$toOperatior = $this->input->post('to_operator');
 		if ($toUser) $template = 'views/account/render/timesheet_periods_list.tpl';
 		elseif ($toOperatior) $template = 'views/operator/render/timesheet_periods_list.tpl';
 		else $template = 'views/admin/render/timesheet_periods_list.tpl';
-		
 		$timesheetPeriods = $this->timesheet_model->getTimesheetPeriods();
-		echo $this->twig->render($template, ['timesheet_periods' => bringTypes($timesheetPeriods), 'to_user' => $toUser, 'to_operator' => $toOperatior]);
+		echo $this->twig->render($template, ['timesheet_periods' => bringTypes($timesheetPeriods), 'to_user' => $toUser, 'to_operator' => $toOperatior, 'attr' => $attr]);
 	}
 	
 	
@@ -83,6 +83,18 @@ class Timesheet extends MY_Controller {
 	
 	
 	/**
+	 * Копировать период
+	 * @param 
+	 * @return 
+	 */
+	public function copy_timesheet_period() {
+		$data = $this->input->post();
+		echo $this->timesheet_model->copyTimesheetPeriod($data);
+	}
+	
+	
+	
+	/**
 	 * Сохраняет период
 	 * @param 
 	 * @return 
@@ -112,16 +124,16 @@ class Timesheet extends MY_Controller {
 		
 		
 		if (!$toOperator) {
-			$location = isset($timesheetData['statics'][$staticId]) ? $timesheetData['statics'][$staticId]['location'] : $timesheetData['statics']['location'];
+			$location = isset($staticId) && isset($timesheetData['statics'][$staticId]) ? $timesheetData['statics'][$staticId]['location'] : false;
 		}
 		
 		$locStaticOffset = $toOperator ? 0 : ($staticId ? $this->dayOffsets[$location] : 0); // смешение дней, исходя из локации статика (только для ЛК)
 		$period = $this->getTimesheetPeriod($periodId);
 		$timesheetData['dates'] = getDatesRange(($period['start_date'] + $locStaticOffset), 8, 'day', '+');
 		$timesheetData['to_user'] = $staticId ? true : false;
-		$timesheetData['static_name'] = $staticId ? $timesheetData['statics']['name'] : null;
-		$timesheetData['static_icon'] = $staticId ? $timesheetData['statics']['icon'] : null;
-		$timesheetData['location'] = isset($timesheetData['statics']['location']) ? $timesheetData['statics']['location'] : false;
+		$timesheetData['static_name'] = $staticId ? $timesheetData['statics'][$staticId]['name'] : null;
+		$timesheetData['static_icon'] = $staticId ? $timesheetData['statics'][$staticId]['icon'] : null;
+		$timesheetData['location'] = isset($timesheetData['statics'][$staticId]['location']) ? $timesheetData['statics'][$staticId]['location'] : false;
 		
 		if ($toOperator) {
 			$this->load->model('operator_model');

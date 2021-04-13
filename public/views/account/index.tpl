@@ -105,7 +105,8 @@
 																	{% for friend in friends[staticId]|sortusers %}
 																		<div class="staticuser" userid="{{friend.id}}">
 																			<div class="staticuser__image" style="background-image: url('{{base_url('public/images/users/'~friend.avatar)|is_file('public/images/user_mini.jpg')}}')">
-																				<div class="staticuser__stat {#online#}"></div>
+																				<div class="staticuser__stat{#online#}"></div>
+																				{% if friend.is_resign %}<div class="staticuser__resign" title="Увольняется"></div>{% endif %}
 																			</div>
 																			<div class="staticuser__name mr-auto">
 																				<p>{{friend.nickname}}</p>

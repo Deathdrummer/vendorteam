@@ -13,7 +13,7 @@
 						{% for id, user in compounds_data %}
 							<tr{% if user.color %} style="background-color: {{user.color}}"{% endif %}>
 								<td class="w1 nopadding">
-									<div class="image mini" style="background-image: url('public/images/{% if user.avatar %}users/mini/{{user.avatar}}{% else %}user_mini.jpg{% endif %}')"></div>
+									<div class="image mini" style="background-image: url('public/images/{% if user.avatar %}users/mini/{{user.avatar}}{% else %}user_mini.jpg{% endif %}')">{% if user.is_resign %}<div class="resign" title="Увольняется"></div>{% endif %}</div>
 								</td>
 								<td>{{user.nickname}}</td>
 							</tr>

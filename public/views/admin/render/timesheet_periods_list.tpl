@@ -27,7 +27,7 @@
 {% else %}
 	<ul class="timesheet__periods">
 		{% for period in timesheet_periods %}
-			<li title="Выбрать период" choosetimesheetperiod="{{period.id}}">
+			<li title="Выбрать период"{% if attr %} {{attr}}="{{period.id}}"{% else %} choosetimesheetperiod="{{period.id}}"{% endif %}>
 				<span>{{period.name}}</span>
 			</li>
 		{% endfor %}

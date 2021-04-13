@@ -162,7 +162,7 @@ class Users_model extends MY_Model {
 	
 	
 	/**
-	 * Задать статики пользователю
+	 * Задать статики участнику
 	 * @param 
 	 * @return 
 	 */
@@ -251,7 +251,7 @@ class Users_model extends MY_Model {
 	
 	
 	/**
-	 * Задать данные одного пользователя
+	 * Задать данные одного участника
 	 * @param данные пользователя
 	 * @param статус верификации
 	 * @return статус
@@ -357,7 +357,7 @@ class Users_model extends MY_Model {
 	
 	
 	/**
-	 * Задать данные пользователей
+	 * Задать данные участников
 	 * @param 
 	 * @return 
 	 */
@@ -383,7 +383,7 @@ class Users_model extends MY_Model {
 	
 	
 	/**
-	 * Задать бухгалтерию пользователей
+	 * Задать бухгалтерию участников
 	 * @param 
 	 * @return 
 	 */
@@ -398,7 +398,7 @@ class Users_model extends MY_Model {
 	
 	
 	/**
-	 * Задать статистику пользователей
+	 * Задать статистику участников
 	 * @param 
 	 * @return 
 	 */
@@ -414,7 +414,7 @@ class Users_model extends MY_Model {
 	
 	/**
 	 * Обнулить бронирование выходных, если изменилась роль
-	 * @param список пользователей
+	 * @param список участников
 	 * @return 
 	 */
 	public function refreshUsersOfftime($users) {
@@ -466,7 +466,7 @@ class Users_model extends MY_Model {
 	
 	
 	/**
-	 * Обновить Резервы пользователей
+	 * Обновить Резервы участников
 	 * @param 
 	 * @return 
 	 */
@@ -529,7 +529,7 @@ class Users_model extends MY_Model {
 	
 	
 	/**
-	 * Задать статики пользователю
+	 * Задать статики участнику
 	 * @param 
 	 * @return 
 	 */
@@ -598,7 +598,7 @@ class Users_model extends MY_Model {
 	
 	
 	/**
-	 * Пометить пользователя как удаленного
+	 * Пометить участника как удаленного
 	 * @param ID пользователя
 	 * @return статус
 	 */
@@ -648,7 +648,7 @@ class Users_model extends MY_Model {
 	
 	
 	/**
-	 * Задать цвет пользователю
+	 * Задать цвет участнику
 	 * @param 
 	 * @return 
 	 */
@@ -656,6 +656,55 @@ class Users_model extends MY_Model {
 		$this->db->where('id', $userId);
 		if ($this->db->update('users', ['color' => $color])) return true;
 		return false;
+	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * Получить список увольняющихся участников
+	 * @param дата последнего рабочего дня была 10 дней назад
+	 * @return 
+	*/
+	public function getResignUsersIds($daysLeft = false) {
+		$this->db->select('user_id');
+		if ($daysLeft) $this->db->where('date_last <=', strtotime(date('Y-m-d', strtotime('-10 days'))));
+		$this->db->where('stat', 0);
+		$this->db->where('done', 0);
+		if (!$result = $this->_result('resign')) return false;
+		return array_values(array_unique(array_column($result, 'user_id')));
+	}
+	
+	
+	/**
+	 * Переместить уволенных участников в инактив
+	 * @param 
+	 * @return 
+	*/
+	public function replaceResignUsers($usersIds = false, $replaceStaticId = false) {
+		if (!$usersIds || !$replaceStaticId) return false;
+		
+		$this->db->where_in('user_id', $usersIds);
+		$this->db->delete('users_statics');
+		
+		$insData = [];
+		foreach ($usersIds as $userId) {
+			$insData[] = [
+				'user_id'	=> $userId,
+				'static_id'	=> $replaceStaticId,
+				'main'		=> 1
+			];
+		}
+		
+		if (!$this->db->insert_batch('users_statics', $insData)) {
+			toLog('replaceResignUsers -> не выполнилась!');
+			return false;
+		} 
+		$this->db->where_in('user_id', $usersIds);
+		$this->db->update('resign', ['done' => 1]);
+		return true;
 	}
 	
 	

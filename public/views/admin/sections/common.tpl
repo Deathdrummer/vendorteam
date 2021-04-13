@@ -346,16 +346,11 @@
 					<table>
 						<thead>
 							<tr>
-								<td></td>
+								<td class="nowidth"></td>
 								<td class="w200px">Никнейм</td>
-								<td class="w200px">Статик</td>
-								<td>Причина увольнения</td>
-								<td>Что изменить</td>
-								<td class="w150px">Дата регистрации аккаунта</td>
-								<td class="w150px">Дата подачи заявки</td>
-								<td class="w150px">Дата для увольнения</td>
-								<td class="w150px">Последний рабочий день</td>
-								<td class="w60px">Статус</td>
+								<td>Статик</td>
+								<td class="w240px">Дата подачи заявки</td>
+								<td class="w110px" title="Опции">Опции.</td>
 							</tr>
 						</thead>
 						<tbody>
@@ -365,23 +360,25 @@
 										<td class="nopadding nowidth"><div class="avatar" style="background-image: url('{{base_url('public/images/users/mini/'~item.avatar)}}');"></div></td>
 										<td>{{item.nickname}}</td>
 										<td>{{item.static}}</td>
-										<td><small>{{item.reason|raw}}</small></td>
-										<td><small>{{item.comment|raw}}</small></td>
-										<td>{{item.date_reg|d}}</td>
-										<td>{{item.date_add|d}} <p>в {{item.date_add|t}}</p></td>
-										<td>{{item.date_resign|d}}</td>
-										<td>{{item.date_last|d}}</td>
-										<td class="access_block center">
+										<td>{{item.date_add|d}} в {{item.date_add|t}}</td>
+										<td class="center">
+											<div class="buttons inline">
+												<button class="alt" showresign="{{item.id}}" title="Посмотреть заявку на увольнение"><i class="fa fa-eye"></i></button>
+												<button class="pay" accessresign="{{item.id}}" title="Подтвердить увольнение"><i class="fa fa-check"></i></button>
+											</div>
+										</td>
+										
+										{#<td class="access_block center">
 											{% if item.stat %}
 												<div resign="0" class="success" data-id="{{item.id}}" title="Уволен"></div>
 											{% else %}
 												<div resign="1" class="forbidden" data-id="{{item.id}}" title="не уволен"></div>
 											{% endif %}
-										</td>
+										</td>#}
 									</tr>
 								{% endfor %}
 							{% else %}
-								<tr><td colspan="10"><p class="empty center">Нет данных</p></td></tr>
+								<tr><td colspan="6"><p class="empty center">Нет данных</p></td></tr>
 							{% endif %}
 						</tbody>
 					</table>	
@@ -390,17 +387,13 @@
 					<table>
 						<thead>
 							<tr>
-								<td></td>
+								<td class="nowidth"></td>
 								<td class="w200px">Никнейм</td>
-								<td class="w200px">Статик</td>
-								<td>Причина увольнения</td>
-								<td>Что изменить</td>
-								<td class="w150px">Дата регистрации аккаунта</td>
-								<td class="w150px">Дата подачи заявки</td>
-								<td class="w150px">Дата для увольнения</td>
-								<td class="w150px">Последний рабочий день</td>
-								<td class="w150px">Дата одобрения заявки</td>
-								<td class="w150px">Подтвердил увольнение</td>
+								<td>Статик</td>
+								<td class="w240px">Дата подачи заявки</td>
+								<td class="w240px">Дата одобрения заявки</td>
+								<td class="w150px" title="Подтвердил увольнение">Подтвердил</td>
+								<td class="w60px">Опции</td>
 							</tr>
 						</thead>
 						<tbody>
@@ -410,13 +403,8 @@
 										<td class="nopadding nowidth"><div class="avatar" style="background-image: url('{{base_url('public/images/users/mini/'~item.avatar)}}');"></div></td>
 										<td>{{item.nickname}}</td>
 										<td>{{item.static}}</td>
-										<td><small>{{item.reason|raw}}</small></td>
-										<td><small>{{item.comment|raw}}</small></td>
-										<td>{{item.date_reg|d}}</td>
-										<td>{{item.date_add|d}} <p>в {{item.date_add|t}}</p></td>
-										<td>{{item.date_resign|d}}</td>
-										<td>{{item.date_last|d}}</td>
-										<td>{{item.date_success|d}} <p>в {{item.date_success|t}}</p></td>
+										<td>{{item.date_add|d}} в {{item.date_add|t}}</td>
+										<td>{{item.date_success|d}} в {{item.date_success|t}}</td>
 										<td>
 											{% if item.from is same as(0) %}
 												Администратор
@@ -424,6 +412,11 @@
 												<small>Оператор:</small>
 												{{item.from}}
 											{% endif %}
+										</td>
+										<td class="center">
+											<div class="buttons inline">
+												<button class="alt" showresign="{{item.id}}" title="Посмотреть заявку на увольнение"><i class="fa fa-eye"></i></button>
+											</div>
 										</td>
 										{#<td class="access_block center">
 											{% if item.stat %}
@@ -435,7 +428,7 @@
 									</tr>
 								{% endfor %}
 							{% else %}
-								<tr><td colspan="11"><p class="empty center">Нет данных</p></td></tr>
+								<tr><td colspan="7"><p class="empty center">Нет данных</p></td></tr>
 							{% endif %}
 						</tbody>
 					</table>
@@ -982,28 +975,42 @@ $(document).ready(function() {
 	
 	
 	
-	
-	
 	//------------------------- Изменить статус "Заявки на увольнение"
-	$('body').off(tapEvent, '[resign]').on(tapEvent, '[resign]', function() {
+	$('body').off(tapEvent, '[accessresign]').on(tapEvent, '[accessresign]', function() {
 		var thisItem = this,
-			id = $(thisItem).data('id'),
-			stat = $(thisItem).attr('resign');
+			thisRow = $(thisItem).closest('tr'),
+			id = $(thisItem).attr('accessresign');
 		
-		$.post('/admin/change_resign_stat', {id: id, from: 'admin', stat: stat}, function(response) {
+		$.post('/admin/change_resign_stat', {id: id, from: 'admin', stat: 0}, function(response) {
 			if (response) {
-				if (stat === '1') {
-					$(thisItem).attr('resign', '0').removeClass('forbidden').addClass('success').attr('title', 'уволен');
-				} else {
-					$(thisItem).attr('resign', '1').removeClass('success').addClass('forbidden').attr('title', 'не уволен');
-				}
-				notify('Статус изменен!');
+				notify('Заявка на увольнение утверждена!');
+				$(thisRow).remove();
 			} else {
-				notify('Ошибка!', 'error');
+				notify('Ошибка! Заявка на увольнение не утверждена', 'error');
 			}
 		}).fail(function(e) {
 			showError(e);	
 			notify('Системная ошибка!', 'error');
+		});
+	});
+	
+	
+	//------------------------- Посмотреть заявку на увольнение
+	$('body').off(tapEvent, '[showresign]').on(tapEvent, '[showresign]', function() {
+		var thisItem = this,
+			id = $(thisItem).attr('showresign');
+		
+		popUp({
+			title: 'Заявка на увольнение',
+		    width: 800,
+		    closeButton: 'Закрыть',
+		}, function(showResignWin) {
+			showResignWin.wait();
+			getAjaxHtml('admin/show_resign', {id: id}, function(html) {
+				showResignWin.setData(html);
+			}, function() {
+				showResignWin.wait(false);
+			});
 		});
 	});
 	

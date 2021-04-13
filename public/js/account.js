@@ -1530,6 +1530,7 @@ $(document).ready(function() {
 	
 	function getTimesheetData(staticId, staticName, period) {
 		$.post('/timesheet/get_timesheet_data', {period_id: period, static_id: staticId, static_name: staticName}, function(html) {
+			console.log(html);
 			if (html) {
 				timesheetPeriodsWin.setWidth(1330, function() {
 					timesheetPeriodsWin.setData(html);

@@ -929,7 +929,6 @@ class Account extends MY_Controller {
 		$postData = bringTypes($this->input->post());
 		switch ($action) {
 			case 'get':
-				//toLog($this->userData);
 				$mentors = $this->account->getMentors();
 				echo $this->twig->render('views/account/render/mentors.tpl', ['mentors' => $mentors]);
 				break;

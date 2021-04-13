@@ -291,7 +291,7 @@ class Ratings_model extends My_Model {
 	 * @return 
 	*/
 	public function getUsersForRating() {
-		$this->db->select('u.id, us.static_id, u.nickname, u.avatar, ra.name AS role, ro.name AS rank');
+		$this->db->select('u.id, us.static_id, u.nickname, u.avatar, ra.name AS role, ro.name AS rank, EXISTS (SELECT 1 FROM resign r WHERE r.user_id = u.id AND r.date_last > '.time().') AS is_resign');
 		$this->db->join('users_statics us', 'us.user_id = u.id');
 		$this->db->join('roles ro', 'u.role = ro.id', 'LEFT OUTER');
 		$this->db->join('ranks ra', 'u.rank = ra.id', 'LEFT OUTER');

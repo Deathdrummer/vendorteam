@@ -99,6 +99,7 @@
 							<a class="button fieldheight" target="_self" href="{{base_url()}}reports/paymentrequest_export" download="Заявки_на_оплату_{{date('Y-m-d_H_i')}}.csv" title="Экспортировать отчет"><i class="fa fa-download"></i></a>
 							<button id="paymentRequestsSetStatToAll" class="fieldheight ml-0" title="Рассчитать все заявки"><i class="fa fa-list-ol"></i></button>
 							<button id="setSalaryBtn" class="fieldheight ml-0" title="Рассчитать оклады"><i class="fa fa-money"></i></button>
+							<button id="addictPayBtn" class="fieldheight ml-0 pay" title="Дополнительные выплаты"><i class="fa fa-money"></i></button>
 						</div>
 					</div>
 					
@@ -840,8 +841,6 @@ $(document).ready(function() {
 			userId = thisData[2],
 			cash = thisData[4],
 			toDeposit = thisData[3];
-		
-		console.log('paydone');
 			
 		$.post('/reports/change_paydone_stat', {
 			stat: stat,
@@ -1473,6 +1472,136 @@ $(document).ready(function() {
 			});
 		});
 	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	// --------------------------------------- Дополнительные выплаты
+	$('#addictPayBtn').on(tapEvent, function() {
+		popUp({
+			title: 'Дополнительные выплаты',
+		    width: 450,
+		    wrapToClose: true,
+		    winClass: false,
+		    buttons: [{id: 'calcAddictPay', title: 'Рассчитать'}],
+		    closeButton: 'Закрыть',
+		}, function(addictPayWin) {
+			addictPayWin.wait();
+			getAjaxHtml('reports/get_addictpay_form', function(html) {
+				addictPayWin.setData(html);
+				
+				
+				
+				$('#calcAddictPay').on(tapEvent, function() {
+					let order = $('#addictPayOrder'),
+						comment = $('#addictPayComment'),
+						toDeposit = ($('#paymentRequestToDeposit').is(':checked') ? 1 : 0),
+						choosedStatics = [],
+						stat = true;
+					
+					
+					if ($('#addictPayFormStatics').find('input[type="checkbox"]:checked').length == 0) {
+						notify('Необходимо выбрать хотя бы один статик!', 'error');
+						stat = false;
+					}
+					
+					if ($(order).val() == '') {
+						notify('Необходимо заполнить поле [номер заказа]!', 'error');
+						$(order).addClass('error');
+						stat = false;
+					}
+					
+					if ($(comment).val() == '') {
+						notify('Необходимо заполнить поле [комментарий к оплатам]!', 'error');
+						$(comment).addClass('error');
+						stat = false;
+					}
+					
+					if (stat) {
+						addictPayWin.wait();
+						$('#addictPayFormStatics').find('input[type="checkbox"]:checked').each(function() {
+							choosedStatics.push(parseInt($(this).val()));
+						});
+						
+						getAjaxHtml('reports/calc_addictpay', {statics: choosedStatics, to_deposit: toDeposit}, function(html) {
+							addictPayWin.setWidth(700);
+							addictPayWin.setData(html);
+							addictPayWin.setButtons([{id: 'setAddictPayUsers', title: 'Сформировать заявки'}]);
+							
+							$('[addictpayuser]').on('change', function() {
+								let totalSumm = 0;
+								$(this).closest('tbody').find('input[type="checkbox"]:checked').each(function() {
+									let d = $(this).attr('addictpayuser').split('|'),
+										summ = parseInt(d[2]);
+									totalSumm += summ;
+								});
+								$(this).closest('tbody').siblings('tfoot').find('[totalsumm]').text($.number(totalSumm, 2, '.', ' ')+' р.');
+							});
+							
+							
+							
+							$('#setAddictPayUsers').on(tapEvent, function() {
+								addictPayWin.wait();
+								let ordersData = [];
+								$('#addictPayUsersData').find('input[type="checkbox"]:checked').each(function() {
+									let d = $(this).attr('addictpayuser').split('|'),
+										static = parseInt(d[0]),
+										user = parseInt(d[1]),
+										summ = parseInt(d[2]),
+										deposit = parseInt(d[3]);
+									
+									ordersData.push({
+										static: static,
+										user: user,
+										summ: summ,
+										to_deposit: deposit
+									});
+								});
+								
+								if (ordersData) {
+									$.post('/reports/set_addictpay_orders', {users: ordersData, order: $(order).val(), comment: $(comment).val(), to_deposit: toDeposit}, function(response) {
+										if (response) {
+											addictPayWin.close();
+											notify('Заявки успешно сформированны!');
+										} else {
+											notify('Ошибка формирования заявок!', 'error');
+											addictPayWin.wait(false);
+										}
+									}, 'json').fail(function(e) {
+										addictPayWin.wait(false);
+										showError(e);
+										notify('Системная ошибка!', 'error');
+									});
+									
+								} else {
+									notify('Необходимо выбрать хотя бы одного участника!', 'error');
+								}
+							});
+							
+						}, function() {
+							addictPayWin.wait(false);
+						});
+					}
+					
+					
+				});
+				
+			}, function() {
+				addictPayWin.wait(false);
+			});
+		});
+	});
+	
 	
 	
 	

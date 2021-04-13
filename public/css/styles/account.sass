@@ -1044,6 +1044,27 @@ body
 			
 			&.online
 				opacity: 1
+		
+		&__resign
+			width: 18px
+			height: 18px
+			display: inline-block
+			background-color: #fff
+			border-radius: 50%
+			box-shadow: 0 0 0 2px #211731
+			position: absolute
+			top: -4px
+			right: -4px
+			z-index: 1
+			
+			&::after
+				content: '\f235'
+				font: normal normal normal 13px/1 FontAwesome
+				color: #f00
+				display: block
+				position: absolute
+				top: 2px
+				left: 2px
 				
 		
 		&__name
@@ -2264,6 +2285,7 @@ body
 							display: inline-block
 					
 					.image
+						position: relative
 						width: 40px
 						height: 40px
 						border-radius: 2px
@@ -2276,6 +2298,37 @@ body
 						&.mini
 							width: 36px
 							height: 36px
+						
+						.resign
+							width: 18px
+							height: 18px
+							display: inline-block
+							background-color: #fff
+							border-radius: 50%
+							box-shadow: 0 0 0 2px #211731
+							position: absolute
+							top: -4px
+							right: -4px
+							z-index: 1
+							
+							&::after
+								content: '\f235'
+								font: normal normal normal 13px/1 FontAwesome
+								color: #f00
+								display: block
+								position: absolute
+								top: 2px
+								left: 2px
+						
+						&.mini .resign
+							width: 15px
+							height: 15px
+							top: -2px
+							right: -2px
+							
+							&::after
+								font-size: 11px
+							
 					
 					input[type="number"]
 						background: none
@@ -3354,7 +3407,7 @@ body
 		border-radius: 3px
 		margin-right: 8px
 		box-shadow: 0 0 5px 0 rgba(68, 68, 68, 0.45)
-		position: static
+		position: relative
 		background:		
 			repeat: no-repeat
 			size: cover
@@ -3363,6 +3416,27 @@ body
 		img
 			width: 100%
 			height: auto
+		
+	&__resign
+		width: 18px
+		height: 18px
+		display: inline-block
+		background-color: #fff
+		border-radius: 50%
+		box-shadow: 0 0 0 2px #211731
+		position: absolute
+		top: -4px
+		right: -4px
+		z-index: 1
+		
+		&::after
+			content: '\f235'
+			font: normal normal normal 13px/1 FontAwesome
+			color: #f00
+			display: block
+			position: absolute
+			top: 2px
+			left: 2px
 			
 	
 	&__name
