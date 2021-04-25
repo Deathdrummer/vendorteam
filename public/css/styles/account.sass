@@ -1127,21 +1127,28 @@ body
 	
 	
 	.staticbuttons
-		display: flex
-		justify-content: space-between
-		padding: 10px 5px 0 10px
 		margin-top: 1rem
 		
+		&__row
+			display: flex
+			justify-content: space-between
+			padding: 0px 5px 0 10px
+			
+			+ .staticbuttons__row
+				margin-top: 5px
+			
+		
 		button
-			height: 44px
-			width: calc(50% - 5px)
+			height: 32px
+			width: 100%
 			padding-left: 10px
 			padding-right: 10px
 			background-color: $colorBlue
 			color: $colorDarkViolett
 			border-radius: 4px
 			+font(roboto, bold)
-			+resp(font-size, (xs: 14px, sm: 14px, md: 14px, lg: 14px, xl: 14px), (line-height: 0))
+			font-size: 12px
+			line-height: 12px
 			transition: background-color 0.16s
 			
 			&:hover

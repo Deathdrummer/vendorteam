@@ -49817,48 +49817,35 @@ body.body_start::-webkit-resizer {
         -webkit-box-shadow: 0 0 5px 0 rgba(68, 68, 68, 0.45);
                 box-shadow: 0 0 5px 0 rgba(68, 68, 68, 0.45); }
   .contentblock .staticbuttons {
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-pack: justify;
-    -webkit-justify-content: space-between;
-       -moz-box-pack: justify;
-        -ms-flex-pack: justify;
-            justify-content: space-between;
-    padding: 10px 5px 0 10px;
     margin-top: 1rem; }
+    .contentblock .staticbuttons__row {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -moz-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-pack: justify;
+      -webkit-justify-content: space-between;
+         -moz-box-pack: justify;
+          -ms-flex-pack: justify;
+              justify-content: space-between;
+      padding: 0px 5px 0 10px; }
+      .contentblock .staticbuttons__row + .staticbuttons__row {
+        margin-top: 5px; }
     .contentblock .staticbuttons button {
-      height: 44px;
-      width: calc(50% - 5px);
+      height: 32px;
+      width: 100%;
       padding-left: 10px;
       padding-right: 10px;
       background-color: #54e9ff;
       color: #1e1528;
       border-radius: 4px;
       font-family: roboto-bold, sans-serif;
-      font-size: 14px;
-      line-height: 14px;
+      font-size: 12px;
+      line-height: 12px;
       -webkit-transition: background-color 0.16s;
       -o-transition: background-color 0.16s;
       transition: background-color 0.16s; }
-      @media screen and (min-width: 576px) {
-        .contentblock .staticbuttons button {
-          font-size: 14px;
-          line-height: 14px; } }
-      @media screen and (min-width: 768px) {
-        .contentblock .staticbuttons button {
-          font-size: 14px;
-          line-height: 14px; } }
-      @media screen and (min-width: 992px) {
-        .contentblock .staticbuttons button {
-          font-size: 14px;
-          line-height: 14px; } }
-      @media screen and (min-width: 1590px) {
-        .contentblock .staticbuttons button {
-          font-size: 14px;
-          line-height: 14px; } }
       .contentblock .staticbuttons button:hover {
         background-color: #21e2ff; }
       .contentblock .staticbuttons button:active {

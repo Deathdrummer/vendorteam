@@ -565,6 +565,7 @@ class Admin extends MY_Controller {
 		$statics = array_filter($staticsData, function($val) {return isset($val['name']) && $val['name'] != '';});
 		$statics = array_map(function($item) {
 			$item['stopstage'] = isset($item['stopstage']) ? $item['stopstage'] : 0;
+			$item['payformat'] = isset($item['payformat']) ? $item['payformat'] : null;
 			$item['cap_simple'] = str_replace(' ', '', $item['cap_simple']);
 			$item['cap_lider'] = str_replace(' ', '', $item['cap_lider']);
 			return $item;

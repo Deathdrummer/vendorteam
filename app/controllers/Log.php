@@ -4,6 +4,9 @@ class Log extends MY_Controller {
 	
 	
 	public function index() {
+		echo '<head><title>Лог</title></head>';
+		echo '<link rel="shortcut icon" href="/public/images/favicon_log.png" />';
+		
 		echo '<div id="logButtonsBlock" style="position: fixed; top: 7px; left: calc(50% - 150px); padding: 5px; background-color: #fff; border: 1px solid #aaa; opacity: 0.4">';
 		echo 	'<button style="height: 40px; padding-left: 30px;padding-right: 30px;margin-right: 10px;cursor: pointer;" onclick="location.reload();">Перезагрузить</button>';
 		echo 	'<form action="log/clear" style="display: inline"><input type="submit" style="height: 40px; padding-left: 30px;padding-right: 30px;cursor: pointer;" value="Очистить" /></form>';

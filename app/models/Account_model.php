@@ -48,7 +48,7 @@ class Account_model extends My_Model {
 		if ($response = $query->row_array()) {
 			$response['access'] = json_decode($response['access'], true);
 			unset($response['password']);
-			$this->db->select('us.static_id, s.name, s.icon, us.lider, us.main, s.stopstage');
+			$this->db->select('us.static_id, s.name, s.icon, us.lider, us.main, s.stopstage, s.payformat');
 			$this->db->join('statics s', 's.id = us.static_id', 'left outer');
 			$this->db->where('us.user_id', $userId);
 			$sQuery = $this->db->get('users_statics us');

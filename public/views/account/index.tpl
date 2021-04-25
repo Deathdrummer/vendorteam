@@ -17,13 +17,7 @@
 	<link rel="shortcut icon" href="{{base_url('public/images/favicon.png')}}" />
 	
 	<link rel="stylesheet" href="{{base_url('public/css/plugins.min.css')}}">
-	<script src="{{base_url('public/js/plugins.min.js')}}"></script>
-	
-	<script src="{{base_url('public/js/assets/functions.js')}}"></script>
-	<script src="{{base_url('public/js/assets/common.js')}}"></script>
-	
 	<link rel="stylesheet" href="{{base_url('public/css/account.min.css')}}">
-	<script src="{{base_url('public/js/account.js')}}"></script>
 	
 	<!-- Если сайт на хостинге - выполнять функции -->
 	{% if hosting %}{% endif %}
@@ -101,12 +95,12 @@
 													<div class="row gutters-5">
 														<div class="col-12"> <!-- <div class="col-5"> -->
 															<div class="staticpanel">
-																<div class="staticusers noselect">
+																<div class="staticusers noselect" staticusers="{{statics[staticId]['lider']}}">
 																	{% for friend in friends[staticId]|sortusers %}
 																		<div class="staticuser" userid="{{friend.id}}">
 																			<div class="staticuser__image" style="background-image: url('{{base_url('public/images/users/'~friend.avatar)|is_file('public/images/user_mini.jpg')}}')">
 																				<div class="staticuser__stat{#online#}"></div>
-																				{% if friend.is_resign %}<div class="staticuser__resign" title="Увольняется"></div>{% endif %}
+																				{% if friend.is_resign and is_lider %}<div class="staticuser__resign" title="Увольняется"></div>{% endif %}
 																			</div>
 																			<div class="staticuser__name mr-auto">
 																				<p>{{friend.nickname}}</p>
@@ -127,15 +121,24 @@
 																		</div>
 																	{% endfor %}
 																</div>
-																<div class="staticbuttons" id="staticLiderButtons">
+																<div class="staticbuttons">
 																	{% if statics[staticId]['lider'] %}
-																		<button newraid="{{staticId}}">Создать рейд</button>
-																		<button setcompound="{{staticId}}|1">Коэфф.</button>
-																		<button setkeys="{{staticId}}|1">Ключи</button>
-																		{% if id in [2,21] %}<button setrating="{{staticId}}|1">Рейтинги</button>{% endif %}
+																		<div class="staticbuttons__row">
+																			<button newraid="{{staticId}}">Создать рейд</button>
+																			<button setcompound="{{staticId}}|1">Коэфф.</button>
+																			<button setkeys="{{staticId}}|1">Ключи</button>
+																		</div>
+																		<div class="staticbuttons__row">
+																			{% if statics[staticId]['payformat'] == 1 %}
+																				<button myreward="{{staticId}}">Моя премия</button>	
+																			{% endif %}
+																			{% if id in [2,21] %}<button setrating="{{staticId}}|1">Рейтинги</button>{% endif %}
+																		</div>
 																	{% else %}
-																		<button setcompound="{{staticId}}|0">Коэффициенты</button>
-																		<button setkeys="{{staticId}}|0">Ключи</button>
+																		<div class="staticbuttons__row">
+																			<button setcompound="{{staticId}}|0">Коэффициенты</button>
+																			<button setkeys="{{staticId}}|0">Ключи</button>
+																		</div>
 																	{% endif %}
 																</div>
 															</div>
@@ -242,5 +245,9 @@
 	</main>
 	
 	<!-- <div scrolltop><svg><use xlink:href="#arrow_left"></use></svg></div> -->
+	<script src="{{base_url('public/js/plugins.min.js')}}"></script>
+	<script src="{{base_url('public/js/assets/functions.js')}}"></script>
+	<script src="{{base_url('public/js/assets/common.js')}}"></script>
+	<script src="{{base_url('public/js/account.js')}}"></script>
 </body>
 </html>

@@ -497,11 +497,16 @@ $(document).ready(function() {
 		}, 50);
 	});
 	
-	if ($('#staticLiderButtons').length == 0) {
-		$('.staticusers').css('max-height', 'calc(100vh - 204px)');
-	} else {
-		$('.staticusers').css('max-height', 'calc(100vh - 274px)');
-	}
+	
+	$('[staticusers]').each(function() {
+		let thisUsersBlock = this,
+			isLider = $(thisUsersBlock).attr('staticusers') == 1 ? true : false;
+		if (isLider) {
+			$(thisUsersBlock).css('max-height', 'calc(100vh - 289px)');
+		} else {
+			$(thisUsersBlock).css('max-height', 'calc(100vh - 252px)');
+		}
+	});
 	
 	
 	

@@ -49424,6 +49424,30 @@ html::-webkit-resizer {
                -moz-box-pack: justify;
                 -ms-flex-pack: justify;
                     justify-content: space-between; }
+      .main fieldset .list_col {
+        display: -webkit-inline-box;
+        display: -webkit-inline-flex;
+        display: -moz-inline-box;
+        display: -ms-inline-flexbox;
+        display: inline-flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -webkit-flex-direction: column;
+           -moz-box-orient: vertical;
+           -moz-box-direction: normal;
+            -ms-flex-direction: column;
+                flex-direction: column;
+        -webkit-align-self: flex-start;
+            -ms-flex-item-align: start;
+                align-self: flex-start; }
+        .main fieldset .list_col .title {
+          font-size: 14px;
+          line-height: 14px;
+          margin-top: -2px;
+          margin-bottom: 6px; }
+        .main fieldset .list_col .subtitle {
+          font-size: 12px;
+          line-height: 12px; }
 
 .scroll {
   -webkit-box-flex: 1;
