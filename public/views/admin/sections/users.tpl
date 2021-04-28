@@ -355,7 +355,7 @@
 											<td class="nopadding"><div class="avatar" style="background-image: url('{{base_url('public/images/users/mini/'~item.avatar)}}')"></div></td>
 											<td>{{item.nickname}}</td>
 											<td>{{item.reason}}</td>
-											<td>{{item.summ|number_format(2, '.', ' ')}} р.</td>
+											<td>{{item.summ|number_format(2, '.', ' ')}} ₽</td>
 											<td>{{item.date|d}}</td>
 											<td>{{item.stat}}</td>
 										</tr>	

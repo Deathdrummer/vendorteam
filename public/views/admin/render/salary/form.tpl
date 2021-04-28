@@ -9,7 +9,7 @@
 					<td class="w60px" title="Количчество участников">Кол-во участ.</td>
 					<td class="w60px" title="Максимальная сумма коэффициентов">Макс. сум. коэфф.</td>
 					<td class="nowidth">Коэфф.</td>
-					<td class="nowidth">Сумма (р.)</td>
+					<td class="nowidth">Сумма (₽)</td>
 					<td class="nowidth" title="Выбрать">Выб.</td>
 				</tr>
 			</thead>

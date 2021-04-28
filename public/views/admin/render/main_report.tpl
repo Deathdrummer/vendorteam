@@ -24,7 +24,7 @@
 								<tr>
 									<td>{{userData.nickname}}</td>
 									<td>{{userData.rank_name}}</td>
-									<td><span class="nowrap">{{userData.deposit|number_format(2, '.', ' ')}} р.</span></td>
+									<td><span class="nowrap">{{userData.deposit|number_format(2, '.', ' ')}} ₽</span></td>
 								</tr>
 							{% endfor %}
 							<tr>
@@ -94,9 +94,9 @@
 									<td class="nowidth">{{userData.effectiveness}}</td>
 									<td class="nowidth">{{userData.fine}}</td>
 									<td class="nowidth">{{userData.period_koeff|round(3)}}</td>
-									<td class="nowidth"><span class="nowrap">{{userData.payment|number_format(2, '.', ' ')}} р.</span></td>
-									<td><span class="nowrap">{{userData.to_deposit|number_format(2, '.', ' ')}} р.</span></td>
-									<td><strong class="nowrap">{{userData.final_payment|number_format(2, '.', ' ')}} р.</strong></td>
+									<td class="nowidth"><span class="nowrap">{{userData.payment|number_format(2, '.', ' ')}} ₽</span></td>
+									<td><span class="nowrap">{{userData.to_deposit|number_format(2, '.', ' ')}} ₽</span></td>
+									<td><strong class="nowrap">{{userData.final_payment|number_format(2, '.', ' ')}} ₽</strong></td>
 									{% if pattern_id and not to_user %}
 										<td class="square_block">
 											{% if userData.final_payment != 0 %}
@@ -115,7 +115,7 @@
 							<tr>
 								<td colspan="4" class="right">Сумма коэффициентов периода:</td>
 								<td><strong>{{static.period_koeff_summ|round(3)}}</strong></td>
-								<td colspan="3" class="right"><span class="nowrap right">Бюджет:</span> <strong class="nowrap">{{static.cash|number_format(2, '.', ' ')}} р.</strong></td>
+								<td colspan="3" class="right"><span class="nowrap right">Бюджет:</span> <strong class="nowrap">{{static.cash|number_format(2, '.', ' ')}} ₽</strong></td>
 								{% if pattern_id and not to_user %}<td></td>{% endif %}
 							</tr>
 						</tbody>

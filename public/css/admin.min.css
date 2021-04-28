@@ -49584,7 +49584,7 @@ table {
         table tbody > tr > td p, table tbody > tr > td strong, table tbody > tr > td span {
           font-size: 14px !important;
           margin-bottom: 0 !important; }
-        table tbody > tr > td.texttop {
+        table tbody > tr > td.texttop, table tbody > tr > td.top {
           vertical-align: text-top; }
         table tbody > tr > td img {
           max-width: 50px; }

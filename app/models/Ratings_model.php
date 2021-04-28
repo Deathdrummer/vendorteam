@@ -64,7 +64,7 @@ class Ratings_model extends My_Model {
 	
 	
 	/**
-	 * Получить список периодов отчетов
+	 * Получить список платежных периодов
 	 * @param
 	 * @return 
 	*/

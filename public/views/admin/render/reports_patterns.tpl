@@ -18,7 +18,7 @@
 					<td class="w30">
 						<ul class="list_overflow patterns">
 							{% for static, cash in pattern.cash %}
-								<li>{{statics[static]['name']}} <strong>{{cash|number_format(0, '.', ' ')}} р.</strong></li>
+								<li>{{statics[static]['name']}} <strong>{{cash|number_format(0, '.', ' ')}} ₽</strong></li>
 							{% endfor %}
 						</ul>
 					</td>

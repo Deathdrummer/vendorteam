@@ -77,7 +77,7 @@
 																{% if 7 in access %}
 																	<input type="text" class="user_deposit" value="{{user.deposit|default(0)}}">
 																{% else %}
-																	<p>{{user.deposit|default(0)|number_format(0, '', ' ')}} р.</p>
+																	<p>{{user.deposit|default(0)|number_format(0, '', ' ')}} ₽</p>
 																{% endif %}
 															</div>
 														</td>

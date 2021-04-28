@@ -1690,6 +1690,107 @@ class Admin extends MY_Controller {
 	
 	
 	
+	
+	/**
+	 * Премии
+	 * @param 
+	 * @return 
+	*/
+	public function rewards($action = false) {
+		if (!$this->input->is_ajax_request() || !$action) return false;
+		$postData = bringTypes($this->input->post());
+		$this->load->model(['rewards_model' => 'rewards', 'reports_model' => 'reports']);
+		switch ($action) {
+			case 'get_periods': // получить список периодов
+				$rewardsPeriods = $this->rewards->getPeriods();
+				echo $this->twig->render('views/admin/render/rewards/periods_list.tpl', ['rewards_periods' => $rewardsPeriods]);
+				break;
+			
+			case 'new_period': // новый период
+				$reportsPeriods = $this->reports->getReportsPeriods();
+				echo $this->twig->render('views/admin/render/rewards/period_form.tpl', ['reports_periods' => $reportsPeriods]);
+				break;
+			
+			case 'add_period': // добавить период
+				$this->rewards->addPeriod($postData);
+				$rewardsPeriods = $this->rewards->getPeriods();
+				echo $this->twig->render('views/admin/render/rewards/periods_list.tpl', ['rewards_periods' => $rewardsPeriods]);
+				break;
+			
+			case 'edit_period': // добавить период
+				$periodData = $this->rewards->getPeriod($postData['period_id']);
+				$reportsPeriods = $this->reports->getReportsPeriods();
+				if ($reportsPeriods) {
+					foreach ($reportsPeriods as $pkey => $period) {
+						if (in_array($period['id'], $periodData['reports_periods'])) $reportsPeriods[$pkey]['choosed'] = 1;
+					}
+				}
+				echo $this->twig->render('views/admin/render/rewards/period_form.tpl', array_merge($periodData, ['reports_periods' => $reportsPeriods]));
+				break;
+			
+			case 'update_period': // обновить период
+				$this->rewards->updatePeriod($postData);
+				$rewardsPeriods = $this->rewards->getPeriods();
+				echo $this->twig->render('views/admin/render/rewards/periods_list.tpl', ['rewards_periods' => $rewardsPeriods]);
+				break;
+				
+			case 'change_stat': // изменить статус периода
+				if ($this->rewards->changePeriodStat($postData)) exit('0');
+				echo '1';
+				break;
+			
+			case 'get_statics_form': // Задать бюджет статиков
+				$statics = $this->rewards->getStatics();
+				$rewards = $this->rewards->getStaticsSumm($postData['period_id']);
+				$periods = $this->rewards->getRewardReportsPeriods($postData['period_id']);
+				echo $this->twig->render('views/admin/render/rewards/statics_form.tpl', ['statics' => $statics, 'periods' => $periods, 'rewards' => $rewards]);
+				break;
+				
+			case 'set_statics_summ': // Сохранить бюджет статиков
+				if ($this->rewards->setStaticsSumm($postData)) exit('0');
+				echo '1';
+				break;
+			
+			case 'get_report': // получить отчет
+				$statics = $this->rewards->getStatics();
+				$reportsPeriods = $this->reports->getReportsPeriods();
+				$report = $this->rewards->getReportData($postData['period_id'], $statics, $reportsPeriods);
+				toLog($report);
+				
+				
+				echo $this->twig->render('views/admin/render/rewards/report.tpl', $report);
+				break;
+				
+				
+			
+			default:
+				break;
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	/**
 	 * Выговоры
 	 * @param 
@@ -1879,7 +1980,7 @@ class Admin extends MY_Controller {
 	
 	
 	/**
-	 * Выговоры
+	 * Стимулирование
 	 * @param 
 	 * @return 
 	 */

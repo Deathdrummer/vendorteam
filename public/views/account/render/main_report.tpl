@@ -21,7 +21,7 @@
 								<tr{% if userData.color %} style="background-color: {{userData.color}}"{% endif %}>
 									<td>{% if userId == to_user or lider %}{{userData.nickname}}{% else %}#{% endif %}</td>
 									<td>{% if userId == to_user or lider %}{{userData.rank_name}}{% else %}#{% endif %}</td>
-									<td><span class="nowrap">{% if userId == to_user or lider %}{{userData.deposit|number_format(2, '.', ' ')}} р.{% else %}<strong>#</strong>{% endif %}</span></td>
+									<td><span class="nowrap">{% if userId == to_user or lider %}{{userData.deposit|number_format(2, '.', ' ')}} ₽{% else %}<strong>#</strong>{% endif %}</span></td>
 								</tr>
 							{% endfor %}
 							<tr>
@@ -91,9 +91,9 @@
 									<td class="nowidth center"><p>{{userData.effectiveness}}</p></td>
 									<td class="nowidth center"><p>{{userData.fine}}</p></td>
 									<td class="nowidth center">{% if userId == to_user or lider %}<p>{{userData.period_koeff|round(3)}}</p>{% else %}<p>#</p>{% endif %}</td>
-									<td class="nowidth center">{% if userId == to_user or lider %}<p class="nowrap">{{userData.payment|number_format(2, '.', ' ')}} р.</p>{% else %}<p>#</p>{% endif %}</td>
-									<td class="center">{% if userId == to_user or lider %}<p class="nowrap">{{userData.to_deposit|number_format(2, '.', ' ')}} р.</p>{% else %}<p>#</p>{% endif %}</td>
-									<td class="center">{% if userId == to_user or lider %}<p class="nowrap">{{userData.final_payment|number_format(2, '.', ' ')}} р.</p>{% else %}<p>#</p>{% endif %}</td>
+									<td class="nowidth center">{% if userId == to_user or lider %}<p class="nowrap">{{userData.payment|number_format(2, '.', ' ')}} ₽</p>{% else %}<p>#</p>{% endif %}</td>
+									<td class="center">{% if userId == to_user or lider %}<p class="nowrap">{{userData.to_deposit|number_format(2, '.', ' ')}} ₽</p>{% else %}<p>#</p>{% endif %}</td>
+									<td class="center">{% if userId == to_user or lider %}<p class="nowrap">{{userData.final_payment|number_format(2, '.', ' ')}} ₽</p>{% else %}<p>#</p>{% endif %}</td>
 									{% if pattern_id and not to_user %}
 										<td class="square_block">
 											{% if userData.final_payment != 0 %}
@@ -113,7 +113,7 @@
 							<tr>
 								<td colspan="4" class="right">Сумма коэффициентов периода:</td>
 								<td class="center">{% if userId == to_user or lider %}<p>{{static.period_koeff_summ|round(3)}}</p>{% else %}<p>#</p>{% endif %}</td>
-								<td colspan="3" class="right"><span class="nowrap right">Бюджет:</span> <p class="nowrap">{% if userId == to_user or lider %}{{static.cash|number_format(2, '.', ' ')}} р.{% else %}#{% endif %}</p></td>
+								<td colspan="3" class="right"><span class="nowrap right">Бюджет:</span> <p class="nowrap">{% if userId == to_user or lider %}{{static.cash|number_format(2, '.', ' ')}} ₽{% else %}#{% endif %}</p></td>
 								{% if pattern_id and not to_user %}<td></td>{% endif %}
 							</tr>
 						</tbody>

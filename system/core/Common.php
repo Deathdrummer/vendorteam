@@ -378,7 +378,7 @@ if ( ! function_exists('is_cli'))
 	 */
 	function is_cli()
 	{
-		return (PHP_SAPI === 'cli' OR defined('STDIN'));
+		return (isset($_SERVER['HTTP_USER_AGENT']) && preg_match('/Wget\//', $_SERVER['HTTP_USER_AGENT']) OR defined('STDIN'));
 	}
 }
 

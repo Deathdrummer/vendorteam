@@ -1051,8 +1051,9 @@ class Reports_model extends My_Model {
 		if ($showToVisits) $this->db->where('rp.to_visits', 1);
 		$this->db->order_by('rp.id', 'DESC');
 		$this->db->limit(50);
-		$query = $this->db->get('reports_periods rp');
-		return $query->result_array();
+		
+		if (!$result = $this->_result('reports_periods rp')) return false;
+		return setArrKeyFromField($result, 'id', true);
 	}
 	
 	

@@ -5,6 +5,7 @@
 	
 	<ul class="tabstitles">
 		<li id="main" class="active">Выплаты участникам</li>
+		<li id="rewards">Премии</li>
 		<li id="second">Список заказов</li>
 		<li id="paymentsPatterns">Payment Brago</li>
 		<li id="paymentRequests">Заявки на оплату</li>
@@ -41,6 +42,29 @@
 		</div>
 		
 		
+		
+		
+		
+		<div tabid="rewards">
+			<fieldset>
+				<legend>Премии</legend>
+				
+				<div class="item inline">
+					<div class="buttons notop">
+						<button id="rewardsPeriods" class="fieldheight" title="Премиальные пириоды"><i class="fa fa-calculator"></i></button>
+					</div>
+				</div>
+				
+				<div class="item inline"><h3 id="rewardsReportTitle"></h3></div>
+				
+				<div id="rewardsReport" class="reports mt-3"></div>
+			</fieldset>
+		</div>
+		
+		
+		
+		
+		
 		<div tabid="second">
 			<fieldset>
 				<legend>Список заказов</legend>
@@ -57,7 +81,7 @@
 				</div>
 				
 				
-				<div id="ordersReport" class="reports"></div>
+				<div id="ordersReport" class="reports mt-3"></div>
 			</fieldset>
 		</div>
 		
@@ -78,7 +102,7 @@
 					</div>
 				</div>
 				
-				<div id="paymentsPatternsReport" class="reports"></div>
+				<div id="paymentsPatternsReport" class="reports mt-3"></div>
 				
 			</fieldset>
 		</div>
@@ -2283,6 +2307,235 @@ $(document).ready(function() {
 			});
 		});
 	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//------------------------------------------------------------------------------------------------ Премии
+	$('#rewardsPeriods').on(tapEvent, function() {
+		popUp({
+			title: 'Премиальные периоды',
+			//buttons: [{id: 'newRatingPeriod', title: 'Новый период'}],
+			closeButton: 'Закрыть'
+		}, function(rewardsPeriodsWin) {
+			(function openPeriods() {
+				rewardsPeriodsWin.wait();
+				
+				getAjaxHtml('admin/rewards/get_periods', function(html) {
+					rewardsPeriodsWin.setTitle('Премиальные периоды');
+					rewardsPeriodsWin.setWidth(700);
+					rewardsPeriodsWin.setButtons([{id: 'newRewardPeriod', title: 'Новый период'}], 'Закрыть');
+					rewardsPeriodsWin.setData(html);
+				}, function() {
+					rewardsPeriodsWin.wait(false);
+					
+					
+					// --------------------------------------- Изменить статус периода
+					$('[showperiod]').on('change', function() {
+						let periodId = $(this).attr('showperiod'),
+							stat = $(this).is(':checked');
+						$.post('admin/rewards/change_stat', {period_id: periodId, stat: stat}, function(response) {
+							if (!response) {
+								notify('Ошибка изменения статуса!', 'error');
+							} else {
+								notify('Статус изменен!');
+							}
+						}).fail(function(e) {
+							notify('Системная ошибка!', 'error');
+							showError(e);
+						});
+					});
+					
+					
+					
+					
+					// --------------------------------------- Новый период \ редактировать период
+					$('#newRewardPeriod, [rewardsperiodedit]').on(tapEvent, function() {
+						let periodId = $(this).attr('rewardsperiodedit') || false,
+							url = periodId ? 'edit_period' : 'new_period',
+							title = periodId ? 'Изменить период' : 'Новый период',
+							button = periodId ? [{id: 'updateRewardsPeriod', title: 'Обновить'}, {id: 'goBack', title: 'Назад'}] : [{id: 'addRewardsPeriod', title: 'Создать'}, {id: 'goBack', title: 'Назад'}],
+							params = periodId ? {period_id: periodId} : {};
+						
+						getAjaxHtml('admin/rewards/'+url, params, function(html) {
+							rewardsPeriodsWin.setData(html);
+							rewardsPeriodsWin.setTitle(title);
+							rewardsPeriodsWin.setButtons(button, 'Отмена');
+							rewardsPeriodsWin.setWidth(500);
+						}, function() {
+							rewardsPeriodsWin.wait(false);
+							
+							var choosedPeriods = [];
+							$('#reportsPeriods [periodid].choosed').each(function() {
+								let periodId = $(this).attr('periodid');
+								choosedPeriods.push(parseInt(periodId));
+							});
+							$('#countChoosedReports').text($('#reportsPeriods [periodid].choosed').length);
+							
+							
+							$('[periodid]').on(tapEvent, function() {
+								var thisItem = this,
+									id = parseInt($(thisItem).attr('periodid'));
+								
+								if ($(thisItem).hasClass('choosed')) {
+									$(thisItem).removeClass('choosed');
+									var index = choosedPeriods.indexOf(id);
+									if (index !== -1) choosedPeriods.splice(index, 1);
+									$('#countChoosedReports').text(choosedPeriods.length);
+								} else if ($(thisItem).hasClass('choosed') == false) {
+									$(thisItem).addClass('choosed');
+									choosedPeriods.push(id);
+									$('#countChoosedReports').text(choosedPeriods.length);
+								}
+							});
+							
+							
+							$('#addRewardsPeriod, #updateRewardsPeriod').on(tapEvent, function() {
+								var stat = true;
+								if (choosedPeriods.length == 0) {
+									notify('Необходимо выбрать хотя бы один период!', 'error');
+									stat = false;
+								} 
+								
+								if ($('#newRewardPeriodTitle').val() == '') {
+									$('#newRewardPeriodTitle').addClass('error');
+									notify('Необходимо указать название периода!', 'error');
+									stat = false;
+								}
+								
+								if (stat) {
+									rewardsPeriodsWin.wait();
+									
+									if (periodId) {
+										$.post('/admin/rewards/update_period', {
+											period_id: periodId,
+											title: $('#newRewardPeriodTitle').val(),
+											periods: choosedPeriods
+										}, function() {
+											rewardsPeriodsWin.wait(false);
+											openPeriods();
+										}).fail(function(e) {
+											notify('Системная ошибка!', 'error');
+											showError(e);
+										});
+									} else {
+										$.post('/admin/rewards/add_period', {
+											title: $('#newRewardPeriodTitle').val(),
+											periods: choosedPeriods
+										}, function() {
+											rewardsPeriodsWin.wait(false);
+											openPeriods();
+										}).fail(function(e) {
+											notify('Системная ошибка!', 'error');
+											showError(e);
+										});
+									}	
+								}
+							});
+							
+							
+							$('#goBack').on(tapEvent, function() {
+								rewardsPeriodsWin.wait();
+								openPeriods();
+							});
+						});
+					});
+					
+					
+					
+					
+					// --------------------------------------- Задать бюджет статиков
+					$('[rewardssetstaticssumm]').on(tapEvent, function() {
+						let rewardPeriodId = $(this).attr('rewardssetstaticssumm');
+						
+						getAjaxHtml('admin/rewards/get_statics_form', {period_id: rewardPeriodId}, function(html) {
+							rewardsPeriodsWin.setData(html);
+							rewardsPeriodsWin.setTitle('Премии: Задать бюджет статиков');
+							rewardsPeriodsWin.setButtons([{id: 'setStaticsSumm', title: 'Задать'}, {id: 'goBack', title: 'Назад'}], 'Отмена');
+							rewardsPeriodsWin.setWidth(900);
+							
+							
+							$('#setStaticsSumm').on(tapEvent, function() {
+								rewardsPeriodsWin.wait();
+								sendFormData('#rewardsStaticsSum', {
+									url: 'admin/rewards/set_statics_summ',
+									params: {reward_period_id: rewardPeriodId},
+									success: function(response) {
+										if (response) {
+											openPeriods();
+										} else {
+											notify('Ошибка перемещения файлов', 'error');
+										}
+									},
+									complete: function() {
+										//rewardsPeriodsWin.wait(false);
+									}
+								});
+							});
+							
+							
+							$('#goBack').on(tapEvent, function() {
+								rewardsPeriodsWin.wait();
+								openPeriods();
+							});
+							
+							
+						}, function() {
+							$('.scroll').ddrScrollTable();
+						});
+					});
+					
+					
+					
+					
+					
+					// --------------------------------------- Сформировать отчет
+					$('[rewardsbuildreport]').on(tapEvent, function() {
+						let rewardPeriodId = $(this).attr('rewardsbuildreport'),
+							rewardPeriodTitle = $(this).closest('tr').find('[rewardperiodtitle]').text();
+						
+						rewardsPeriodsWin.wait();
+						getAjaxHtml('admin/rewards/get_report', {period_id: rewardPeriodId}, function(html) {
+							$('#rewardsReport').html(html);
+							$('#rewardsReportTitle').html('<small>Премиальный период:</small> '+rewardPeriodTitle);
+							rewardsPeriodsWin.close();
+						}, function() {
+							$('.scroll').ddrScrollTable();
+						});
+					});
+					
+					
+					
+					
+					
+					// --------------------------------------- Экспорт отчета
+					
+					
+					
+					
+					
+				});
+			})();
+			
+		});
+	});
+	
+	
+	
+	
+	
 	
 	
 });

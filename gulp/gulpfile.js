@@ -57,7 +57,7 @@ function startWatch() {
 		watchDirs.forEach(function(dir) {
 			var dirName = dir.name || dir;
 			watch('../public/js/'+dirName+'.js').on('change', browserSync.reload);
-			watch(['../public/views/'+dirName+'/**/*.tpl']).on('change', browserSync.reload);
+			watch(['../public/views/'+dirName+'/**/*.tpl', '!../public/views/'+dirName+'/render/**/*.tpl']).on('change', browserSync.reload);
 		});
 	} else {
 		console.log('Нет директорий для отслеживания файлов!');

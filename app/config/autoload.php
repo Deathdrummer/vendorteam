@@ -57,7 +57,11 @@ $autoload['packages'] = [];
 |
 |	$autoload['libraries'] = array('user_agent' => 'ua');
 */
-$autoload['libraries'] = ['twig', 'session', 'database'];
+if (is_cli()) {
+	$autoload['libraries'] = ['database'];
+} else {
+	$autoload['libraries'] = ['twig', 'session', 'database'];
+}
 
 /*
 | -------------------------------------------------------------------
