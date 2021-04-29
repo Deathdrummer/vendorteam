@@ -2,7 +2,7 @@
 	<thead>
 		<tr>
 			<td>Название</td>
-			<td>Периоды</td>
+			<td>Платежные периоды</td>
 			<td class="nowidth" title="Показать период в личном кабинете">Показ.</td>
 			<td class="w156px"></td>
 		</tr>
@@ -34,7 +34,7 @@
 							<button rewardsperiodedit="{{period.id}}" title="Редактировать период" periodtitle="{{period.title}}"><i class="fa fa-edit"></i></button>
 							<button class="pay" rewardssetstaticssumm="{{period.id}}" title="Задать бюджет статиков" periodtitle="{{period.title}}"><i class="fa fa-money"></i></button>
 							<button class="alt" rewardsbuildreport="{{period.id}}" title="Задать бюджет статиков" periodtitle="{{period.title}}"><i class="fa fa-bar-chart"></i></button>
-							<button class="alt" rewardsexport="{{period.id}}" title="Экспортировать" periodtitle="{{period.title}}"><i class="fa fa-download"></i></button>
+							<a class="button alt ml-1" target="_self" href="{{base_url('admin/rewards/export/'~period.id)}}" download="Премиальные выплаты ({{period.title}}).csv" title="Экспортировать отчет"><i class="fa fa-download"></i></a>
 						</div>
 					</td>
 				</tr>

@@ -43,7 +43,7 @@
 				{% for stId, periods in report %}
 					<tr class="h45px">
 						{% for pId, summ in periods %}
-							<td class="text-center">
+							<td>
 								{{summ|number_format(2, '.', ' ')}} <small>₽</small>
 							</td>
 						{% endfor %}

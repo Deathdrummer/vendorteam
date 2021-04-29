@@ -304,7 +304,6 @@ $(document).ready(function() {
 					$('[choosereportrariant]').on(tapEvent, function() {
 						reportVariantWin.wait();
 						var reportVariant = $(this).attr('choosereportrariant');
-						
 						if(stat) {
 							getAjaxHtml('reports/get_main_report', {cash: staticsCash, period_id: periodId, variant: reportVariant}, function(html) {
 								$('#mainReport').html(html);
@@ -326,8 +325,6 @@ $(document).ready(function() {
 			});
 		}
 	});
-	
-	
 	
 	
 	
@@ -533,8 +530,6 @@ $(document).ready(function() {
 			choosenPeriods.push(thisId);
 			$(this).addClass('pay done');
 		}
-		console.log(choosenPeriods);
-		
 	});
 	
 	
@@ -1098,7 +1093,6 @@ $(document).ready(function() {
 						
 						$('body').off(tapEvent, '#downloadPaymentsPatterns').on(tapEvent, '#downloadPaymentsPatterns', function() {
 							$(this).attr('download', 'Выплаты по диапазонам.csv').attr('href', location.origin+'/reports/download_payments_patterns_report/'+checkedPatterns.join('|'));
-							//console.log(checkedPatterns);
 						});
 						
 					}, function() {
@@ -1314,7 +1308,6 @@ $(document).ready(function() {
 	
 	// --------------------------------------- Заявки на оплату: изменить статус выплаты
 	$('body').off(tapEvent, '[prpaydone]').on(tapEvent, '[prpaydone]', function() {
-		console.log('prpaydone');
 		serPrPayDone(this);
 	});
 	
@@ -1569,7 +1562,7 @@ $(document).ready(function() {
 										summ = parseInt(d[2]);
 									totalSumm += summ;
 								});
-								$(this).closest('tbody').siblings('tfoot').find('[totalsumm]').text($.number(totalSumm, 2, '.', ' ')+' р.');
+								$(this).closest('tbody').siblings('tfoot').find('[totalsumm]').text($.number(totalSumm, 2, '.', ' ')+' ₽');
 							});
 							
 							
@@ -2515,13 +2508,6 @@ $(document).ready(function() {
 							$('.scroll').ddrScrollTable();
 						});
 					});
-					
-					
-					
-					
-					
-					// --------------------------------------- Экспорт отчета
-					
 					
 					
 					

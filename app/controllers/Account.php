@@ -1194,4 +1194,63 @@ class Account extends MY_Controller {
 	
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Моя премия
+	 * @param 
+	 * @return 
+	*/
+	public function rewards($action = false) {
+		if (!$this->input->is_ajax_request() || !$action) return false;
+		$this->load->model('rewards_model', 'rewards');
+		switch ($action) {
+			case 'get_periods':
+				
+				$rewardsPeriods = $this->rewards->getRewardsPeriods();
+				//toLog($rewardsPeriods);
+				echo $this->twig->render('views/account/render/rewards/periods_list.tpl', ['periods' => $rewardsPeriods]);
+				break;
+			
+			case 'get_report':
+				$rewardPeriodId = $this->input->post('period_id');
+				$staticId = $this->input->post('static_id');
+				
+				$periodData = $this->rewards->getPeriod($rewardPeriodId);
+				$summData = $this->rewards->getTotalStaticSumm($rewardPeriodId, $staticId);
+				
+				
+				$data['cash'][$staticId] = $summData;
+				$data['period_id'] = $periodData['reports_periods'];
+				$data['variant'] = 2;
+				$data['statics'] = [$staticId];
+				
+				$this->load->model('reports_model', 'reports');
+				$mainReportData = $this->reports->buildReportPaymentsData($this->constants[2], $data, false);
+				$total = $mainReportData[$staticId]['users'][$this->userData['id']]['payment'];
+				
+				echo $this->twig->render('views/account/render/rewards/total_summ.tpl', ['total' => $total, 'period' => $periodData['title']]);
+				break;
+			
+				
+			
+			
+			
+			default:
+				echo '';
+				break;
+		}
+		
+	}
+	
+	
+	
+	
+	
 }

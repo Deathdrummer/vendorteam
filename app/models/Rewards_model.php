@@ -75,6 +75,25 @@ class Rewards_model extends MY_Model {
 	
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Получить список премиальных периодов
+	 * @param только активные
+	 * @return 
+	*/
+	public function getRewardsPeriods($onlyActve = true) {
+		if ($onlyActve) $this->db->where('stat', 1);
+		if (!$result = $this->_result($this->rewardsPeriodsTable)) return false;
+		return $result;
+	}
+	
+	
 
 	
 	
@@ -192,6 +211,26 @@ class Rewards_model extends MY_Model {
 		
 		return $data;
 	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * Получить общую сумму статика
+	 * @param 
+	 * @return 
+	*/
+	public function getTotalStaticSumm($rewardPeriodId = false, $staticId = false) {
+		if (!$rewardPeriodId || !$staticId) return false;
+		$this->db->select('SUM(summ) AS total_summ');
+		$this->db->where('reward_period_id', $rewardPeriodId);
+		$this->db->where('static_id', $staticId);
+		if (!$totalSumm = $this->_row($this->rewardsStaticsTable)) return false;
+		return $totalSumm;
+	}
+	
 	
 	
 	

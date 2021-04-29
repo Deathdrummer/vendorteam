@@ -1696,8 +1696,8 @@ class Admin extends MY_Controller {
 	 * @param 
 	 * @return 
 	*/
-	public function rewards($action = false) {
-		if (!$this->input->is_ajax_request() || !$action) return false;
+	public function rewards($action = false, $arg = false) {
+		if ((!$this->input->is_ajax_request() || !$action) && $action != 'export') return false;
 		$postData = bringTypes($this->input->post());
 		$this->load->model(['rewards_model' => 'rewards', 'reports_model' => 'reports']);
 		switch ($action) {
@@ -1755,10 +1755,43 @@ class Admin extends MY_Controller {
 				$statics = $this->rewards->getStatics();
 				$reportsPeriods = $this->reports->getReportsPeriods();
 				$report = $this->rewards->getReportData($postData['period_id'], $statics, $reportsPeriods);
-				toLog($report);
-				
-				
 				echo $this->twig->render('views/admin/render/rewards/report.tpl', $report);
+				break;
+			
+			case 'export':
+				$rewardPeriodId = $arg;
+				$periodData = $this->rewards->getPeriod($rewardPeriodId);
+				$summData = $this->rewards->getStaticsSumm($rewardPeriodId);
+				
+				$staticsSumm = [];
+				foreach ($summData as $period) {
+					foreach ($period as $staticId => $summ) {
+						if (!isset($staticsSumm[$staticId])) $staticsSumm[$staticId] = $summ;
+						else $staticsSumm[$staticId] += $summ;
+					}
+				}
+				
+				$data['cash'] = $staticsSumm;
+				$data['period_id'] = $periodData['reports_periods'];
+				$data['variant'] = 2;
+				
+				$dataToExport = $this->reports->buildReportPaymentsData($this->constants[2], $data);
+				
+				$export = '';
+				foreach ($dataToExport as $staticId => $data) {
+					$export .= iconv('UTF-8', 'windows-1251', 'Статик;Бюджет статика'."\r\n");
+					//$export .= $data['static_name'].';'.number_format($data['cash'], 2, '.', ' ')."\r\n";
+					$export .= $data['static_name'].';'.$data['cash']."\r\n";
+					$export .= iconv('UTF-8', 'windows-1251', 'Никнейм;Выплата;Средство оплаты')."\r\n";
+					foreach ($data['users'] as $userId => $userData) {
+						unset($userData['raids']);
+						$export .= iconv('UTF-8', 'windows-1251', $userData['nickname'].';'.str_replace('.', ',', $userData['payment']).';'.$userData['pay_method'])."\r\n";
+					}
+					$export .= "\r\n";
+				}
+				
+				setHeadersToDownload('application/octet-stream', 'windows-1251');
+				echo $export;
 				break;
 				
 				

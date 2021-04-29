@@ -474,7 +474,7 @@ class Reports_model extends My_Model {
 		
 		//---------------------------------------------------------- Формирование отчета "налету"
 		if (!isset($pData['pattern_id'])) {
-			$this->db->select('u.id AS user_id, u.color, u.nickname, u.deposit, u.deposit_percent, u.deleted, s.name AS static_name, s.cap_simple, s.cap_lider, s.deposit_percent AS sdp, r.name AS rank_name, r.coefficient AS rank_coefficient, us.lider, us.static_id AS static');
+			$this->db->select('u.id AS user_id, u.color, u.nickname, u.deposit, u.deposit_percent, u.payment AS pay_method, u.deleted, s.name AS static_name, s.cap_simple, s.cap_lider, s.deposit_percent AS sdp, r.name AS rank_name, r.coefficient AS rank_coefficient, us.lider, us.static_id AS static');
 			$this->db->join('users_statics us', 'us.user_id = u.id', 'LEFT OUTER');
 			$this->db->join('statics s', 's.id = us.static_id', 'LEFT OUTER');
 			$this->db->join('ranks r', 'u.rank = r.id', 'LEFT OUTER');
@@ -567,12 +567,12 @@ class Reports_model extends My_Model {
 					'to_deposit'		=> $toDeposit,
 					'final_payment'		=> round($payment - $toDeposit, 2),
 					'pay_done'			=> 0,
+					'pay_method'		=> $user['pay_method'],
 					'raids' 			=> !empty($user['raids']) ? $user['raids'] : []
 				];
 			}
 			
 			if ($response) ksort($response);
-			
 			return $response;
 		}
 		

@@ -1345,6 +1345,72 @@ $(document).ready(function() {
 	
 	
 	
+	
+	
+	
+	
+	//---------------------------------------- Моя премия
+	$('[myreward]').on(tapEvent, function() {
+		let staticId = $(this).attr('myreward');
+		
+		popUp({
+			title: 'Моя премия',
+		    width: 500,
+		    //closeButton: 'Отмена',
+		}, function(myRewardWin) {
+			myRewardWin.wait();
+			getAjaxHtml('account/rewards/get_periods', function(html) {
+				myRewardWin.setData(html);
+				
+				$('[chooseperiodtoreward]').on(tapEvent, function() {
+					let periodId = $(this).attr('chooseperiodtoreward');
+					myRewardWin.wait();
+					getAjaxHtml('account/rewards/get_report', {period_id: periodId, static_id: staticId}, function(html) {
+						myRewardWin.setData(html);
+					}, function() {
+						myRewardWin.wait(false);
+					});
+				});
+			}, function() {
+				myRewardWin.wait(false);
+			});
+		});
+		
+		
+		/*1. выбрать премиальный период
+		2. выдрать из периода платежные периоды из rewards_period
+		3. выдрать сумму на статик из rewards_statics
+		
+		
+		{cash: "{"2":30000}", period_id: "[89,88,87]", variant: "2"}
+		getAjaxHtml('reports/get_main_report', {cash: staticsCash, period_id: periodId, to_user: 1,  variant: 2}, function(html) {
+			$('#mainReport').html(html);
+			$('#mainReport').ready(function() {
+				$('.scroll').ddrScrollTable();
+				$('#mainReportTitle').text('');
+			});
+			$('[id^="tabstatic"]:first').addClass('active');
+			$('[tabid^="tabstatic"]:first').addClass('visible');
+			$('#reportVariant').val(reportVariant);
+			reportVariantWin.close();
+			$('#saveMainReport').removeAttrib('disabled');
+		});*/
+	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	//---------------------------------------- Напоминание о заполнении коэффициентов для рейтинга
 	
 	

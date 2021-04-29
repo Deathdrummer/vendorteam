@@ -264,8 +264,8 @@ class Operator extends MY_Controller {
 				if ($getPaymentRequests = $this->reports_model->getPaymentRequests($params)) {
 					$statics = $this->admin_model->getStatics();
 					$paymentRequestsList = array_map(function($item) use ($statics) {
-						$item['static_name'] = $statics[$item['static']]['name'];
-						$item['static_icon'] = $statics[$item['static']]['icon'];
+						$item['static_name'] = isset($statics[$item['static']]) ? $statics[$item['static']]['name'] : 'Статик не существует';
+						$item['static_icon'] = isset($statics[$item['static']]) ? $statics[$item['static']]['icon'] : 'public/images/deleted.jpg';
 						unset($item['static']);
 						return $item;
 					}, $getPaymentRequests);
