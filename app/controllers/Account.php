@@ -25,7 +25,6 @@ class Account extends MY_Controller {
 	
 	
 	
-	
 	public function index() {
 		// вставляем SVG спрайт
 		$this->userData['svg_sparite'] = getSprite('public/svg/sprite.svg');
@@ -49,6 +48,9 @@ class Account extends MY_Controller {
 		$this->userData['friends'] = $this->get_friends();
 		$this->userData['agreement'] = $this->get_agreement_stat();
 		$this->userData['feed_messages'] = $this->admin->getFeedMessagesStatic(array_keys($this->userData['statics']));
+		
+		$this->userData['is_resignation'] = $this->account->isResignation();
+		$this->userData['resign_notify'] = $this->account->getResignNotifiy();
 		
 		$outData = array_merge((array)$this->userData, (array)$this->settings);
 		

@@ -354,6 +354,24 @@ body
 			width: auto
 			max-width: 100%
 			+resp(max-height, (xs: 70px, sm: 80px, md: 90px, lg: 130px, xl: 130px))
+		
+		
+		.resign
+			position: absolute
+			display: flex
+			align-items: center
+			justify-content: center
+			width: 40px
+			height: 40px
+			top: 5px
+			right: 5px
+			background-color: #47256b
+			border-radius: 50%
+			
+			i
+				font-size: 20px
+				color: #ff0c0c
+			
 			
 	
 	&__changebutton
@@ -506,15 +524,15 @@ body
 	
 	
 	&__logout
-		margin-top: 10px
+		margin-top: 20px
 		text-align: left
 		display: flex
 		justify-content: space-between
 		align-items: flex-end
 		
-		button, a
+		button, a, span
+			display: inline-block
 			margin: 0
-			margin-top: 10px
 			padding: 0
 			color: #fff
 			background-color: transparent
@@ -3555,4 +3573,15 @@ body
 		font-size: 14px
 		
 		&_empty
-			color: #aaa
+			color: #50366b
+	
+	&__text
+		font-size: 16px
+		line-height: 16px
+	
+	&__notify
+		font-size: 20px
+		color: #e4ff00
+		
+		&_alert
+			color: #fff

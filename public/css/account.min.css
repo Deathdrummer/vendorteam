@@ -48879,6 +48879,32 @@ body.body_start::-webkit-resizer {
       @media screen and (min-width: 1590px) {
         .leftblock__avatar img {
           max-height: 130px; } }
+    .leftblock__avatar .resign {
+      position: absolute;
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -moz-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+         -moz-box-align: center;
+          -ms-flex-align: center;
+              align-items: center;
+      -webkit-box-pack: center;
+      -webkit-justify-content: center;
+         -moz-box-pack: center;
+          -ms-flex-pack: center;
+              justify-content: center;
+      width: 40px;
+      height: 40px;
+      top: 5px;
+      right: 5px;
+      background-color: #47256b;
+      border-radius: 50%; }
+      .leftblock__avatar .resign i {
+        font-size: 20px;
+        color: #ff0c0c; }
   .leftblock__changebutton {
     position: absolute;
     bottom: 0;
@@ -49078,7 +49104,7 @@ body.body_start::-webkit-resizer {
       transition: background-color 0s;
       cursor: default; }
   .leftblock__logout {
-    margin-top: 10px;
+    margin-top: 20px;
     text-align: left;
     display: -webkit-box;
     display: -webkit-flex;
@@ -49095,9 +49121,9 @@ body.body_start::-webkit-resizer {
        -moz-box-align: end;
         -ms-flex-align: end;
             align-items: flex-end; }
-    .leftblock__logout button, .leftblock__logout a {
+    .leftblock__logout button, .leftblock__logout a, .leftblock__logout span {
+      display: inline-block;
       margin: 0;
-      margin-top: 10px;
       padding: 0;
       color: #fff;
       background-color: transparent;
@@ -49107,11 +49133,11 @@ body.body_start::-webkit-resizer {
       -webkit-transition: color 0.16s;
       -o-transition: color 0.16s;
       transition: color 0.16s; }
-      .leftblock__logout button i, .leftblock__logout a i {
+      .leftblock__logout button i, .leftblock__logout a i, .leftblock__logout span i {
         margin-right: 4px; }
-      .leftblock__logout button:hover, .leftblock__logout a:hover {
+      .leftblock__logout button:hover, .leftblock__logout a:hover, .leftblock__logout span:hover {
         color: #54e9ff; }
-      .leftblock__logout button.small, .leftblock__logout a.small {
+      .leftblock__logout button.small, .leftblock__logout a.small, .leftblock__logout span.small {
         font-size: 14px;
         line-height: 14px; }
   .leftblock__nav {
@@ -52982,4 +53008,14 @@ body.body_start::-webkit-resizer {
   margin-top: 9px;
   font-size: 14px; }
   .resign__lastdate_empty {
-    color: #aaa; }
+    color: #50366b; }
+
+.resign__text {
+  font-size: 16px;
+  line-height: 16px; }
+
+.resign__notify {
+  font-size: 20px;
+  color: #e4ff00; }
+  .resign__notify_alert {
+    color: #fff; }

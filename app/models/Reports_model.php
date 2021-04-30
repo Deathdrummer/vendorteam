@@ -1504,8 +1504,6 @@ class Reports_model extends My_Model {
 		if (!$orders) return false;
 		if (!$this->db->insert_batch('users_orders', $orders)) return false;
 		return true;
-		
-		
 	}
 	
 	

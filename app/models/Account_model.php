@@ -1606,6 +1606,38 @@ class Account_model extends My_Model {
 	
 	
 	
+	/**
+	 * Получить обработанную заявку на увольнение
+	 * @param 
+	 * @return 
+	*/
+	public function getResignNotifiy() {
+		$this->db->where('user_id', $this->userData['id']);
+		$this->db->where(['new' => 0, 'stat' => 1, 'notify' => 1]);
+		if (!$result = $this->_row('resign')) return false;
+		return $result;
+	}
+	
+	
+	
+	
+	/**
+	 * Подал ли учасник заявку на увольнение
+	 * @param 
+	 * @return 
+	*/
+	public function isResignation() {
+		$this->db->where('user_id', $this->userData['id']);
+		if ($this->db->count_all_results('resign') == 0) return false;
+		return true;
+	}
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

@@ -1,6 +1,10 @@
 <aside class="leftblock" id="accountLeftBlock">
 	<div class="leftblock__block leftblock__block_top mb-2 mb-md-3" id="accountTopBlock">
 		<div class="leftblock__avatar mb-2">
+			{% if is_resignation and resign_notify %}
+				<div class="resign"><i class="fa fa-user-times" title="Уволен"></i></div>
+			{% endif %}
+			
 			{% if avatar %}
 				<img useravatarimg src="public/images/users/{{avatar}}?{{time()}}" alt="">
 			{% else %}
@@ -89,7 +93,7 @@
 		
 		<div class="leftblock__logout">
 			<button logout title="Выйти из личного кабинета"><i class="fa fa-sign-out"></i>Выход</button>
-			<button class="small" resign title="Создать заявку на увольнение"><i class="fa fa-user-times"></i>Уволиться</button>
+			{% if not is_resignation %}<button class="small" resign title="Создать заявку на увольнение"><i class="fa fa-user-times"></i>Уволиться</button>{% endif %}
 		</div>
 		
 	</div>

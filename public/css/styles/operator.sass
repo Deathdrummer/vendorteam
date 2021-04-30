@@ -2291,18 +2291,27 @@ table
 				
 				&::after
 					content: ':'
-					
+			
+			&.large
+				font-size: 22px
+				
+				h3
+					font-size: 28px
+					+font(roboto, bold)
+					display: inline-block
+					color: #008400		
 			
 			+ li
 				margin-top: 15px
 		
 	
 	&__textblock
-		margin-top: 40px
-		
 		p
 			font-size: 14px
 			white-space: pre-wrap
+		
+		&_hidden
+			display: none
 	
 	
 

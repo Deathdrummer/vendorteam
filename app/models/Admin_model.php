@@ -1931,7 +1931,9 @@ class Admin_model extends My_Model {
 	 * @return 
 	 */
 	public function getResigns() {
+		$this->db->order_by('id', 'DESC');
 		if (!$resignsList = $this->_result('resign')) return false;
+		
 		$this->load->model('users_model', 'users');
 		$userIds = array_unique(array_column($resignsList, 'user_id'));
 		
@@ -1947,7 +1949,7 @@ class Admin_model extends My_Model {
 			$item['avatar'] = $usersData[$item['user_id']]['avatar'];
 			$item['static'] = $statics[$usersData[$item['user_id']]['static']]['name'];
 			if ($item['stat'] == 0) $item['from'] = $item['from'] != 0 ? $operators[$item['from']]['nickname'] : 0;
-			$finaData[$item['stat']][] = $item;
+			$finaData[$item['new']][$item['stat']][] = $item;
 		}
 		
 		return $finaData;
@@ -1967,11 +1969,30 @@ class Admin_model extends My_Model {
 		if (!$data) return false;
 		$this->db->where('id', $data['id']);
 		$from = $data['from'] == 'admin' ? 0 : $data['from'];
-		$update = ['stat' => $data['stat'], 'from' => $from];
+		$update = ['new' => 0, 'stat' => $data['stat'], 'from' => $from];
 		if ($data['stat'] == 0) $update['date_success'] = time();
+		if (isset($data['summ']) && $data['summ']) $update['summ'] = $data['summ'];
+		if (isset($data['summ_to_balance']) && $data['summ_to_balance']) $update['summ_to_balance'] = $data['summ_to_balance'];
 		if (!$this->db->update('resign', $update)) return false;
 		return true;
 	}
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function insertResignOrder($order = false) {
+		if (!$order) return false;
+		if (!$this->db->insert('users_orders', $order)) return false;
+		return true;
+	}
+	
+	
+	
+	
 	
 	
 	
@@ -1988,13 +2009,66 @@ class Admin_model extends My_Model {
 		
 		$static = $this->getStatics(false, $userData[0]['static']);
 		
+		$data['user_id'] = $userData[0]['id'];
 		$data['nickname'] = $userData[0]['nickname'];
 		$data['avatar'] = $userData[0]['avatar'];
 		$data['reg_date'] = $userData[0]['reg_date'];
+		$data['deposit'] = $userData[0]['deposit'];
 		$data['static'] = $static;
 		
 		return $data;
 	}
+	
+	
+	
+	
+	/**
+	 * Изменить дату последнего рабочего дня
+	 * @param 
+	 * @return 
+	 */
+	public function changeResignLastday($id = false, $date = false) {
+		if (!$id || !$date) return false;
+		$this->db->where('id', $id);
+		if (!$this->db->update('resign', ['date_last' => strtotime(date('Y-m-d', strtotime($date)))])) return false;
+		return true;
+	}
+	
+	
+	
+	
+	
+	/**
+	 * Обработать заявку
+	 * @param 
+	 * @return 
+	*/
+	public function setViedResign($id = false) {
+		if (!$id) return false;
+		$this->db->where('id', $id);
+		if (!$this->db->update('resign', ['new' => 0, 'notify' => 1])) return false;
+		return true;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function setOrderToBalance($order = false) {
+		if (!$order) return false;
+		if (!$this->db->insert('balance', $order)) return false;
+		return true;
+	}
+	
+	
 	
 	
 	

@@ -50664,6 +50664,25 @@ table {
 
 .popup {
   background-color: rgba(170, 182, 187, 0.7); }
+  .popup::-webkit-scrollbar {
+    width: 10px;
+    height: 10px; }
+  .popup::-webkit-scrollbar-track {
+    background-color: #c2c8ce;
+    border-radius: 0; }
+  .popup::-webkit-scrollbar-thumb {
+    background-color: #6785a2;
+    width: 13px;
+    height: 13px;
+    border-radius: 0; }
+  .popup::-webkit-scrollbar-thumb:hover {
+    background-color: #516b85; }
+  .popup::-webkit-resizer {
+    display: none;
+    width: 0px;
+    height: 0px;
+    background: transparent;
+    border-radius: 0; }
   .popup__window {
     background: #f6f6f7;
     border: 1px solid #c8d3d8;
@@ -50672,7 +50691,8 @@ table {
     border-radius: 3px;
     padding: 10px;
     -webkit-box-shadow: 0 12px 40px -12px rgba(0, 0, 0, 0.66);
-            box-shadow: 0 12px 40px -12px rgba(0, 0, 0, 0.66); }
+            box-shadow: 0 12px 40px -12px rgba(0, 0, 0, 0.66);
+    margin-bottom: 100px !important; }
   .popup__dialog {
     background-color: rgba(21, 38, 47, 0.5); }
     .popup__dialog .popupdialog {
@@ -53498,11 +53518,19 @@ p.info {
     margin-right: 10px; }
     .resign__info li strong::after {
       content: ':'; }
+  .resign__info li.large {
+    font-size: 22px; }
+    .resign__info li.large h3 {
+      font-size: 28px;
+      font-family: roboto-bold, sans-serif;
+      display: inline-block;
+      color: #008400; }
   .resign__info li + li {
     margin-top: 15px; }
 
-.resign__textblock {
-  margin-top: 40px; }
-  .resign__textblock p {
-    font-size: 14px;
-    white-space: pre-wrap; }
+.resign__textblock p {
+  font-size: 14px;
+  white-space: pre-wrap; }
+
+.resign__textblock_hidden {
+  display: none; }

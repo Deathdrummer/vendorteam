@@ -52823,11 +52823,19 @@ table {
     margin-right: 10px; }
     .resign__info li strong::after {
       content: ':'; }
+  .resign__info li.large {
+    font-size: 22px; }
+    .resign__info li.large h3 {
+      font-size: 28px;
+      font-family: roboto-bold, sans-serif;
+      display: inline-block;
+      color: #008400; }
   .resign__info li + li {
     margin-top: 15px; }
 
-.resign__textblock {
-  margin-top: 40px; }
-  .resign__textblock p {
-    font-size: 14px;
-    white-space: pre-wrap; }
+.resign__textblock p {
+  font-size: 14px;
+  white-space: pre-wrap; }
+
+.resign__textblock_hidden {
+  display: none; }

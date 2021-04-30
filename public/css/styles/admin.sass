@@ -1336,6 +1336,7 @@ table
 // -------------------------------------------------------- popUp
 .popup
 	background-color: rgba(170, 182, 187, 0.7)
+	+scrollbar(#c2c8ce, #6785a2)
 	
 	&__window
 		background: #f6f6f7
@@ -1344,6 +1345,7 @@ table
 		border-radius: 3px
 		padding: 10px
 		box-shadow: 0 12px 40px -12px rgba(#000, 0.66)
+		margin-bottom: 100px !important
 		
 	&__wait
 	
@@ -2700,6 +2702,15 @@ p
 				
 				&::after
 					content: ':'
+			
+			&.large
+				font-size: 22px
+				
+				h3
+					font-size: 28px
+					+font(roboto, bold)
+					display: inline-block
+					color: #008400
 					
 			
 			+ li
@@ -2707,9 +2718,10 @@ p
 		
 	
 	&__textblock
-		margin-top: 40px
-		
 		p
 			font-size: 14px
 			white-space: pre-wrap
+		
+		&_hidden
+			display: none
 		

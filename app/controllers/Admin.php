@@ -2061,9 +2061,47 @@ class Admin extends MY_Controller {
 	 * @return 
 	 */
 	public function change_resign_stat() {
+		if (!$this->input->is_ajax_request()) return false;
 		$postData = bringTypes($this->input->post());
-		if (!$this->admin_model->changeResignStat($postData)) exit('0');
-		echo '1'; 
+		$this->load->model('users_model', 'users');
+		
+		if (isset($postData['order'])) {
+			$userData = $this->users->getUsers(['where' => ['u.id' => $postData['order']['user_id'], 'us.main' => 1]]);
+			$order = [
+				'user_id'		=> $postData['order']['user_id'],
+				'nickname' 		=> $userData[0]['nickname'],
+				'avatar' 		=> $userData[0]['avatar'],
+				'payment' 		=> $userData[0]['payment'],
+				'static' 		=> $userData[0]['static'],
+				'order' 		=> $postData['order']['order'],
+				'summ' 			=> (float)$postData['order']['summ'],
+				'to_deposit' 	=> 0,
+				'comment' 		=> $postData['order']['comment'],
+				'date'			=> time()
+			];
+			
+			$summToBalance = (float)$postData['order']['full_summ'] - (float)$postData['order']['summ'];
+			if ($summToBalance > 0) {
+				$orderToBalance = [
+					'user_id'		=> $postData['order']['user_id'],
+					'nickname' 		=> $userData[0]['nickname'],
+					'avatar' 		=> $userData[0]['avatar'],
+					'static' 		=> $userData[0]['static'],
+					'summ' 			=> $summToBalance,
+					'comment' 		=> $postData['order']['comment_to_balance'],
+					'date'			=> time()
+				];
+				if (!$this->admin_model->setOrderToBalance($orderToBalance)) exit(-3);
+			}
+			
+			if (!$this->admin_model->insertResignOrder($order)) exit('-1'); // отправить заявку на оплату
+			if (!$this->users_model->setUserDeposit($postData['order']['user_id'], true)) exit('-2'); // обнулить депозит участника
+			
+		}
+		
+		if (!$this->admin_model->changeResignStat($postData['resign'])) exit('0'); // изменить статус заявки на увольнения
+		
+		echo '1';
 	}
 	
 	
@@ -2077,10 +2115,73 @@ class Admin extends MY_Controller {
 	 * @return 
 	 */
 	public function show_resign() {
+		if (!$this->input->is_ajax_request()) return false;
 		$id = $this->input->post('id');
+		$data['disableedit'] = $this->input->post('disableedit');
 		$data['resign'] = $this->admin_model->showResign($id);
+		
 		echo $this->twig->render('views/admin/render/resign_info.tpl', $data);
 	}
+	
+	
+	
+	/**
+	 * Изменить дату последнего рабочего дня
+	 * @param 
+	 * @return 
+	*/
+	public function change_resign_lastday() {
+		if (!$this->input->is_ajax_request()) return false;
+		$postData = bringTypes($this->input->post());
+		if (!$this->admin_model->changeResignLastday($postData['id'], $postData['date'])) exit('0');
+		echo '1';
+	}
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Показать форму для выплаты резерва
+	 * @param 
+	 * @return 
+	 */
+	public function pay_deposit_form() {
+		if (!$this->input->is_ajax_request()) return false;
+		$id = $this->input->post('id');
+		$data['disableedit'] = $this->input->post('disableedit');
+		$data['resign'] = $this->admin_model->showResign($id);
+		echo $this->twig->render('views/admin/render/pay_deposit_form.tpl', $data);
+	}
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Обработать заявку
+	 * @param 
+	 * @return 
+	*/
+	public function set_vieved() {
+		if (!$this->input->is_ajax_request()) return false;
+		$id = $this->input->post('id');
+		if (!$this->admin_model->setViedResign($id)) exit('0');
+		echo '1';
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

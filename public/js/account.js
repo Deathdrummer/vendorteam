@@ -223,8 +223,16 @@ $(document).ready(function() {
 	
 	
 	
+	
+	
+	
+	
+	
+	
 	//----------------------------------------------------------------------------------- Уволиться
 	$('[resign]').on(tapEvent, function() {
+		let resignBtn = this;
+		
 		popUp({
 			title: 'Заявка на увольнение',
 		    width: 600,
@@ -263,7 +271,6 @@ $(document).ready(function() {
 			    });
 			    
 			    
-			    
 			    $('#setResign').on(tapEvent, function() {
 			    	var resignDate = $('#resignCurrentDate'),
 			    		lastDate = $('#resignLastDate'),
@@ -287,6 +294,7 @@ $(document).ready(function() {
 		    			$.post('account/resign/set_resign', {date_resign: resignDate.val(), date_last: lastDate.val(), reason: reason.val(), comment: comment.val()}, function(response) {
 			    			if (response) {
 			    				notify('Заявка успешно отправлена!');
+			    				$(resignBtn).remove();
 			    				resignWin.close();
 			    			} else {
 			    				resignWin.wait(false);

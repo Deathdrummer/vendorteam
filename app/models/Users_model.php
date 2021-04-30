@@ -596,6 +596,34 @@ class Users_model extends MY_Model {
 	
 	
 	
+	/**
+	 * Задать / обновить депозит участника
+	 * @param ID участника
+	 * @param сумма, которую нужно зачислить или вычесть. TRUE - обнулить резерв
+	 * @return 
+	*/
+	public function setUserDeposit($userId = false, $summ = false) {
+		if (!$userId || !$summ) return false;
+		
+		if ($summ === true) {
+			$this->db->where('id', $userId);
+			if (!$this->db->update('users', ['deposit' => 0])) return false;
+			return true;
+		}
+		
+		$this->db->where('id', $userId);
+		$this->db->select('id, deposit');
+		if (!$tableUser = $this->_row('users')) return false;
+		
+		if (!$this->db->update('users', ['deposit' => (float)$tableUser['deposit'] + (float)$summ])) return false;
+		return true;
+	}
+	
+	
+	
+	
+	
+	
 	
 	/**
 	 * Пометить участника как удаленного

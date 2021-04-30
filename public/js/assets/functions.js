@@ -52,6 +52,16 @@ $.fn.removeAttrib = function(attr) {
 
 
 
+/*
+	Проверка наличия атрибута
+		- название атрибута
+*/
+$.fn.hasAttr = function(a) {
+	var attr = $(this).attr(a);
+	return typeof attr !== typeof undefined && attr !== false;
+}
+
+
 
 
 // Задать куки
