@@ -384,6 +384,9 @@ ul {
   background-size: cover;
   background-position: center center; }
 
+.format {
+  white-space: pre-wrap; }
+
 .drow {
   display: -webkit-box;
   display: -webkit-flex;

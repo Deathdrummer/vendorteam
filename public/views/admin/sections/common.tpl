@@ -1092,6 +1092,7 @@ $(document).ready(function() {
 		        			$(rowDate).remove();
 		        			notify('Заявка обработана!');
 		        			showResignWin.close();
+		        			renderSection();
 		        		} else {
 		        			notify('Ошибка! Не удалось обработать заявку', 'error');
 		        		}
@@ -1225,6 +1226,7 @@ $(document).ready(function() {
 								notify('Заявка на увольнение утверждена!');
 								$(thisRow).remove();
 								accessResignWin.close();
+								renderSection();
 							} else {
 								notify('Ошибка! Заявка на увольнение не утверждена', 'error');
 							}

@@ -2072,4 +2072,65 @@ class Admin_model extends My_Model {
 	
 	
 	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function getBalance() {
+		if (!$result = $this->_result('balance')) return false;
+		$statics = $this->getStatics();
+		$balance = ['items' => [], 'total' => 0];
+		foreach ($result as $row) {
+			if ($row['reset'] == 0) $balance['total'] += (int)$row['summ'];
+			$row['static'] = $statics[$row['static']];
+			$balance['items'][] = $row;
+		}
+		return $balance;
+	}
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function getBalanceHistory() {
+		$this->db->order_by('id', 'DESC');
+		if (!$result = $this->_result('balance_history')) return false;
+		return $result;
+	}
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function resetBalance() {
+		$this->db->select('SUM(summ)');
+		$this->db->where('reset', 0);
+		if (!$totalSumm = $this->_row('balance')) return 0;
+		
+		$insData = [
+			'summ' => $totalSumm,
+			'date' => time(),
+		];
+		
+		if (!$this->db->insert('balance_history', $insData)) return -1;
+		
+		$this->db->where('reset', 0);
+		if (!$this->db->update('balance', ['reset' => 1])) return -2;
+		return 1;
+	}
+	
+	
+	
+	
+	
+	
 }

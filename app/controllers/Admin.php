@@ -157,7 +157,8 @@ class Admin extends MY_Controller {
 				$data['deposit_users'] = [];
 				$data['deposit'] = ['global' => 0, 'statics' => []];
 				$data['deposit_history'] = $this->admin_model->globalDepositHistoryGet();
-				
+				$data['balance'] = $this->admin_model->getBalance();
+				$data['balance_history'] = $this->admin_model->getBalanceHistory();
 				
 				$usersStatics = [];
 				
@@ -2175,6 +2176,20 @@ class Admin extends MY_Controller {
 	}
 	
 	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Списать баланс
+	 * @param 
+	 * @return 
+	*/
+	public function reset_balance() {
+		echo $this->admin_model->resetBalance();
+	}
 	
 	
 	

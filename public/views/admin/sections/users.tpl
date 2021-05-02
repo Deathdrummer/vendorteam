@@ -52,6 +52,7 @@
 			<li id="newUsers">Новые</li>
 			<li id="deletedUsers">Удаленные</li>
 			<li id="depositUsers">Резерв</li>
+			<li id="balance">Баланс</li>
 			<li id="colorsUsers">Цвета рейдеров</li>
 		</ul>
 		
@@ -394,6 +395,96 @@
 				
 					
 			</div>
+			
+			
+			
+			
+			<div tabid="balance">
+				
+				<div class="row">
+					<div class="col-12 col-md-8 col-lg-9">
+						
+						<div class="d-flex align-items-center justify-content-between h46px">
+							<h3 class="mb-0 mr-auto">Список</h3>
+							<h4 class="mr-4 mt2px">Общий баланс: <strong>{{balance.total|number_format(2, '.', ' ')}}</strong> ₽</h4>
+							<div class="buttons mb10px">
+								<button class="small" id="resetBalance"{% if balance.total == 0 %} disabled{% endif %}>Списать баланс</button>
+							</div>
+						</div>
+						
+						<table>
+							<thead>
+								<tr>
+									<td class="w300px">Участник</td>
+									<td class="w300px">Статик</td>
+									<td>Причина удержания</td>
+									<td class="w160px">Сумма</td>
+								</tr>
+							</thead>
+							<tbody>
+								{% if balance.items %}
+									{% for item in balance.items %}
+										<tr>
+											<td class="nowidth nopadding">
+												<div class="d-flex align-items-center">
+													<div class="avatar mr-2" style="background-image: url('{{base_url('public/images/users/mini/'~item.avatar)}}')" title="{{item.nickname}}"></div>
+													<p>{{item.nickname}}</p>
+												</div>
+											</td>
+											<td class="nowidth nopadding">
+												<div class="d-flex align-items-center">
+													<div class="avatar mr-2" style="background-image: url('{{base_url('public/filemanager/'~item.static.icon)}}')" title="{{item.static.name}}"></div>
+													<p>{{item.static.name}}</p>
+												</div>
+											</td>
+											<td>
+												<small class="format">{{item.comment}}</small>
+											</td>
+											<td>
+												{% if item.reset %}
+													<strike title="Списано" style="color: #afafaf;"><strong>{{item.summ|number_format(2, '.', ' ')}}</strong> <small>₽</small></strike>
+												{% else %}
+													<strong style="color: #5db553;">{{item.summ|number_format(2, '.', ' ')}}</strong> <small>₽</small>
+												{% endif %}
+											</td>
+										</tr>
+									{% endfor %}
+								{% else %}
+									<tr><td colspan="5"><p class="empty center">Нет данных</p></td></tr>
+								{% endif %}	
+							</tbody>
+						</table>
+					</div>
+					<div class="col-12 col-md-4 col-lg-3">
+						<div class="d-flex align-items-center h46px">
+							<h3 class="mb-0 text-right">История</h3>
+						</div>
+						<table>
+							<thead>
+								<tr>
+									<td class="w70">Дата списания</td>
+									<td>Сумма списания</td>
+								</tr>
+							</thead>
+							<tbody>
+								{% if balance_history %}
+									{% for item in balance_history %}
+										<tr>
+											<td>{{item.date|d}} в {{item.date|t}}</td>
+											<td><strong>{{item.summ|number_format(2, '.', ' ')}}</strong> <small>₽</small></td>
+										</tr>
+									{% endfor %}
+								{% else %}
+									<tr><td colspan="2"><p class="empty center">Нет данных</p></td></tr>	
+								{% endif %}
+							</tbody>
+						</table>
+					</div>
+				</div>	
+			</div>
+			
+			
+			
 			
 			<div tabid="colorsUsers">
 				<form id="raidersColorsForm">
@@ -1227,11 +1318,36 @@ $(document).ready(function() {
 					$('[deposituserslist]').find('tr.changed').removeClass('changed');
 					renderSection();
 				}
+			}).fail(function(e) {
+				notify('Системная ошибка!', 'error');
+				showError(e);
 			});
 		} else {
 			notify('Нет данных для сохранения', 'info');
 		}
 	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//-------------------------------------------------------------- Баланс
+	$('#resetBalance').on(tapEvent, function() {
+		$.post('/admin/reset_balance', function(response) {
+			if (response) {
+				notify('Баланс успешно списан!');
+				renderSection();
+			}
+		}).fail(function(e) {
+			notify('Системная ошибка!', 'error');
+			showError(e);
+		});
+	});
+	
 	
 	
 	

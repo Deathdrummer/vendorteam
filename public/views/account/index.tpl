@@ -138,6 +138,7 @@
 																		<div class="staticbuttons__row">
 																			<button setcompound="{{staticId}}|0">Коэффициенты</button>
 																			<button setkeys="{{staticId}}|0">Ключи</button>
+																			{% if statics[staticId]['payformat'] == 1 %}<button myreward="{{staticId}}">Моя премия</button>{% endif %}	
 																		</div>
 																	{% endif %}
 																</div>

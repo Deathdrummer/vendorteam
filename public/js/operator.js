@@ -301,7 +301,10 @@ jQuery(document).ready(function($) {
 	
 	
 	
-	
+	renderContentData = function() {
+		let hashData = location.hash.split('.');
+		setContentData(hashData[0].substr(1, hashData[0].length));
+	}
 	
 	
 	

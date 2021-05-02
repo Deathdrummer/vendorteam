@@ -180,7 +180,6 @@
 
 
 <script type="text/javascript"><!--
-	
 
 	var hash = location.hash.split('.');
 
@@ -259,6 +258,7 @@
 		        			$(rowDate).remove();
 		        			notify('Заявка обработана!');
 		        			showResignWin.close();
+		        			renderContentData();
 		        		} else {
 		        			notify('Ошибка! Не удалось обработать заявку', 'error');
 		        		}
@@ -391,6 +391,7 @@
 								notify('Заявка на увольнение утверждена!');
 								$(thisRow).remove();
 								accessResignWin.close();
+								renderContentData();
 							} else {
 								notify('Ошибка! Заявка на увольнение не утверждена', 'error');
 							}
