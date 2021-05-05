@@ -212,6 +212,397 @@ jQuery(document).ready(function($) {
 	
 	
 	
+	// при одиночном выборе не иметь возможность выбирать уже выбранных участников !!!
+	
+	
+	
+	
+	
+	usersManager = function(params) {
+		let ops = $.extend({
+			choosedStatic: false, // последний выбранный статик
+			choosedUsers: false, // выбранные участники: объект [{user:..., static:..., ...}] или функция с коллбэком, в которые передаются данные: [{user:..., static:..., ...}] 
+			chooseType: 'single', // multiple Тип выборки одиночный или множественный
+			returnFields: false, // при выборе участников какие поля вывести
+			onChoose: false // возвращает выбранных участников
+		}, params),
+		usersManagerWin,
+		choosedUsers = typeof ops.choosedUsers == 'object' ? ops.choosedUsers : [],
+		initialUsers = choosedUsers.map(function(item) {return item.user}),
+		savedStatic = getSavedStatic(),
+		stUsersCounter = {},
+		isDisableBtn = ops.choosedUsers ? 0 : 1;
+		
+		popUp({
+			title: 'Менеджер участников',
+		    width: 900,
+		    winClass: 'usersmanager',
+		    buttons: ops.chooseType == 'multiple' ? [{id: 'chooseUsers', title: 'Выбрать', disabled: isDisableBtn}] : false,
+		    closeButton: 'Закрыть',
+		}, function(uMWin) {
+			usersManagerWin = uMWin;
+			usersManagerWin.wait();
+			
+			
+			if (typeof ops.choosedUsers == 'function') {
+				ops.choosedUsers(function(data) {
+					choosedUsers = data;
+					initialUsers = data.map(function(item) {return item.user});
+					init();
+				});
+			} else {
+				init();
+			}
+		});
+		
+		
+		
+		// ----------------------------------------------------- Функции
+		
+		
+		
+		function init() {
+			getAjaxHtml('admin/usersmanager/init', {choose_type: ops.chooseType}, function(html) {
+				usersManagerWin.setData(html);
+				
+				if (choosedUsers) {
+					choosedUsers.forEach(function(item, index) {
+						let static = parseInt(item.static);
+						if (stUsersCounter[static] === undefined) stUsersCounter[static] = 0;
+						stUsersCounter[static] += 1;
+					});
+					
+					$.each(stUsersCounter, function(static, count) {
+						$('[umstatic="'+static+'"]').find('[countchoosedusers]').text(count);
+						$('[umstatic="'+static+'"]:not(.haschoosed)').addClass('haschoosed');
+					});
+				}
+				
+				if (savedStatic) {
+					usersWait();
+					getUsers(savedStatic, choosedUsers, function(html) {
+						$('[umstatic="'+savedStatic+'"]').addClass('choosed');
+						$('#usersmanagerUsers').html(html);
+						$('#usersmanagerChoosedTotal').text(choosedUsers.length);
+						manageButtons();
+						usersWait(false);
+					});
+				}
+				
+				$('[umstatic]').on(tapEvent, function() {
+					let staticId = parseInt($(this).attr('umstatic'));
+					$('[umstatic].choosed').removeClass('choosed');
+					usersWait();
+					getUsers(staticId, choosedUsers, function(html) {
+						$('[umstatic="'+staticId+'"]').addClass('choosed');
+						$('#usersmanagerUsers').html(html);
+						stUsersCounter[staticId] = stUsersCounter[staticId] || 0;
+						saveChoosedStatic(staticId);
+						manageButtons();
+						usersWait(false);
+					});
+				});
+				
+				
+				
+				$('#usersmanagerUsers').on(tapEvent, '[umuser]:not(.choosed_single)', function() {
+					let thisItem = this,
+						d = $(thisItem).attr('umuser').split('|'),
+						static = parseInt(d[0]),
+						user = parseInt(d[1]),
+						isChoosed = $(thisItem).hasClass('choosed');
+					
+					if (ops.chooseType == 'multiple') {
+						if (isChoosed) {
+							let index = searchInObject(choosedUsers, 'user', user);
+							choosedUsers.splice(index, 1);
+							$(thisItem).removeClass('choosed');
+							$('#usersmanagerChoosedTotal').text(choosedUsers.length);
+							
+							stUsersCounter[static] -= 1;
+							$('[umstatic="'+static+'"]').find('[countchoosedusers]').text(stUsersCounter[static]);
+							if (stUsersCounter[static] == 0) $('[umstatic="'+static+'"]').removeClass('haschoosed');
+						} else {
+							choosedUsers.push({
+								user: user,
+								static: static
+							});
+							$(thisItem).addClass('choosed');
+							$('#usersmanagerChoosedTotal').text(choosedUsers.length);
+							
+							if (stUsersCounter[static] === undefined) stUsersCounter[static] = 0;
+							stUsersCounter[static] += 1;						
+							$('[umstatic="'+static+'"]').find('[countchoosedusers]').text(stUsersCounter[static]);
+							if (stUsersCounter[static] > 0) $('[umstatic="'+static+'"]:not(.haschoosed)').addClass('haschoosed');
+						}
+						
+						manageButtons();
+						
+					} else {
+						if (ops.returnFields) {
+							getUsersFull([{static: static, user: user}], ops.returnFields, function(usersData) {
+								ops.onChoose(usersData);
+								usersManagerWin.close();
+							}, function() {
+								usersManagerWin.wait(false);
+							});
+						} else {
+							ops.onChoose({static: static, user: user});
+							usersManagerWin.close();
+						}
+					}	
+				});
+				
+				
+				
+				// 
+				$('#uMCheckAllStatic').on(tapEvent, function() {
+					if ($(this).hasAttrib('disabled')) return false;
+					checkAllUsersStatic();
+				});
+				
+				// 
+				$('#uMUncheckAllStatic').on(tapEvent, function() {
+					if ($(this).hasAttrib('disabled')) return false;
+					unCheckAllUsersStatic();
+				});
+				
+				// 
+				$('#uMCheckAll').on(tapEvent, function() {
+					if ($(this).hasAttrib('disabled')) return false;
+					checkAllUsers();
+				});
+				
+				// 
+				$('#uMUncheckAll').on(tapEvent, function() {
+					if ($(this).hasAttrib('disabled')) return false;
+					unCheckAllUsers();
+				});
+				
+				
+				$('#chooseUsers').on(tapEvent, function() {
+					usersManagerWin.wait();
+					let ouputData = [];
+					
+					if (initialUsers) {
+						ouputData = choosedUsers.filter(function(item) {
+							if (initialUsers.indexOf(item.user) == -1) return true;
+						});
+					} else {
+						ouputData = choosedUsers;
+					}
+					
+					if (ops.returnFields) {
+						getUsersFull(ouputData, ops.returnFields, function(usersData) {
+							ops.onChoose(usersData);
+							usersManagerWin.close();
+						}, function() {
+							usersManagerWin.wait(false);
+						});
+					} else {
+						ops.onChoose(ouputData);
+						usersManagerWin.close();
+					}
+				});
+				
+			}, function() {
+				usersManagerWin.wait(false);
+			});
+		}
+		
+		
+		
+		
+		function getUsersFull(users, fields, callback, always) {
+			$.post('/admin/usersmanager/get_users_full', {users: users, fields: fields}, function(usersData) {
+				callback(usersData);
+			}, 'json').fail(function(e) {
+				always();
+				notify('Системная ошибка!', 'error');
+				showError(e);
+			});
+		}
+		
+		
+		
+		function getUsers(staticId, choosedUsers, callback) {
+			if (!staticId) return false;
+			let usersIds = [];
+			if (choosedUsers) {
+				usersIds = choosedUsers.map(function(item) {
+					return item['user'];
+				});
+			}
+			
+			getAjaxHtml('admin/usersmanager/get_users', {static_id: staticId, choosed_users_ids: usersIds, choose_type: ops.chooseType}, function(html) {
+				if (callback && typeof callback == 'function') callback(html);
+			}, function() {});
+		}
+		
+		
+		function saveChoosedStatic(static) {
+			localStorage.setItem('usersManagerStatic', static);
+		}
+		
+		function getSavedStatic() {
+			let savedStatic = localStorage.getItem('usersManagerStatic');
+			return savedStatic || false;
+		}
+		
+					
+		function checkAllUsers() {
+			$.post('/admin/usersmanager/check_all_users', function(allUsers) {
+				stUsersCounter = {};
+				allUsers.forEach(function(user) {
+					if (stUsersCounter[user.static] === undefined) stUsersCounter[user.static] = 0;
+					stUsersCounter[user.static] += 1;
+				});
+				
+				$.each(stUsersCounter, function(static, count) {
+					$('[umstatic="'+static+'"]').find('[countchoosedusers]').text(count);
+					$('[umstatic="'+static+'"]:not(.haschoosed)').addClass('haschoosed');
+				});
+				
+				$('#usersmanagerChoosedTotal').text(allUsers.length);
+				$('#usersmanagerUsers').find('[umuser]:not(.choosed)').addClass('choosed');
+				
+				choosedUsers = allUsers;
+				
+				$('#uMCheckAll:not([disabled])').setAttrib('disabled');
+				$('#uMUncheckAll[disabled]').removeAttrib('disabled');
+				manageButtons();
+				
+			}, 'json').fail(function(e) {
+				notify('Системная ошибка!', 'error');
+				showError(e);
+			});
+		}
+		
+		
+		function unCheckAllUsers() {
+			stUsersCounter = {};
+			choosedUsers = [];
+			
+			$('[umstatic]').find('[countchoosedusers]').text(0);
+			$('[umstatic].haschoosed').removeClass('haschoosed');
+			
+			$('#usersmanagerChoosedTotal').text(0);
+			
+			$('#usersmanagerUsers').find('[umuser].choosed').removeClass('choosed');
+			manageButtons();
+		}
+		
+		
+		
+		
+		function checkAllUsersStatic() {
+			let currentStatic = parseInt($('[umstatic].choosed').attr('umstatic'));
+			$('#usersmanagerUsers').find('[umuser]:not(.choosed)').each(function() {
+				let thisItem = this,
+					d = $(thisItem).attr('umuser').split('|'),
+					static = parseInt(d[0]),
+					user = parseInt(d[1]);
+				
+				choosedUsers.push({
+					user: user,
+					static: static
+				});
+			
+				if (stUsersCounter[static] === undefined) stUsersCounter[static] = 0;
+				stUsersCounter[static] += 1;
+				
+				$(thisItem).addClass('choosed');
+			});
+			
+			$('[umstatic="'+currentStatic+'"]').find('[countchoosedusers]').text($('#usersmanagerUsers').find('[umuser].choosed').length);
+			$('[umstatic="'+currentStatic+'"]:not(.haschoosed)').addClass('haschoosed');
+			manageButtons()
+			$('#usersmanagerChoosedTotal').text(choosedUsers.length);
+		}
+		
+		
+		
+		
+		function unCheckAllUsersStatic() {
+			let currentStatic = parseInt($('[umstatic].choosed').attr('umstatic'));
+			$('#usersmanagerUsers').find('[umuser].choosed').each(function() {
+				let thisItem = this,
+					d = $(thisItem).attr('umuser').split('|'),
+					static = parseInt(d[0]),
+					user = parseInt(d[1]);
+				
+				let index = searchInObject(choosedUsers, 'user', user);
+				choosedUsers.splice(index, 1);
+			
+				if (stUsersCounter[static] !== undefined) stUsersCounter[static] -= 1;
+				
+				$(thisItem).removeClass('choosed');
+			});
+			
+			$('[umstatic="'+currentStatic+'"]').find('[countchoosedusers]').text(0);
+			$('[umstatic="'+currentStatic+'"].haschoosed').removeClass('haschoosed');
+			manageButtons();
+			$('#usersmanagerChoosedTotal').text(choosedUsers.length);
+		}
+		
+		
+		
+		function staticsWait(stat) {
+			if (stat === undefined) {
+				$('#staticsWait').addClass('usersmanager__wait_visible');
+			} else if (stat == false) {
+				$('#staticsWait').removeClass('usersmanager__wait_visible');
+			}
+		}
+		
+		function usersWait(stat) {
+			if (stat === undefined) {
+				$('#usersWait').addClass('usersmanager__wait_visible');
+			} else if (stat == false) {
+				$('#usersWait').removeClass('usersmanager__wait_visible');
+			}
+		}
+		
+		
+		
+		function manageButtons() {
+			let countAll = $('#usersmanagerTotal').val(),
+				countChoosedAll = choosedUsers.length,
+				countInStatic = $('#usersmanagerUsers').find('[umuser]').length,
+				countChoosedInStatic = $('#usersmanagerUsers').find('[umuser].choosed').length;
+			
+			if (countAll == 0) return false;
+			
+			if (countChoosedAll < countAll) {
+				$('#uMCheckAll[disabled]').removeAttrib('disabled');
+				$('#uMUncheckAll[disabled]').removeAttrib('disabled');
+			} 
+			
+			if (countChoosedAll == 0) $('#uMUncheckAll:not([disabled])').setAttrib('disabled');
+			if (countAll == countChoosedAll) $('#uMUncheckAll[disabled]').removeAttrib('disabled');
+			
+			
+			
+			if (countInStatic) $('#uMCheckAllStatic[disabled]').removeAttrib('disabled');
+			else $('#uMCheckAllStatic:not([disabled])').setAttrib('disabled');
+			
+			if (countChoosedInStatic) $('#uMUncheckAllStatic[disabled]').removeAttrib('disabled');
+			else $('#uMUncheckAllStatic:not([disabled])').setAttrib('disabled');
+			
+			if (countInStatic == countChoosedInStatic) $('#uMCheckAllStatic:not([disabled])').setAttrib('disabled');
+			else $('#uMCheckAllStatic[disabled]').removeAttrib('disabled');
+			
+			if (countChoosedAll) $('#chooseUsers[disabled]').removeAttrib('disabled');
+			else $('#chooseUsers:not([disabled])').setAttrib('disabled');
+		}
+						
+						
+		
+		
+		
+	};
+	
+	
 	
 	
 	

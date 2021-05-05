@@ -51,19 +51,19 @@
 				<div class="resign__textblock mt20px">
 					<h4>Номер заказа</h4>
 					<div class="popup__field w230px">
-						<input type="text" id="confirmResignOrder">
+						<input type="text" id="confirmResignOrder" value="{{pattern.order}}">
 					</div>
 				</div>
 				<div class="resign__textblock mt20px">
 					<h4>Комментарий</h4>
 					<div class="popup__textarea">
-						<textarea rows="5" id="confirmResignComment"></textarea>
+						<textarea rows="5" id="confirmResignComment">{{pattern.comment}}</textarea>
 					</div>
 				</div>
 				<div class="resign__textblock mt20px resign__textblock_hidden">
 					<h4>Комментарий по удержанию в баланс</h4>
 					<div class="popup__textarea">
-						<textarea rows="5" id="confirmResignCommentToBalance"></textarea>
+						<textarea rows="5" id="confirmResignCommentToBalance">{{pattern.balance_comment}}</textarea>
 					</div>
 				</div>
 			</div>

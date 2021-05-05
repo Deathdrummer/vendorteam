@@ -35,6 +35,27 @@ Counter = function(start, order, step) {
 
 
 
+/*
+	Поиск в массиве объектов по значению ключа
+		- массив объектов
+		- поле, по которому искать
+		- значение, которое искать
+		возвращает индекс объекта массива
+*/
+searchInObject = function(arrObj, field, value) {
+	let objIndex = arrObj.findIndex(function(element, index) {
+		if (element[field] == value) return true;
+	});
+	return objIndex;
+};
+
+
+
+	
+
+
+
+
 $.fn.setAttrib = function(attr, value) {
 	if (attr == undefined) return false;
 	if ($(this).length == 0) return false;
@@ -57,6 +78,11 @@ $.fn.removeAttrib = function(attr) {
 		- название атрибута
 */
 $.fn.hasAttr = function(a) {
+	var attr = $(this).attr(a);
+	return typeof attr !== typeof undefined && attr !== false;
+}
+
+$.fn.hasAttrib = function(a) {
 	var attr = $(this).attr(a);
 	return typeof attr !== typeof undefined && attr !== false;
 }

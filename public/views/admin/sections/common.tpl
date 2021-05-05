@@ -15,12 +15,13 @@
 		<li id="usersListPay">Список "Заказ Оплаты"</li>
 		<li id="usersListComplaints">Список "Предложения и Жалобы"</li>
 		<li id="resignsList">Заявки на увольнение</li>
-		<li id="constants">Константы</li>
+		<li id="constants">Константы и шаблоны</li>
 		<li id="agreement">Договор</li>
 		<li id="importantInfo">Важная информация</li>
 		<li id="commonMessage">Cообщение для НЕверифицированных</li>
 		<li id="skype">Скайп</li>
 		<li id="links">Ссылки</li>
+		<li id="stopList">Стоп-лист</li>
 	</ul>
 	
 	
@@ -495,6 +496,7 @@
 				<li id="tabVacations">Бронирование выходных</li>
 				<li id="tabDeposit">Депозит</li>
 				<li id="tabRating">Рейтинг</li>
+				<li id="tabResigns">Увольнения</li>
 			</ul>
 			
 			<div class="tabscontent">
@@ -541,6 +543,7 @@
 					</fieldset>
 				</div>
 				
+				
 				<div tabid="tabRating">
 					<fieldset>
 						<legend>Коэффициенты для рейтинга</legend>
@@ -580,6 +583,18 @@
 						<legend>Как рассчитывается рейтинг</legend>
 						
 						{% include form~'textarea.tpl' with {'label': 'Описание', 'name': 'rating_desc', 'editor': 'ratingDesc', 'class': 'w100'} %}
+					
+					</fieldset>
+				</div>
+				
+				
+				<div tabid="tabResigns">
+					<fieldset>
+						<legend>Форма</legend>
+						
+						{% include form~'field.tpl' with {'label': 'Номер заказа', 'name': 'resign|order', 'class': 'w300px',} %}
+						{% include form~'textarea.tpl' with {'label': 'Комментарий по выплате из резерва', 'name': 'resign|comment', 'class': 'w40'} %}
+						{% include form~'textarea.tpl' with {'label': 'Комментарий по удержанию в баланс', 'name': 'resign|balance_comment', 'class': 'w40'} %}
 					
 					</fieldset>
 				</div>
@@ -696,6 +711,70 @@
 				
 			</fieldset>
 		</div>
+		
+		<div tabid="stopList">
+			
+			
+			<ul class="tabstitles sub">
+				<li id="addictPay">Доплнительные выплаты</li>
+			</ul>
+			
+			<div class="tabscontent">
+				<div tabid="addictPay">
+					<table>
+						<thead>
+							<tr>
+								<td class="w300px">Участник</td>
+								<td class="w300px">Статик</td>
+								<td></td>
+								<td class="w60px">Опции</td>
+							</tr>
+						</thead>
+						<tbody id="stopListAddictPay">
+							{% if stop_list['addictpay'] %}
+								{% for row in stop_list['addictpay'] %}
+									<tr>
+										<td>
+											<div class="d-flex align-items-center">
+												<div class="avatar mini mr-1" style="background-image: url('{{base_url('public/images/users/mini/'~users[row['item_id']]['avatar'])|no_file('public/images/user_mini.jpg')}}')"></div>
+												<p>{{users[row['item_id']]['nickname']}}</p>
+											</div>	
+										</td>
+										<td>
+											<div class="d-flex align-items-center">
+												<div class="avatar mini mr-1" style="background-image: url('{{base_url('public/filemanager/'~users[row['item_id']]['static_icon'])|no_file('public/images/deleted_mini.jpg')}}')"></div>
+												<p>{{users[row['item_id']]['static_name']}}</p>
+											</div>
+										</td>
+										<td></td>
+										<td class="center">
+											<div class="buttons inline">
+												<button class="remove" stoplistremoveaddictpay="{{row.id}}" title="Удалить"><i class="fa fa-trash"></i></button>
+											</div>
+										</td>
+									</tr>
+								{% endfor %}
+							{% else %}
+								<tr class="empty">
+									<td colspan="4"><p class="empty center">Нет данных</p></td>
+								</tr>
+							{% endif %}	
+						</tbody>
+						<tfoot>
+							<tr>
+								<td colspan="4">
+									<div class="buttons notop right">
+										<button class="small alt" id="addictStopListAdd">Добавить</button>
+									</div>
+								</td>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+			</div>
+			
+		</div>
+		
 		
 		
 	</div>
@@ -1247,6 +1326,52 @@ $(document).ready(function() {
 	});
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	$('#addictStopListAdd').on(tapEvent, function() {
+		usersManager({
+			chooseType: 'single',
+			returnFields: 'nickname avatar static_name static_icon',
+			choosedUsers: function(callback) {
+				$.post('/admin/stoplist/get_users', function(data) {
+					callback(data);
+				}, 'json').fail(function(e) {
+					showError(e);	
+					notify('Системная ошибка!', 'error');
+				});
+			},
+			onChoose: function(users) {
+				getAjaxHtml('admin/stoplist/insert_users', {users: users}, function(html) {
+					$('#stopListAddictPay').find('tr.empty').remove();
+					$('#stopListAddictPay').append(html);
+				});
+			}
+		});	
+	});
+	
+	
+	
+	$('#stopListAddictPay').on(tapEvent, '[stoplistremoveaddictpay]', function() {
+		let thisRow = $(this).closest('tr'), 
+			id = $(this).attr('stoplistremoveaddictpay');
+		
+		$.post('/admin/stoplist/remove_user', {id: id}, function(response) {
+			if (response) {
+				$(thisRow).remove();
+				if ($('#stopListAddictPay').find('tr').length == 0) {
+					$('#stopListAddictPay').html('<tr class="empty"><td colspan="4"><p class="empty center">Нет данных</p></td></tr>');
+				}
+			}
+		}).fail(function(e) {
+			notify('Системная ошибка!', 'error');
+			showError(e);
+		});
+	});
 	
 	
 
