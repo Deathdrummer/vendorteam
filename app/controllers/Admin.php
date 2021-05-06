@@ -143,6 +143,18 @@ class Admin extends MY_Controller {
 				$data['users_list_complaints'] = $this->admin_model->getUsersListComplaints();
 				$data['users_list_more'] = false;
 				$data['resigns'] = $this->admin_model->getResigns();
+				$data['stop_list'] = $this->admin_model->getStopList();
+				
+				//$data['statics'] = $this->admin_model->getStatics();
+				if ($data['stop_list']['addictpay']) {
+					$users = $this->users_model->getUsers([
+						'where' 	=> ['us.main' => 1],
+						'where_in' 	=> ['field' => 'u.id',
+						'values' 	=> array_column($data['stop_list']['addictpay'], 'item_id')],
+						'fields'	=> 'nickname avatar static_name static_icon'
+					]);
+					$data['users'] = $users;
+				}
 				break;
 			
 			case 'users':
@@ -249,8 +261,8 @@ class Admin extends MY_Controller {
 				$data['roles'] = $this->admin_model->getRoles();
 				$data['roles_limits'] = $this->offtime_model->getRolesLimits();
 				
-				$startDatePoint = (date('l', time()) == 'Monday') ? strtotime('today') : strtotime('last monday');
-				$data['offtime']['dates'] = getDatesRange($startDatePoint - 604800, 35, 'day');
+				$startDatePoint = (date('j', time()) == 1) ? strtotime('today') : strtotime(date('d-m-Y', strtotime('first day of 0 month')));
+				$data['offtime']['dates'] = getDatesRange($startDatePoint, date('t', $startDatePoint), 'day');
 				$data['offtime']['users'] = $this->offtime_model->getOfftimeUsers();
 				$data['offtime']['disabled'] = $this->offtime_model->getOfftimeDisabled();
 				$data['current_date'] = strtotime('today');
@@ -2145,7 +2157,7 @@ class Admin extends MY_Controller {
 	
 	
 	/**
-	 * Показать форму для выплаты резерва
+	 * Показать форму для выплаты резерва и удержания в баланс
 	 * @param 
 	 * @return 
 	 */
@@ -2154,6 +2166,7 @@ class Admin extends MY_Controller {
 		$id = $this->input->post('id');
 		$data['disableedit'] = $this->input->post('disableedit');
 		$data['resign'] = $this->admin_model->showResign($id);
+		$data['pattern'] = $this->admin_model->getSettings('resign');
 		echo $this->twig->render('views/admin/render/pay_deposit_form.tpl', $data);
 	}
 	
@@ -2194,6 +2207,141 @@ class Admin extends MY_Controller {
 	
 	
 	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function stoplist($action = false) {
+		if (!$action) return false;
+		$post = bringTypes($this->input->post());
+		$this->load->model('users_model', 'users');
+		
+		switch ($action) {
+			case 'get_users':
+				$usersData = [];
+				if ($stopListItems = $this->admin_model->getStopList('addictpay')) {
+					$usersIds = array_column($stopListItems, 'item_id');
+					$users = $this->users->getUsers(['where' => ['us.main' => 1], 'where_in' => ['field' => 'u.id', 'values' => $usersIds], 'fields' => 'id static']);
+					foreach ($users as $user) {
+						$usersData[] = [
+							'user'		=> (int)$user['id'],
+							'static'	=> (int)$user['static']
+						];
+					}
+				}
+				
+				echo json_encode($usersData);
+				break;
+			
+			case 'remove_user':
+				if (!$this->admin_model->removeFromStopList($post['id'])) exit('0');
+				echo '1';
+				break;
+			
+			case 'insert_users':
+				if (isset($post['users']) && $post['users']) {
+					$usersIds = array_column($post['users'], 'id');
+					if ($insData = $this->admin_model->insertInStopList($usersIds, 'addictpay')) {
+						foreach ($insData as $itemId => $insItem) {
+							$post['users'][$itemId]['ins_id'] = $insItem;
+						}
+					}
+				}
+				
+				echo $this->twig->render('views/admin/render/stoplist/addictpay_users.tpl', $post);
+				break;
+			
+			
+				
+			default:
+				break;
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * менеджер участников
+	 * @param 
+	 * @return 
+	*/
+	public function usersmanager($action = false) {
+		if (!$action) return false;
+		$post = bringTypes($this->input->post());
+		$this->load->model('users_model', 'users');
+		$data = [];
+		switch ($action) {
+			case 'init':
+				
+				$data['statics'] = $this->admin_model->getStatics();
+				$data['count_all_users'] = array_sum(array_column($data['statics'], 'count_users'));
+				$data['choose_type'] = $post['choose_type'];
+				echo $this->twig->render('views/admin/render/usersmanager/main.tpl', $data);
+				break;
+			
+			case 'get_users':
+				if (!$post['static_id']) exit('0');
+				
+				$users = $this->users->getUsers(['where' => ['us.static_id' => $post['static_id'], 'us.main' => 1, 'deleted' => 0], 'fields' => 'id nickname avatar static']);
+				
+				if ($users && isset($post['choosed_users_ids']) && $post['choosed_users_ids']) {
+					$choosedUsersTemp = array_combine($post['choosed_users_ids'], array_fill(0, count($post['choosed_users_ids']), ['choosed' => 1]));
+					$choosedUsers = array_intersect_key($choosedUsersTemp, $users);
+					$users = array_replace_recursive($users, $choosedUsers);
+				}
+				
+				$data['users'] = $users;
+				$data['choose_type'] = $post['choose_type'];
+				
+				echo $this->twig->render('views/admin/render/usersmanager/users.tpl', $data);
+				break;
+			
+			case 'get_users_full':
+				$usersIds = array_column($post['users'], 'user');
+				
+				$params = [
+					'where' => ['us.main' => 1, 'deleted' => 0],
+					'where_in' => ['field' => 'u.id', 'values' => $usersIds]
+				];
+				
+				if ($post['fields']) $params['fields'] = 'id '.$post['fields'];
+				
+				$users = $this->users->getUsers($params);
+				echo json_encode($users);
+				break;
+			
+			
+			case 'check_all_users':
+				$users = $this->users->getUsers(['where' => ['us.main' => 1, 'deleted' => 0], 'fields' => 'id nickname avatar static']);
+				$data = [];
+				foreach ($users as $user) {
+					$data[] = [
+						'user' 	=> $user['id'],
+						'static' => $user['static'],
+					];
+				}
+				echo json_encode($data);
+				break;
+			
+			default:
+				# code...
+				break;
+		}
+		return $data ?: [];
+	}
 	
 	
 	

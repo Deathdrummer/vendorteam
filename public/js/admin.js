@@ -229,7 +229,7 @@ jQuery(document).ready(function($) {
 		usersManagerWin,
 		choosedUsers = typeof ops.choosedUsers == 'object' ? ops.choosedUsers : [],
 		initialUsers = choosedUsers.map(function(item) {return item.user}),
-		savedStatic = getSavedStatic(),
+		initialStatic = false,
 		stUsersCounter = {},
 		isDisableBtn = ops.choosedUsers ? 0 : 1;
 		
@@ -278,15 +278,21 @@ jQuery(document).ready(function($) {
 					});
 				}
 				
-				if (savedStatic) {
+				
+				initialStatic = getSavedStatic();
+				
+				if (initialStatic) {
 					usersWait();
-					getUsers(savedStatic, choosedUsers, function(html) {
-						$('[umstatic="'+savedStatic+'"]').addClass('choosed');
+					getUsers(initialStatic, choosedUsers, function(html) {
+						$('[umstatic="'+initialStatic+'"]').addClass('choosed');
 						$('#usersmanagerUsers').html(html);
 						$('#usersmanagerChoosedTotal').text(choosedUsers.length);
 						manageButtons();
 						usersWait(false);
 					});
+				} else {
+					$('#usersmanagerUsers').html('<div class="usersmanager__empty"><p class="empty center">Нет участников</p></div>')
+					$('#usersmanagerStatics').html('<div class="usersmanager__empty"><p class="empty center">Нет статиков</p></div>')
 				}
 				
 				$('[umstatic]').on(tapEvent, function() {
@@ -444,9 +450,17 @@ jQuery(document).ready(function($) {
 			localStorage.setItem('usersManagerStatic', static);
 		}
 		
+		
 		function getSavedStatic() {
 			let savedStatic = localStorage.getItem('usersManagerStatic');
-			return savedStatic || false;
+			if (savedStatic) return savedStatic; 
+			
+			let firstStaticInList = $('#usersmanagerStatics').find('[umstatic]:first');
+			if ($(firstStaticInList).length) {
+				let firstStId = $(firstStaticInList).attr('umstatic');
+				if (firstStId) return parseInt(firstStId);
+			}
+			return false;
 		}
 		
 					

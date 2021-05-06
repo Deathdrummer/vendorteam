@@ -67,12 +67,12 @@ class Offtime extends MY_Controller {
 		if (! $this->input->is_ajax_request()) return false;
 		$this->load->model(['account_model', 'admin_model']);
 		$static = $this->input->post('static');
-		$history = $this->input->post('history');
+		$history = $this->input->post('history') ?: 0;
 		
-		if ($history) $startDatePoint = (date('l', time()) == 'Monday') ? strtotime('today '.$history.' week') : strtotime('last Monday of '.$history.' week');
-		else $startDatePoint = (date('l', time()) == 'Monday') ? strtotime('today') : strtotime('last monday');
+		$startDatePoint = (date('j', time()) == 1) ? strtotime('today') : strtotime(date('d-m-Y', strtotime('first day of '.$history.' month')));
 		
-		$data['offtime_dates'] = getDatesRange(($startDatePoint - 604800), 28, 'day'); // 604800 показывать предыдущую неделю
+		$data['offtime_dates'] = getDatesRange($startDatePoint, date('t', $startDatePoint), 'day'); // 604800 показывать предыдущую неделю
+		
 		$data['disabled'] = $this->offtime_model->getOfftimeDisabled();
 		$data['user_id'] = get_cookie('id'); //$this->session->userdata('id');
 		$data['statics_names'] = $this->admin_model->getStatics(true);
@@ -114,14 +114,14 @@ class Offtime extends MY_Controller {
 	 * @return 
 	 */
 	public function get_offtime_history() {
-		$history = $this->input->post('history');
+		$history = $this->input->post('history') ?: 0;
 		$this->load->model('admin_model');
 		$data['statics'] = $this->admin_model->getStatics();
 		$data['roles'] = $this->admin_model->getRoles();
 		$data['roles_limits'] = $this->offtime_model->getRolesLimits();
 		
-		$startDatePoint = (date('l', time()) == 'Monday') ? strtotime('today '.$history.' week') : strtotime('last Monday of '.$history.' week');
-		$data['offtime']['dates'] = getDatesRange($startDatePoint - 604800, 35, 'day');
+		$startDatePoint = (date('j', time()) == 1) ? strtotime('today') : strtotime(date('d-m-Y', strtotime('first day of '.$history.' month')));
+		$data['offtime']['dates'] = getDatesRange($startDatePoint, date('t', $startDatePoint), 'day');
 		$data['offtime']['users'] = $this->offtime_model->getOfftimeUsers();
 		$data['offtime']['disabled'] = $this->offtime_model->getOfftimeDisabled();
 		$data['current_date'] = strtotime('today');

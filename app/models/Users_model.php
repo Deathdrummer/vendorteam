@@ -19,17 +19,20 @@ class Users_model extends MY_Model {
 	public function getUsers($params = []) {
 		$where = isset($params['where']) ? $params['where'] : false;
 		$whereIn = isset($params['where_in']) ? $params['where_in'] : false;
+		$whereNotIn = isset($params['where_not_in']) ? $params['where_not_in'] : false;
 		$like = isset($params['like']) ? $params['like'] : false;
 		$orderField = isset($params['field']) ? $params['field'] : false;
 		$orderType = isset($params['order']) ? $params['order'] : false;
 		$returnFields = isset($params['fields']) ? $params['fields'] : false;
 		
-		$this->db->select('u.*, us.lider, us.static_id AS static');
+		$this->db->select('u.*, us.lider, us.static_id AS static, s.name AS static_name, s.icon AS static_icon');
 		$this->db->join('users_statics us', 'us.user_id = u.id', 'LEFT OUTER');
+		$this->db->join('statics s', 's.id = us.static_id', 'LEFT OUTER');
 		
 		
 		if ($where) $this->db->where($where);
 		if ($whereIn) $this->db->where_in($whereIn['field'], $whereIn['values']);
+		if ($whereNotIn) $this->db->where_not_in($whereNotIn['field'], $whereNotIn['values']);
 		if ($like) $this->db->like($like['field'], $like['value'], $like['placed']);
 		
 		$this->db->order_by('us.static_id ASC');
@@ -39,7 +42,7 @@ class Users_model extends MY_Model {
 		$query = $this->db->get('users u');
 		if (!$usersData = $query->result_array()) return false;
 		
-		if ($returnFields) $usersData = setArrKeyFromField($usersData, false, $returnFields);
+		if ($returnFields) $usersData = setArrKeyFromField($usersData, 'id', true, $returnFields);
 		
 		return $usersData ?: false;
 	}

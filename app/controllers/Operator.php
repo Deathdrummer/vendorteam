@@ -182,8 +182,8 @@ class Operator extends MY_Controller {
 				$data['roles'] = $this->admin_model->getRoles();
 				$data['roles_limits'] = $this->offtime_model->getRolesLimits();
 				
-				$startDatePoint = (date('l', time()) == 'Monday') ? strtotime('today') : strtotime('last monday');
-				$data['offtime']['dates'] = getDatesRange($startDatePoint - 604800, 35, 'day');
+				$startDatePoint = (date('j', time()) == 1) ? strtotime('today') : strtotime(date('d-m-Y', strtotime('first day of 0 month')));
+				$data['offtime']['dates'] = getDatesRange($startDatePoint, date('t', $startDatePoint), 'day');
 				$data['offtime']['users'] = $this->offtime_model->getOfftimeUsers();
 				$data['offtime']['disabled'] = $this->offtime_model->getOfftimeDisabled();
 				$data['current_date'] = strtotime('today');
@@ -748,8 +748,8 @@ class Operator extends MY_Controller {
 		$data['roles'] = $this->admin_model->getRoles();
 		$data['roles_limits'] = $this->offtime_model->getRolesLimits();
 		
-		$startDatePoint = (date('l', time()) == 'Monday') ? strtotime('today '.$history.' week') : strtotime('last Monday of '.$history.' week');
-		$data['offtime']['dates'] = getDatesRange($startDatePoint - 604800, 35, 'day');
+		$startDatePoint = (date('j', time()) == 1) ? strtotime('today') : strtotime(date('d-m-Y', strtotime('first day of '.$history.' month')));
+		$data['offtime']['dates'] = getDatesRange($startDatePoint, date('t', $startDatePoint), 'day');
 		$data['offtime']['users'] = $this->offtime_model->getOfftimeUsers();
 		$data['offtime']['disabled'] = $this->offtime_model->getOfftimeDisabled();
 		$data['current_date'] = strtotime('today');

@@ -1651,7 +1651,7 @@ $(document).ready(function() {
 	
 	
 	//---------------------------------------- Забронировать выходной
-	var offtimeWin, offtimeStatic, historyWeeks, weeksStep = 4;
+	var offtimeWin, offtimeStatic, historyWeeks;
 	$('[getofftime]').on(tapEvent, function() {
 		historyWeeks = 0;
 		popUp({
@@ -1683,7 +1683,7 @@ $(document).ready(function() {
 	
 	$('body').off(tapEvent, '[offtimehistory]').on(tapEvent, '[offtimehistory]', function() {
 		var dir = $(this).attr('offtimehistory');
-		historyWeeks = dir == '+' ? historyWeeks+weeksStep : historyWeeks-weeksStep;
+		historyWeeks = dir == '+' ? historyWeeks+1 : historyWeeks-1;
 		if (historyWeeks == 0) $('[offtimehistory="+"]').setAttrib('disabled');
 		else $('[offtimehistory="+"]').removeAttrib('disabled');
 		offtimeWin.wait();

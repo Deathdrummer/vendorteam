@@ -801,8 +801,16 @@ class Reports extends MY_Controller {
 	*/
 	public function calc_addictpay() {
 		$post = $this->input->post();
-		$this->load->model('users_model');
-		$usersData = $this->users_model->getUsers(['where_in' => ['field' => 'us.static_id', 'values' => $post['statics'], 'where' => ['us.main' => 1, 'u.deleted' => 0, 'u.verification' => 1]]]);
+		$this->load->model(['users_model', 'admin_model']);
+		
+		$stopListUsersIds = false;
+		if ($stopList = $this->admin_model->getStopList('addictpay')) { // получить стоп-лист участников для дополнительных выплат
+			$stopListUsersIds = array_column($stopList, 'item_id');
+		}
+		
+		$params = ['where_in' => ['field' => 'us.static_id', 'values' => $post['statics']], 'where' => ['us.main' => 1, 'u.deleted' => 0, 'u.verification' => 1]];
+		if ($stopListUsersIds) $params['where_not_in'] = ['field' => 'u.id', 'values' => $stopListUsersIds];
+		$usersData = $this->users_model->getUsers($params);
 		
 		$ranks = $this->admin_model->getRanks();
 		$statics = $this->admin_model->getStatics();
@@ -830,7 +838,6 @@ class Reports extends MY_Controller {
 		$data['statics'] = $statics;
 		$data['totals'] = $totals;
 		
-
 		echo $this->twig->render('views/admin/render/addictpay/orders.tpl', $data);
 	}
 	

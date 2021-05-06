@@ -106,6 +106,32 @@ class MY_Model extends CI_Model {
 	
 	
 	
+	/**
+	 * Получить данные из таблицы + количество записей без лимитов
+	 * @param название таблицы
+	 * @param лимит
+	 * @param смещение
+	 * @return array [data, total]
+	*/
+	protected function _resultWithCount($table = false, $limit = false, $offset = 0) {
+		if (!$table) return false;
+		$query = $this->db->get_compiled_select($table, false);
+		if ($limit) $this->db->limit($limit, $offset);
+		$respone = $this->db->query($query);
+		$count = $respone->result_id->num_rows ?: null;
+		
+		$itemsQuery = $this->db->get();
+		$items = $itemsQuery->result_array();
+		
+		return [
+			'items'	=> $items,
+			'total' => $count
+		];
+	}
+	
+	
+	
+	
 	
 	
 	

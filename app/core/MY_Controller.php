@@ -227,6 +227,13 @@ class MY_Controller extends CI_Controller {
 			return is_file($file) ? $filename : $nofile;
 		});
 		
+		
+		$this->twig->addFilter('no_file', function($filename, $nofile = '') {
+			$filePath = str_replace(base_url(), '', $filename);
+			$filePath = explode('?', $filePath);
+			return is_file($filePath[0]) ? $filename : $nofile;
+		});
+		
 		$this->twig->addFilter('trimstring', function($string, $length = 10, $end = '...') {
 			return mb_strimwidth($string, 0, $length, $end);
 		});

@@ -146,11 +146,11 @@
 $(document).ready(function() {
 	//-------------------------------------------------------------------------------------------------- Выходные
 	
-	var history = 0, weeksStep = 4;
+	var history = 0;
 	$('[offtimehistory]').on(tapEvent, function() {
 		var dir = $(this).attr('offtimehistory'),
 			hash = location.hash.split('.');
-		history = dir == '+' ? history+weeksStep : history-weeksStep;
+		history = dir == '+' ? history+1 : history-1;
 		
 		getAjaxHtml('operator/get_offtime_history', {history: history}, function(html) {
 			$('#offtimeDataContent').html(html);

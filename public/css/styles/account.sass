@@ -1681,6 +1681,7 @@ body
 				table-layout: fixed
 				flex: 0 1 100%
 				width: 100%
+				background-color: transparent
 				
 				td
 					//border: 1px solid #6d8a98
@@ -1689,7 +1690,19 @@ body
 					padding: 0
 					vertical-align: top
 					font-size: 14px
+					background-color: #eef0f0
 					position: relative
+					
+					&.disabled
+						background-color: #f6f8f9
+						
+						.offtime__title
+							strong, small
+								color: #aeb4b5
+								+font(roboto, light)
+								
+						
+						
 						
 			&__title
 				border-top: 1px solid #e5e5e5
@@ -1698,8 +1711,9 @@ body
 				text-align: center
 				display: flex
 				align-items: center
-				justify-content: center
+				justify-content: flex-end
 				flex-direction: column
+				padding-bottom: 3px
 				
 				span, small
 					display: block
@@ -1720,6 +1734,7 @@ body
 				overflow-y: auto
 				+scrollbar(#dfe4e4, #9b98a5, 4px, 2px, 2px)
 				
+				
 				&_closed
 					position: relative
 					
@@ -1732,7 +1747,7 @@ body
 						right: 0
 						width: 100%
 						height: 100%
-						background-color: #eee
+						//background-color: #eee
 						opacity: 0.6
 					// display: flex
 					// justify-content: center

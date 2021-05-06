@@ -403,8 +403,9 @@ class Admin_model extends My_Model {
 	 * @return [static id => static name] или [static id => static data]
 	 */
 	public function getStatics($nameOnly = false, $staticId = null) {
+		$this->db->select('s.*, (SELECT COUNT(us.id) FROM users_statics us JOIN users u ON us.user_id = u.id WHERE s.id = us.static_id AND u.deleted = 0 AND us.main = 1) AS count_users');
 		$this->db->order_by('id', 'ASC');
-		$query = $this->db->get('statics');
+		$query = $this->db->get('statics s');
 		if (!$response = $query->result_array()) return false;
 		$data = [];
 		if ($nameOnly) {
@@ -2130,6 +2131,67 @@ class Admin_model extends My_Model {
 	
 	
 	
+	
+	
+	
+	
+	
+	
+	//----------------------------------------------- Стоп-лист
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function getStopList($type = false) {
+		$this->db->select('id, item_id');
+		if (!$type) $this->db->select('type');
+		if ($type) $this->db->where('type', $type);
+		if (!$result = $this->_result('stop_list')) return false;
+		
+		if ($type) return $result;
+		
+		$data = [];
+		foreach ($result as $row) {
+			$tp = arrTakeItem($row, 'type');
+			$data[$tp][] = $row;
+		}
+		return $data;
+	}
+	
+	
+	
+	/**
+	 * Добавить записи в стоп-лист
+	 * @param 
+	 * @return 
+	*/
+	public function insertInStopList($itemsIds = false, $type = false) {
+		if (!$itemsIds || !$type) return false;
+		
+		$insIds = [];
+		foreach ($itemsIds as $id) {
+			if ($this->db->insert('stop_list', ['item_id' => $id,'type' => $type])) {
+				$insIds[$id] = $this->db->insert_id();
+			}
+		}
+		
+		return $insIds ?: false;
+	}
+	
+	
+	
+	
+	/**
+	 * Удалить запись из стоп-листа
+	 * @param 
+	 * @return 
+	*/
+	public function removeFromStopList($id = false) {
+		if (!$id) return false;
+		$this->db->where('id', $id);
+		if (!$this->db->delete('stop_list')) return false;
+		return true;
+	}
 	
 	
 	

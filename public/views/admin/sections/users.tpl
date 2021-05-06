@@ -22,6 +22,15 @@
 				</div>
 			</div>
 			<div class="col-auto">
+				<div class="select small">
+					<select id="searchUsersType">
+						<option value="nickname">По никнейму</option>
+						<option value="payment">По платежным данным</option>
+					</select>
+					<div class="select__caret"></div>
+				</div>
+			</div>
+			<div class="col-auto">
 				<div class="buttons notop">
 					<button class="small" id="setSearchFromUsers">Поиск</button>
 				</div>
@@ -106,7 +115,7 @@
 											
 											<tbody userslistrows>
 												{% for k, user in usersData %}
-													<tr userid="{{user.id}}"{% if user.nickname %} usernickname="{{user.nickname}}"{% endif %}>
+													<tr userid="{{user.id}}"{% if user.nickname %} usernickname="{{user.nickname}}"{% endif %}{% if user.payment %} userpayment="{{user.payment}}"{% endif %}>
 														<td class="nowidth nopadding">
 															{% if user.avatar %}
 																<div class="avatar" style="background-image: url('{{base_url('public/images/users/mini/'~user.avatar)}}')" title="{{user.nickname}}"></div>
@@ -724,20 +733,32 @@ $(document).ready(function() {
 	
 	//------------------------------------------------------------ Поиск по участникам
 	$('#setSearchFromUsers').on(tapEvent, function() {
-		var searchNickname = $('#searchUsersField').val();
+		var searchFieldData = $('#searchUsersField').val(),
+			searchUsersType = $('#searchUsersType').val();
 		
-		if (!searchNickname) $('#searchUsersField').addClass('error');
+		if (!searchFieldData) $('#searchUsersField').addClass('error');
 		else {
 			$('.tabstitles.sub').children().removeAttrib('hidden');
 			$('[userslistrows], [deposituserslist]').find('tr').each(function() {
 				var thisRow = this;
-				var thisnickName = $(this).attr('usernickname');
-				var patt = new RegExp(searchNickname, 'im');
-				if (!patt.test(thisnickName)) {
-					$(thisRow).setAttrib('hidden');
-				} else {
-					$(thisRow).removeAttrib('hidden');
-				}
+				var thisNickName = $(this).attr('usernickname'),
+					thisPayment = $(this).attr('userpayment');
+				
+				var patt = new RegExp(searchFieldData, 'im');
+				
+				if (searchUsersType == 'nickname') {
+					if (!patt.test(thisNickName)) {
+						$(thisRow).setAttrib('hidden');
+					} else {
+						$(thisRow).removeAttrib('hidden');
+					}
+				} else if (searchUsersType == 'payment') {
+					if (!patt.test(thisPayment)) {
+						$(thisRow).setAttrib('hidden');
+					} else {
+						$(thisRow).removeAttrib('hidden');
+					}
+				}	
 			});
 			
 						

@@ -50908,14 +50908,21 @@ body.body_start::-webkit-resizer {
          -moz-box-flex: 0;
           -ms-flex: 0 1 100%;
               flex: 0 1 100%;
-      width: 100%; }
+      width: 100%;
+      background-color: transparent; }
       .popup__data .offtime table td {
         color: #fff;
         vertical-align: middle;
         padding: 0;
         vertical-align: top;
         font-size: 14px;
+        background-color: #eef0f0;
         position: relative; }
+        .popup__data .offtime table td.disabled {
+          background-color: #f6f8f9; }
+          .popup__data .offtime table td.disabled .offtime__title strong, .popup__data .offtime table td.disabled .offtime__title small {
+            color: #aeb4b5;
+            font-family: roboto-light, sans-serif; }
     .popup__data .offtime__title {
       border-top: 1px solid #e5e5e5;
       background: #fff;
@@ -50931,18 +50938,19 @@ body.body_start::-webkit-resizer {
          -moz-box-align: center;
           -ms-flex-align: center;
               align-items: center;
-      -webkit-box-pack: center;
-      -webkit-justify-content: center;
-         -moz-box-pack: center;
-          -ms-flex-pack: center;
-              justify-content: center;
+      -webkit-box-pack: end;
+      -webkit-justify-content: flex-end;
+         -moz-box-pack: end;
+          -ms-flex-pack: end;
+              justify-content: flex-end;
       -webkit-box-orient: vertical;
       -webkit-box-direction: normal;
       -webkit-flex-direction: column;
          -moz-box-orient: vertical;
          -moz-box-direction: normal;
           -ms-flex-direction: column;
-              flex-direction: column; }
+              flex-direction: column;
+      padding-bottom: 3px; }
       .popup__data .offtime__title span, .popup__data .offtime__title small {
         display: block; }
       .popup__data .offtime__title span {
@@ -50987,7 +50995,6 @@ body.body_start::-webkit-resizer {
           right: 0;
           width: 100%;
           height: 100%;
-          background-color: #eee;
           opacity: 0.6; }
     .popup__data .offtime .users_list {
       padding: 0;
