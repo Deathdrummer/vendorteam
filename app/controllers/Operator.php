@@ -276,7 +276,7 @@ class Operator extends MY_Controller {
 						$paid = $item['paid'] == 0 ? 'nopaid' : 'paid';
 						$data['payment_requests_list'][$paid][] = $item;
 					}
-					$data['payment_requests_list']['paid'] = array_slice($data['payment_requests_list']['paid'], 0, 100);
+					if (isset($data['payment_requests_list']['paid'])) $data['payment_requests_list']['paid'] = array_slice($data['payment_requests_list']['paid'], 0, 100);
 					$data['payment_requests_titles'] = ['nopaid' => 'Не рассчитаны', 'paid' => 'Рассчитаны'];
 				}
 				break;

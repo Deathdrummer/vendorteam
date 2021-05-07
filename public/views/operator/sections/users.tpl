@@ -5,31 +5,31 @@
 	
 	
 	
-	<div class="row gutters-6 align-items-center mb-3">
-		<div class="col-auto">
+	<div class="section__buttons nowidth mb-3">
+		<div class="item inline">
 			<div class="section__buttons mb-0" id="sectionButtons">
-				<button id="usersSave" title="Сохранить"><i class="fa fa-save"></i></button>
+				<button class="small" id="usersSave" title="Сохранить"><i class="fa fa-save"></i></button>
 			</div>
 		</div>
-		<div class="col-auto">
+		<div class="item inline">
 			<div class="field small">
 				<input type="text" id="searchUsersField" placeholder="Введите никнейм">
 			</div>
 		</div>
-		<div class="col-auto">
+		<div class="item inline">
 			<div class="buttons notop">
 				<button class="small" id="setSearchFromUsers">Поиск</button>
 			</div>
 		</div>
-		<div class="col-auto">
+		<div class="item inline">
 			<div class="buttons notop">
 				<button class="small remove" disabled id="resetSearchFromUsers">Сбросить</button>
 			</div>
 		</div>
-		<div class="col-auto ml-auto">
+		<div class="item inline ml-auto">
 			<span>Группировка:</span>
 		</div>
-		<div class="col-auto">
+		<div class="item inline">
 			<div class="select small">
 				<select id="staticsGroup">
 					<option value="">Все</option>

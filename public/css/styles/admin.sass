@@ -1345,7 +1345,6 @@ table
 		border-radius: 3px
 		padding: 10px
 		box-shadow: 0 12px 40px -12px rgba(#000, 0.66)
-		margin-bottom: 100px !important
 		
 	&__wait
 	
@@ -2964,11 +2963,25 @@ p
 		
 		&_single
 			border-color: #ececf1
-			opacity: 0.3
 			cursor: default
+			position: relative
+			
+			&::after
+				content: '\f058'
+				font-family: fontAwesome
+				font-size: 40px
+				line-height: 40px
+				color: #538394
+				position: absolute
+				top: calc(50% - 25px)
+				left: calc(50% - 18px)
+				z-index: 10
 			
 			.usersmanageruser__nickname
-				color: #333
+				color: #84b6c7
+			
+			.usersmanageruser__avatar
+				opacity: 0.3
 			
 	
 	&:hover:not(.choosed)

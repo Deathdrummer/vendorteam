@@ -42,7 +42,7 @@
 	<div class="row no-gutters payment_request_block">
 		<div class="col-12 col-md-4">
 			<div class="field">
-				<input type="text" id="paymentRequestFindUser" autocomplete="off"/>
+				<input type="text" id="paymentRequestFindUser" autocomplete="off" placeholder="Введите никнейм..." />
 			</div>
 			<div id="paymentRequestsUsers" class="payment_requests_users noselect">
 				{% if users %}

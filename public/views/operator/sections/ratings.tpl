@@ -10,13 +10,14 @@
 	<div class="section__content" id="sectionContent">
 		<div>
 			<p>Поиск по участнику</p>
-			<div class="row align-items-center mb-3">
-				<div class="col-auto">
+			
+			<div class="section__buttons nowidth mb-3">
+				<div class="item inline">
 					<div class="field">
-						<input type="text" id="searchEventsField" placeholder="Введите никнейм">
+						<input type="text" id="searchEventsField" autocomplete="off" placeholder="Введите никнейм">
 					</div>
 				</div>
-				<div class="col-auto">
+				<div class="item inline">
 					<div class="buttons notop">
 						<button id="setSearchFromEvents">Поиск</button>
 						<button class="remove" disabled id="resetSearchFromEvents">Сбросить</button>

@@ -243,7 +243,6 @@ jQuery(document).ready(function($) {
 			usersManagerWin = uMWin;
 			usersManagerWin.wait();
 			
-			
 			if (typeof ops.choosedUsers == 'function') {
 				ops.choosedUsers(function(data) {
 					choosedUsers = data;

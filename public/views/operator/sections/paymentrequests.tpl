@@ -21,7 +21,7 @@
 		
 		<div class="item inline">
 			<div class="field">
-				<input type="text" id="paymentRequestsFindUsersValue">
+				<input type="text" id="paymentRequestsFindUsersValue" autocomplete="off" placeholder="Поиск...">
 			</div>
 		</div>
 		

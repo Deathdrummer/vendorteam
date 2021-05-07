@@ -50694,8 +50694,7 @@ table {
     border-radius: 3px;
     padding: 10px;
     -webkit-box-shadow: 0 12px 40px -12px rgba(0, 0, 0, 0.66);
-            box-shadow: 0 12px 40px -12px rgba(0, 0, 0, 0.66);
-    margin-bottom: 100px !important; }
+            box-shadow: 0 12px 40px -12px rgba(0, 0, 0, 0.66); }
   .popup__dialog {
     background-color: rgba(21, 38, 47, 0.5); }
     .popup__dialog .popupdialog {
@@ -53829,10 +53828,22 @@ p.info {
       color: #2698ca; }
     .usersmanageruser.choosed_single {
       border-color: #ececf1;
-      opacity: 0.3;
-      cursor: default; }
+      cursor: default;
+      position: relative; }
+      .usersmanageruser.choosed_single::after {
+        content: '\f058';
+        font-family: fontAwesome;
+        font-size: 40px;
+        line-height: 40px;
+        color: #538394;
+        position: absolute;
+        top: calc(50% - 25px);
+        left: calc(50% - 18px);
+        z-index: 10; }
       .usersmanageruser.choosed_single .usersmanageruser__nickname {
-        color: #333; }
+        color: #84b6c7; }
+      .usersmanageruser.choosed_single .usersmanageruser__avatar {
+        opacity: 0.3; }
   .usersmanageruser:hover:not(.choosed) {
     border-color: #b7ccd4; }
     .usersmanageruser:hover:not(.choosed) .usersmanageruser__avatar {
