@@ -2154,6 +2154,23 @@ class Admin extends MY_Controller {
 	
 	
 	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function remove_resign() {
+		if (!$this->input->is_ajax_request()) return false;
+		$resignId = $this->input->post('id');
+		if (!$this->admin_model->removeResign($resignId)) exit('0');
+		echo '1';
+	}
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	/**

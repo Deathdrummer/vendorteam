@@ -2055,6 +2055,20 @@ class Admin_model extends My_Model {
 	
 	
 	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function removeResign($id = false) {
+		if (!$id) return false;
+		$this->db->where('id', $id);
+		if (!$this->db->delete('resign')) return false;
+		return true;
+	}
+	
+	
+	
+	
 	
 	
 	

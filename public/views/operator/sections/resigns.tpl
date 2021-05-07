@@ -41,7 +41,7 @@
 									<td>Статик</td>
 									<td class="w240px">Дата подачи заявки</td>
 									<td class="w240px">Дата последнего рабочего дня</td>
-									<td class="w60px" title="Опции">Опции.</td>
+									<td class="w110px" title="Опции">Опции</td>
 								</tr>
 							</thead>
 							<tbody>
@@ -56,6 +56,7 @@
 											<td class="center">
 												<div class="buttons inline">
 													<button class="alt" showresign="{{item.id}}" new title="Посмотреть заявку на увольнение"><i class="fa fa-eye"></i></button>
+													<button class="remove" removeresign="{{item.id}}" title="Удалить заявку на увольнение"><i class="fa fa-trash"></i></button>
 													{#<button class="pay" accessresign="{{item.id}}" title="Подтвердить увольнение"><i class="fa fa-check"></i></button>#}
 												</div>
 											</td>
@@ -70,7 +71,7 @@
 										</tr>
 									{% endfor %}
 								{% else %}
-									<tr><td colspan="6"><p class="empty center">Нет данных</p></td></tr>
+									<tr class="empty"><td colspan="6"><p class="empty center">Нет данных</p></td></tr>
 								{% endif %}
 							</tbody>
 						</table>	
@@ -85,7 +86,7 @@
 									<td>Статик</td>
 									<td class="w240px">Дата подачи заявки</td>
 									<td class="w240px">Дата последнего рабочего дня</td>
-									<td class="w110px" title="Опции">Опции.</td>
+									<td class="w155px" title="Опции">Опции</td>
 								</tr>
 							</thead>
 							<tbody>
@@ -101,6 +102,7 @@
 												<div class="buttons inline">
 													<button class="alt" showresign="{{item.id}}" title="Посмотреть заявку на увольнение"><i class="fa fa-eye"></i></button>
 													<button class="pay" accessresign="{{item.id}}" title="Подтвердить увольнение"><i class="fa fa-check"></i></button>
+													<button class="remove" removeresign="{{item.id}}" title="Удалить заявку на увольнение"><i class="fa fa-trash"></i></button>
 												</div>
 											</td>
 											
@@ -114,7 +116,7 @@
 										</tr>
 									{% endfor %}
 								{% else %}
-									<tr><td colspan="6"><p class="empty center">Нет данных</p></td></tr>
+									<tr class="empty"><td colspan="6"><p class="empty center">Нет данных</p></td></tr>
 								{% endif %}
 							</tbody>
 						</table>	
@@ -165,7 +167,7 @@
 										</tr>
 									{% endfor %}
 								{% else %}
-									<tr><td colspan="7"><p class="empty center">Нет данных</p></td></tr>
+									<tr class="empty"><td colspan="6"><p class="empty center">Нет данных</p></td></tr>
 								{% endif %}
 							</tbody>
 						</table>
@@ -410,6 +412,53 @@
 				accessResignWin.wait(false);
 			});
 		});
+	});
+	
+	
+	
+	
+	
+	
+	
+	
+	//------------------------- Удалить заявку на увольнение
+	$('body').off(tapEvent, '[removeresign]').on(tapEvent, '[removeresign]', function() {
+		var thisItem = this,
+			thisRow = $(thisItem).closest('tr'),
+			block = $(thisItem).closest('tbody'),
+			id = $(thisItem).attr('removeresign');
+		
+		popUp({
+			title: 'Удалить заявку',
+		    width: 400,
+		    html: '<p class="green done info center">Вы действительно хотите удалить заявку?</p>',
+		    wrapToClose: true,
+		    winClass: false,
+		    buttons: [{id: 'removeResign', title: 'Удалить'}],
+		    closeButton: 'Отмена',
+		}, function(removeResignWin) {
+			$('#removeResign').on(tapEvent, function() {
+				removeResignWin.wait();
+				$.post('/admin/remove_resign', {id: id}, function(response) {
+					if (response) {
+						notify('Заявка успешно удалена!');
+						$(thisRow).remove();
+						if ($(block).find('tr').length == 0) {
+							$(block).html('<tr class="empty"><td colspan="6"><p class="empty center">Нет данных</p></td></tr>');
+						}
+						removeResignWin.close();
+						
+					} else {
+						notify('Ошибка удаления заяки!', 'error');
+					}
+					removeResignWin.wait(false);
+				}).fail(function(e) {
+					showError(e);	
+					notify('Системная ошибка!', 'error');
+					removeResignWin.wait(false);
+				});
+			});
+		});	
 	});
 	
 	
