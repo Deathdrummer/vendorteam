@@ -117,7 +117,14 @@ $(document).ready(function() {
 			thisMessage = $(thisBlock).find('textarea').val(),
 			thisDataBlock = $(thisBlock).find('.newsfeed__date'),
 			thisButtonsBlock = $(thisBlock).find('.newsfeed__buttons'),
-			stat = true;
+			stat = true,
+			cloneToStatics = [];
+			
+		if ($(this).closest('.list_item').find('.clone_to_statics:checked').length > 0) {
+			$(this).closest('.list_item').find('.clone_to_statics:checked').each(function() {
+				cloneToStatics.push($(this).val());
+			});
+		}
 		
 		if (thisTitle == '') {
 			stat = false;
@@ -131,7 +138,7 @@ $(document).ready(function() {
 		}
 		
 		if (stat) {
-			$.post('/admin/save_feed_message', {static: thisMessStatic, title: thisTitle, icon: thisIcon, message: thisMessage}, function(data) {
+			$.post('/admin/save_feed_message', {static: thisMessStatic, clone_to_statics: cloneToStatics, title: thisTitle, icon: thisIcon, message: thisMessage}, function(data) {
 				if (data.id) {
 					$(thisButtonsBlock).html('<button updatefeedmessage="'+data.id+'">Обновить</button> <button removefeedmessage="'+data.id+'" class="remove">Удалить</button>');
 					$(thisDataBlock).text(data.date);

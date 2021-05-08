@@ -53114,6 +53114,8 @@ table {
       line-height: 16px;
       margin-bottom: 5px;
       display: block; }
+  .newsfeed__statics > div {
+    display: inline-block; }
   .newsfeed__buttons {
     word-spacing: 10px; }
     .newsfeed__buttons button {

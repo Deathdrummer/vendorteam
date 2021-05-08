@@ -29,6 +29,23 @@
 		<textarea editor new class="w100" rows="12"></textarea>
 	</div>
 	
+	<br>
+	<h4>Также, клонировать новость в статики:</h4>
+	{% if statics %}
+		<div class="newsfeed__statics">
+		{% for stId, stName in statics %}
+			<div>
+				<label for="cloneToStatic{{stId}}">{{stName}}</label>
+				<input id="cloneToStatic{{stId}}" class="clone_to_statics" type="checkbox" value="{{stId}}">
+			</div>
+		{% endfor %}
+		</div>
+	{% else %}
+		<p class="empty">Нет статиков</p>
+	{% endif %}
+		
+	
+	
 	<div class="newsfeed__buttons">
 		<button savefeedmessage="{{static_id}}">Сохранить</button>
 	</div>

@@ -16,21 +16,25 @@
 					<table class="main_report_names">
 						<thead>
 							<tr>
-								<td class="nowrap w50">Состав</td>
-								<td class="nowrap w50">Звание</td>
+								<td class="center w36px">№</td>
+								<td class="nowrap">Состав</td>
+								<td class="nowrap">Звание</td>
 								<td>Резерв</td>
 							</tr>
 						</thead>
 						<tbody>
+							{% set index = 1 %}
 							{% for userId, userData in static.users %}
 								<tr>
+									<td class="center"><strong>{{index}}</strong></td>
 									<td>{{userData.nickname}}</td>
 									<td>{{userData.rank_name}}</td>
 									<td><span class="nowrap">{{userData.deposit|number_format(2, '.', ' ')}} ₽</span></td>
 								</tr>
+								{% set index = index + 1 %}
 							{% endfor %}
 							<tr>
-								<td>
+								<td colspan="2">
 									<button class="addraid" operatornewraid="{{staticId}}" report="{% if pattern_id %}1{% else %}0{% endif %}"{% if not add_raid_access[staticId] %} disabled{% endif %}>
 										<i class="fa fa-plus"></i>
 										<span>Рейд</span>

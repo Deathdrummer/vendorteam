@@ -767,7 +767,8 @@ class Operator extends MY_Controller {
 	//-------------------------------------------------------------------------------------------- Лента новостей
 	public function newsfeed_add() {
 		$staticId = $this->input->post('static_id');
-		echo $this->twig->render('views/operator/render/feed_messages_add.tpl', ['static_id' => $staticId]); //admin
+		$this->load->model('admin_model');
+		echo $this->twig->render('views/operator/render/feed_messages_add.tpl', ['static_id' => $staticId, 'statics' => $this->admin_model->getStatics(true)]); //admin
 	}
 	
 	
