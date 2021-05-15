@@ -62,6 +62,7 @@
 					<li data-block="newsfeed">Лента новостей</li>
 					<li data-block="operators">Операторы</li>
 					<li data-block="guides">Образование</li>
+					<li data-block="statistics_amounts">Статистика (доходы)</li>
 					<li data-block="statistics">Статистика (участники)</li>
 					<li data-block="statistics_settings">Статистика (настройки)</li>
 					<li data-block="filemanager">Файлменеджер</li>

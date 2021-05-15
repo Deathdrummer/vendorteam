@@ -8,7 +8,7 @@
 		<tbody>
 			{% if statics %}
 				{% for stId, static in statics %}
-					<tr class="h45px" stid="{{static.id}}">
+					<tr class="h45px pointer" rewardstid="{{stId}}">
 						<td class="nopadding">
 							<div class="row gutters-5 align-items-center">
 								<div class="col-auto">
@@ -29,6 +29,7 @@
 			</tr>
 		</tfoot>
 	</table>
+	
 	<div class="scroll">
 		<table>
 			<thead>
@@ -61,6 +62,7 @@
 			</tfoot>
 		</table>
 	</div>
+	
 	<table class="w150px">
 		<thead>
 			<tr>

@@ -49571,6 +49571,10 @@ table {
         background-color: #a3c3d2 !important; }
       table tbody > tr.changed {
         background-color: #eaffcd !important; }
+      table tbody > tr.pointer:hover {
+        background-color: #e7eaec !important; }
+      table tbody > tr.pointer:active {
+        background-color: #cad7e0 !important; }
       table tbody > tr:nth-child(2n+1):not(.deleted):not(.opened):not(.changed) {
         background-color: #fff; }
       table tbody > tr > td {

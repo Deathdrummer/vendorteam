@@ -1771,6 +1771,34 @@ class Admin extends MY_Controller {
 				echo $this->twig->render('views/admin/render/rewards/report.tpl', $report);
 				break;
 			
+			case 'get_static_report':
+				$post = bringTypes($this->input->post());
+				$this->load->model('users_model', 'users');
+				
+				$rewardPeriodId = $post['period_id'];
+				$staticId = $post['static_id'];
+				$periodData = $this->rewards->getPeriod($rewardPeriodId);
+				$summData = $this->rewards->getStaticsSumm($rewardPeriodId, $staticId);
+				
+				$staticsSumm = 0;
+				foreach ($summData as $period => $summ) $staticsSumm += $summ;
+							
+				$data['cash'][$staticId] = $staticsSumm;
+				$data['period_id'] = $periodData['reports_periods'];
+				$data['variant'] = 2;
+				$data['ranks'] = $this->rewards->getRewardsRanks($rewardPeriodId);
+				
+				$staticReport = $this->reports->buildReportPaymentsData($this->constants[2], $data);
+				
+				if (!$staticReport = isset($staticReport[$staticId]) ? $staticReport[$staticId] : false) exit('');
+				foreach ($staticReport['users'] as $userId => $user) unset($staticReport['users'][$userId]['raids']);
+				
+				$staticReport['static'] = $this->admin_model->getStatics(false, $staticId);
+				$staticReport['users_data'] = $this->users->getUsers(['where' => ['us.static_id' => $staticId, 'deleted' => 0, 'verification' => 1], 'fields' => 'avatar']);
+				
+				echo $this->twig->render('views/admin/render/rewards/static_report.tpl', $staticReport);
+				break;
+			
 			case 'export':
 				$rewardPeriodId = $arg;
 				$periodData = $this->rewards->getPeriod($rewardPeriodId);
@@ -1787,6 +1815,7 @@ class Admin extends MY_Controller {
 				$data['cash'] = $staticsSumm;
 				$data['period_id'] = $periodData['reports_periods'];
 				$data['variant'] = 2;
+				$data['ranks'] = $this->rewards->getRewardsRanks($rewardPeriodId);
 				
 				$dataToExport = $this->reports->buildReportPaymentsData($this->constants[2], $data);
 				
@@ -2312,7 +2341,7 @@ class Admin extends MY_Controller {
 			case 'get_users':
 				if (!$post['static_id']) exit('0');
 				
-				$users = $this->users->getUsers(['where' => ['us.static_id' => $post['static_id'], 'us.main' => 1, 'deleted' => 0], 'fields' => 'id nickname avatar static']);
+				$users = $this->users->getUsers(['where' => ['us.static_id' => $post['static_id'], 'us.main' => 1, 'deleted' => 0, 'verification' => 1], 'fields' => 'id nickname avatar static']);
 				
 				if ($users && isset($post['choosed_users_ids']) && $post['choosed_users_ids']) {
 					$choosedUsersTemp = array_combine($post['choosed_users_ids'], array_fill(0, count($post['choosed_users_ids']), ['choosed' => 1]));
@@ -2330,7 +2359,7 @@ class Admin extends MY_Controller {
 				$usersIds = array_column($post['users'], 'user');
 				
 				$params = [
-					'where' => ['us.main' => 1, 'deleted' => 0],
+					'where' => ['us.main' => 1, 'deleted' => 0, 'verification' => 1],
 					'where_in' => ['field' => 'u.id', 'values' => $usersIds]
 				];
 				
@@ -2342,7 +2371,7 @@ class Admin extends MY_Controller {
 			
 			
 			case 'check_all_users':
-				$users = $this->users->getUsers(['where' => ['us.main' => 1, 'deleted' => 0], 'fields' => 'id nickname avatar static']);
+				$users = $this->users->getUsers(['where' => ['us.main' => 1, 'deleted' => 0, 'verification' => 1], 'fields' => 'id nickname avatar static']);
 				$data = [];
 				foreach ($users as $user) {
 					$data[] = [

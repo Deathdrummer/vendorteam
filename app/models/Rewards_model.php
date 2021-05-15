@@ -138,13 +138,54 @@ class Rewards_model extends MY_Model {
 	
 	
 	/**
-	 * Изменить статус периода
+	 * Изменить статус периода и заморозить звания
 	 * @param 
 	 * @return 
 	*/
 	public function changePeriodStat($postData = false) {
+		
+		$stat = $postData['stat'];
+		
+		if ($stat) {
+			$this->db->select('reports_periods');
+			$this->db->where('id', $postData['period_id']);
+			if (!$reportsPeriods = $this->_row($this->rewardsPeriodsTable)) return false;
+			$reportsPeriods = json_decode($reportsPeriods, true);
+			
+			$this->db->select('ru.user_id');
+			$this->db->join('raids r', 'ru.raid_id = r.id', 'LEFT OUTER');
+			$this->db->where_in('r.period_id', (array)$reportsPeriods);
+			$this->db->where('r.is_key', 0);
+			if ($raidsUsers = $this->_result('raid_users ru')) {
+				$raidsUsersIds = array_column($raidsUsers, 'user_id');
+				$raidsUsersIds = array_values(array_unique($raidsUsersIds));
+				
+				$this->db->select('u.id AS user_id, r.coefficient AS rank_coefficient');
+				$this->db->join('ranks r', 'u.rank = r.id', 'LEFT OUTER');
+				$this->db->where_in('u.id', $raidsUsersIds);
+				if ($usersData = $this->_result('users u')) {
+					$usersRanks = [];
+					foreach ($usersData as $user) {
+						$rank = json_decode($user['rank_coefficient'], true);
+						$usersRanks[] = [
+							'reward_period_id'	=> $postData['period_id'],
+							'user_id' 			=> $user['user_id'],
+							'rank_coefficient' 	=> (float)$rank[2]
+						];
+					}
+					
+					if ($usersRanks) {
+						$this->db->where('reward_period_id', $postData['period_id']);
+						$this->db->delete('rewards_ranks');
+						$this->db->insert_batch('rewards_ranks', $usersRanks);
+					}
+				}
+			}
+			
+		}
+		
 		$this->db->where('id', $postData['period_id']);
-		if (!$this->db->update($this->rewardsPeriodsTable, ['stat' => $postData['stat']])) return false;
+		if (!$this->db->update($this->rewardsPeriodsTable, ['stat' => $stat])) return false;
 		return true;
 	}
 	
@@ -199,14 +240,21 @@ class Rewards_model extends MY_Model {
 	 * @param 
 	 * @return 
 	*/
-	public function getStaticsSumm($rewardPeriodId = false) {
+	public function getStaticsSumm($rewardPeriodId = false, $staticId = false) {
 		if (!$rewardPeriodId) return false;
 		$this->db->where('reward_period_id', $rewardPeriodId);
+		if ($staticId) $this->db->where('static_id', $staticId);
 		if (!$amounts = $this->_result($this->rewardsStaticsTable)) return false;
 		
 		$data = [];
-		foreach ($amounts as $item) {
-			$data[$item['report_period_id']][$item['static_id']] = $item['summ'];
+		if ($staticId) {
+			foreach ($amounts as $item) {
+				$data[$item['report_period_id']] = $item['summ'];
+			}
+		} else {
+			foreach ($amounts as $item) {
+				$data[$item['report_period_id']][$item['static_id']] = $item['summ'];
+			}
 		}
 		
 		return $data;
@@ -304,6 +352,16 @@ class Rewards_model extends MY_Model {
 	
 	
 	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function getRewardsRanks($periodId = false) {
+		if (!$periodId) return false;
+		$this->db->where('reward_period_id', $periodId);
+		if (!$data = $this->_result('rewards_ranks')) return false;
+		return setArrKeyFromField($data, 'user_id', 'rank_coefficient');
+	}
 	
 	
 	

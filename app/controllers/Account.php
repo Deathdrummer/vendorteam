@@ -1232,6 +1232,7 @@ class Account extends MY_Controller {
 				$data['period_id'] = $periodData['reports_periods'];
 				$data['variant'] = 2;
 				$data['statics'] = [$staticId];
+				$data['ranks'] = $this->rewards->getRewardsRanks($rewardPeriodId);
 				
 				$this->load->model('reports_model', 'reports');
 				$mainReportData = $this->reports->buildReportPaymentsData($this->constants[2], $data, false);
@@ -1241,9 +1242,6 @@ class Account extends MY_Controller {
 				break;
 			
 				
-			
-			
-			
 			default:
 				echo '';
 				break;

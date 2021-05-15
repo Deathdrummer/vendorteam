@@ -1985,13 +1985,25 @@ $(document).ready(function() {
 					$('#staticsCashKeys').html(html);
 					$('#staticsCashKeys').find('input').number(true, 0, '.', ' ');
 					
+					var checkedStat = true,
+						checks = $('#staticsCashKeys').find('[choosestatictodeposit]');
+					$('#staticsDepositCheckAll').on(tapEvent, function() {
+						checkedStat = !checkedStat;
+						$(checks).each(function() {
+							if (checkedStat) $(this).setAttrib('checked');
+							else $(this).removeAttrib('checked');
+						});
+					});
+					
 					$('#setStaticsCashKeysButton').on(tapEvent, function() {
 						var staticsCashKeys = {};
-						$('#staticsCashKeys').find('input').each(function() {
-							var staticId = $(this).attr('static'),
-								staticValue = parseInt($(this).val());
+						$('#staticsCashKeys').find('[choosestatictodeposit]:checked').each(function() {
+							var thisInput = $(this).closest('tr').find('input[static]');
+								staticId = $(thisInput).attr('static'),
+								staticValue = parseInt($(thisInput).val());
 							staticsCashKeys[staticId] = staticValue;
 						});
+
 						$('#staticsCashDataKeys').val(JSON.stringify(staticsCashKeys));
 						staticsCasKeyshWin.close();
 						$('#setStaticsCashKeys').addClass('done');
@@ -2320,7 +2332,6 @@ $(document).ready(function() {
 	$('#rewardsPeriods').on(tapEvent, function() {
 		popUp({
 			title: 'Премиальные периоды',
-			//buttons: [{id: 'newRatingPeriod', title: 'Новый период'}],
 			closeButton: 'Закрыть'
 		}, function(rewardsPeriodsWin) {
 			(function openPeriods() {
@@ -2504,6 +2515,31 @@ $(document).ready(function() {
 							$('#rewardsReport').html(html);
 							$('#rewardsReportTitle').html('<small>Премиальный период:</small> '+rewardPeriodTitle);
 							rewardsPeriodsWin.close();
+							
+							$('[rewardstid]').on(tapEvent, function() {
+								let staticId = $(this).attr('rewardstid');
+								
+								popUp({
+									title: 'Отчет по статику',
+								    width: 600,
+								    height: false,
+								    html: '',
+								    wrapToClose: true,
+								    winClass: false,
+								    buttons: false,
+								    closeButton: false,
+								}, function(rewardStaticReportWin) {
+									rewardStaticReportWin.wait();
+									getAjaxHtml('admin/rewards/get_static_report', {period_id: rewardPeriodId, static_id: staticId}, function(html) {
+										rewardStaticReportWin.setData(html);
+									}, function() {
+										rewardStaticReportWin.wait(false);
+									});
+								});
+							});
+							
+							
+							
 						}, function() {
 							$('.scroll').ddrScrollTable();
 						});

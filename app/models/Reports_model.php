@@ -485,10 +485,16 @@ class Reports_model extends My_Model {
 			$resultUsers = sortUsers($resultUsers); // сортировка участников по именам (сначала русские потом англ.)
 			
 			
+			
 			// Добавление списка рейдов к массиву участников
 			foreach ($resultUsers as $key => $user) {
-				$coeff = json_decode($user['rank_coefficient'], true);
-				$resultUsers[$key]['rank_coefficient'] = $coeff[$pData['variant']];
+				if (isset($pData['ranks'][$user['user_id']])) {
+					$resultUsers[$key]['rank_coefficient'] = $pData['ranks'][$user['user_id']];
+				} else {
+					$coeff = json_decode($user['rank_coefficient'], true);
+					$resultUsers[$key]['rank_coefficient'] = $coeff[$pData['variant']];
+				}
+				
 				
 				if (!isset($raidUsers[$user['static']][$user['user_id']]) && $user['deleted'] == 0) continue; 
 				if (!isset($raidUsers[$user['static']][$user['user_id']]) && $user['deleted'] == 1) unset($resultUsers[$key]);
@@ -512,7 +518,8 @@ class Reports_model extends My_Model {
 				if (! isset($koeffPeriodSumm[$user['static']])) $koeffPeriodSumm[$user['static']] = $periodKoeff;
 				else $koeffPeriodSumm[$user['static']] += $periodKoeff;
 			}
-				
+			
+			
 			
 			// static id => [static type, users => [user id => user data... raids => [raid id => rate]]]
 			foreach ($resultUsers as $user) {
