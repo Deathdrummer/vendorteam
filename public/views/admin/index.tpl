@@ -54,6 +54,9 @@
 					<li data-block="mentors">Наставничество</li>
 					{#<li data-block="payments_types">Средства платежа</li>#}
 					<li data-block="raids_types">Типы рейдов и ключей</li>
+					<li data-block="filemanager">Файлменеджер</li>
+				</ul>
+				<ul>
 					<li data-block="reports">Отчеты</li>
 					<li data-block="ratings">Рейтинги</li>
 					<li data-block="timesheet">Расписание</li>
@@ -65,7 +68,6 @@
 					<li data-block="statistics_amounts">Статистика (доходы)</li>
 					<li data-block="statistics">Статистика (участники)</li>
 					<li data-block="statistics_settings">Статистика (настройки)</li>
-					<li data-block="filemanager">Файлменеджер</li>
 					{#<li data-block=""></li>#}
 				</ul>
 			</nav>

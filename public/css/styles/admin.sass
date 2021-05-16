@@ -71,10 +71,10 @@ html
 		
 		//---------------------------------------------------------------- Меню
 		nav.main_nav
+			display: flex
 			opacity: 0
 			pointer-events: none
 			position: absolute
-			width: 250px
 			background-color: #c7ccd0
 			box-shadow: 0 13px 30px -7px rgba(30, 36, 41, 0.8)
 			top: $headerHeight
@@ -82,7 +82,8 @@ html
 			transition: opacity 0.16s
 			
 			ul
-				padding: 0
+				width: 250px
+				padding: 15px
 				margin-bottom: 0
 				//margin: $grid-gutter-width / 2
 				
@@ -99,6 +100,9 @@ html
 					border: 1px solid transparent
 					// background-color: lighten(#c7ccd0, 2%)
 					border-bottom: 1px solid #adb6bd
+					
+					&:first-of-type
+						border-top: 1px solid #adb6bd
 					
 					&:hover
 						background-color: lighten(#c7ccd0, 4%)

@@ -48329,10 +48329,14 @@ html::-webkit-resizer {
       .header__item .navigation:hover {
         color: #fff; }
     .header__item nav.main_nav {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -moz-box;
+      display: -ms-flexbox;
+      display: flex;
       opacity: 0;
       pointer-events: none;
       position: absolute;
-      width: 250px;
       background-color: #c7ccd0;
       -webkit-box-shadow: 0 13px 30px -7px rgba(30, 36, 41, 0.8);
               box-shadow: 0 13px 30px -7px rgba(30, 36, 41, 0.8);
@@ -48342,7 +48346,8 @@ html::-webkit-resizer {
       -o-transition: opacity 0.16s;
       transition: opacity 0.16s; }
       .header__item nav.main_nav ul {
-        padding: 0;
+        width: 250px;
+        padding: 15px;
         margin-bottom: 0; }
         .header__item nav.main_nav ul li {
           display: -webkit-box;
@@ -48364,6 +48369,8 @@ html::-webkit-resizer {
           color: #606971;
           border: 1px solid transparent;
           border-bottom: 1px solid #adb6bd; }
+          .header__item nav.main_nav ul li:first-of-type {
+            border-top: 1px solid #adb6bd; }
           .header__item nav.main_nav ul li:hover {
             background-color: #d2d6d9;
             color: #366082; }
