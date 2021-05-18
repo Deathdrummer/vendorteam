@@ -160,6 +160,35 @@ class Reports_model extends My_Model {
 	
 	
 	
+	
+	
+	/**
+	 * Получить список заголовков паттернов первого отчета
+	 * @param ID паттерна
+	 * @param данные [offset, limit]
+	 * @param ID статика
+	 * @return массив 
+	 */
+	public function getMainReportPatternsTitles($reportsIds = false, $limit = false, $offset = 0) {
+		$this->db->select('id, name AS title');
+		if ($reportsIds) $this->db->where_in('id', $reportsIds);
+		if ($limit) $this->db->limit($limit, $offset);
+		$this->db->order_by('id', 'DESC');
+		if (!$result = $this->_resultWithCount('reports_patterns')) return false;
+		
+		$result['items'] = setArrKeyFromField($result['items'], 'id', 'title');
+		
+		
+		return $result;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 	/**
 	 * Паттерн в архив
 	 * @param 

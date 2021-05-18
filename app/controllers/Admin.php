@@ -2319,6 +2319,107 @@ class Admin extends MY_Controller {
 	
 	
 	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function statistics($action = false) {
+		if (!$action) return false;
+		$post = bringTypes($this->input->post());
+		$this->load->model('reports_model', 'reports');
+		//$this->load->model('users_model', 'users');
+		switch ($action) {
+			case 'get_statics':
+				$data['statics'] = $statics = $this->admin_model->getStatics();
+				echo $this->twig->render('views/admin/render/statistics/statics.tpl', $data);
+				break;
+			
+			case 'get_reports':
+				
+				$data['reports'] = $this->reports->getMainReportPatternsTitles();
+				echo $this->twig->render('views/admin/render/statistics/reports.tpl', $data);
+				break;
+			
+			case 'statics_amount_report':
+				$reports = $this->reports->getMainReportPatterns();
+				$reports2 = $this->reports->getMainReportPatterns(null, null, 1);
+				
+				$allReports = array_replace($reports, $reports2);
+				ksort($allReports);
+				
+				
+				$statics = $this->admin_model->getStatics(false, $post['statics']);
+				$reportsTitles = $this->reports->getMainReportPatternsTitles($post['reports']);
+				
+				if (!$choosedReports = array_intersect_key($allReports, array_flip($post['reports']))) exit('');
+				
+				$reportData = []; $staticsData = array_flip($post['statics']);
+				foreach ($choosedReports as $reportId => $report) {
+					$hasInPost = array_diff_key($staticsData, $report['cash']);
+					$hasInReports = array_intersect_key($report['cash'], $staticsData);
+					$hasInPost = array_combine(array_keys($hasInPost), array_fill(0, count($hasInPost), null));
+					$cashData = array_replace($hasInPost, $hasInReports);
+					ksort($cashData);
+					
+					foreach ($cashData as $staticId => $cash) {
+						$reportData[$staticId][$reportId] = $cash;
+					}
+				}
+				
+				$totals = [];
+				foreach ($reportData as $staticId => $data) {
+					if (array_sum($data) == 0) {
+						$totals[$staticId]['summ'] = null;
+						$totals[$staticId]['median'] = null;
+						$totals[$staticId]['avg'] = null;
+						continue;
+					} 
+					
+					$totals[$staticId]['summ'] = array_sum($data);
+					$totals[$staticId]['avg'] = floor(array_sum($data) / count($data));
+					
+					$data = array_values($data);
+					sort($data);
+					
+					if (count($data) % 2 != 0) {
+						$totals[$staticId]['median'] = $data[floor(count($data) / 2)];
+					} else {
+						$florVal = $data[floor(count($data) / 2) - 1];
+						$ceilVal = $data[floor(count($data) / 2)];
+						$totals[$staticId]['median'] = floor(($florVal + $ceilVal) / 2);
+					}
+				}
+				
+				$data['report'] = $reportData;
+				$data['statics'] = $statics;
+				$data['reports_titles'] = $reportsTitles;
+				$data['totals'] = $totals;
+				
+				echo $this->twig->render('views/admin/render/statistics/statics_amount_report.tpl', $data);
+				break;
+			
+			
+			default:
+				# code...
+				break;
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	/**
 	 * менеджер участников
 	 * @param 

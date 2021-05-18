@@ -479,6 +479,26 @@ $bPoints: map-remove($grid-breakpoints, xs)
 
 
 
+//------------------------------------------------------------- Длина и ширина rem
+@for $i from 1 through 200
+	.w-#{$i}rem
+		width: #{$i}rem !important
+
+	.h-#{$i}rem
+		height: #{$i}rem !important
+
+$bPoints: map-remove($grid-breakpoints, xs)
+@each $breakpoint, $minWidth in $bPoints
+	@media (min-width: $minWidth)
+		@for $i from 1 through 200
+			.w-#{$breakpoint}-#{$i}rem
+				width: #{$i}rem !important
+
+			.h-#{$breakpoint}-#{$i}rem
+				height: #{$i}rem !important
+
+
+
 
 //-------------------------------------------------------- Отступы
 @for $i from 1 through 500

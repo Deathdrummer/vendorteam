@@ -404,6 +404,8 @@ class Admin_model extends My_Model {
 	 */
 	public function getStatics($nameOnly = false, $staticId = null) {
 		$this->db->select('s.*, (SELECT COUNT(us.id) FROM users_statics us JOIN users u ON us.user_id = u.id WHERE s.id = us.static_id AND u.deleted = 0 AND us.main = 1) AS count_users');
+		if (is_array($staticId)) $this->db->where_in('s.id', $staticId);
+		elseif (!is_null($staticId)) $this->db->where('s.id', $staticId);
 		$this->db->order_by('id', 'ASC');
 		$query = $this->db->get('statics s');
 		if (!$response = $query->result_array()) return false;
@@ -420,7 +422,7 @@ class Admin_model extends My_Model {
 			}
 		}
 		
-		if (!is_null($staticId)) {
+		if (!is_null($staticId) && !is_array($staticId)) {
 			$data[$staticId]['id'] = $staticId;
 			return $data[$staticId];
 		}
