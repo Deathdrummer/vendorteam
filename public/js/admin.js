@@ -224,13 +224,15 @@ jQuery(document).ready(function($) {
 			choosedUsers: false, // выбранные участники: объект [{user:..., static:..., ...}] или функция с коллбэком, в которые передаются данные: [{user:..., static:..., ...}] 
 			chooseType: 'single', // multiple Тип выборки одиночный или множественный
 			returnFields: false, // при выборе участников какие поля вывести
-			onChoose: false // возвращает выбранных участников
+			onChoose: false, // возвращает выбранных участников
+			closeToChoose: false // Закрыть после выбора участников
 		}, params),
 		usersManagerWin,
 		choosedUsers = typeof ops.choosedUsers == 'object' ? ops.choosedUsers : [],
 		initialUsers = choosedUsers.map(function(item) {return item.user}),
 		initialStatic = false,
 		stUsersCounter = {},
+		sUTOut,
 		isDisableBtn = ops.choosedUsers ? 0 : 1;
 		
 		popUp({
@@ -290,11 +292,28 @@ jQuery(document).ready(function($) {
 						usersWait(false);
 					});
 				} else {
-					$('#usersmanagerUsers').html('<div class="usersmanager__empty"><p class="empty center">Нет участников</p></div>')
-					$('#usersmanagerStatics').html('<div class="usersmanager__empty"><p class="empty center">Нет статиков</p></div>')
+					$('#usersmanagerUsers').html('<div class="usersmanager__empty"><p class="empty center">Нет участников</p></div>');
+					$('#usersmanagerStatics').html('<div class="usersmanager__empty"><p class="empty center">Нет статиков</p></div>');
 				}
 				
-				$('[umstatic]').on(tapEvent, function() {
+				
+				
+				$('#usersmanagerSearch').on('keyup', function() {
+					clearTimeout(sUTOut);
+					sUTOut = setTimeout(function() {
+						filterUsersStatics();
+					}, 500);
+				});
+				
+				
+				
+				$('#usersmanagerRanks').on('change', function() {
+					filterUsersStatics();
+				});
+				
+				
+				
+				$('#usersmanagerStatics').on(tapEvent, '[umstatic]:not(.choosed)', function() {
 					let staticId = parseInt($(this).attr('umstatic'));
 					$('[umstatic].choosed').removeClass('choosed');
 					usersWait();
@@ -346,14 +365,14 @@ jQuery(document).ready(function($) {
 					} else {
 						if (ops.returnFields) {
 							getUsersFull([{static: static, user: user}], ops.returnFields, function(usersData) {
-								ops.onChoose(usersData);
-								usersManagerWin.close();
+								ops.onChoose(usersData, usersManagerWin);
+								if (ops.closeToChoose) usersManagerWin.close();
 							}, function() {
 								usersManagerWin.wait(false);
 							});
 						} else {
-							ops.onChoose({static: static, user: user});
-							usersManagerWin.close();
+							ops.onChoose({static: static, user: user}, usersManagerWin);
+							if (ops.closeToChoose) usersManagerWin.close();
 						}
 					}	
 				});
@@ -399,14 +418,14 @@ jQuery(document).ready(function($) {
 					
 					if (ops.returnFields) {
 						getUsersFull(ouputData, ops.returnFields, function(usersData) {
-							ops.onChoose(usersData);
-							usersManagerWin.close();
+							ops.onChoose(usersData, usersManagerWin);
+							if (ops.closeToChoose) usersManagerWin.close();
 						}, function() {
 							usersManagerWin.wait(false);
 						});
 					} else {
-						ops.onChoose(ouputData);
-						usersManagerWin.close();
+						ops.onChoose(ouputData, usersManagerWin);
+						if (ops.closeToChoose) usersManagerWin.close();
 					}
 				});
 				
@@ -431,18 +450,55 @@ jQuery(document).ready(function($) {
 		
 		
 		function getUsers(staticId, choosedUsers, callback) {
-			if (!staticId) return false;
-			let usersIds = [];
+			if (!staticId) {
+				callback('');
+				return false;
+			}
+			
+			let usersIds = [],
+				nickName = $('#usersmanagerSearch').val() || null,
+				rank = $('#usersmanagerRanks').val() || null;
+			
 			if (choosedUsers) {
 				usersIds = choosedUsers.map(function(item) {
 					return item['user'];
 				});
 			}
 			
-			getAjaxHtml('admin/usersmanager/get_users', {static_id: staticId, choosed_users_ids: usersIds, choose_type: ops.chooseType}, function(html) {
+			getAjaxHtml('admin/usersmanager/get_users', {static_id: staticId, choosed_users_ids: usersIds, choose_type: ops.chooseType, nickname: nickName, rank: rank}, function(html) {
 				if (callback && typeof callback == 'function') callback(html);
 			}, function() {});
 		}
+		
+		
+		
+		function filterUsersStatics() {
+			usersWait();
+			staticsWait();
+			
+			let nickName = $('#usersmanagerSearch').val(),
+				rank = $('#usersmanagerRanks').val();
+			getAjaxHtml('admin/usersmanager/get_statics', {nickname: nickName, rank: rank}, function(html) {
+				$('#usersmanagerStatics').html(html);
+				$('#usersmanagerCountAllUsers').text($('#usersmanagerStatics').find('#countAllUsers').val());
+				initialStatic = getSavedStatic();
+				$('#usersmanagerStatics').find('[umstatic="'+initialStatic+'"]:not(.choosed)').addClass('choosed');
+				staticsWait(false);
+			}, function() {
+				getUsers(initialStatic, choosedUsers, function(html) {
+					if (html) {
+						$('#usersmanagerUsers').html(html);
+						$('#usersmanagerChoosedTotal').text(choosedUsers.length);
+						manageButtons();
+					} else {
+						$('#usersmanagerUsers').html('<div class="usersmanager__empty"><p class="empty center">Нет участников</p></div>')
+					}
+					usersWait(false);
+				});
+			});
+		}
+		
+		
 		
 		
 		function saveChoosedStatic(static) {
@@ -452,7 +508,7 @@ jQuery(document).ready(function($) {
 		
 		function getSavedStatic() {
 			let savedStatic = localStorage.getItem('usersManagerStatic');
-			if (savedStatic) return savedStatic; 
+			if (savedStatic && $('#usersmanagerStatics').find('[umstatic="'+savedStatic+'"]').length) return savedStatic; 
 			
 			let firstStaticInList = $('#usersmanagerStatics').find('[umstatic]:first');
 			if ($(firstStaticInList).length) {
@@ -464,7 +520,9 @@ jQuery(document).ready(function($) {
 		
 					
 		function checkAllUsers() {
-			$.post('/admin/usersmanager/check_all_users', function(allUsers) {
+			let nickName = $('#usersmanagerSearch').val() || null;
+				rank = $('#usersmanagerRanks').val() || null;
+			$.post('/admin/usersmanager/check_all_users', {nickname: nickName, rank: rank}, function(allUsers) {
 				stUsersCounter = {};
 				allUsers.forEach(function(user) {
 					if (stUsersCounter[user.static] === undefined) stUsersCounter[user.static] = 0;
@@ -611,7 +669,7 @@ jQuery(document).ready(function($) {
 						
 						
 		
-		
+		return usersManagerWin;
 		
 	};
 	

@@ -1,5 +1,19 @@
 {% if reports.total %}
-	<h4>Выберите отчеты</h4>
+	<div class="d-flex align-items-end justify-content-between mb10px">
+		<h4>Выберите отчеты ({{reports.total}})</h4>
+		{% if type == 1 %}
+			<div class="popup__select">
+				<select id="reportsAmountType">
+					<option value="0">Все</option>
+					<option value="1">Обычные расчеты</option>
+					<option value="2">Ключи</option>
+					<option value="3">Премии</option>
+				</select>
+				<div class="popup__select__caret"></div>
+			</div>
+		{% endif %}
+	</div>
+	
 	<div id="reportsAmountList">
 		<table>
 			<thead>
@@ -9,11 +23,11 @@
 				</tr>
 			</thead>
 			<tbody>
-				{% for id, title in reports.items %}
-					<tr>
+				{% for id, data in reports.items %}
+					<tr type="{{data.type}}">
 						<td>
 							<div class="d-flex align-items-center">
-								<p>{{title}}</p>
+								<p>{{data.title}}</p>
 							</div>
 						</td>
 						<td class="nowidth center">

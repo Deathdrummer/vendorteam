@@ -2337,12 +2337,28 @@ class Admin extends MY_Controller {
 				break;
 			
 			case 'get_reports':
-				
 				$data['reports'] = $this->reports->getMainReportPatternsTitles();
 				echo $this->twig->render('views/admin/render/statistics/reports.tpl', $data);
 				break;
 			
-			case 'statics_amount_report':
+			case 'get_calendar_reports':
+				$reportsIds = $this->reports->getCalendarReportsIds();
+				
+				$type = $post['type'] ?: 1;
+				if ($type == 1) { // сохр. отчеты
+					$data['reports'] = $this->reports->getMainReportPatternsTitles();
+					if ($reportsIds[1]) $data['reports']['items'] = array_diff_key($data['reports']['items'], array_flip($reportsIds[1]));
+					
+				} elseif ($type == 2) { // премиальные отчеты
+					$data['reports'] = $this->reports->getRewardsPeriodsTitles();
+					if ($reportsIds[2]) $data['reports']['items'] = array_diff_key($data['reports']['items'], array_flip($reportsIds[2]));
+				}
+				$data['type'] = $type;
+				
+				echo $this->twig->render('views/admin/render/statistics/reports.tpl', $data);
+				break;
+			
+			case 'statics_amount_report': // Отчет "Доход статиков"
 				$reports = $this->reports->getMainReportPatterns();
 				$reports2 = $this->reports->getMainReportPatterns(null, null, 1);
 				
@@ -2392,7 +2408,7 @@ class Admin extends MY_Controller {
 					}
 				}
 				
-				$data['report'] = $reportData;
+				
 				$data['statics'] = $statics;
 				$data['reports_titles'] = $reportsTitles;
 				$data['totals'] = $totals;
@@ -2400,11 +2416,104 @@ class Admin extends MY_Controller {
 				echo $this->twig->render('views/admin/render/statistics/statics_amount_report.tpl', $data);
 				break;
 			
+			case 'users_amount_report': // Отчет "Доход участников"
+				if (!$reportData = $this->reports->getReportPatternsPayments(array_keys($post['users']), $post['reports'])) exit('');
+				
+				$totals = [];
+				foreach ($reportData as $userId => $data) {
+					if (array_sum($data) == 0) {
+						$totals[$userId]['summ'] = null;
+						$totals[$userId]['median'] = null;
+						$totals[$userId]['avg'] = null;
+						continue;
+					} 
+					
+					$totals[$userId]['summ'] = array_sum($data);
+					$totals[$userId]['avg'] = floor(array_sum($data) / count($data));
+					
+					$data = array_values($data);
+					sort($data);
+					
+					if (count($data) % 2 != 0) {
+						$totals[$userId]['median'] = $data[floor(count($data) / 2)];
+					} else {
+						$florVal = $data[floor(count($data) / 2) - 1];
+						$ceilVal = $data[floor(count($data) / 2)];
+						$totals[$userId]['median'] = floor(($florVal + $ceilVal) / 2);
+					}
+				}
+				
+				
+				$data['reports_titles'] = $this->reports->getMainReportPatternsTitles($post['reports']);
+				$data['users'] = $post['users'];
+				$data['report'] = $reportData;
+				$data['totals'] = $totals;
+				
+				echo $this->twig->render('views/admin/render/statistics/users_amount_report.tpl', $data);
+				break;
 			
 			default:
 				# code...
 				break;
 		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function calendar($action = false) {
+		if (!$action) return false;
+		$this->load->model('reports_model', 'reports');
+		$post = bringTypes($this->input->post());
+		
+		switch ($action) {
+			case 'get_calendar':
+				$startDate = strtotime('01-01-2019');
+				$countYears = 3;
+				
+				$monthesDates = [];
+				for ($month = 0; $month < ($countYears * 12); $month++) {
+					$datePoint = strtotime("first day of $month month", $startDate);
+					$monthesDates[date('Y', $datePoint)][] = [
+						'timepoint'	=> $datePoint,
+						'month'	=> $this->monthes2[date('n', $datePoint)]
+					];
+				}
+				
+				$data['calendar'] = $monthesDates;
+				$data['reports'] = $this->reports->getCalendarReports();
+				echo $this->twig->render('views/admin/render/calendar/monthes_grid.tpl', $data);
+				
+				break;
+			case 'add_reports':
+				
+				if (!$this->reports->addCalendarReports($post['type'], $post['timepoint'], $post['reports'])) exit('0');
+				echo '1';
+				break;
+			
+			case 'remove_report':
+				if (!$this->reports->removeCalendarReport($post['type'], $post['timepoint'], $post['report'])) exit('0');
+				echo '1';
+				break;
+			
+			
+			
+			default:
+				break;
+		}
+		
 	}
 	
 	
@@ -2432,17 +2541,38 @@ class Admin extends MY_Controller {
 		$data = [];
 		switch ($action) {
 			case 'init':
-				
 				$data['statics'] = $this->admin_model->getStatics();
 				$data['count_all_users'] = array_sum(array_column($data['statics'], 'count_users'));
 				$data['choose_type'] = $post['choose_type'];
+				$data['ranks'] = $this->admin_model->getRanks(false, true);
+				
 				echo $this->twig->render('views/admin/render/usersmanager/main.tpl', $data);
+				break;
+			
+			case 'get_statics':
+				$data['statics'] = $this->admin_model->filterStatics(['u.nickname' => $post['nickname']], ['u.rank' => $post['rank']]);
+				$data['count_all_users'] = array_sum(array_column($data['statics'], 'count_users'));
+				echo $this->twig->render('views/admin/render/usersmanager/statics.tpl', $data);
 				break;
 			
 			case 'get_users':
 				if (!$post['static_id']) exit('0');
 				
-				$users = $this->users->getUsers(['where' => ['us.static_id' => $post['static_id'], 'us.main' => 1, 'deleted' => 0, 'verification' => 1], 'fields' => 'id nickname avatar static']);
+				
+				$params = [
+					'where' => [
+						'us.static_id' => $post['static_id'],
+						'us.main' => 1,
+						'deleted' => 0,
+						'verification' => 1
+					],
+					'fields' => 'id nickname avatar static'
+				];
+				
+				if ($post['nickname']) $params['like'] = ['field' => 'u.nickname', 'value' => $post['nickname'], 'placed' => 'after'];
+				if ($post['rank']) $params['where']['u.rank'] = $post['rank'];
+				
+				$users = $this->users->getUsers($params);
 				
 				if ($users && isset($post['choosed_users_ids']) && $post['choosed_users_ids']) {
 					$choosedUsersTemp = array_combine($post['choosed_users_ids'], array_fill(0, count($post['choosed_users_ids']), ['choosed' => 1]));
@@ -2472,7 +2602,21 @@ class Admin extends MY_Controller {
 			
 			
 			case 'check_all_users':
-				$users = $this->users->getUsers(['where' => ['us.main' => 1, 'deleted' => 0, 'verification' => 1], 'fields' => 'id nickname avatar static']);
+				
+				$params = [
+					'where' => [
+						'us.main' => 1,
+						'deleted' => 0,
+						'verification' => 1
+					],
+					'fields' => 'id nickname avatar static'
+				];
+				
+				if ($post['nickname']) $params['like'] = ['field' => 'u.nickname', 'value' => $post['nickname'], 'placed' => 'after'];
+				if ($post['rank']) $params['where']['u.rank'] = $post['rank'];
+				
+				$users = $this->users->getUsers($params);
+				
 				$data = [];
 				foreach ($users as $user) {
 					$data[] = [

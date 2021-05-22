@@ -432,6 +432,73 @@ class Admin_model extends My_Model {
 	
 	
 	
+	
+	/**
+	 * Получить список статиков с запросами LIKE & WHERE
+	 * @param массив данных по поиску LIKE
+	 * @param массив данных по поиску WHERE
+	 * @param фильтровать пустые статики (в которых не найдено ни одного участника)
+	 * @param только имена статиков [static id => static name]
+	 * @param Вернуть данные заданного статика
+	 * @return [static id => static name] или [static id => static data]
+	 */
+	public function filterStatics($like = [], $where = [], $filterEmptyStatics = true, $nameOnly = false, $staticId = null) {
+		$query = '';
+		
+		if ($where) {
+			foreach ($where as $wField => $wValue) {
+				if (!$wValue) continue;
+				$query .= ' AND '.$wField.' = '.$wValue;
+			}
+		}
+		
+		if ($like) {
+			foreach ($like as $lField => $lValue) {
+				if (!$lValue) continue;
+				$query .= ' AND '.$lField.' LIKE \''.$lValue.'%\' ESCAPE \'!\'';
+			}
+		}
+		
+		
+		
+		$this->db->select('s.*, (SELECT COUNT(us.id) FROM users_statics us JOIN users u ON us.user_id = u.id WHERE s.id = us.static_id AND u.deleted = 0 AND us.main = 1'.$query.') AS count_users');
+		if (is_array($staticId)) $this->db->where_in('s.id', $staticId);
+		elseif (!is_null($staticId)) $this->db->where('s.id', $staticId);
+		$this->db->order_by('id', 'ASC');
+		
+		if (!$result = $this->_result('statics s')) return false;
+		
+		if ($filterEmptyStatics) {
+			$result = array_filter($result, function($item) {
+				return $item['count_users'] > 0;
+			});
+		}
+		
+		
+		$data = [];
+		if ($nameOnly) {
+			foreach ($result as $item) {
+				$data[$item['id']] = $item['name'];
+			}
+		} else {
+			foreach ($result as $key => $item) {
+				$sId = $item['id'];
+				unset($item['id']);
+				$data[$sId] = $item;
+			}
+		}
+		
+		if (!is_null($staticId) && !is_array($staticId)) {
+			$data[$staticId]['id'] = $staticId;
+			return $data[$staticId];
+		}
+		return $data;
+	}
+	
+	
+	
+	
+	
 
 	/**
 	 * Добавить, обновить список статиков

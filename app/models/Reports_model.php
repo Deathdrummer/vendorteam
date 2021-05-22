@@ -170,17 +170,57 @@ class Reports_model extends My_Model {
 	 * @return массив 
 	 */
 	public function getMainReportPatternsTitles($reportsIds = false, $limit = false, $offset = 0) {
-		$this->db->select('id, name AS title');
+		$this->db->select('id, name AS title, variant, is_key');
 		if ($reportsIds) $this->db->where_in('id', $reportsIds);
 		if ($limit) $this->db->limit($limit, $offset);
 		$this->db->order_by('id', 'DESC');
 		if (!$result = $this->_resultWithCount('reports_patterns')) return false;
 		
-		$result['items'] = setArrKeyFromField($result['items'], 'id', 'title');
-		
-		
-		return $result;
+		$data['items'] = [];
+		foreach ($result['items'] as $item) {
+			$mask = $item['variant'].''.$item['is_key'];
+			if ($mask == '10') $type = 1;
+			if ($mask == '11') $type = 2;
+			if ($mask == '20') $type = 3;
+			
+			$data['items'][$item['id']] = [
+				'title' => $item['title'],
+				'type'	=> $type
+			];
+		}
+		$data['total'] = $result['total'];
+		return $data;
 	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * Получить список заголовков паттернов первого отчета
+	 * @param ID паттерна
+	 * @param данные [offset, limit]
+	 * @param ID статика
+	 * @return массив 
+	 */
+	public function getRewardsPeriodsTitles($reportsIds = false, $limit = false, $offset = 0) {
+		$this->db->select('id, title');
+		if ($reportsIds) $this->db->where_in('id', $reportsIds);
+		if ($limit) $this->db->limit($limit, $offset);
+		$this->db->order_by('id', 'DESC');
+		if (!$result = $this->_resultWithCount('rewards_periods')) return false;
+		
+		$data['items'] = [];
+		foreach ($result['items'] as $item) {
+			$data['items'][$item['id']] = [
+				'title' => $item['title']
+			];
+		}
+		$data['total'] = $result['total'];
+		return $data;
+	}
+	
 	
 	
 	
@@ -455,9 +495,113 @@ class Reports_model extends My_Model {
 	
 	
 	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function getReportPatternsPayments($usersIds = false, $patternsIds = false) {
+		if (!$usersIds || !$patternsIds) return false;
+		
+		$this->db->select('report_pattern_id, user_id, payout');
+		$this->db->where_in('user_id', $usersIds);
+		$this->db->where_in('report_pattern_id', $patternsIds);
+		
+		if (!$result = $this->_result('reports_patterns_payments')) return false;
+		
+		$data = [];
+		foreach ($result as $item) {
+			$data[$item['user_id']][$item['report_pattern_id']] = $item['payout'];
+		}
+		
+		return $data;
+	}
 	
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function addCalendarReports($type = 1, $timepoint = false, $reports = false) {
+		if (!$timepoint || !$reports) return false;
+		
+		$insData = [];
+		foreach ($reports as $reportId) {
+			$insData[] = [
+				'type'		=> $type,
+				'report_id' => $reportId,
+				'timepoint' => $timepoint
+			];
+		}
+		
+		if (!$this->db->insert_batch('reports_calendar', $insData)) return false;
+		return true;
+	}
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function getCalendarReports() {
+		if (!$result = $this->_result('reports_calendar')) return false;
+		
+		$reportsIds = [1 => [], 2 => []];
+		foreach ($result as $item) {
+			$reportsIds[$item['type']][] = $item;
+		}
+		
+		$reportsTitles[1] = $this->getMainReportPatternsTitles(array_column($reportsIds[1], 'report_id'));
+		$reportsTitles[2] = $this->getRewardsPeriodsTitles(array_column($reportsIds[2], 'report_id'));
+		
+		$data = [];
+		foreach ($result as $row) {
+			$data[$row['type']][$row['timepoint']][] = [
+				'title'		=> $reportsTitles[$row['type']]['items'][$row['report_id']]['title'],
+				'report_id' => $row['report_id']
+			];
+		}
+		return $data;
+	}
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function getCalendarReportsIds() {
+		$this->db->select('type, report_id');
+		if (!$result = $this->_result('reports_calendar')) return false;
+		
+		$reportsIds = [1 => [], 2 => []];
+		foreach ($result as $row) {
+			$reportsIds[$row['type']][] = $row['report_id'];
+		}
+		return $reportsIds;
+	}
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function removeCalendarReport($type = 1, $timePoint = false, $reportId = false) {
+		if (!$timePoint || !$reportId) return false;
+		$this->db->where(['type' => $type, 'timepoint' => $timePoint, 'report_id' => $reportId]);
+		if (!$this->db->delete('reports_calendar')) return false;
+		return true;
+	}
 	
 	
 	

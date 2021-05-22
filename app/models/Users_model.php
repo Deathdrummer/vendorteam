@@ -21,6 +21,7 @@ class Users_model extends MY_Model {
 		$whereIn = isset($params['where_in']) ? $params['where_in'] : false;
 		$whereNotIn = isset($params['where_not_in']) ? $params['where_not_in'] : false;
 		$like = isset($params['like']) ? $params['like'] : false;
+		$orLike = isset($params['or_like']) ? $params['or_like'] : false;
 		$orderField = isset($params['field']) ? $params['field'] : false;
 		$orderType = isset($params['order']) ? $params['order'] : false;
 		$returnFields = isset($params['fields']) ? $params['fields'] : false;
@@ -33,7 +34,8 @@ class Users_model extends MY_Model {
 		if ($where) $this->db->where($where);
 		if ($whereIn) $this->db->where_in($whereIn['field'], $whereIn['values']);
 		if ($whereNotIn) $this->db->where_not_in($whereNotIn['field'], $whereNotIn['values']);
-		if ($like) $this->db->like($like['field'], $like['value'], $like['placed']);
+		if ($like) $this->db->like($like['field'], $like['value'], (isset($like['placed']) ? $like['placed'] : 'both'));
+		if ($orLike) $this->db->or_like($orLike['field'], $orLike['value'], (isset($orLike['placed']) ? $orLike['placed'] : 'both'));
 		
 		$this->db->order_by('us.static_id ASC');
 		if ($orderField && $orderType) $this->db->order_by($orderField, $orderType);

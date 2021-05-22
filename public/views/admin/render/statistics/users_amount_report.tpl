@@ -1,18 +1,18 @@
 {% if report %}
 	<div class="report">
-		<table class="w-18rem">
+		<table class="w-16rem">
 			<thead>
 				<tr>
-					<td>Статик</td>
+					<td>Участник</td>
 				</tr>	
 			</thead>
 			<tbody>
-				{% for stId, static in statics %}
+				{% for uId, user in users %}
 					<tr>
 						<td class="h52px">
 							<div class="d-flex align-items-center">
-								<div class="avatar mini mr-2" style="background-image: url('{{base_url('public/filemanager/thumbs/'~static.icon)}}')"></div>
-								<p>{{static.name}}</p>
+								<div class="avatar mini mr-2" style="background-image: url('{{base_url('public/images/users/mini/'~user.avatar)}}')"></div>
+								<p>{{user.nickname}}</p>
 							</div>
 						</td>
 					</tr>
@@ -30,12 +30,12 @@
 					</tr>
 				</thead>
 				<tbody>
-					{% for stId, static in statics %}
+					{% for uId, user in users %}
 						<tr>
 							{% for rId, rTitle in reports_titles.items %}
 								<td class="h52px">
-									{% if report[stId][rId] %}
-										<p>{{report[stId][rId]|number_format(2, '.', ' ')}} ₽</p>
+									{% if report[uId][rId] %}
+										<p>{{report[uId][rId]|number_format(2, '.', ' ')}} ₽</p>
 									{% else %}
 										-
 									{% endif %}
@@ -54,16 +54,16 @@
 				<td>Сумма</td>
 			</thead>
 			<tbody>
-				{% for stId, static in statics %}
+				{% for uId, user in users %}
 					<tr>
 						<td class="h52px">
-							{% if totals[stId]['median'] %}<strong>{{totals[stId]['median']|number_format(2, '.', ' ')}} ₽</strong>{% else %}-{% endif %}
+							{% if totals[uId]['median'] %}<strong>{{totals[uId]['median']|number_format(2, '.', ' ')}} ₽</strong>{% else %}-{% endif %}
 						</td>
 						<td class="h52px">
-							{% if totals[stId]['avg'] %}<strong>{{totals[stId]['avg']|number_format(2, '.', ' ')}} ₽</strong>{% else %}-{% endif %}
+							{% if totals[uId]['avg'] %}<strong>{{totals[uId]['avg']|number_format(2, '.', ' ')}} ₽</strong>{% else %}-{% endif %}
 						</td>
 						<td class="h52px">
-							{% if totals[stId]['summ'] %}<strong>{{totals[stId]['summ']|number_format(2, '.', ' ')}} ₽</strong>{% else %}-{% endif %}
+							{% if totals[uId]['summ'] %}<strong>{{totals[uId]['summ']|number_format(2, '.', ' ')}} ₽</strong>{% else %}-{% endif %}
 						</td>
 					</tr>
 				{% endfor %}

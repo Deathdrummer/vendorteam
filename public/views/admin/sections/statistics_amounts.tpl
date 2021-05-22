@@ -8,6 +8,7 @@
 		<li id="tabStaticsAmount" class="active">Доход статиков</li>
 		<li id="tabUsersAmount">Доход участников</li>
 		<li id="tabRanksAmount">Доход званий</li>
+		<li id="tabCalendar">Календарь отчетов</li>
 	</ul>
 	
 	
@@ -35,12 +36,12 @@
 				
 				<div class="item inline">
 					<div class="buttons notop">
-						<button id="ratingPeriods" class="fieldheight" title="Периоды"><i class="fa fa-calculator"></i></button>
+						<button id="usersAmount" class="fieldheight" title="Сформировать отчет"><i class="fa fa-calculator"></i></button>
 					</div>
 				</div>
 				
 				
-				<div id="" class="reports noborder"></div>
+				<div id="usersAmountReport" class="reports noborder"></div>
 			</fieldset>
 		</div>
 		
@@ -59,6 +60,13 @@
 				<div id="" class="reports noborder"></div>
 			</fieldset>
 		</div>
+		
+		<div tabid="tabCalendar">
+			
+			<div id="calendarGrid"></div>
+			
+		</div>
+
 	
 	
 </div>
@@ -72,6 +80,8 @@
 
 <script type="text/javascript"><!--
 	
+	
+	//------------------------------------------------------------------------------------------------ Доход статиков
 	$('#staticsAmount').on(tapEvent, function() {
 		popUp({
 			title: 'Доход статиков',
@@ -116,12 +126,24 @@
 						staticsAmountWin.setButtons([{id: 'sAChooseReports', title: 'Выбрать', disabled: 1}], 'Закрыть');
 						staticsAmountWin.setData(html, false, function() {
 							$('#reportsAmountList').ddrScrollTableY('400px');
-							
+						});
+						
+						
+						$('#reportsAmountType').on('change', function() {
+							staticsAmountWin.wait();
+							let type = $(this).val();
+							if (type == 0) {
+								$('#reportsAmountList').find('tbody').children('tr[hidden]').removeAttrib('hidden');
+							} else {
+								$('#reportsAmountList').find('tbody').children('tr:not([hidden])').setAttrib('hidden');
+								$('#reportsAmountList').find('tbody').children('tr[type="'+type+'"]').removeAttrib('hidden');
+							}
+							staticsAmountWin.wait(false);
 						});
 						
 						$('#reportsAmountSetAll').on(tapEvent, function() {
-							$('#reportsAmountList').find('input[type="checkbox"]:not(:checked)').each(function() {
-								$(this).setAttrib('checked');
+							$('#reportsAmountList').find('tr:not([hidden])').each(function() {
+								$(this).find('input[type="checkbox"]:not(:checked)').setAttrib('checked');
 							});
 							$('#sAChooseReports:disabled').removeAttrib('disabled');
 						});
@@ -169,6 +191,258 @@
 			});
 		});
 	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//------------------------------------------------------------------------------------------------ Доход участников
+	$('#usersAmount').on(tapEvent, function() {
+		
+		usersManager({
+			chooseType: 'multiple',
+			returnFields: 'nickname avatar static_name static_icon',
+			onChoose: function(users, uMWin) {
+				getAjaxHtml('admin/statistics/get_reports', function(html) {
+					uMWin.setButtons([{id: 'sAChooseReports', title: 'Выбрать', disabled: 1}], 'Закрыть');
+					uMWin.setData(html);
+					uMWin.setWidth(500);
+					uMWin.setTitle('Доход участников');
+					$('#reportsAmountList').ddrScrollTableY('400px');
+					
+					$('#reportsAmountType').on('change', function() {
+						uMWin.wait();
+						let type = $(this).val();
+						if (type == 0) {
+							$('#reportsAmountList').find('tbody').children('tr[hidden]').removeAttrib('hidden');
+						} else {
+							$('#reportsAmountList').find('tbody').children('tr:not([hidden])').setAttrib('hidden');
+							$('#reportsAmountList').find('tbody').children('tr[type="'+type+'"]').removeAttrib('hidden');
+						}
+						uMWin.wait(false);
+					});
+					
+					$('#reportsAmountSetAll').on(tapEvent, function() {
+						$('#reportsAmountList').find('tr:not([hidden])').each(function() {
+							$(this).find('input[type="checkbox"]:not(:checked)').setAttrib('checked');
+						});
+						$('#sAChooseReports:disabled').removeAttrib('disabled');
+					});
+					
+					
+					$('#reportsAmountList').find('input[type="checkbox"]').on(tapEvent, function() {
+						let checkedLength = $('#reportsAmountList').find('input[type="checkbox"]:checked').length;
+						if (checkedLength) {
+							$('#sAChooseReports:disabled').removeAttrib('disabled');
+						} else {
+							$('#sAChooseReports:not(:disabled)').setAttrib('disabled');
+						}
+					});
+					
+					
+					$('#sAChooseReports').on(tapEvent, function() {
+						uMWin.wait();
+						let choosedReports = [];
+						$('#reportsAmountList').find('input[type="checkbox"]:checked').each(function() {
+							choosedReports.push(parseInt($(this).val()));
+						});
+						
+						getAjaxHtml('admin/statistics/users_amount_report', {users: users, reports: choosedReports}, function(html) {
+							$('#usersAmountReport').html(html);
+							$('#usersAmountReport').find('.scroll').ddrScrollTable();
+							uMWin.close();
+						}, function() {
+							uMWin.wait(false);
+						});
+					});
+				}, function() {
+					uMWin.wait(false);
+				});
+			}
+		});
+		
+		
+		
+		
+		
+		
+	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//------------------------------------------------------------------------------------------------ Календарь
+	let hashData = location.hash.split('.'),
+		isCalendarLoaded = false;
+	if (hashData[1] != undefined && hashData[1] == 'tabCalendar') {
+		getCalendar(function() {
+			isCalendarLoaded = true;
+		});
+	}
+
+	$(document).on('changetabs', function(_, elem) {
+		let id = $(elem).attr('id');
+		
+		if (id == 'tabCalendar' && !isCalendarLoaded) {
+			getCalendar(function() {
+				isCalendarLoaded = true;
+			});
+		}
+	});
+	
+	
+	function getCalendar(callback) {
+		$('#sectionWait').addClass('visible');
+		getAjaxHtml('admin/calendar/get_calendar', function(html) {
+			$('#calendarGrid').html(html);
+			ddrInitTabs();
+			$('#sectionWait').removeClass('visible');
+			
+			
+			$('[calendaraddreport]').on(tapEvent, function() {
+				let thisBlock = $(this).closest('.calendar__item'),
+					reportsList = $(this).closest('.calendar__column').find('[calendarreportslist]'),
+					d = $(this).attr('calendaraddreport').split('|'),
+					reportType = d[0],
+					tPoint = d[1];
+				
+				popUp({
+					title: 'Добавить отчеты',
+				    width: 500,
+				    buttons: [{id: 'calendarAddReport', title: 'Выбрать', disabled: 1}],
+				    closeButton: 'Отмена',
+				}, function(addreportWin) {
+					addreportWin.wait();
+					getAjaxHtml('admin/statistics/get_calendar_reports', {type: reportType}, function(html) {
+						addreportWin.setData(html);
+						$('#reportsAmountList').ddrScrollTableY('400px');
+						
+						$('#reportsAmountType').on('change', function() {
+							addreportWin.wait();
+							let type = $(this).val();
+							if (type == 0) {
+								$('#reportsAmountList').find('tbody').children('tr[hidden]').removeAttrib('hidden');
+							} else {
+								$('#reportsAmountList').find('tbody').children('tr:not([hidden])').setAttrib('hidden');
+								$('#reportsAmountList').find('tbody').children('tr[type="'+type+'"]').removeAttrib('hidden');
+							}
+							addreportWin.wait(false);
+						});
+						
+						$('#reportsAmountSetAll').on(tapEvent, function() {
+							$('#reportsAmountList').find('tr:not([hidden])').each(function() {
+								$(this).find('input[type="checkbox"]:not(:checked)').setAttrib('checked');
+							});
+							$('#calendarAddReport:disabled').removeAttrib('disabled');
+						});
+						
+						
+						$('#reportsAmountList').find('input[type="checkbox"]').on(tapEvent, function() {
+							let checkedLength = $('#reportsAmountList').find('input[type="checkbox"]:checked').length;
+							if (checkedLength) {
+								$('#calendarAddReport:disabled').removeAttrib('disabled');
+							} else {
+								$('#calendarAddReport:not(:disabled)').setAttrib('disabled');
+							}
+						});
+						
+						
+						$('#calendarAddReport').on(tapEvent, function() {
+							addreportWin.wait();
+							let choosedReports = {};
+							$('#reportsAmountList').find('input[type="checkbox"]:checked').each(function() {
+								choosedReports[parseInt($(this).val())] = $(this).closest('tr').find('p').text();
+							});
+							
+							if (choosedReports) {
+								$.post('/admin/calendar/add_reports', {type: reportType, timepoint: tPoint, reports: Object.keys(choosedReports)}, function(response) {
+									if (response) {
+										let addList = '';
+										$.each(choosedReports, function(reportId, reporTitle) {
+											addList += '<li>';
+											addList += 	'<span>'+reporTitle+'</span>';
+											addList += 	'<i calendarremovereport="'+reportType+'|'+tPoint+'|'+reportId+'" class="fa fa-trash"></i>';
+											addList += '</li>';
+										});
+										$(reportsList).append(addList);
+										notify('Отчеты успешно добавлены!');
+										
+									} else {
+										notify('Не удалось добавить отчеты!', 'error');
+									}
+									addreportWin.close();
+								});		
+							}
+						});
+						
+					}, function() {
+						addreportWin.wait(false);
+					});
+				});
+			});
+			
+			
+			
+			
+			
+			$('#calendarGrid').on(tapEvent, '[calendarremovereport]', function() {
+				let thisRow = $(this).closest('li'),
+					thidGridItem = $(this).closest('.calendar__item'),
+					d = $(this).attr('calendarremovereport').split('|'),
+					type = d[0],
+					timePoint = d[1],
+					reoprtId = d[2];
+				
+				waitCalendarItem(thidGridItem);
+				$.post('/admin/calendar/remove_report', {type: type, timepoint: timePoint, report: reoprtId}, function(response) {
+					if (response) {
+						$(thisRow).remove();
+						notify('Отчет успешно удален!');
+					} else {
+						notify('Не удалось удалить отчет!', 'error');
+					}
+					waitCalendarItem(thidGridItem, false);
+				});
+			});
+			
+			
+			
+			
+			function waitCalendarItem(selector, stat) {
+				if (stat == undefined) {
+					$(selector).append('<div calendarwait class="calendar__waiting calendar__waiting_visible"><i class="fa fa-spinner fa-pulse fa-fw"></i></div>');
+				} else if (stat === false)  {
+					$(selector).find('[calendarwait]').removeClass('calendar__waiting_visible');
+					setTimeout(function() {
+						$(selector).find('[calendarwait]').remove();
+					}, 160);
+				}
+			}
+			
+			
+		}, function() {
+			if (callback && typeof callback == 'function') {
+				callback();
+			}
+		});
+	}
 	
 	
 	

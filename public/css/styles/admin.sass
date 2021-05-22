@@ -2770,6 +2770,9 @@ p
 		span
 			font-size: 13px
 		
+		&_right
+			justify-content: flex-end
+		
 		
 	
 	&__statics
@@ -2797,6 +2800,19 @@ p
 			margin-left: 2px
 			margin-bottom: 2px
 	
+	
+	&__input
+		height: 20px
+		width: 150px
+		font-size: 12px
+		+font(roboto, regular)
+		border: 1px solid #94c3d6
+		border-radius: 3px
+		transition: border-color 0.16s
+		
+		&:focus
+			border-color: #4790af
+		
 	
 	&__buttons
 		display: flex
@@ -2842,13 +2858,12 @@ p
 	
 	
 	&__total
-		width: 68px
 		display: inline-block
-		text-align: right
+		//text-align: right
 		font-size: 1.1em
 		
 		&_short
-			width: 34px
+			//width: 34px
 	
 	&__container
 		position: relative
@@ -3030,3 +3045,136 @@ p
 		text-overflow: ellipsis
 		white-space: nowrap
 		overflow: hidden
+
+
+
+
+
+
+
+
+
+.calendar
+	display: grid
+	grid-template-columns: repeat(3, 1fr)
+	grid-column-gap: 20px
+	grid-row-gap: 20px
+	
+	&__item
+		position: relative
+		border: 1px solid #d9dde2
+		background-color: #f5f7f9
+		border-radius: 3px
+		
+	&__waiting
+		display: flex
+		align-items: center
+		justify-content: center
+		position: absolute
+		top: 0
+		bottom: 0
+		left: 0
+		right: 0
+		background-color: rgba(#fff, 0.8)
+		opacity: 0
+		pointer-events: none
+		transition: opacity 0.16s
+		
+		i
+			font-size: 24px
+		
+		&_visible
+			opacity: 1
+			pointer-events: auto
+			transition: opacity 0.16s
+		
+		
+	&__title
+		height: 40px
+		display: flex
+		align-items: center
+		justify-content: center
+		
+		span
+			font-size: 16px
+			+font(roboto, bold)
+			text-transform: uppercase
+			
+			small
+				text-transform: lowercase
+				+font(roboto, bold)
+	
+	&__subtitle
+		padding-left: 15px
+		padding-right: 15px
+		margin-bottom: 4px
+		border-bottom: 1px solid #d9dde2
+		
+		span
+			font-size: 14px
+			+font(roboto, medium)
+			
+			small
+				text-transform: lowercase
+		
+	
+	&__content
+		display: flex
+		
+	&__column
+		flex: 0 0 50%
+		
+		
+		
+		ul
+			padding-left: 15px
+			padding-right: 5px
+			margin-right: 15px
+			+scrollbar(#e8eaed, #b4bbc1, 5px, 2px, 2px)
+			overflow-y: scroll
+			height: 170px
+			
+			li
+				display: flex
+				flex-wrap: nowrap
+				justify-content: space-between
+				padding-top: 2px
+				padding-bottom: 2px
+				
+				+ li
+					border-top: 1px solid #cbcfd2
+				
+				span
+					font-size: 12px
+					line-height: 12px
+					color: #7d8a90
+					text-overflow: ellipsis
+					padding-top: 2px
+					
+				
+				i
+					margin-left: 10px
+					color: #f59797
+					cursor: pointer
+					
+					&:hover
+						color: #e44242
+		
+	
+	&__bottom
+		padding-right: 15px
+		text-align: center
+		height: 40px
+		display: flex
+		align-items: center
+		justify-content: center
+		
+		
+		
+	&__botton
+		+btn()
+		height: 20px
+		font-size: 12px
+			
+			
+		

@@ -9,7 +9,7 @@
 						<span>Загрузка...</span>
 					</div>
 				</div>
-				<div class="usersmanager__statics" id="usersmanagerStatics">
+				<div class="usersmanager__statics noselect" id="usersmanagerStatics">
 					{% if statics %}
 						<ul>
 							{% for stId, static in statics %}
@@ -30,19 +30,35 @@
 				
 		</div>
 		<div class="col">
-			<div class="usersmanager__title">
-				<p class="mb-0">Участники</p>
-				<input type="hidden" id="usersmanagerTotal" value="{{count_all_users}}">
+			<div class="usersmanager__title usersmanager__title_right">
+				<p class="mb-0 mr-2">Участники</p>
 				{% if choose_type == 'multiple' %}
-					<div class="usersmanager__buttons ml-auto mr30px">
-						<button id="uMCheckAllStatic" disabled title="Выделить все в статике"><i class="fa fa-check-square-o"></i></button>
-						<button id="uMUncheckAllStatic" disabled class="mr30px" title="Отменить выделение в статике"><i class="fa fa-minus-square-o"></i></button>
-						<button id="uMCheckAll" disabled title="Выделить все"><i class="fa fa-check-square"></i></button>
-						<button id="uMUncheckAll" disabled title="Отменить выделение"><i class="fa fa-minus-square"></i></button>
-					</div>
-					<span class="mb-0">Всего выбрано: <strong class="usersmanager__total"><span id="usersmanagerChoosedTotal">0</span>/{{count_all_users}}</strong></span>
+					<span class="mb-0"><strong class="usersmanager__total"><span id="usersmanagerChoosedTotal">0</span>/<span id="usersmanagerCountAllUsers">{{count_all_users}}</span></strong></span>
 				{% else %}
-					<span class="mb-0">Всего: <strong class="usersmanager__total usersmanager__total_short">{{count_all_users}}</strong></span>
+					<span class="mb-0"><strong class="usersmanager__total usersmanager__total_short">{{count_all_users}}</strong></span>
+				{% endif %}
+				
+				<input type="hidden" id="usersmanagerTotal" value="{{count_all_users}}">
+				
+				<input type="text" class="usersmanager__input ml-auto" id="usersmanagerSearch" placeholder="Введите никнейм" autocomplete="off">
+				
+				{% if ranks %}
+					<select id="usersmanagerRanks" class="usersmanager__input ml15px">
+						<option disabled selected>Выберите звание</option>
+						<option value="">Все звания</option>
+						{% for rId, rank in ranks %}
+							<option value="{{rId}}">{{rank.name}}</option>
+						{% endfor %}
+					</select>
+				{% endif %}
+				
+				{% if choose_type == 'multiple' %}
+					<div class="usersmanager__buttons ml15px">
+						<button id="uMUncheckAllStatic" disabled title="Отменить выделение в статике"><i class="fa fa-minus-square-o"></i></button>
+						<button id="uMCheckAllStatic" disabled title="Выделить все в статике"><i class="fa fa-check-square-o"></i></button>
+						<button id="uMUncheckAll" class="ml10px" disabled title="Отменить выделение"><i class="fa fa-minus-square"></i></button>
+						<button id="uMCheckAll" disabled title="Выделить все"><i class="fa fa-check-square"></i></button>
+					</div>
 				{% endif %}
 			</div>	
 			<div class="usersmanager__container">
