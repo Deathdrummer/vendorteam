@@ -720,6 +720,32 @@ class Admin_model extends My_Model {
 	
 	
 	
+	/**
+	 * Получить список званий заданных статиков
+	 * @param статики
+	 * @return array
+	 */
+	public function getStaticsRanks($staticsIds = false) {
+		$this->db->select('r.id AS rank_id, r.name');
+		$this->db->join('users u', 'u.rank = r.id', 'LEFT OUTER');
+		$this->db->join('users_statics us', 'us.user_id = u.id', 'LEFT OUTER');
+		$this->db->where_in('us.static_id', (array)$staticsIds);
+		$this->db->distinct();
+		$this->db->order_by('r.id', 'ASC');
+		
+		if (!$result = $this->_result('ranks r')) return false;
+		
+		$ranksData = [];
+		foreach ($result as $row) {
+			$ranksData[$row['rank_id']] = $row['name'];
+		}
+		
+		return $ranksData;
+	}
+	
+	
+	
+	
 	
 	
 	

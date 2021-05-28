@@ -56,6 +56,34 @@ class Rewards_model extends MY_Model {
 	
 	
 	
+	/**
+	 * Получить плетежные периоды из премиального периода
+	 * @param 
+	 * @return 
+	*/
+	public function getRewardsPeriodData($rewardsPeriodId = false) {
+		if (!$rewardsPeriodId) return false;
+		$this->db->select('rp.reports_periods, rs.static_id');
+		$this->db->join('rewards_statics rs', 'rs.reward_period_id = rp.id');
+		$this->db->where('rp.id', $rewardsPeriodId);
+		$periodsData = $this->_result($this->rewardsPeriodsTable.' rp');
+		
+		$reportsPeriods = []; $statics = [];
+		foreach ($periodsData as $row) {
+			$reportsPeriods[] = json_decode($row['reports_periods'], true);
+			$statics[] = $row['static_id'];
+		}
+		
+		$reportsPeriods = call_user_func_array('array_merge', $reportsPeriods);
+		
+		return [
+			'reports_periods'	=> array_values(array_unique($reportsPeriods)),
+			'statics'			=> array_values(array_unique($statics))
+		];
+	}
+	
+	
+	
 	
 	
 	
@@ -242,12 +270,16 @@ class Rewards_model extends MY_Model {
 	*/
 	public function getStaticsSumm($rewardPeriodId = false, $staticId = false) {
 		if (!$rewardPeriodId) return false;
-		$this->db->where('reward_period_id', $rewardPeriodId);
-		if ($staticId) $this->db->where('static_id', $staticId);
+		if (is_array($rewardPeriodId)) $this->db->where_in('reward_period_id', $rewardPeriodId);
+		else $this->db->where('reward_period_id', $rewardPeriodId);
+		
+		if ($staticId && is_array($staticId)) $this->db->where_in('static_id', $staticId);
+		elseif ($staticId) $this->db->where('static_id', $staticId);
+		
 		if (!$amounts = $this->_result($this->rewardsStaticsTable)) return false;
 		
 		$data = [];
-		if ($staticId) {
+		if ($staticId && !is_array($staticId)) {
 			foreach ($amounts as $item) {
 				$data[$item['report_period_id']] = $item['summ'];
 			}
@@ -320,9 +352,9 @@ class Rewards_model extends MY_Model {
 	 * @param ID периода
 	 * @return 
 	*/
-	public function getReportData($periodId = false, $statics, $reportsPeriods) {
-		if (!$periodId) return false;
-		$this->db->where('reward_period_id', $periodId);
+	public function getReportData($rewardPeriodId = false, $statics, $reportsPeriods) {
+		if (!$rewardPeriodId) return false;
+		$this->db->where('reward_period_id', $rewardPeriodId);
 		if (!$result = $this->_result('rewards_statics')) return false;
 		
 		$data = [
@@ -356,9 +388,12 @@ class Rewards_model extends MY_Model {
 	 * @param 
 	 * @return 
 	*/
-	public function getRewardsRanks($periodId = false) {
-		if (!$periodId) return false;
-		$this->db->where('reward_period_id', $periodId);
+	public function getRewardsRanks($rewardPeriodId = false) {
+		if (!$rewardPeriodId) return false;
+		
+		if (is_array($rewardPeriodId)) $this->db->where_in('reward_period_id', $rewardPeriodId);
+		else $this->db->where('reward_period_id', $rewardPeriodId);
+		
 		if (!$data = $this->_result('rewards_ranks')) return false;
 		return setArrKeyFromField($data, 'user_id', 'rank_coefficient');
 	}

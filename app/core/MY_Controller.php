@@ -162,7 +162,7 @@ class MY_Controller extends CI_Controller {
 		$this->twig->addFilter('month', function($date, $type = 'short', $case = 'n') { // short full n g
 			$m = date('n', $date);
 			if ($type == 'short') return $case == 'n' ? $this->monthesShort2[$m] : $this->monthesShort[$m];
-			return $case == 'n' ? $this->monthes2[$m] : $this->monthes[$m];
+			if ($type == 'full') return $case == 'n' ? $this->monthes2[$m] : $this->monthes[$m];
 			
 		});
 		

@@ -55,6 +55,32 @@ class Users_model extends MY_Model {
 	
 	
 	
+	/**
+	 * Получить ID участников по званиям и\или статикам
+	 * @param 
+	 * @return 
+	*/
+	public function getRanksStaticsUsers($ranks = false, $statics = false, $orderBy = 'u.rank') {
+		if (!$ranks) return false;
+		
+		$this->db->select('u.id AS user_id, u.rank, s.id AS static_id');
+		$this->db->join('users_statics us', 'us.user_id = u.id', 'LEFT OUTER');
+		$this->db->join('statics s', 's.id = us.static_id', 'LEFT OUTER');
+		$this->db->where_in('u.rank', $ranks);
+		if ($statics) $this->db->where_in('us.static_id', $statics);
+		$this->db->order_by($orderBy, 'ASC');
+		if (!$result = $this->_result('users u')) return false;
+		
+		$data = [];
+		foreach ($result as $row) {
+			$data[$row['static_id']][$row['user_id']] = $row['rank'];
+		}
+		return $data;
+	}
+	
+	
+	
+	
 	
 	
 	

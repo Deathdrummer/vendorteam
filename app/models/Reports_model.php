@@ -552,8 +552,28 @@ class Reports_model extends My_Model {
 	 * @param 
 	 * @return 
 	*/
-	public function getCalendarReports() {
-		if (!$result = $this->_result('reports_calendar')) return false;
+	public function getCalendarReports($timePoints = false, $toReport = false) {
+		if ($timePoints) $this->db->where_in('timepoint', (array)$timePoints);
+		$result = $this->_result('reports_calendar');
+		if (!$result && !$toReport) return false;
+		
+		if ($toReport) {
+			$toReportData = [];
+			
+			if ($result) {
+				foreach ($result as $item) {
+					$toReportData[$item['timepoint']][$item['type']][] = $item['report_id'];
+				}
+			}
+			
+			foreach ($timePoints as $timePoint) {
+				if (!isset($toReportData[$timePoint])) $toReportData[$timePoint] = null;
+			}
+			
+			ksort($toReportData);
+			return $toReportData ?: false;
+		}
+		
 		
 		$reportsIds = [1 => [], 2 => []];
 		foreach ($result as $item) {
@@ -1710,6 +1730,30 @@ class Reports_model extends My_Model {
 		return $result;
 	}
 	
+	
+	
+	
+	/**
+	 * Получить список выплат
+	 * @param 
+	 * @return 
+	 */
+	public function getUsersOrders($dates = false, $users = false) {
+		if (!$dates) return false;
+		
+		$this->db->select('user_id, summ');
+		$this->db->where('paid', 1);
+		$this->db->where('date >=', $dates['start']);
+		$this->db->where('date <', $dates['end']);
+		if ($users) $this->db->where_in('user_id', $users);
+		if (!$usersOtders = $this->_result('users_orders')) return false;
+		
+		$result = [];
+		foreach ($usersOtders as $order) {
+			$result[$order['user_id']][] = $order['summ'];
+		}
+		return $result ?: false;
+	}
 	
 	
 	

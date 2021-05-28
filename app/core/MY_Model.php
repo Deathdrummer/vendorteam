@@ -11,38 +11,6 @@ class MY_Model extends CI_Model {
 	
 	
 	
-	/**
-	 * Добавить в запрос concat
-	 * @param поле для теста (есть ли данные)
-	 * @param все поля
-	 * @param название поля
-	 * @return string
-	*/
-	protected function groupConcat($concatTest = false, $concatData = false, $fieldname = false) {
-		if (!$concatTest || !$concatData || !$fieldname) return '';
-		
-		$finalConcat = '';
-		if ($cData = preg_split("/,\s+/", $concatData)) {
-			if (count($cData) == 1) $finalConcat = "GROUP_CONCAT(distinct ".reset($cData).")";
-			else {
-				foreach ($cData as $k => $item) {
-					if ($k == 0 || $k % 2 == 0) $item = "'$item'";
-					$finalConcat .= $item.', ';
-				}
-				$finalConcat = "GROUP_CONCAT(distinct JSON_OBJECT(".rtrim($finalConcat, ', ')."))";
-			}
-		}
-		
-		return "IF(GROUP_CONCAT(".$concatTest."), CAST(CONCAT('[', ".$finalConcat.", ']') AS JSON), NULL) AS ".$fieldname;
-	}
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	/**
 	 * Получить все значения заданного поля
@@ -136,9 +104,62 @@ class MY_Model extends CI_Model {
 	
 	
 	
+	//--------------------------------------------------------------------------------------------------
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Добавить в запрос concat
+	 * @param поле для теста (есть ли данные)
+	 * @param все поля "название поля1":"поле в таблице1","название поля2":"поле в таблице2". Если оба названия схожи - то просто одно название
+	 * @param название поля при выводе данных
+	 * @param уникальные значения
+	 * @return string
+	*/
+	protected function groupConcat($concatTest = false, $concatData = false, $fieldname = false, $distinct = false) {
+		if (!$concatTest || !$concatData || !$fieldname) return '';
+		
+		$finalConcat = '';
+		if ($cData = preg_split("/,\s+/", $concatData)) {
+			foreach ($cData as $k => $item) {
+				$item = explode(':', $item);
+				$finalConcat .= "'$item[0]'".", ".(isset($item[1]) ? $item[1] : $item[0]).", ";
+			}
+		}
+		
+		return "IF(GROUP_CONCAT(".$concatTest."), CAST(CONCAT('[', GROUP_CONCAT(".($distinct ? 'distinct' : '')." JSON_OBJECT(".rtrim($finalConcat, ', ').")), ']') AS JSON), NULL) AS ".$fieldname;
+	}
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Добавить в запрос concat value
+	 * @param поле для теста объединения
+	 * @param название поля
+	 * @param уникальные значения
+	 * @return string
+	*/
+	protected function groupConcatValue($concatField = false, $fieldname = false, $distinct = false) {
+		if (!$concatField || !$fieldname) return '';
+		return "IF(GROUP_CONCAT(".$concatField."), CAST(CONCAT('[', GROUP_CONCAT(".($distinct === true ? 'distinct' : '')." ".$concatField."), ']') AS JSON), NULL) AS ".$fieldname;
+	}
+	
+	
+	
+	
+	
 	
 	
 	//--------------------------------------------------------------------------------------------------
+	
 	
 	
 	

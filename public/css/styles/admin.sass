@@ -1438,6 +1438,7 @@ table
 		
 	&__content
 		margin-top: 1rem
+		min-height: 50px
 		
 		p
 			font-size: 16px
@@ -3176,5 +3177,63 @@ p
 		height: 20px
 		font-size: 12px
 			
+		
+	
+
+
+
+
+
+.calendarpopup
+	
+	&__block
+		padding: 10px
+		background-color: #eaedef
+		
+		+ .calendarpopup__block
+			margin-top: 30px
+	
+	&__year
+		font-size: 16px
+		+font(roboto, medium)
+		
+		
+	&__monthes
+		display: grid
+		grid-template-columns: repeat(6, 1fr)
+		grid-column-gap: 10px
+		grid-row-gap: 10px
+		
+		input[type="checkbox"]
+			display: none
 			
+			&:checked ~ .calendarpopup__month
+				box-shadow: 0 0 0 3px #6e9fbf inset
+			
+		
+	&__month
+		height: 50px
+		border: 1px solid #dee2e4
+		border-radius: 2px
+		background-color: #fff
+		display: flex
+		align-items: center
+		justify-content: center
+		cursor: pointer
+		transition: border-color 0.16s
+		
+		&:hover
+			border-color: #6e9fbf
+			
+			span
+				color: #659cbd
+		
+		span
+			font-size: 14px
+			text-transform: uppercase
+			color: #929fa7
+			+font(roboto, medium)
+			transition: color 0.16s
+		
+		
 		

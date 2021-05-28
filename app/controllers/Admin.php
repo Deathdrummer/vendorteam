@@ -1776,6 +1776,7 @@ class Admin extends MY_Controller {
 				$this->load->model('users_model', 'users');
 				
 				$rewardPeriodId = $post['period_id'];
+				
 				$staticId = $post['static_id'];
 				$periodData = $this->rewards->getPeriod($rewardPeriodId);
 				$summData = $this->rewards->getStaticsSumm($rewardPeriodId, $staticId);
@@ -1798,7 +1799,7 @@ class Admin extends MY_Controller {
 				
 				echo $this->twig->render('views/admin/render/rewards/static_report.tpl', $staticReport);
 				break;
-			
+				
 			case 'export':
 				$rewardPeriodId = $arg;
 				$periodData = $this->rewards->getPeriod($rewardPeriodId);
@@ -2341,6 +2342,11 @@ class Admin extends MY_Controller {
 				echo $this->twig->render('views/admin/render/statistics/reports.tpl', $data);
 				break;
 			
+			case 'get_ranks':
+				$data['ranks'] = $this->admin_model->getStaticsRanks($post['statics']);
+				echo $this->twig->render('views/admin/render/statistics/rakns.tpl', $data);
+				break;
+				
 			case 'get_calendar_reports':
 				$reportsIds = $this->reports->getCalendarReportsIds();
 				
@@ -2371,6 +2377,7 @@ class Admin extends MY_Controller {
 				
 				if (!$choosedReports = array_intersect_key($allReports, array_flip($post['reports']))) exit('');
 				
+				
 				$reportData = []; $staticsData = array_flip($post['statics']);
 				foreach ($choosedReports as $reportId => $report) {
 					$hasInPost = array_diff_key($staticsData, $report['cash']);
@@ -2385,30 +2392,30 @@ class Admin extends MY_Controller {
 				}
 				
 				$totals = [];
-				foreach ($reportData as $staticId => $data) {
-					if (array_sum($data) == 0) {
+				foreach ($reportData as $staticId => $reportsAmounts) {
+					if (array_sum($reportsAmounts) == 0) {
 						$totals[$staticId]['summ'] = null;
 						$totals[$staticId]['median'] = null;
 						$totals[$staticId]['avg'] = null;
 						continue;
 					} 
 					
-					$totals[$staticId]['summ'] = array_sum($data);
-					$totals[$staticId]['avg'] = floor(array_sum($data) / count($data));
+					$totals[$staticId]['summ'] = array_sum($reportsAmounts);
+					$totals[$staticId]['avg'] = floor(array_sum($reportsAmounts) / count($reportsAmounts));
 					
-					$data = array_values($data);
-					sort($data);
+					$reportsAmounts = array_values($reportsAmounts);
+					sort($reportsAmounts);
 					
-					if (count($data) % 2 != 0) {
-						$totals[$staticId]['median'] = $data[floor(count($data) / 2)];
+					if (count($reportsAmounts) % 2 != 0) {
+						$totals[$staticId]['median'] = $reportsAmounts[floor(count($reportsAmounts) / 2)];
 					} else {
-						$florVal = $data[floor(count($data) / 2) - 1];
-						$ceilVal = $data[floor(count($data) / 2)];
+						$florVal = $reportsAmounts[floor(count($reportsAmounts) / 2) - 1];
+						$ceilVal = $reportsAmounts[floor(count($reportsAmounts) / 2)];
 						$totals[$staticId]['median'] = floor(($florVal + $ceilVal) / 2);
 					}
 				}
 				
-				
+				$data['report'] = $reportData;
 				$data['statics'] = $statics;
 				$data['reports_titles'] = $reportsTitles;
 				$data['totals'] = $totals;
@@ -2417,7 +2424,44 @@ class Admin extends MY_Controller {
 				break;
 			
 			case 'users_amount_report': // Отчет "Доход участников"
-				if (!$reportData = $this->reports->getReportPatternsPayments(array_keys($post['users']), $post['reports'])) exit('');
+				$monthesDates = [];
+				if (isset($post['timepoints']) && $post['timepoints']) {
+					foreach ($post['timepoints'] as $timePoint) {
+						$monthesDates[$timePoint] = [
+							'start' => $timePoint, 
+							'end' 	=> strtotime("first day of +1 month", $timePoint)
+						];
+					}
+				}
+				
+				$calendarReports = $this->reports->getCalendarReports($post['timepoints'], true);
+				
+				$reportData = []; $reportsTitles = [];
+				foreach ($calendarReports as $timePoint => $reports) {
+					$paymentReports = isset($reports[1]) ? $reports[1] : false;
+					$rewardsPeriods = isset($reports[2]) ? $reports[2] : false;
+					
+					$reportsPayments = $this->reports->getReportPatternsPayments(array_keys($post['users']), $paymentReports);
+					$rewardsPayments = $this->get_rewards_report($rewardsPeriods, array_keys($post['users']));
+					$usersOrders = $this->reports->getUsersOrders($monthesDates[$timePoint], array_keys($post['users']));
+					
+					$combineReports = array_filter(array_replace_recursive((array)$reportsPayments, (array)$rewardsPayments));
+					if ($combineReports) {
+						foreach ($combineReports as $userId => $reportsSummData) {
+							$reportData[$userId][(string)$timePoint] = array_sum($reportsSummData) ?: 0;
+						}
+					}
+					
+					if ($usersOrders) {
+						foreach ($usersOrders as $userId => $orders) {
+							if (!isset($reportData[$userId][(string)$timePoint])) $reportData[$userId][(string)$timePoint] = (float)array_sum($orders);
+							else $reportData[$userId][(string)$timePoint] += (float)array_sum($orders);
+						}
+					}
+						
+					$reportsTitles[] = $timePoint;
+				}
+				
 				
 				$totals = [];
 				foreach ($reportData as $userId => $data) {
@@ -2444,12 +2488,101 @@ class Admin extends MY_Controller {
 				}
 				
 				
-				$data['reports_titles'] = $this->reports->getMainReportPatternsTitles($post['reports']);
 				$data['users'] = $post['users'];
 				$data['report'] = $reportData;
+				$data['reports_titles'] = $reportsTitles;
 				$data['totals'] = $totals;
 				
 				echo $this->twig->render('views/admin/render/statistics/users_amount_report.tpl', $data);
+				break;
+			
+			case 'ranks_amount_report': // Отчет "Доход по званиям" statics -> ranks -> monthes
+				$monthesDates = [];
+				if (isset($post['timepoints']) && $post['timepoints']) {
+					foreach ($post['timepoints'] as $timePoint) {
+						$monthesDates[$timePoint] = [
+							'start' => $timePoint, 
+							'end' 	=> strtotime("first day of +1 month", $timePoint)
+						];
+					}
+				}
+				
+				$statics = $this->admin_model->getStatics(true);
+				$ranks = $this->admin_model->getRanks(true);
+				$calendarReports = $this->reports->getCalendarReports($post['timepoints'], true);
+				
+				$this->load->model('users_model', 'users');
+				$ranksStaticsData = $this->users->getRanksStaticsUsers($post['ranks'], $post['statics']);
+				
+				$reportData = []; $reportsTitles = []; // static -> user -> [timepoint => summ]
+				foreach ($ranksStaticsData as $staticId => $ranksData) {
+					$usersIds = array_keys($ranksData);
+					foreach ($calendarReports as $timePoint => $reports) {
+						$paymentReports = isset($reports[1]) ? $reports[1] : false;
+						$rewardsPeriods = isset($reports[2]) ? $reports[2] : false;
+						
+						$reportsPayments = $this->reports->getReportPatternsPayments($usersIds, $paymentReports);
+						$rewardsPayments = $this->get_rewards_report($rewardsPeriods, $usersIds);
+						$usersOrders = $this->reports->getUsersOrders($monthesDates[$timePoint], $usersIds);
+						
+						
+						$combineReports = array_filter(array_replace_recursive((array)$reportsPayments, (array)$rewardsPayments));
+						if ($combineReports) {
+							foreach ($combineReports as $userId => $reportsSummData) {
+								if (!isset($reportData[$staticId][$ranksStaticsData[$staticId][$userId]][(string)$timePoint])) $reportData[$staticId][$ranksStaticsData[$staticId][$userId]][(string)$timePoint] = array_sum($reportsSummData) ?: 0;
+								else $reportData[$staticId][$ranksStaticsData[$staticId][$userId]][(string)$timePoint] += array_sum($reportsSummData) ?: 0; 
+							}
+						}
+						
+						if ($usersOrders) {
+							foreach ($usersOrders as $userId => $orders) {
+								if (!isset($reportData[$staticId][$ranksStaticsData[$staticId][$userId]][(string)$timePoint])) $reportData[$staticId][$ranksStaticsData[$staticId][$userId]][(string)$timePoint] = (float)array_sum($orders);
+								else $reportData[$staticId][$ranksStaticsData[$staticId][$userId]][(string)$timePoint] += (float)array_sum($orders);
+							}
+						}
+							
+						$reportsTitles[$timePoint] = $timePoint;
+					}
+					
+				}
+					
+				
+				
+				$totals = [];
+				foreach ($reportData as $staticId => $ranksData) foreach ($ranksData as $rankId => $data) {
+					if (array_sum($data) == 0) {
+						$totals[$staticId][$rankId]['summ'] = null;
+						$totals[$staticId][$rankId]['median'] = null;
+						$totals[$staticId][$rankId]['avg'] = null;
+						continue;
+					} 
+					
+					$totals[$staticId][$rankId]['summ'] = array_sum($data);
+					$totals[$staticId][$rankId]['avg'] = floor(array_sum($data) / count($data));
+					
+					$data = array_values($data);
+					sort($data);
+					
+					if (count($data) % 2 != 0) {
+						$totals[$staticId][$rankId]['median'] = $data[floor(count($data) / 2)];
+					} else {
+						$florVal = $data[floor(count($data) / 2) - 1];
+						$ceilVal = $data[floor(count($data) / 2)];
+						$totals[$staticId][$rankId]['median'] = floor(($florVal + $ceilVal) / 2);
+					}
+				}
+				
+				
+				$data['statics'] = $statics;
+				$data['ranks'] = $ranks;
+				$data['report'] = $reportData;
+				$data['reports_titles'] = array_values($reportsTitles);
+				$data['totals'] = $totals;
+				
+				echo $this->twig->render('views/admin/render/statistics/ranks_amount_report.tpl', $data);
+				break;
+			
+				
 				break;
 			
 			default:
@@ -2457,6 +2590,68 @@ class Admin extends MY_Controller {
 				break;
 		}
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function get_rewards_report($rewardsPeriodsIds = false, $usersIds = false) {
+		if (!$rewardsPeriodsIds) return false;
+		$this->load->model('rewards_model', 'rewards');
+			
+		$result = [];
+		foreach ((array)$rewardsPeriodsIds as $rewardPeriodId) {
+			$rewardPeriodData = $this->rewards->getRewardsPeriodData($rewardPeriodId);
+			
+			$summData = $this->rewards->getStaticsSumm($rewardsPeriodsIds, $rewardPeriodData['statics']);
+			
+			$staticsSumm = [];
+			foreach ($summData as $period => $statics) foreach ($statics as $staticId => $summ) {
+				if (!isset($staticsSumm[$staticId])) $staticsSumm[$staticId] = $summ;
+				else $staticsSumm[$staticId] += $summ;
+			}
+			
+			
+			$data['cash'] = $staticsSumm;
+			$data['period_id'] = $rewardPeriodData['reports_periods'];
+			$data['variant'] = 2;
+			$data['ranks'] = $this->rewards->getRewardsRanks($rewardsPeriodsIds);
+
+			$reportData = $this->reports->buildReportPaymentsData($this->constants[2], $data);
+			
+			
+			foreach ($reportData as $staticId => $reportData) foreach ($reportData['users'] as $userId => $user) {
+				$result[$rewardPeriodId][$userId] = $user['payment'];
+			} 
+		}
+		
+		foreach ($result as $reportId => $usersPayments) {
+			$result[$reportId] = array_intersect_key($usersPayments, (array)array_flip($usersIds));
+		}
+		
+		$finalData = [];
+		foreach ($result as $reportId => $usersPayments) foreach ($usersPayments as $userId => $payment) {
+			$finalData[$userId][$reportId] = $payment;
+		}
+				
+		return $finalData;
+	}
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -2480,8 +2675,9 @@ class Admin extends MY_Controller {
 		
 		switch ($action) {
 			case 'get_calendar':
-				$startDate = strtotime('01-01-2019');
-				$countYears = 3;
+				$startYear = 2019; // ----------------------------- год начала
+				$startDate = strtotime('01-01-'.$startYear);
+				$countYears =  date('Y') - ($startYear - 1);
 				
 				$monthesDates = [];
 				for ($month = 0; $month < ($countYears * 12); $month++) {
@@ -2495,8 +2691,26 @@ class Admin extends MY_Controller {
 				$data['calendar'] = $monthesDates;
 				$data['reports'] = $this->reports->getCalendarReports();
 				echo $this->twig->render('views/admin/render/calendar/monthes_grid.tpl', $data);
-				
 				break;
+				
+			case 'get_table':	
+				$startYear = 2019; // ----------------------------- год начала
+				$startDate = strtotime('01-01-'.$startYear);
+				$countYears =  date('Y') - ($startYear - 1);
+				
+				$monthesDates = [];
+				for ($month = 0; $month < ($countYears * 12); $month++) {
+					$datePoint = strtotime("first day of $month month", $startDate);
+					$monthesDates[date('Y', $datePoint)][] = [
+						'timepoint'	=> $datePoint,
+						'month'	=> $this->monthes2[date('n', $datePoint)]
+					];
+				}
+				$data['calendar'] = $monthesDates;
+				
+				echo $this->twig->render('views/admin/render/calendar/table.tpl', $data);
+				break;
+				
 			case 'add_reports':
 				
 				if (!$this->reports->addCalendarReports($post['type'], $post['timepoint'], $post['reports'])) exit('0');

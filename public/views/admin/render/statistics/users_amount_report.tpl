@@ -23,8 +23,8 @@
 			<table>
 				<thead>
 					<tr>
-						{% for rId, report in reports_titles.items %}
-							<td class="nowidth"><p class="w120px">{{report.title}}</p></td>
+						{% for timepoint in reports_titles %}
+							<td class="nowidth"><p class="w130px">{{timepoint|month('full')|upper}} {{date('Y', timepoint)}} г.</p></td>
 						{% endfor %}
 						<td class="p-0"></td>
 					</tr>
@@ -32,10 +32,10 @@
 				<tbody>
 					{% for uId, user in users %}
 						<tr>
-							{% for rId, rTitle in reports_titles.items %}
+							{% for timepoint in reports_titles %}
 								<td class="h52px">
-									{% if report[uId][rId] %}
-										<p>{{report[uId][rId]|number_format(2, '.', ' ')}} ₽</p>
+									{% if report[uId][timepoint] %}
+										<p>{{report[uId][timepoint]|number_format(2, '.', ' ')}} ₽</p>
 									{% else %}
 										-
 									{% endif %}

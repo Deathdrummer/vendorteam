@@ -52,23 +52,20 @@
 				
 				<div class="item inline">
 					<div class="buttons notop">
-						<button id="ratingPeriods" class="fieldheight" title="Периоды"><i class="fa fa-calculator"></i></button>
+						<button id="ranksAmount" class="fieldheight" title="Сформировать отчет"><i class="fa fa-calculator"></i></button>
 					</div>
 				</div>
 				
 				
-				<div id="" class="reports noborder"></div>
+				<div id="ranksAmountReport" class="reports noborder"></div>
 			</fieldset>
 		</div>
 		
+		
 		<div tabid="tabCalendar">
-			
 			<div id="calendarGrid"></div>
-			
 		</div>
-
-	
-	
+	</div>
 </div>
 
 
@@ -107,11 +104,8 @@
 				
 				$('#staticsAmountList').find('input[type="checkbox"]').on(tapEvent, function() {
 					let checkedLength = $('#staticsAmountList').find('input[type="checkbox"]:checked').length;
-					if (checkedLength) {
-						$('#sAChooseStatics:disabled').removeAttrib('disabled');
-					} else {
-						$('#sAChooseStatics:not(:disabled)').setAttrib('disabled');
-					}
+					if (checkedLength) $('#sAChooseStatics:disabled').removeAttrib('disabled');
+					else $('#sAChooseStatics:not(:disabled)').setAttrib('disabled');
 				});
 				
 				
@@ -151,11 +145,8 @@
 						
 						$('#reportsAmountList').find('input[type="checkbox"]').on(tapEvent, function() {
 							let checkedLength = $('#reportsAmountList').find('input[type="checkbox"]:checked').length;
-							if (checkedLength) {
-								$('#sAChooseReports:disabled').removeAttrib('disabled');
-							} else {
-								$('#sAChooseReports:not(:disabled)').setAttrib('disabled');
-							}
+							if (checkedLength) $('#sAChooseReports:disabled').removeAttrib('disabled');
+							else $('#sAChooseReports:not(:disabled)').setAttrib('disabled');
 						});
 						
 						
@@ -179,12 +170,7 @@
 					}, function() {
 						staticsAmountWin.wait(false);
 					});
-					
-					
 				});
-				
-				
-				
 				
 			}, function() {
 				staticsAmountWin.wait(false);
@@ -214,51 +200,27 @@
 			chooseType: 'multiple',
 			returnFields: 'nickname avatar static_name static_icon',
 			onChoose: function(users, uMWin) {
-				getAjaxHtml('admin/statistics/get_reports', function(html) {
-					uMWin.setButtons([{id: 'sAChooseReports', title: 'Выбрать', disabled: 1}], 'Закрыть');
+				getAjaxHtml('admin/calendar/get_table', function(html) {
+					uMWin.setButtons([{id: 'uAChooseMonthes', title: 'Выбрать', disabled: 1}], 'Закрыть');
 					uMWin.setData(html);
-					uMWin.setWidth(500);
+					uMWin.setWidth(900);
 					uMWin.setTitle('Доход участников');
-					$('#reportsAmountList').ddrScrollTableY('400px');
 					
-					$('#reportsAmountType').on('change', function() {
+					
+					$('#calendarPopup').find('input[type="checkbox"]').on(tapEvent, function() {
+						let checkedLength = $('#calendarPopup').find('input[type="checkbox"]:checked').length;
+						if (checkedLength) $('#uAChooseMonthes:disabled').removeAttrib('disabled');
+						else $('#uAChooseMonthes:not(:disabled)').setAttrib('disabled');
+					});
+					
+					$('#uAChooseMonthes').on(tapEvent, function() {
 						uMWin.wait();
-						let type = $(this).val();
-						if (type == 0) {
-							$('#reportsAmountList').find('tbody').children('tr[hidden]').removeAttrib('hidden');
-						} else {
-							$('#reportsAmountList').find('tbody').children('tr:not([hidden])').setAttrib('hidden');
-							$('#reportsAmountList').find('tbody').children('tr[type="'+type+'"]').removeAttrib('hidden');
-						}
-						uMWin.wait(false);
-					});
-					
-					$('#reportsAmountSetAll').on(tapEvent, function() {
-						$('#reportsAmountList').find('tr:not([hidden])').each(function() {
-							$(this).find('input[type="checkbox"]:not(:checked)').setAttrib('checked');
-						});
-						$('#sAChooseReports:disabled').removeAttrib('disabled');
-					});
-					
-					
-					$('#reportsAmountList').find('input[type="checkbox"]').on(tapEvent, function() {
-						let checkedLength = $('#reportsAmountList').find('input[type="checkbox"]:checked').length;
-						if (checkedLength) {
-							$('#sAChooseReports:disabled').removeAttrib('disabled');
-						} else {
-							$('#sAChooseReports:not(:disabled)').setAttrib('disabled');
-						}
-					});
-					
-					
-					$('#sAChooseReports').on(tapEvent, function() {
-						uMWin.wait();
-						let choosedReports = [];
-						$('#reportsAmountList').find('input[type="checkbox"]:checked').each(function() {
-							choosedReports.push(parseInt($(this).val()));
+						let choosedMonthes = [];
+						$('#calendarPopup').find('input[type="checkbox"]:checked').each(function() {
+							choosedMonthes.push(parseInt($(this).val()));
 						});
 						
-						getAjaxHtml('admin/statistics/users_amount_report', {users: users, reports: choosedReports}, function(html) {
+						getAjaxHtml('admin/statistics/users_amount_report', {users: users, timepoints: choosedMonthes}, function(html) {
 							$('#usersAmountReport').html(html);
 							$('#usersAmountReport').find('.scroll').ddrScrollTable();
 							uMWin.close();
@@ -271,13 +233,156 @@
 				});
 			}
 		});
-		
-		
-		
-		
-		
-		
 	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//------------------------------------------------------------------------------------------------ Доход по званиям
+	$('#ranksAmount').on(tapEvent, function() {
+		popUp({
+			title: 'Доход по званиям',
+		    width: 500,
+		    wrapToClose: true,
+		    buttons: [{id: 'sAChooseStatics', title: 'Выбрать', disabled: 1}],
+		    closeButton: 'Закрыть',
+		}, function(ranksAmountWin) {
+			ranksAmountWin.wait();
+			getAjaxHtml('admin/statistics/get_statics', {}, function(html) {
+				ranksAmountWin.setData(html, false, function() {
+					$('#staticsAmountList').ddrScrollTableY('400px');
+				});
+				
+				
+				$('#staticsAmountSetAll').on(tapEvent, function() {
+					$('#staticsAmountList').find('input[type="checkbox"]:not(:checked)').each(function() {
+						$(this).setAttrib('checked');
+					});
+					$('#sAChooseStatics:disabled').removeAttrib('disabled');
+				});
+				
+				
+				$('#staticsAmountList').find('input[type="checkbox"]').on(tapEvent, function() {
+					let checkedLength = $('#staticsAmountList').find('input[type="checkbox"]:checked').length;
+					if (checkedLength) $('#sAChooseStatics:disabled').removeAttrib('disabled');
+					else $('#sAChooseStatics:not(:disabled)').setAttrib('disabled');
+				});
+				
+				
+				$('#sAChooseStatics').on(tapEvent, function() {
+					ranksAmountWin.wait();
+					let choosedStatics = [];
+					$('#staticsAmountList').find('input[type="checkbox"]:checked').each(function() {
+						choosedStatics.push(parseInt($(this).val()));
+					});
+					
+					getAjaxHtml('admin/statistics/get_ranks', {statics: choosedStatics}, function(html) {
+						ranksAmountWin.setButtons([{id: 'rAChooseRanks', title: 'Выбрать', disabled: 1}], 'Закрыть');
+						ranksAmountWin.setData(html, false, function() {
+							$('#ranksAmountList').ddrScrollTableY('400px');
+						});
+						
+						$('#ranksAmountSetAll').on(tapEvent, function() {
+							$('#ranksAmountList').find('input[type="checkbox"]:not(:checked)').each(function() {
+								$(this).setAttrib('checked');
+							});
+							$('#rAChooseRanks:disabled').removeAttrib('disabled');
+						});
+						
+						
+						$('#ranksAmountList').find('input[type="checkbox"]').on(tapEvent, function() {
+							let checkedLength = $('#ranksAmountList').find('input[type="checkbox"]:checked').length;
+							if (checkedLength) {
+								$('#rAChooseRanks:disabled').removeAttrib('disabled');
+							} else {
+								$('#rAChooseRanks:not(:disabled)').setAttrib('disabled');
+							}
+						});
+						
+						
+						$('#rAChooseRanks').on(tapEvent, function() {
+							ranksAmountWin.wait();
+							let choosedRanks = [];
+							$('#ranksAmountList').find('input[type="checkbox"]:checked').each(function() {
+								choosedRanks.push(parseInt($(this).val()));
+							});
+							
+							
+							getAjaxHtml('admin/calendar/get_table', function(html) {
+								ranksAmountWin.setButtons([{id: 'rAChooseMonthes', title: 'Выбрать', disabled: 1}], 'Закрыть');
+								ranksAmountWin.setData(html);
+								ranksAmountWin.setWidth(900);
+								
+								$('#calendarPopup').find('input[type="checkbox"]').on(tapEvent, function() {
+									let checkedLength = $('#calendarPopup').find('input[type="checkbox"]:checked').length;
+									if (checkedLength) $('#rAChooseMonthes:disabled').removeAttrib('disabled');
+									else $('#rAChooseMonthes:not(:disabled)').setAttrib('disabled');
+								});
+								
+								$('#rAChooseMonthes').on(tapEvent, function() {
+									ranksAmountWin.wait();
+									let choosedMonthes = [];
+									$('#calendarPopup').find('input[type="checkbox"]:checked').each(function() {
+										choosedMonthes.push(parseInt($(this).val()));
+									});
+									
+									
+									getAjaxHtml('admin/statistics/ranks_amount_report', {ranks: choosedRanks, statics: choosedStatics, timepoints: choosedMonthes}, function(html) {
+										$('#ranksAmountReport').html(html);
+										$('#ranksAmountReport').find('.scroll').ddrScrollTable();
+										ddrInitTabs();
+										ranksAmountWin.close();
+									}, function() {
+										ranksAmountWin.wait(false);
+									});
+								});
+							}, function() {
+								ranksAmountWin.wait(false);
+							});
+							
+							
+							
+							
+						});
+						
+						
+						
+						
+					}, function() {
+						ranksAmountWin.wait(false);
+					});
+				});
+				
+				
+				
+				
+			}, function() {
+				ranksAmountWin.wait(false);
+			});
+		});
+	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

@@ -55230,7 +55230,8 @@ table {
           font-size: 26px;
           line-height: 26px; } }
   .popup__content {
-    margin-top: 1rem; }
+    margin-top: 1rem;
+    min-height: 50px; }
     .popup__content p {
       font-size: 16px;
       line-height: 20px;
@@ -58691,3 +58692,61 @@ p.info {
         top: -7px;
         right: -1px;
         font-size: 14px; }
+
+.calendarpopup__block {
+  padding: 10px;
+  background-color: #eaedef; }
+  .calendarpopup__block + .calendarpopup__block {
+    margin-top: 30px; }
+
+.calendarpopup__year {
+  font-size: 16px;
+  font-family: roboto-medium, sans-serif; }
+
+.calendarpopup__monthes {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-column-gap: 10px;
+  grid-row-gap: 10px; }
+  .calendarpopup__monthes input[type="checkbox"] {
+    display: none; }
+    .calendarpopup__monthes input[type="checkbox"]:checked ~ .calendarpopup__month {
+      -webkit-box-shadow: 0 0 0 3px #6e9fbf inset;
+              box-shadow: 0 0 0 3px #6e9fbf inset; }
+
+.calendarpopup__month {
+  height: 50px;
+  border: 1px solid #dee2e4;
+  border-radius: 2px;
+  background-color: #fff;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+     -moz-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+     -moz-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  cursor: pointer;
+  -webkit-transition: border-color 0.16s;
+  -o-transition: border-color 0.16s;
+  transition: border-color 0.16s; }
+  .calendarpopup__month:hover {
+    border-color: #6e9fbf; }
+    .calendarpopup__month:hover span {
+      color: #659cbd; }
+  .calendarpopup__month span {
+    font-size: 14px;
+    text-transform: uppercase;
+    color: #929fa7;
+    font-family: roboto-medium, sans-serif;
+    -webkit-transition: color 0.16s;
+    -o-transition: color 0.16s;
+    transition: color 0.16s; }
