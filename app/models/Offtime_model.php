@@ -123,13 +123,13 @@ class Offtime_model extends My_Model {
 		$this->load->model('admin_model');
 		$offtimeUserMonthLimit = $this->admin_model->getSettings('offtime_user_limit'); // лимит выходных на одного в месяц
 		$periodStart = strtotime(date('Y-m-d', strtotime('first day of 0 month', $data['date'])));
-		$periodEnd = strtotime(date('Y-m-d', strtotime('first day of next month', $data['date']) - 86400));
+		$periodEnd = strtotime(date('Y-m-d', strtotime('first day of next month', $data['date'])));
 		$data['date'] = strtotime(date('Y-m-d', $data['date']));
+		
 		
 		$rolesLimits = $this->getRolesLimits($data['static']);
 		$roleLimit = isset($rolesLimits[$data['role']]) ? $rolesLimits[$data['role']] : 0;
 		$staticLimit = isset($rolesLimits[0]) ? $rolesLimits[0] : 0;
-		
 		
 		
 		// лимит на роль в день
@@ -140,7 +140,7 @@ class Offtime_model extends My_Model {
 		]);
 		$countRolesUsersOfDay = $this->db->count_all_results('offtime_users');
 		if ($countRolesUsersOfDay >= $roleLimit) {
-			return false;
+			return -1;
 		}
 		
 		
@@ -151,17 +151,19 @@ class Offtime_model extends My_Model {
 		]);
 		$countStaticUsersOfDay = $this->db->count_all_results('offtime_users');
 		if ($countStaticUsersOfDay >= $staticLimit) {
-			return false;
+			return -2;
 		} 
 		
 		
+		// лимит на количество выходных в месяц
 		$this->db->where([
 			'user_id' 	=> $data['user_id'],
 			'static'	=> $data['static'],
 			'date >=' 	=> $periodStart,
-			'date <=' 	=> $periodEnd
+			'date <' 	=> $periodEnd
 		]);
-		if ($this->db->count_all_results('offtime_users') >= $offtimeUserMonthLimit) return false;
+		if ($this->db->count_all_results('offtime_users') >= $offtimeUserMonthLimit) return -3;
+		
 		
 		$this->db->where([
 			'user_id' 	=> $data['user_id'],
@@ -169,9 +171,10 @@ class Offtime_model extends My_Model {
 			'date' 		=> $data['date']
 		]);
 		
-		if ($this->db->count_all_results('offtime_users') > 0) return false;
-		if ($this->db->insert('offtime_users', $data)) return true;
-		return false;
+		// если у этого участника в этот день уже есть выходной
+		if ($this->db->count_all_results('offtime_users') > 0) return -4;
+		if (!$this->db->insert('offtime_users', $data)) return false;
+		return 1;
 	}
 	
 	

@@ -1713,14 +1713,21 @@ $(document).ready(function() {
 				user_id: thisData[0],
 				static: thisData[1],
 				role: thisData[2],
-				date: thisData[3]
+				date: thisData[3],
+				history: historyWeeks
 			};
 		$.post('/offtime/set_offtime', params, function(html) {
-			if (html) {
+			if (html == '-1') { // лимит на роль в день
+				notify('Достигнут лимит на роль в день!', 'info');
+			} else if (html == '-2') { // лимит на все роли одного статика в день
+				notify('Достигнут лимит на все роли одного статика в день!', 'info');
+			} else if (html == '-3') { // лимит на количество выходных в месяц
+				notify('Достигнут лимит на количество выходных в месяц!', 'info');
+			} else if (html == '-4') { // если у этого участника в этот день уже есть выходной
+				notify('У Вас в этот день уже есть выходной!', 'info');
+			} else {
 				offtimeWin.setData(html);
 				notify('Выходной успешно забронирован!');
-			} else {
-				notify('Лимит выходных на данный месяц исчерпан!', 'info');
 			}
 		}, 'html').fail(function(e) {
 			showError(e);
@@ -1731,7 +1738,7 @@ $(document).ready(function() {
 	
 	$('body').off(tapEvent, '[unsetofftime]').on(tapEvent, '[unsetofftime]', function() {
 		var thisData = $(this).attr('unsetofftime').split('|');
-		$.post('/offtime/unset_offtime', {id: thisData[0], static: thisData[1]}, function(html) {
+		$.post('/offtime/unset_offtime', {id: thisData[0], static: thisData[1], history: historyWeeks}, function(html) {
 			if (html) {
 				offtimeWin.setData(html);
 				notify('Выходной отменен!', 'info');

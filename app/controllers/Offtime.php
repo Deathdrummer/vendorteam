@@ -32,11 +32,11 @@ class Offtime extends MY_Controller {
 	 */
 	public function set_offtime() {
 		$data = $this->input->post();
-		if ($this->offtime_model->setOfftime($data)) {
-			$this->get_offtime_dates();
-		} else {
-			echo '';
-		}
+		$history = arrTakeItem($data, 'history');
+		
+		$code = $this->offtime_model->setOfftime($data);
+		if ($code == 1) $this->get_offtime_dates($history);
+		else echo $code;
 	}
 	
 	
@@ -49,9 +49,10 @@ class Offtime extends MY_Controller {
 	public function unset_offtime() {
 		$id = $this->input->post('id');
 		$static = $this->input->post('static');
+		$history = $this->input->post('history');
 		
 		if ($this->offtime_model->unsetOfftime($id, $static)) {
-			$this->get_offtime_dates();
+			$this->get_offtime_dates($history);
 		}
 	}
 	
@@ -63,11 +64,11 @@ class Offtime extends MY_Controller {
 	 * @param 
 	 * @return 
 	 */
-	public function get_offtime_dates() {
+	public function get_offtime_dates($history = false) {
 		if (! $this->input->is_ajax_request()) return false;
 		$this->load->model(['account_model', 'admin_model']);
 		$static = $this->input->post('static');
-		$history = $this->input->post('history') ?: 0;
+		$history = $history ?: ($this->input->post('history') ?: 0);
 		
 		$startDatePoint = (date('j', time()) == 1) ? strtotime('today') : strtotime(date('d-m-Y', strtotime('first day of '.$history.' month')));
 		
@@ -80,7 +81,7 @@ class Offtime extends MY_Controller {
 		$data['location'] = $this->admin_model->getStaticLocation($static);
 		$data['role'] = $this->account_model->getRole();
 		$data['current_date'] = strtotime('today');
-		$data['history_disabled'] = $history >= 0 ? true : false;
+		$data['history_disabled'] = $history >= 1 ? true : false;
 		
 		$data['users'] = $this->offtime_model->getOfftimeUsers($static);
 		$rolesLimits = $this->offtime_model->getRolesLimits($static);
