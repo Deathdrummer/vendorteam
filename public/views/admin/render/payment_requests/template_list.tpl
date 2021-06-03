@@ -71,13 +71,13 @@
 						<label for="paymentRequestTempOrder">Номер заказа</label>
 						<input type="text" id="paymentRequestTempOrder" autocomplete="off"/>
 					</div>
-					<div class="payment_request_form__item">
+					{#<div class="payment_request_form__item">
 						<label>Удержать в резерв</label>
 						<div class="checkblock">
 							<input type="checkbox" id="paymentRequestToDeposit">
 							<label for="paymentRequestToDeposit"></label>
 						</div>
-					</div>
+					</div>#}
 				</div>
 			</div>
 			<div class="col-12 col-md-7">

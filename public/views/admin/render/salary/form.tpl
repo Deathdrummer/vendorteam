@@ -57,7 +57,7 @@
 				<input type="text" id="salesOrder" placeholder="Номер заказа">
 			</div>
 		</div>
-		<div class="col-auto">
+		{#<div class="col-auto">
 			<div class="d-flex align-items-center">
 				<span class="mr-2">Удержать в резерв</span>
 				<div class="checkblock">
@@ -65,7 +65,7 @@
 					<label for="paymentRequestToDeposit"></label>
 				</div>
 			</div>
-		</div>
+		</div>#}
 	</div>
 	
 	<div class="popup__textarea">

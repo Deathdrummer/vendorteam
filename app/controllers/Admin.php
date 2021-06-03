@@ -261,7 +261,7 @@ class Admin extends MY_Controller {
 				$data['roles'] = $this->admin_model->getRoles();
 				$data['roles_limits'] = $this->offtime_model->getRolesLimits();
 				
-				$startDatePoint = (date('j', time()) == 1) ? strtotime('today') : strtotime(date('d-m-Y', strtotime('first day of 0 month')));
+				$startDatePoint = strtotime(date('d-m-Y', strtotime('first day of 0 month')));
 				$data['offtime']['dates'] = getDatesRange($startDatePoint, date('t', $startDatePoint), 'day');
 				$data['offtime']['users'] = $this->offtime_model->getOfftimeUsers();
 				$data['offtime']['disabled'] = $this->offtime_model->getOfftimeDisabled();
@@ -1433,21 +1433,21 @@ class Admin extends MY_Controller {
 			
 			case 'set_checkout':
 				$data = bringTypes($postData['data']);
-				$toDeposit = $postData['to_deposit'];
+				//$toDeposit = $postData['to_deposit'];
 				$usersIds = array_column($data, 'user_id') ?: [];
 				$this->load->model('users_model');
 				$usersData = $this->users_model->getUsers(['where' => ['us.main' => 1], 'where_in' => ['field' => 'u.id', 'values' => $usersIds], 'fields' => 'id, nickname, avatar, payment, deposit, static, lider']);
 				$usersData = setArrKeyFromField($usersData, 'id', true);
 				
-				if ($toDeposit) {
+				/*if ($toDeposit) {
 					$staticsData = $this->admin_model->getStatics();
 					$percentToDeposit = $this->admin_model->getSettings('payment_requests_deposit_percent');
-				}
+				}*/
 				
-				$orders = [];
-				$toDepositData = [];
+				$orders = []; $toWalletData = [];
+				//$toDepositData = [];
 				foreach ($data as $user) {
-					if ($toDeposit) {
+					/*if ($toDeposit) {
 						$userStatic = $usersData[$user['user_id']]['static'];
 						$userLider = $usersData[$user['user_id']]['lider'];
 						$userDeposit = $usersData[$user['user_id']]['deposit'];
@@ -1465,9 +1465,10 @@ class Admin extends MY_Controller {
 					} else {
 						$summToOrder = $user['summ'];
 						$summToDeposit = 0;
-					}
-						
+					}*/
 					
+					$summToOrder = $user['summ'];
+					$summToDeposit = 0;
 					
 					$orders[] = [
 						'user_id'		=> $user['user_id'],
@@ -1481,7 +1482,13 @@ class Admin extends MY_Controller {
 						'comment' 		=> $user['comment'],
 						'date'			=> time()
 					];
+					
+					if (!isset($toWalletData[$user['user_id']])) $toWalletData[$user['user_id']] = $summToOrder;
+					else $toWalletData[$user['user_id']] += $summToOrder;
 				}
+				
+				$this->load->model('wallet_model');
+				$this->wallet_model->setToWallet($toWalletData, 5, $user['order'], '+');
 
 				if (!$this->reports_model->insertUsersOrders($orders)) exit('0');
 				if ($toDeposit) $this->users_model->setUsersDeposit($toDepositData);
@@ -1763,6 +1770,16 @@ class Admin extends MY_Controller {
 				if ($this->rewards->setStaticsSumm($postData)) exit('0');
 				echo '1';
 				break;
+			
+			case 'set_to_wallet': // Отправить суммы в кошельки участников
+				$this->load->model('wallet_model', 'wallet');
+				$rewardsPayments = $this->get_rewards_report($postData['period_id']);
+				
+				if (!$this->wallet->setToWallet($rewardsPayments, 3, $postData['report_title'], '+')) exit('0');
+				$this->rewards->setWalletStat($postData['period_id'], 1);
+				echo '1';
+				break;
+			
 			
 			case 'get_report': // получить отчет
 				$statics = $this->rewards->getStatics();
@@ -2136,6 +2153,9 @@ class Admin extends MY_Controller {
 				];
 				if (!$this->admin_model->setOrderToBalance($orderToBalance)) exit(-3);
 			}
+			
+			$this->load->model('wallet_model');
+			$this->wallet_model->setToWallet([$postData['order']['user_id'] => (float)$postData['order']['summ']], 5, $postData['order']['order'], '+');
 			
 			if (!$this->admin_model->insertResignOrder($order)) exit('-1'); // отправить заявку на оплату
 			if (!$this->users_model->setUserDeposit($postData['order']['user_id'], true)) exit('-2'); // обнулить депозит участника
@@ -2581,12 +2601,8 @@ class Admin extends MY_Controller {
 				
 				echo $this->twig->render('views/admin/render/statistics/ranks_amount_report.tpl', $data);
 				break;
-			
 				
-				break;
-			
 			default:
-				# code...
 				break;
 		}
 	}
@@ -2635,13 +2651,17 @@ class Admin extends MY_Controller {
 			} 
 		}
 		
-		foreach ($result as $reportId => $usersPayments) {
-			$result[$reportId] = array_intersect_key($usersPayments, (array)array_flip($usersIds));
+		if ($usersIds) {
+			foreach ($result as $reportId => $usersPayments) {
+				$result[$reportId] = array_intersect_key($usersPayments, (array)array_flip($usersIds));
+			}
 		}
+			
 		
 		$finalData = [];
 		foreach ($result as $reportId => $usersPayments) foreach ($usersPayments as $userId => $payment) {
-			$finalData[$userId][$reportId] = $payment;
+			if (!is_array($rewardsPeriodsIds)) $finalData[$userId] = $payment;
+			else $finalData[$userId][$reportId] = $payment;
 		}
 				
 		return $finalData;

@@ -94,6 +94,7 @@ class Reports extends MY_Controller {
 		$postData = $this->input->post();
 		$postData['cash'] = json_decode($postData['cash'], true);
 		$this->reports_model->saveMainReportPattern($postData, $this->constants[$postData['variant']]);
+		exit('0');
 		echo 1;
 	}
 	
@@ -590,18 +591,19 @@ class Reports extends MY_Controller {
 	public function set_users_orders() {
 		if (!$this->input->is_ajax_request()) return false;
 		$data = bringTypes($this->input->post());
+		
 		$this->load->model('users_model');
 		$usersData = $this->users_model->getUsers(['where' => ['us.main' => 1], 'where_in' => ['field' => 'u.id', 'values' => $data['users']], 'fields' => 'id, nickname, avatar, payment, deposit, static, lider']);
 		
-		if (isset($data['to_deposit']) && $data['to_deposit']) {
+		/*if (isset($data['to_deposit']) && $data['to_deposit']) {
 			$staticsData = $this->admin_model->getStatics();
 			$percentToDeposit = $this->admin_model->getSettings('payment_requests_deposit_percent');
-		}
+		}*/
 		
-		$orders = [];
-		$toDepositData = [];
+		$orders = []; $toWalletData = [];
+		//$toDepositData = [];
 		foreach ($usersData as $user) {
-			if (isset($data['to_deposit']) && $data['to_deposit']) {
+			/*if (isset($data['to_deposit']) && $data['to_deposit']) {
 				$limit = $user['lider'] ? $staticsData[$user['static']]['cap_lider'] : $staticsData[$user['static']]['cap_simple']; // лимит депозита
 				$canSetToDeposit = $limit - $user['deposit'] > 0 ? $limit - $user['deposit'] : 0;
 				
@@ -614,7 +616,10 @@ class Reports extends MY_Controller {
 			} else {
 				$summToOrder = $data['summ'];
 				$summToDeposit = 0;
-			}
+			}*/
+			
+			$summToOrder = (float)$data['summ'];
+			$summToDeposit = 0;
 			
 			
 			$orders[] = [
@@ -629,11 +634,16 @@ class Reports extends MY_Controller {
 				'comment' 		=> $data['comment'],
 				'date'			=> time()
 			];
+			
+			if (!isset($toWalletData[$user['id']])) $toWalletData[$user['id']] = $summToOrder;
+			else $toWalletData[$user['id']] += $summToOrder;
 		}
 		
+		$this->load->model('wallet_model');
+		$this->wallet_model->setToWallet($toWalletData, 5, $data['order'], '+');
 		
 		if (!$this->reports_model->insertUsersOrders($orders)) exit('0');
-		if (isset($data['to_deposit']) && $data['to_deposit']) $this->users_model->setUsersDeposit($toDepositData);
+		//if (isset($data['to_deposit']) && $data['to_deposit']) $this->users_model->setUsersDeposit($toDepositData);
 		echo json_encode('1');
 	}
 	
@@ -862,9 +872,10 @@ class Reports extends MY_Controller {
 		$usersData = setArrKeyFromField($usersData, 'id');
 		
 		
-		$orders = []; $toDepositData = [];
+		$orders = []; $toWalletData = [];
+		//$toDepositData = [];
 		foreach ($data['users'] as $user) {
-			$toDepositData[$user['user']] = $user['to_deposit']; 
+			//$toDepositData[$user['user']] = $user['to_deposit']; 
 			
 			$orders[] = [
 				'user_id'		=> $user['user'],
@@ -878,10 +889,16 @@ class Reports extends MY_Controller {
 				'comment' 		=> $data['comment'],
 				'date'			=> time()
 			];
+			
+			if (!isset($toWalletData[$user['user']])) $toWalletData[$user['user']] = $user['summ'];
+			else $toWalletData[$user['user']] += $user['summ'];
 		}
 		
+		$this->load->model('wallet_model');
+		$this->wallet_model->setToWallet($toWalletData, 5, $data['order'], '+');
+		
 		if (!$this->reports_model->insertUsersOrders($orders)) exit('0');
-		if ($data['to_deposit']) $this->users_model->setUsersDeposit($toDepositData);
+		//if ($data['to_deposit']) $this->users_model->setUsersDeposit($toDepositData);
 		echo '1';
 	}
 	
