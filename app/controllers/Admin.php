@@ -306,7 +306,7 @@ class Admin extends MY_Controller {
 			
 			case 'reports':
 				//$this->load->model('reports_model');
-				$data['payment_requests_list'] = []; $paymentRequestsList = false;
+				$data['payment_requests_list'] = []; $paymentRequestsList = [];
 				if ($getPaymentRequests = $this->reports_model->getPaymentRequests($params)) {
 					$statics = $this->admin_model->getStatics();
 					$paymentRequestsList = array_map(function($item) use ($statics) {
@@ -317,13 +317,15 @@ class Admin extends MY_Controller {
 					}, $getPaymentRequests);
 				}
 				
-				if ($paymentRequestsList) {
+				$data['payment_requests_list'] = array_slice($paymentRequestsList, 0, 500);
+
+				/*if ($paymentRequestsList) {
 					foreach ($paymentRequestsList as $item) {
 						$paid = $item['paid'] == 0 ? 'nopaid' : 'paid';
 						$data['payment_requests_list'][$paid][] = $item;
 					}
 					$data['payment_requests_list']['paid'] = isset($data['payment_requests_list']['paid']) ? array_slice($data['payment_requests_list']['paid'], 0, 100) : false;
-				}
+				}*/
 				break;
 			
 			case 'guides':
@@ -1775,7 +1777,7 @@ class Admin extends MY_Controller {
 				$this->load->model('wallet_model', 'wallet');
 				$rewardsPayments = $this->get_rewards_report($postData['period_id']);
 				
-				if (!$this->wallet->setToWallet($rewardsPayments, 3, $postData['report_title'], '+')) exit('0');
+				if (!$this->wallet->setToWallet($rewardsPayments, 4, $postData['report_title'], '+')) exit('0');
 				$this->rewards->setWalletStat($postData['period_id'], 1);
 				echo '1';
 				break;

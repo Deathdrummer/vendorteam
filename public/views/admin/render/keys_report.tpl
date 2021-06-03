@@ -77,7 +77,7 @@
 							<tr>
 								<td colspan="2">сумма коэффициентов</td>
 								<td>Выплата</td>
-								{% if pattern_id and not to_user %}<td class="center"><i title="Статус выплаты" paydonekeyall class="fa fa-check-square"></i></td>{% endif %}
+								{#{% if pattern_id and not to_user %}<td class="center"><i title="Статус выплаты" paydonekeyall class="fa fa-check-square"></i></td>{% endif %}#}
 							</tr>
 						</thead>
 						<tbody>
@@ -85,7 +85,7 @@
 								<tr>
 									<td colspan="2" class="nowidth">{{userData.koeff_summ}}</td>
 									<td><strong class="nowrap">{{userData.payment|number_format(2, '.', ' ')}} ₽</strong></td>
-									{% if pattern_id and not to_user %}
+									{#{% if pattern_id and not to_user %}
 										<td class="square_block">
 											{% if userData.payment != 0 %}
 												{% if userData.pay_done %}
@@ -97,14 +97,14 @@
 												<div class="forbidden disabled" title="Недоступен"><i class="fa fa-check-square-o"></i></div>
 											{% endif %}
 										</td>
-									{% endif %}
+									{% endif %}#}
 								</tr>
 							{% endfor %}
 							<tr>
-								<td class="right">Сумма коэффициентов периода:</td>
+								<td class="right">Сумм. коэф. периода:</td>
 								<td><strong>{{static.period_koeff_summ|round(3)}}</strong></td>
 								<td class="right"><span class="nowrap right">Бюджет:</span> <strong class="nowrap">{{static.cash|number_format(2, '.', ' ')}} ₽</strong></td>
-								{% if pattern_id and not to_user %}<td></td>{% endif %}
+								{#{% if pattern_id and not to_user %}<td></td>{% endif %}#}
 							</tr>
 						</tbody>
 					</table>

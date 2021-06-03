@@ -347,6 +347,26 @@ class Rewards_model extends MY_Model {
 	
 	
 	
+	
+	/**
+	 * Изменить статус
+	 * @param ID премиального периода
+	 * @param статус
+	 * @return bool
+	*/
+	public function setWalletStat($rewardPeriodId = false, $stat = true) {
+		if (!$rewardPeriodId || !$stat) return false;
+		$this->db->where('id', $rewardPeriodId);
+		if (!$this->db->update('rewards_periods', ['to_wallet' => ($stat === true ? 1 : $stat)])) return false;
+		return true;
+	}
+	
+	
+	
+	
+	
+	
+	
 	/**
 	 * Сформировать отчет
 	 * @param ID периода

@@ -85,9 +85,9 @@
 								<td>Ошибки</td>
 								<td>Коэфф. периода</td>
 								<td>Выплата</td>
-								<td class="nowrap">В Резерв</td>
-								<td>Итого</td>
-								{% if pattern_id and not to_user %}<td class="center"><i title="Статус выплаты" paydoneall class="fa fa-check-square"></i></td>{% endif %}
+								{#<td class="nowrap">В Резерв</td>#}
+								{#<td>Итого</td>#}
+								{#{% if pattern_id and not to_user %}<td class="center"><i title="Статус выплаты" paydoneall class="fa fa-check-square"></i></td>{% endif %}#}
 							</tr>
 						</thead>
 						<tbody>
@@ -98,10 +98,10 @@
 									<td class="nowidth">{{userData.effectiveness}}</td>
 									<td class="nowidth">{{userData.fine}}</td>
 									<td class="nowidth">{{userData.period_koeff|round(3)}}</td>
-									<td class="nowidth"><span class="nowrap">{{userData.payment|number_format(2, '.', ' ')}} ₽</span></td>
-									<td><span class="nowrap">{{userData.to_deposit|number_format(2, '.', ' ')}} ₽</span></td>
-									<td><strong class="nowrap">{{userData.final_payment|number_format(2, '.', ' ')}} ₽</strong></td>
-									{% if pattern_id and not to_user %}
+									<td class="nowidth"><strong class="nowrap">{{userData.payment|number_format(2, '.', ' ')}} ₽</strong></td>
+									{#<td><span class="nowrap">{{userData.to_deposit|number_format(2, '.', ' ')}} ₽</span></td>#}
+									{#<td><strong class="nowrap">{{userData.final_payment|number_format(2, '.', ' ')}} ₽</strong></td>#}
+									{#{% if pattern_id and not to_user %}
 										<td class="square_block">
 											{% if userData.final_payment != 0 %}
 												{% if userData.pay_done %}
@@ -113,14 +113,14 @@
 												<div class="forbidden disabled" title="Недоступен"><i class="fa fa-check-square-o"></i></div>
 											{% endif %}
 										</td>
-									{% endif %}
+									{% endif %}#}
 								</tr>
 							{% endfor %}
 							<tr>
-								<td colspan="4" class="right">Сумма коэффициентов периода:</td>
+								<td colspan="2" class="right">Сум. коэф. периода:</td>
 								<td><strong>{{static.period_koeff_summ|round(3)}}</strong></td>
 								<td colspan="3" class="right"><span class="nowrap right">Бюджет:</span> <strong class="nowrap">{{static.cash|number_format(2, '.', ' ')}} ₽</strong></td>
-								{% if pattern_id and not to_user %}<td></td>{% endif %}
+								{#{% if pattern_id and not to_user %}<td></td>{% endif %}#}
 							</tr>
 						</tbody>
 					</table>

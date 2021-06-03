@@ -94,7 +94,6 @@ class Reports extends MY_Controller {
 		$postData = $this->input->post();
 		$postData['cash'] = json_decode($postData['cash'], true);
 		$this->reports_model->saveMainReportPattern($postData, $this->constants[$postData['variant']]);
-		exit('0');
 		echo 1;
 	}
 	

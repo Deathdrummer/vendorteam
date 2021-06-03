@@ -10,6 +10,7 @@
 		<li id="paymentsPatterns">Payment Brago</li>
 		<li id="paymentRequests">Заявки на оплату</li>
 		<li id="keys">Ключи</li>
+		<li id="wallet">Выплата баланса</li>
 	</ul>
 	
 	
@@ -159,73 +160,61 @@
 				<fieldset>
 					<legend>Список заявок</legend>
 					
-					<ul class="tabstitles sub">
-						<li id="paymentRequestsPaidnopaid" class="active">Не рассчитаны</li>	
-						<li id="paymentRequestsPaidpaid">Рассчитаны</li>	
-					</ul>
-						
-					<div class="tabscontent">
-						{% for payStat in ['nopaid', 'paid'] %}
-							{% set items = payment_requests_list[payStat] %}
-							<div tabid="paymentRequestsPaid{{payStat}}">
-								<table id="paymentRequestsList">
-									<thead>
-										<tr>
-											<td class="w1"></td>
-											<td class="nowrap" paymentrequestsort="nickname">Никнейм <i class="fa fa-sort"></i></td>
-											<td class="nowrap" paymentrequestsort="static">Статик <i class="fa fa-sort"></i></td>
-											<td class="nowrap" paymentrequestsort="payment">Способ оплаты <i class="fa fa-sort"></i></td>
-											<td class="nowrap" paymentrequestsort="order">№ заказа <i class="fa fa-sort"></i></td>
-											<td class="nowrap" paymentrequestsort="summ">Сумма заказа <i class="fa fa-sort"></i></td>
-											<td>Удержано в резерв</td>
-											<td>Комментарий</td>
-											<td>Дата</td>
-											<td class="w1">Расчет</td>
-										</tr>
-									</thead>
-									{% for item in items %}
-										<tbody>
-											<tr>
-												<td class="nopadding">
-													{% if item.avatar %}
-														<div class="avatar mini" style="background-image: url('{{base_url('public/images/users/mini/'~item.avatar)}}')"></div>
-													{% else %}
-														<div class="avatar mini" style="background-image: url('{{base_url('public/images/user_mini.jpg')}}')"></div>
-													{% endif %}
-												</td>
-												<td>{{item.nickname}}</td>
-												<td>
-													<div class="d-flex align-items-center">
-														<div class="mr-1">
-															{% if item.static_icon %}
-																<img style="width: 26px" src="{{base_url('public/filemanager/'~item.static_icon)}}" alt="">
-															{% else %}
-																<img style="width: 26px" src="{{base_url('public/images/deleted_mini.jpg')}}" alt="">
-															{% endif %}
-														</div>
-														<div>{{item.static_name}}</div>
-													</div>
-												</td>
-												<td>{{item.payment}}</td>
-												<td>{{item.order}}</td>
-												<td class="nowrap">{{item.summ|number_format(2, '.', ' ')}} <small>руб.</small></td>
-												<td class="nowrap">{{item.to_deposit|number_format(2, '.', ' ')}} <small>руб.</small></td>
-												<td><small style="word-break: break-all; white-space: pre-wrap;">{{item.comment}}</small></td>
-												<td class="nowrap">{{item.date|d}} {{item.date|t}}</td>
-												<td class="square_block center">
-													{% if item.paid %}
-														<div prpaydone="0" data="{{item.id}}|{{item.user_id}}|{{item.summ}}" class="success" title="Не рассчитан"><i class="fa fa-check-square-o"></i></div>
-													{% else %}
-														<div prpaydone="1" data="{{item.id}}|{{item.user_id}}|{{item.summ}}" class="forbidden" title="рассчитан"><i class="fa fa-square-o"></i></div>
-													{% endif %}
-												</td>
-											</tr>
-										</tbody>
-									{% endfor %}
-								</table>
-							</div>
+					<table id="paymentRequestsList">
+						<thead>
+							<tr>
+								<td class="w1"></td>
+								<td class="nowrap" paymentrequestsort="nickname">Никнейм <i class="fa fa-sort"></i></td>
+								<td class="nowrap" paymentrequestsort="static">Статик <i class="fa fa-sort"></i></td>
+								<td class="nowrap" paymentrequestsort="payment">Способ оплаты <i class="fa fa-sort"></i></td>
+								<td class="nowrap" paymentrequestsort="order">№ заказа <i class="fa fa-sort"></i></td>
+								<td class="nowrap" paymentrequestsort="summ">Сумма заказа <i class="fa fa-sort"></i></td>
+								<td>Удержано в резерв</td>
+								<td>Комментарий</td>
+								<td>Дата</td>
+								{#<td class="w1">Расчет</td>#}
+							</tr>
+						</thead>
+						{% for item in payment_requests_list %}
+							<tbody>
+								<tr>
+									<td class="nopadding">
+										{% if item.avatar %}
+											<div class="avatar mini" style="background-image: url('{{base_url('public/images/users/mini/'~item.avatar)}}')"></div>
+										{% else %}
+											<div class="avatar mini" style="background-image: url('{{base_url('public/images/user_mini.jpg')}}')"></div>
+										{% endif %}
+									</td>
+									<td>{{item.nickname}}</td>
+									<td class="w200px">
+										<div class="d-flex align-items-center">
+											<div class="mr-1">
+												{% if item.static_icon %}
+													<img style="width: 26px" src="{{base_url('public/filemanager/'~item.static_icon)}}" alt="">
+												{% else %}
+													<img style="width: 26px" src="{{base_url('public/images/deleted_mini.jpg')}}" alt="">
+												{% endif %}
+											</div>
+											<div>{{item.static_name}}</div>
+										</div>
+									</td>
+									<td>{{item.payment}}</td>
+									<td>{{item.order}}</td>
+									<td class="nowrap">{{item.summ|number_format(2, '.', ' ')}} <small>руб.</small></td>
+									<td class="nowrap">{{item.to_deposit|number_format(2, '.', ' ')}} <small>руб.</small></td>
+									<td><small style="word-break: break-all; white-space: pre-wrap;">{{item.comment}}</small></td>
+									<td class="nowrap">{{item.date|d}} {{item.date|t}}</td>
+									{#<td class="square_block center">
+										{% if item.paid %}
+											<div prpaydone="0" data="{{item.id}}|{{item.user_id}}|{{item.summ}}" class="success" title="Не рассчитан"><i class="fa fa-check-square-o"></i></div>
+										{% else %}
+											<div prpaydone="1" data="{{item.id}}|{{item.user_id}}|{{item.summ}}" class="forbidden" title="рассчитан"><i class="fa fa-square-o"></i></div>
+										{% endif %}
+									</td>#}
+								</tr>
+							</tbody>
 						{% endfor %}
-					</div>
+					</table>
 				</fieldset>
 			{% endif %}
 		</div>
@@ -254,6 +243,19 @@
 			</fieldset>
 		</div>
 		
+		<div tabid="wallet">
+			<fieldset>
+				<legend>Выплата баланса</legend>
+				
+				<div class="item inline">
+					<div class="buttons notop">
+						<button id="" class="fieldheight" title="Новое платежное поручение"><i class="fa fa-rub"></i></button>
+					</div>
+				</div>
+				
+				<div id="walletReport" class="reports mt-3"></div>
+			</fieldset>
+		</div>
 		
 	</div>	
 </div>
@@ -336,6 +338,7 @@ $(document).ready(function() {
 		    width: 500,
 		    html: '<div id="staticsCash"></div>',
 		    buttons: [{id: 'setStaticsCashButton', title: 'Задать бюджет'}],
+		    buttonsOnTop: true,
 		    closeButton: 'Отмена'
 		}, function(staticsCashWin) {
 			staticsCashWin.wait();
@@ -1378,7 +1381,7 @@ $(document).ready(function() {
 						salaryWin.setButtons([{id : 'calcSalary', title: 'Рассчитать'}], 'Отмена');
 						salaryWin.setData(html);
 						
-						$('#salaryStatics').ddrScrollTable();
+						$('#salaryStatics').ddrScrollTableY(360);
 						$('[salarysumm]').number(true, 0, ',', ' ');
 						
 						
@@ -1956,6 +1959,7 @@ $(document).ready(function() {
 				$('#keysReport').html(html);
 				$('#keysReport').ready(function() {
 					$('.scroll').ddrScrollTable();
+					ddrInitTabs();
 				});
 				$('[id^="tabstatic"]:first').addClass('active');
 				$('[tabid^="tabstatic"]:first').addClass('visible');
@@ -1975,6 +1979,7 @@ $(document).ready(function() {
 		    width: 500,
 		    html: '<div id="staticsCashKeys"></div>',
 		    buttons: [{id: 'setStaticsCashKeysButton', title: 'Задать бюджет'}],
+		    buttonsOnTop: true,
 		    closeButton: 'Отмена'
 		}, function(staticsCasKeyshWin) {
 			staticsCasKeyshWin.wait();
@@ -2106,7 +2111,8 @@ $(document).ready(function() {
 			$('#keysReportTitle').text(thisPatternTitle);
 			$('#keysReport').html(html);
 			$('#keysReport').ready(function() {
-				$('.scroll').ddrScrollTable();
+				$('.scroll').ddrScrollTable()
+				ddrInitTabs();
 			});
 			$('[id^="tabstatic"]:first').addClass('active');
 			$('[tabid^="tabstatic"]:first').addClass('visible');
@@ -2148,7 +2154,7 @@ $(document).ready(function() {
 	
 	
 	
-	// --------------------------------------------- Сохранить паттерн первого отчета
+	// --------------------------------------------- Сохранить паттерн отчета по ключам
 	$('#saveKeysReport').on(tapEvent, function() {
 		var staticsCash = $('#staticsCashDataKeys').val(),
 			periodId = $('#choosenPeriodIdKeys').val(),
@@ -2339,7 +2345,7 @@ $(document).ready(function() {
 				
 				getAjaxHtml('admin/rewards/get_periods', function(html) {
 					rewardsPeriodsWin.setTitle('Премиальные периоды');
-					rewardsPeriodsWin.setWidth(700);
+					rewardsPeriodsWin.setWidth(750);
 					rewardsPeriodsWin.setButtons([{id: 'newRewardPeriod', title: 'Новый период'}], 'Закрыть');
 					rewardsPeriodsWin.setData(html);
 				}, function() {
@@ -2500,6 +2506,35 @@ $(document).ready(function() {
 							$('.scroll').ddrScrollTable();
 						});
 					});
+					
+					
+					
+					
+					
+					// --------------------------------------- Внести суммы в баланс
+					$('[rewardssettowallet]').on(tapEvent, function() {
+						let thisButton = this,
+							rewardPeriodId = $(this).attr('rewardssettowallet'),
+							periodTitle = $(thisButton).closest('tr').find('[rewardperiodtitle]').text();
+						rewardsPeriodsWin.wait();
+						
+						$.post('/admin/rewards/set_to_wallet', {period_id: rewardPeriodId, report_title: periodTitle}, function(response) {
+							if (response) {
+								$(thisButton).setAttrib('disabled');
+								$(thisButton).siblings('[rewardsperiodedit]').setAttrib('disabled');
+								$(thisButton).siblings('[rewardssetstaticssumm]').setAttrib('disabled');
+								notify('Суммы успешно отправлены!');
+							} else {
+								notify('Ошибка отправки сумм в баланс!');
+							}
+							rewardsPeriodsWin.wait(false);
+						}).fail(function(e) {
+							notify('Системная ошибка!', 'error');
+							showError(e);
+						});
+					});
+					
+					
 					
 					
 					
