@@ -289,7 +289,7 @@ class Reports_model extends My_Model {
 						'report_pattern_id'	=> $lastPatternId,
 						'static_id' 		=> $staticId,
 						'user_id' 			=> $userId,
-						'debit' 			=> (float)str_replace(' ', '', $userData['final_payment'])
+						'debit' 			=> (float)str_replace(' ', '', $userData['payment'])
 					];
 					
 					$usersStaticsData[] = [
@@ -303,6 +303,8 @@ class Reports_model extends My_Model {
 					else $toWalletData[$userId] += $walletPayment;
 				}
 			}
+			
+			//toLog($usersPaymentsData, true);
 			
 			if ($toWalletData) {
 				$this->load->model('wallet_model');
@@ -758,16 +760,14 @@ class Reports_model extends My_Model {
 				
 				
 				// Процент, отстегивающийся в Резерв
-				$persentToDeposit = $user['deposit_percent'] ?: ($user['sdp'] ?: ($defaultDepositPercent ?: 10));
-				unset($user['sdp']);
+				//$persentToDeposit = $user['deposit_percent'] ?: ($user['sdp'] ?: ($defaultDepositPercent ?: 10));
+				//unset($user['sdp']);
 				
-				$depositLimit = $user['lider'] ? $user['cap_lider'] : $user['cap_simple'];
-				$percentFromPayment = ($payment * ($persentToDeposit / 100)) <= $depositLimit ? ($payment * ($persentToDeposit / 100)) : $depositLimit;
+				//$depositLimit = $user['lider'] ? $user['cap_lider'] : $user['cap_simple'];
+				//$percentFromPayment = ($payment * ($persentToDeposit / 100)) <= $depositLimit ? ($payment * ($persentToDeposit / 100)) : $depositLimit;
 				
-				$deposit = $user['deposit'];
-				$toDeposit = $deposit < $depositLimit ? ($depositLimit - $deposit >= $percentFromPayment ? round($percentFromPayment, 2) : round($depositLimit - $deposit, 2)) : 0;
-				
-				
+				//$deposit = $user['deposit'];
+				//$toDeposit = $deposit < $depositLimit ? ($depositLimit - $deposit >= $percentFromPayment ? round($percentFromPayment, 2) : round($depositLimit - $deposit, 2)) : 0;
 				
 				
 				
@@ -783,11 +783,11 @@ class Reports_model extends My_Model {
 					'fine' 				=> $fine,
 					'koeff_summ' 		=> $rateSumm,
 					'period_koeff' 		=> $periodKoeff,
-					'payment' 			=> round($payment, 2),
 					'deposit'			=> round($user['deposit'], 2),
-					'to_deposit'		=> $toDeposit,
-					'final_payment'		=> round($payment - $toDeposit, 2),
-					'pay_done'			=> 0,
+					'payment' 			=> round($payment, 2),
+					//'to_deposit'		=> $toDeposit,
+					//'final_payment'		=> round($payment - $toDeposit, 2),
+					//'pay_done'			=> 0,
 					'pay_method'		=> $user['pay_method'],
 					'raids' 			=> !empty($user['raids']) ? $user['raids'] : []
 				];
@@ -868,14 +868,14 @@ class Reports_model extends My_Model {
 				
 				
 				// Процент, отстегивающийся в Резерв
-				$persentToDeposit = $user['deposit_percent'] ?: ($user['sdp'] ?: ($defaultDepositPercent ?: 10));
-				unset($user['sdp']);
+				//$persentToDeposit = $user['deposit_percent'] ?: ($user['sdp'] ?: ($defaultDepositPercent ?: 10));
+				//unset($user['sdp']);
 				
-				$depositLimit = $user['lider'] ? $user['cap_lider'] : $user['cap_simple'];
-				$percentFromPayment = ($payment * ($persentToDeposit / 100)) <= $depositLimit ? ($payment * ($persentToDeposit / 100)) : $depositLimit;
-				$hSumm = isset($depositHistories[$pData['pattern_id']][$user['static']][$user['user_id']]) ? ($rpp[$user['static']][$user['user_id']] == 1 ? $depositHistories[$pData['pattern_id']][$user['static']][$user['user_id']] : 0) : 0; // сумма из истории
-				$deposit = ($user['deposit'] - $hSumm);
-				$toDeposit = $deposit < $depositLimit ? ($depositLimit - $deposit >= $percentFromPayment ? round($percentFromPayment, 2) : round($depositLimit - $deposit, 2)) : 0;
+				//$depositLimit = $user['lider'] ? $user['cap_lider'] : $user['cap_simple'];
+				//$percentFromPayment = ($payment * ($persentToDeposit / 100)) <= $depositLimit ? ($payment * ($persentToDeposit / 100)) : $depositLimit;
+				//$hSumm = isset($depositHistories[$pData['pattern_id']][$user['static']][$user['user_id']]) ? ($rpp[$user['static']][$user['user_id']] == 1 ? $depositHistories[$pData['pattern_id']][$user['static']][$user['user_id']] : 0) : 0; // сумма из истории
+				//$deposit = ($user['deposit'] - $hSumm);
+				//$toDeposit = $deposit < $depositLimit ? ($depositLimit - $deposit >= $percentFromPayment ? round($percentFromPayment, 2) : round($depositLimit - $deposit, 2)) : 0;
 				
 				$response[$user['static']]['cash'] = $pData['cash'][$user['static']];
 				$response[$user['static']]['static_name'] = $user['static_name'];
@@ -889,12 +889,12 @@ class Reports_model extends My_Model {
 					'fine' 				=> $fine,
 					'koeff_summ' 		=> $rateSumm,
 					'period_koeff' 		=> $periodKoeff,
-					'payment' 			=> round($payment, 2),
 					'pay_method'		=> $user['pay_method'],
 					'deposit'			=> round($user['deposit'], 2),
-					'to_deposit'		=> $toDeposit,
-					'final_payment'		=> round($payment - $toDeposit, 2),
-					'pay_done'			=> isset($rpp[$user['static']][$user['user_id']]) ? $rpp[$user['static']][$user['user_id']] : 0,
+					'payment' 			=> round($payment, 2),
+					//'to_deposit'		=> $toDeposit,
+					//'final_payment'		=> round($payment - $toDeposit, 2),
+					//'pay_done'			=> isset($rpp[$user['static']][$user['user_id']]) ? $rpp[$user['static']][$user['user_id']] : 0,
 					'raids' 			=> !empty($user['raids']) ? $user['raids'] : []
 				];
 			}
@@ -910,7 +910,7 @@ class Reports_model extends My_Model {
 				$dataToExport .= $data['static_name'].';'.$data['cash']."\r\n";
 				$dataToExport .= iconv('UTF-8', 'windows-1251', 'Никнейм;Выплата;Средство оплаты')."\r\n";
 				foreach ($data['users'] as $userId => $userData) {
-					$dataToExport .= iconv('UTF-8', 'windows-1251', $userData['nickname'].';'.str_replace('.', ',', $userData['final_payment']).';'.$userData['pay_method'])."\r\n";
+					$dataToExport .= iconv('UTF-8', 'windows-1251', $userData['nickname'].';'.str_replace('.', ',', $userData['payment']).';'.$userData['pay_method'])."\r\n";
 				}
 				$dataToExport .= "\r\n";
 			}
@@ -1918,7 +1918,7 @@ class Reports_model extends My_Model {
 		if (!$data['period_id'] || !$data['data']) return false;
 		
 		$order = arrTakeItem($data, 'order');
-		//$toDeposit = arrTakeItem($data, 'to_deposit');
+		$toDeposit = arrTakeItem($data, 'to_deposit');
 		$comment = arrTakeItem($data, 'comment');
 		$periodId = arrTakeItem($data, 'period_id');
 		$coeffsData = setArrKeyFromField(arrTakeItem($data, 'data'), 'static_id');
@@ -1941,14 +1941,14 @@ class Reports_model extends My_Model {
 		$usersData = $this->users_model->getUsers(['where' => ['us.main' => 1], 'where_in' => ['field' => 'u.id', 'values' => $usersIds], 'fields' => 'id, nickname, avatar, payment, deposit, static, lider']);
 		$usersData = setArrKeyFromField($usersData, 'id', true);
 		
-		/*if ($toDeposit) {
+		if ($toDeposit) {
 			$staticsData = $this->admin_model->getStatics();
 			$percentToDeposit = $this->admin_model->getSettings('payment_requests_deposit_percent');
-		}*/
+		}
 		
 		
-		$orders = []; $toWalletData = [];
-		//$toDepositData = [];
+		$orders = [];
+		$toDepositData = [];
 		foreach ($data as $staticId => $users) {
 			$total[$staticId] = 0;
 			foreach ($users as $userId => $coeffSumm) {
@@ -1956,7 +1956,7 @@ class Reports_model extends My_Model {
 				
 				$summ = $coeffSumm > $coeffsData[$staticId]['coeff'] ? $coeffsData[$staticId]['summ'] : round(($coeffsData[$staticId]['summ'] / $coeffsData[$staticId]['coeff']) * $coeffSumm);
 				
-				/*if ($toDeposit) {
+				if ($toDeposit) {
 					$userStatic = $usersData[$userId]['static'];
 					$userLider = $usersData[$userId]['lider'];
 					$userDeposit = $usersData[$userId]['deposit'];
@@ -1973,10 +1973,7 @@ class Reports_model extends My_Model {
 				} else {
 					$summToOrder = $summ;
 					$summToDeposit = 0;
-				}*/
-				
-				$summToOrder = $summ;
-				$summToDeposit = 0;
+				}
 				
 				$total[$staticId] += $summToOrder;
 				
@@ -1992,16 +1989,10 @@ class Reports_model extends My_Model {
 					'comment' 		=> $comment,
 					'date'			=> time()
 				];
-				
-				if (!isset($toWalletData[$userId])) $toWalletData[$userId] = $summToOrder;
-				else $toWalletData[$userId] += $summToOrder;
 			}	
 		}
 		
-		$this->load->model('wallet_model');
-		$this->wallet_model->setToWallet($toWalletData, 5, $order, '+');
-		
-		//if ($toDeposit && $setUsersDeposit) $this->users_model->setUsersDeposit($toDepositData);
+		if ($toDeposit && $setUsersDeposit) $this->users_model->setUsersDeposit($toDepositData);
 		return $orders ? ($withTotal ? ['orders' => $orders, 'total' => $total] : $orders) : false;
 	}
 	
