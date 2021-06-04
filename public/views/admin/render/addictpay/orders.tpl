@@ -11,11 +11,11 @@
 					<thead>
 						<tr>
 							<td class="nowidth"></td>
-							<td class="w200px">Никнейм</td>
+							<td>Никнейм</td>
 							<td class="w150px">Звание</td>
 							<td class="w100px">Сумма</td>
-							<td class="w100px">Удержано в депозит</td>
-							<td title="Соглашение">Согл.</td>
+							{#<td class="w100px">Удержано в депозит</td>#}
+							<td class="w50px" title="Соглашение">Согл.</td>
 							<td class="w40px"></td>
 						</tr>
 					</thead>
@@ -28,7 +28,7 @@
 								<td>{{user.nickname}}</td>
 								<td>{{user.rank}}</td>
 								<td>{{user.summ|number_format(2, '.', ' ')}}</td>
-								<td>{{user.to_deposit|number_format(2, '.', ' ')}}</td>
+								{#<td>{{user.to_deposit|number_format(2, '.', ' ')}}</td>#}
 								<td class="text-center">
 									{% if user.agreement %}
 										<i class="fa fa-check" style="color: #15c112;"></i>

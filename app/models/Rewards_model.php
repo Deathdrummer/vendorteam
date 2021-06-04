@@ -365,8 +365,6 @@ class Rewards_model extends MY_Model {
 	
 	
 	
-	
-	
 	/**
 	 * Сформировать отчет
 	 * @param ID периода

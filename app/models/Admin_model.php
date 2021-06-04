@@ -13,8 +13,6 @@ class Admin_model extends My_Model {
 	
 	
 	
-	
-	
 	/**
 	 * Сохранение настроек
 	 * @param 

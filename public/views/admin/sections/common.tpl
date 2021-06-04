@@ -1424,7 +1424,5 @@ $(document).ready(function() {
 	
 	
 
-	
-	
 });
 //--></script>
