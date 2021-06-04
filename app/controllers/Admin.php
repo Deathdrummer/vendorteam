@@ -1490,7 +1490,7 @@ class Admin extends MY_Controller {
 				$this->wallet_model->setToWallet($toWalletData, 5, $user['order'], '+');
 
 				if (!$this->reports_model->insertUsersOrders($orders)) exit('0');
-				if ($toDeposit) $this->users_model->setUsersDeposit($toDepositData);
+				//if ($toDeposit) $this->users_model->setUsersDeposit($toDepositData);
 				echo json_encode('1');
 				break;
 			
