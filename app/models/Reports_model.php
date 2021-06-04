@@ -1918,7 +1918,7 @@ class Reports_model extends My_Model {
 		if (!$data['period_id'] || !$data['data']) return false;
 		
 		$order = arrTakeItem($data, 'order');
-		$toDeposit = arrTakeItem($data, 'to_deposit');
+		//$toDeposit = arrTakeItem($data, 'to_deposit');
 		$comment = arrTakeItem($data, 'comment');
 		$periodId = arrTakeItem($data, 'period_id');
 		$coeffsData = setArrKeyFromField(arrTakeItem($data, 'data'), 'static_id');
@@ -1941,14 +1941,14 @@ class Reports_model extends My_Model {
 		$usersData = $this->users_model->getUsers(['where' => ['us.main' => 1], 'where_in' => ['field' => 'u.id', 'values' => $usersIds], 'fields' => 'id, nickname, avatar, payment, deposit, static, lider']);
 		$usersData = setArrKeyFromField($usersData, 'id', true);
 		
-		if ($toDeposit) {
+		/*if ($toDeposit) {
 			$staticsData = $this->admin_model->getStatics();
 			$percentToDeposit = $this->admin_model->getSettings('payment_requests_deposit_percent');
-		}
+		}*/
 		
 		
-		$orders = [];
-		$toDepositData = [];
+		$orders = []; $toWalletData = [];
+		//$toDepositData = [];
 		foreach ($data as $staticId => $users) {
 			$total[$staticId] = 0;
 			foreach ($users as $userId => $coeffSumm) {
@@ -1956,7 +1956,7 @@ class Reports_model extends My_Model {
 				
 				$summ = $coeffSumm > $coeffsData[$staticId]['coeff'] ? $coeffsData[$staticId]['summ'] : round(($coeffsData[$staticId]['summ'] / $coeffsData[$staticId]['coeff']) * $coeffSumm);
 				
-				if ($toDeposit) {
+				/*if ($toDeposit) {
 					$userStatic = $usersData[$userId]['static'];
 					$userLider = $usersData[$userId]['lider'];
 					$userDeposit = $usersData[$userId]['deposit'];
@@ -1973,7 +1973,10 @@ class Reports_model extends My_Model {
 				} else {
 					$summToOrder = $summ;
 					$summToDeposit = 0;
-				}
+				}*/
+				
+				$summToOrder = $summ;
+				$summToDeposit = 0;
 				
 				$total[$staticId] += $summToOrder;
 				
@@ -1989,10 +1992,16 @@ class Reports_model extends My_Model {
 					'comment' 		=> $comment,
 					'date'			=> time()
 				];
+				
+				if (!isset($toWalletData[$userId])) $toWalletData[$userId] = $summToOrder;
+				else $toWalletData[$userId] += $summToOrder;
 			}	
 		}
 		
-		if ($toDeposit && $setUsersDeposit) $this->users_model->setUsersDeposit($toDepositData);
+		$this->load->model('wallet_model');
+		$this->wallet_model->setToWallet($toWalletData, 5, $order, '+');
+		
+		//if ($toDeposit && $setUsersDeposit) $this->users_model->setUsersDeposit($toDepositData);
 		return $orders ? ($withTotal ? ['orders' => $orders, 'total' => $total] : $orders) : false;
 	}
 	
