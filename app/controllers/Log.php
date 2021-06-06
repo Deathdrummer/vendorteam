@@ -23,7 +23,7 @@ class Log extends MY_Controller {
 		echo 		'<pre style="margin: 0; word-break: break-all; white-space: pre; overflow-x: scroll; font-size: 12px;background:#fff;">';
 						foreach (explode('||', $myLog) as $item) {
 							if ($item == '') continue;
-							if ($this->isJson($item)) {
+							if (isJson($item)) {
 								print_r(json_decode($item, true));
 							} else {
 								echo $item.'<br>';
@@ -36,7 +36,7 @@ class Log extends MY_Controller {
 		echo 		'<pre style="margin: 0; word-break: break-all; white-space: pre; overflow-x: scroll; font-size: 12px;background:#fff;">';
 						foreach (explode('||', $sysLog) as $item) {
 							if ($item == '') continue;
-							if ($this->isJson($item)) {
+							if (isJson($item)) {
 								print_r(json_decode($item, true));
 							} else {
 								echo $item.'<br>';
@@ -60,13 +60,6 @@ class Log extends MY_Controller {
 		redirect('/log');
 	}
 	
-	
-	
-	
-	private function isJson($string) {
-		json_decode($string);
-		return (json_last_error() == JSON_ERROR_NONE);
-	}
 	
 	
 	
