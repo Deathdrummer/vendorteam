@@ -1253,4 +1253,26 @@ class Account extends MY_Controller {
 	
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function get_balance() {
+		if (!$userId = $this->userData['id']) exit('');
+		$this->load->model('wallet_model', 'wallet');
+		
+		$data = $this->wallet->getUserHistory($userId);
+		$data['balance'] = $this->wallet->getUserBalance($userId);
+		echo $this->twig->render('views/account/render/wallet/history.tpl', $data);
+	}
+	
+	
+	
 }

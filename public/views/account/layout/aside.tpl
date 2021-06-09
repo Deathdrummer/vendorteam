@@ -117,6 +117,7 @@
 					{% if not access or access.nav.personages %}<li getpersonages><svg><use xlink:href="#weekend"></use></svg><span>Мои персонажи</span></li>{% endif %}
 					{% if not access or access.nav.paymentorders %}<li paymentorders><svg><use xlink:href="#weekend"></use></svg><span>Мои заявки</span></li>{% endif %}
 					{% if not access or access.nav.visitsrate %}<li visitsrate><svg><use xlink:href="#weekend"></use></svg><span>Моя посещаемость</span></li>{% endif %}
+					<li walletbalance><svg><use xlink:href="#wallet"></use></svg><span>Мой баланс</span></li>
 				</ul>	
 			{% endif %}
 		</div>

@@ -2463,6 +2463,39 @@ $(document).ready(function() {
 	
 	
 	
+	$('[walletbalance]').on(tapEvent, function() {
+		popUp({
+			title: 'Мой баланс',
+		    width: 1000,
+		    closeButton: 'Закрыть',
+		}, function(walletBalanceWin) {
+			walletBalanceWin.wait();
+			getAjaxHtml('account/get_balance', function(html) {
+				walletBalanceWin.setData(html);
+				$('#walletUserBalance').ddrScrollTableY(400);
+			}, function() {
+				walletBalanceWin.wait(false);
+			});
+		});
+	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	var raidersColorsData,

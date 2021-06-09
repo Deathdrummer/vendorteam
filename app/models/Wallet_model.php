@@ -7,6 +7,8 @@ class Wallet_model extends MY_Model {
 	private $walletAmountsTable = 'wallet_amounts';
 	private $walletReportsTable = 'wallet_reports';
 	private $walletReportsDataTable = 'wallet_reports_data';
+	private $types = [1 => 'Сдельная выплата', 2 => 'Премиальная выплата', 3 => 'Ключи', 4 => 'Премии', 5 => 'Заявки на оплату'];
+
 	
 	public function __construct() {
 		parent::__construct();
@@ -204,6 +206,54 @@ class Wallet_model extends MY_Model {
 		}
 		return $dataToReport;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function getUserHistory($userId = false) {
+		if (!$userId) return false;
+		$this->db->join($this->walletTitlesTable.' wt', 'wt.id = wh.title_id');
+		$this->db->where('wh.user_id', $userId);
+		//$this->db->order_by('wh.id', 'DESC');
+		if (!$userHistory = $this->_result($this->walletHistoryTable.' wh')) return false;
+
+		$userGlobalSumm = 0;
+		foreach ($userHistory as $k => $item) {
+			$userHistory[$k]['current_balance'] = $item['transfer'] == '+' ? ($userGlobalSumm += $item['summ']) : ($userGlobalSumm -= $item['summ']);
+		}
+		
+		$data['history'] = $userHistory;
+		$data['types'] = $this->types;
+		
+		
+		return $data;
+	}
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function getUserBalance($userId = false) {
+		if (!$userId) return false;
+		$this->db->select('summ');
+		$this->db->where('user_id', $userId);
+		if (!$userBalanse = $this->_row($this->walletAmountsTable)) return false;
+		return $userBalanse;
+	}
+	
+	
 	
 	
 	
