@@ -1998,8 +1998,12 @@ class Reports_model extends My_Model {
 			}	
 		}
 		
-		$this->load->model('wallet_model');
-		$this->wallet_model->setToWallet($toWalletData, 5, $order, '+');
+		
+		if ($setUsersDeposit) {
+			$this->load->model('wallet_model');
+			$this->wallet_model->setToWallet($toWalletData, 5, $order, '+');
+		}
+			
 		
 		//if ($toDeposit && $setUsersDeposit) $this->users_model->setUsersDeposit($toDepositData);
 		return $orders ? ($withTotal ? ['orders' => $orders, 'total' => $total] : $orders) : false;

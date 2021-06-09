@@ -1109,4 +1109,124 @@ class Reports extends MY_Controller {
 	
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//----------------------------------------------------------------------------------------------------------------------------- Выплата баланса
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function wallet($action = false, $reportId = false) {
+		if (!$reportId && !$this->input->is_ajax_request()) return false;
+		if (!$action) return false;
+		$this->load->model('wallet_model', 'wallet');
+		$postData = bringTypes($this->input->post());
+		
+		switch ($action) {
+			case 'get_params_to_build': // окно с выбором параметров для формирования списка выплат
+				$this->load->model('admin_model', 'admin');
+				$data['statics'] = $this->admin->getStatics(true);
+				$data['ranks'] = $this->admin->getRanks(false, true);
+				$data['roles'] = $this->admin->getRoles(true);
+				
+				echo $this->twig->render('views/admin/render/wallet/build_list_params.tpl', $data);
+				break;
+				
+			case 'build_payments': // сформировать список сумм
+				if (!$data = $this->wallet->buildWalletPayments($postData)) exit('');
+				echo $this->twig->render('views/admin/render/wallet/report.tpl', $data);
+				break;
+			
+			case 'get_save_blank':
+				echo $this->twig->render('views/admin/render/wallet/save_blank.tpl');
+				break;
+			
+			case 'set_payout': // выплатить суммы и  сохранить отчет
+				if (!isset($postData['paydata']) || !$postData['paydata']) exit('-1');
+				if (!$postData['title']) exit('-2');
+				if (($reportId = $this->wallet->saveWalletReport($postData['title'])) < 0) exit((string)$reportId);
+				
+				$amountsData = []; $toDepositdata = []; $toReportData = [];
+				foreach ($postData['paydata'] as $payUser) {
+					
+					$amountSumm = (float)($payUser['payout'] + $payUser['to_deposit']);
+					$depositSumm = (float)$payUser['to_deposit'];
+					
+					if ($amountSumm > 0) $amountsData[(int)$payUser['user_id']] = $amountSumm;
+					if ($depositSumm > 0) $toDepositdata[(int)$payUser['user_id']] = $depositSumm;
+					
+					$toReportData[] = [
+						'report_id'		=> $reportId,
+						'user_id'		=> (int)$payUser['user_id'],
+						'summ'			=> (float)$payUser['payout'],
+						'to_deposit'	=> (float)$payUser['to_deposit'],
+					];
+				}
+				
+				// Отправить данные в сохраненный отчет
+				if ($toReportData) $this->wallet->saveWalletReportData($toReportData);
+				
+				// отправить выплаты в историю
+				if ($amountsData) $this->wallet->setToWallet($amountsData, null, 'Выплата', '-');
+				
+				// отправить в резерв
+				if ($toDepositdata) $this->wallet->updateUsersDeposit($toDepositdata);
+				
+				echo '1';
+				break;
+			
+			case 'get_reports': // получить список сохраненных отчетов по выплатам
+				$data['reports'] = $this->wallet->getReports();
+				echo $this->twig->render('views/admin/render/wallet/reports_list.tpl', $data);
+				break;
+			
+			case 'get_saved_report': // Сформировать отчет / Экспортировать отчет
+				$this->load->model('admin_model', 'admin');
+				if (!$report = $this->wallet->getReportData($postData['report_id'] ?: $reportId)) exit('');
+				
+				$data['statics'] = $this->admin->getStatics(true, array_keys($report));
+				
+				if ($reportId) {
+					$dataToExport = '';
+					foreach ($report as $staticId => $users) {
+						$dataToExport .= iconv('UTF-8', 'windows-1251', 'Статик'."\r\n");
+						$dataToExport .= $data['statics'][$staticId]."\r\n";
+						
+						$dataToExport .= iconv('UTF-8', 'windows-1251', 'Никнейм;Выплата;Отправлено в депозит')."\r\n";
+						foreach ($users as $userId => $userData) {
+							$dataToExport .= iconv('UTF-8', 'windows-1251', $userData['nickname'].';'.str_replace('.', ',', $userData['summ']).';'.str_replace('.', ',', $userData['to_deposit']))."\r\n";
+						}
+						$dataToExport .= "\r\n";
+					}
+					
+					setHeadersToDownload('application/octet-stream', 'windows-1251');
+					exit($dataToExport);
+				}
+				
+				$data['report'] = $report;
+				echo $this->twig->render('views/admin/render/wallet/saved_report.tpl', $data);
+				break;
+			
+			default: break;
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }

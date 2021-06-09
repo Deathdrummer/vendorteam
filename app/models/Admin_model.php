@@ -758,6 +758,10 @@ class Admin_model extends My_Model {
 	
 	
 	//------------------------------------------------------------------------------------------------ Роли
+	/**
+	 * Получить список ролей
+	 * @return 
+	*/
 	public function getRoles() {
 		$query = $this->db->get('roles');
 		$rolesData = $query->result_array();

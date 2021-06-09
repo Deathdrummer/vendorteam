@@ -80,13 +80,36 @@ $.fn.removeAttrib = function(attr) {
 $.fn.hasAttr = function(a) {
 	var attr = $(this).attr(a);
 	return typeof attr !== typeof undefined && attr !== false;
-}
+};
 
 $.fn.hasAttrib = function(a) {
 	var attr = $(this).attr(a);
 	return typeof attr !== typeof undefined && attr !== false;
-}
+};
 
+
+
+/*
+	Изменение цифрового поля стрелками и цифрами
+*/
+$.fn.onChangeNumberInput = function(callback) {
+	let wPStat, selector = this;
+	
+	$(selector).on('keyup mousedown mouseup', function(e) {
+		let input = this,
+			inpVal = parseFloat($(this).val());
+		if (e.type == 'mousedown') {
+			wPStat = inpVal;
+		} else if (e.type == 'mouseup') {
+			if (inpVal != wPStat) {
+				if (callback && typeof callback == 'function') callback(inpVal, input);
+			}
+			wPStat = null;
+		} else if (e.type == 'keyup' && [190, 13].indexOf(e.keyCode) == -1) {
+			if (callback && typeof callback == 'function') callback(inpVal, input);
+		}
+	});
+};
 
 
 
@@ -100,7 +123,7 @@ setCookie = function(cname, cvalue, exdays) {
     d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
     var expires = "expires=" + d.toGMTString();
     document.cookie = cname + "=" + cvalue + "; " + expires + "; path=/";
-}
+};
 
 
 // Получить куки
@@ -116,7 +139,7 @@ getCookie = function(cname) {
         }
     }
     return '';
-}
+};
 
 
 

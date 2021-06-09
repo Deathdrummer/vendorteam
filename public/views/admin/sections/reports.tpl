@@ -248,9 +248,18 @@
 				<legend>Выплата баланса</legend>
 				
 				<div class="item inline">
-					<div class="buttons notop">
-						<button id="" class="fieldheight" title="Новое платежное поручение"><i class="fa fa-rub"></i></button>
+					<div class="d-flex">
+						<div class="buttons notop">
+							<button id="buildWalletPayments" class="fieldheight" title="Сформировать платежные данные"><i class="fa fa-bar-chart"></i></button>
+							<button id="getWalletReportsList" class="fieldheight" title="Платежные поручения"><i class="fa fa-list-alt"></i></button>
+							<button id="saveWalletOrder" disabled class="fieldheight" title="Сохранить платежное поручение"><i class="fa fa-save"></i></button>
+						</div>
+						<div class="ml30px">
+							<h3 class="mb-0" id="savedReportTitle"></h3>
+							<p id="savedReportDate"></p>
+						</div>
 					</div>
+						
 				</div>
 				
 				<div id="walletReport" class="reports mt-3"></div>
@@ -1358,7 +1367,7 @@ $(document).ready(function() {
 	
 	
 	// --------------------------------------- Рассчитать оклады
-	$('#setSalaryBtn').on(tapEvent, function() {
+	$('body').off(tapEvent, '#setSalaryBtn').on(tapEvent, '#setSalaryBtn', function() {
 		popUp({
 			title: 'Расчет окладов',
 		    width: 400,
@@ -1471,7 +1480,7 @@ $(document).ready(function() {
 											salaryWin.wait(false);
 											showError(e);
 											notify('Системная ошибка!', 'error');
-										});	
+										});
 									});
 								}, function() {
 									salaryWin.wait(false);
@@ -2588,6 +2597,376 @@ $(document).ready(function() {
 			
 		});
 	});
+
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//------------------------------------------------------------------------------------------------ Выплата баланса
+	
+	
+	// Сформировать список выплат
+	$('#buildWalletPayments').on(tapEvent, function() {
+		$('#savedReportTitle, #savedReportDate').text('');
+		
+		popUp({
+			title: 'Сформировать список выплат',
+		    width: 900,
+		    buttons: [{id: 'buildWPData', title: 'Сформировать', disabled: 1}],
+		    closeButton: 'Отмена',
+		}, function(buildWPDataWin) {
+			buildWPDataWin.wait();
+			getAjaxHtml('reports/wallet/get_params_to_build', function(html) {
+				buildWPDataWin.setData(html);
+				$('#buildWPData').removeAttrib('disabled');
+			}, function() {
+				buildWPDataWin.wait(false);
+			});
+			
+			$('#buildWPData').on(tapEvent, function() {
+				let walletParamStatics = $('#walletParamsForm').find('[walletparamstatics]:checked'),
+					walletParamRanks = $('#walletParamsForm').find('[walletparamranks]:checked'),
+					walletParamRoles = $('#walletParamsForm').find('[walletparamroles]:checked'),
+					walletParamStates = $('#walletParamsForm').find('[walletparamstates]:checked'),
+					params = {statics: [], ranks: [], roles: [], states: []},
+					paramsStat = true;
+				
+				if (walletParamStatics.length == 0) {notify('Необходимо выбрать хотя бы один статик!', 'info'); paramsStat = false;}
+				if (walletParamRanks.length == 0) {notify('Необходимо выбрать хотя бы одно звание!', 'info'); paramsStat = false;}
+				if (walletParamRoles.length == 0) {notify('Необходимо выбрать хотя бы одну роль!', 'info'); paramsStat = false;}
+				if (walletParamStates.length == 0) {notify('Необходимо выбрать хотя бы одно состояние!', 'info'); paramsStat = false;}
+				
+				
+				
+				$(walletParamStatics).each(function(k, input) {
+					params.statics.push(parseInt($(input).val()));
+				});
+				
+				$(walletParamRanks).each(function(k, input) {
+					params.ranks.push(parseInt($(input).val()));
+				});
+				
+				$(walletParamRoles).each(function(k, input) {
+					params.roles.push(parseInt($(input).val()));
+				});
+				
+				$(walletParamStates).each(function(k, input) {
+					params.states.push($(input).val());
+				});
+				
+				
+				if (paramsStat) {
+					(function setPayout() {
+						buildWPDataWin.wait();
+						getAjaxHtml('reports/wallet/build_payments', params, function(html, stat) {
+							if (!stat) notify('Нет данных для формирования списка!', 'info');
+							$('#walletReport').html(html);
+							buildWPDataWin.wait(false);
+							if (!stat) return;
+							
+							buildWPDataWin.close();
+							ddrInitTabs();
+							
+							$('#saveWalletOrder').removeAttrib('disabled');
+							$('#walletReport').find('[walletpayout], [wallettodeposit]').number(true, 1, '.', ' ');
+							
+							
+							// изменение полы "выпатить"
+							$('[walletpayout]').onChangeNumberInput(function(value, payoutInput) {
+								let thisTr = $(payoutInput).closest('tr'),
+									initDeposit = parseFloat($(thisTr).find('input[initdeposit]').val()),
+									initPercentToDeposit = parseFloat($(thisTr).find('input[initpercenttodeposit]').val()),
+									initBalance = parseFloat($(thisTr).find('input[initwalletbalance]').val()),
+									initPayout = parseFloat($(thisTr).find('input[initpayout]').val()),
+									initToDeposit = parseFloat($(thisTr).find('input[inittodeposit]').val()),
+									initMaxToDeposit = parseFloat($(thisTr).find('input[initmaxtodeposit]').val()),
+									toDepositInput = $(thisTr).find('[wallettodeposit]');
+								
+								
+								if (value >= initPayout && value <= initBalance) {
+									$(toDepositInput).val((initBalance - value).toFixed(1));
+								} else if (value > initBalance) {
+									$(payoutInput).val(initBalance.toFixed(1));
+									$(toDepositInput).val(0);
+									notify('Достигнута максимальная сумма для выплаты!', 'info');
+								}
+							});
+							
+							
+							// изменение полы "в резерв"
+							$('[wallettodeposit]').onChangeNumberInput(function(value, toDepositInput) {
+								let thisTr = $(toDepositInput).closest('tr'),
+									initDeposit = parseFloat($(thisTr).find('input[initdeposit]').val()),
+									initPercentToDeposit = parseFloat($(thisTr).find('input[initpercenttodeposit]').val()),
+									initBalance = parseFloat($(thisTr).find('input[initwalletbalance]').val()),
+									initPayout = parseFloat($(thisTr).find('input[initpayout]').val()),
+									initToDeposit = parseFloat($(thisTr).find('input[inittodeposit]').val()),
+									initMaxToDeposit = parseFloat($(thisTr).find('input[initmaxtodeposit]').val()),
+									payoutInput = $(thisTr).find('[walletpayout]'),
+									payoutValue = parseFloat($(payoutInput).val()).toFixed(1);
+								
+								
+								if (value >= (initBalance - payoutValue)) {
+									if (initBalance - payoutValue > 0) {
+										$(toDepositInput).val((initBalance - payoutValue).toFixed(1));
+										notify('Достигнута максимальная сумма для выплаты в резерв!', 'info');
+									} else {
+										$(toDepositInput).val(0);
+										notify('Нет доступных средств для выплаты в резерв!', 'info');
+									}
+								} else if (value > initMaxToDeposit) {
+									$(toDepositInput).val(initMaxToDeposit);
+									notify('Достигнута максимальная сумма для наполнения резерва!', 'info');
+								} else if (value < 0) {
+									$(toDepositInput).val(0);
+									notify('Сумма для выплаты в резерв не может быть меньше нуля!', 'info');
+								}
+							});
+							
+							
+							// Вернуть исходные значения
+							$('[walletreturntoinit]').on(tapEvent, function() {
+								let thisTr = $(this).closest('tr'),
+									initToDeposit = parseFloat($(thisTr).find('input[inittodeposit]').val()),
+									initPayout = parseFloat($(thisTr).find('input[initpayout]').val());
+								
+								$(thisTr).find('[walletpayout]').val(initPayout);
+								$(thisTr).find('[wallettodeposit]').val(initToDeposit);
+							});
+							
+							
+							// всю сумму в оплату
+							$('[walletalltopayout]').on(tapEvent, function() {
+								let thisTr = $(this).closest('tr'),
+									initBalance = parseFloat($(thisTr).find('input[initwalletbalance]').val()),
+									payoutInput = $(thisTr).find('[walletpayout]'),
+									toDepositInput = $(thisTr).find('[wallettodeposit]');
+								
+								$(toDepositInput).val(0);
+								$(payoutInput).val(initBalance.toFixed(1));
+							});
+							
+							
+							// максимально возможную сумму в резерв
+							$('[walletsetmaxtodeposit]').on(tapEvent, function() {
+								let thisTr = $(this).closest('tr'),
+									initDeposit = parseFloat($(thisTr).find('input[initdeposit]').val()),
+									initPercentToDeposit = parseFloat($(thisTr).find('input[initpercenttodeposit]').val()),
+									initBalance = parseFloat($(thisTr).find('input[initwalletbalance]').val()),
+									initPayout = parseFloat($(thisTr).find('input[initpayout]').val()),
+									initToDeposit = parseFloat($(thisTr).find('input[inittodeposit]').val()),
+									initMaxToDeposit = parseFloat($(thisTr).find('input[initmaxtodeposit]').val()),
+									payoutInput = $(thisTr).find('[walletpayout]'),
+									toDepositInput = $(thisTr).find('[wallettodeposit]');
+								
+								let calcMaxTodeposit = initMaxToDeposit <= initBalance ? initMaxToDeposit : initBalance,
+									calcToPayout = (initBalance - calcMaxTodeposit).toFixed(1);
+								
+								$(toDepositInput).val(calcMaxTodeposit.toFixed(1));
+								$(payoutInput).val(calcToPayout);
+							});
+							
+							
+							// Выделить/снять выделение всех участников статика
+							$('[walletselectstatic]').on(tapEvent, function() {
+								let thisBtn = this,
+									stat = $(thisBtn).attr('walletselectstatic');
+								
+								if (stat == 1) {
+									$(thisBtn).closest('table').children('tbody').find('[walletcheckeduser]:not([disabled]):checked').each(function() {
+										$(this).removeAttrib('checked');
+									});
+									$(thisBtn).attr('walletselectstatic', 0);
+								} else if (stat == 0) {
+									$(thisBtn).closest('table').children('tbody').find('[walletcheckeduser]:not([disabled]):not(:checked)').each(function() {
+										$(this).setAttrib('checked');
+									});
+									$(thisBtn).attr('walletselectstatic', 1);
+								}
+							});
+							
+							
+							
+							
+							// Сохранить отчет и выплатить суммы
+							$('#saveWalletOrder').on(tapEvent, function() {
+								popUp({
+									title: 'Отчет по выплатам',
+								    width: 400,
+								    buttons: [{id: 'saveAndPayout', title: 'Сохранить и выплатить'}],
+								    closeButton: false,
+								}, function(saveAndPayoutWin) {
+									saveAndPayoutWin.wait();
+									getAjaxHtml('reports/wallet/get_save_blank', function(html) {
+										saveAndPayoutWin.setData(html);
+									}, function() {
+										saveAndPayoutWin.wait(false);
+									});
+									
+									
+									$('#saveAndPayout').on(tapEvent, function() {
+										let reportTitleInp = $('#walletReportTitle');
+										
+										if (reportTitleInp.val() == '') {
+											notify('Необходимо ввести название отчета', 'info');
+											$(reportTitleInp).addClass('error');
+										
+										} else {
+											let payData = [],
+												rows = $('#walletReport').find('[walletuserrow]');
+											
+											if (rows.length) {
+												saveAndPayoutWin.wait();
+												$(rows).each(function() {
+													let thisRow = this;
+													if ($(thisRow).find('[walletcheckeduser]').is(':checked') == false) return true;
+													let d = $(thisRow).attr('walletuserrow').split('|'),
+														staticId = d[0],
+														userId = d[1],
+														payout = parseFloat($(thisRow).find('[walletpayout]').val()).toFixed(1),
+														toDeposit = parseFloat($(thisRow).find('[wallettodeposit]').val()).toFixed(1);
+														
+													payData.push({
+														user_id: userId,
+														static_id: staticId,
+														payout: payout,
+														to_deposit: toDeposit
+													});
+												});
+												
+												if (payData) {
+													$.post('/reports/wallet/set_payout', {paydata: payData, title: reportTitleInp.val()}, function(response) {
+														if (response) {
+															saveAndPayoutWin.close();
+															setPayout();
+														} else {
+															notify('Ошибка сохранения данных!', 'error');
+															saveAndPayoutWin.wait(false);
+														}
+													}).fail(function(e) {
+														notify('Системная ошибка!', 'error');
+														saveAndPayoutWin.wait(false);
+														showError(e);
+													});
+												} else {
+													notify('Нет данных для сохранения отчета и совершения выплат', 'info');
+													saveAndPayoutWin.close();
+												}
+												
+											} else {
+												notify('Не выбрано ни одного участника', 'info');
+											}
+										}
+											
+									});
+														
+								});
+								
+							});
+							
+						}, function() {});
+					})();
+				}
+			});
+		});
+	});
+	
+	
+	
+	
+	
+	
+	
+	// открыть список сохраненных отчетов по оплатам
+	$('#getWalletReportsList').on(tapEvent, function() {
+		popUp({
+			title: 'Сохраненные отчеты',
+		    width: 500,
+		    closeButton: 'Закрыть'
+		}, function(reportsListWin) {
+			reportsListWin.wait();
+			getAjaxHtml('reports/wallet/get_reports', function(html) {
+				reportsListWin.setData(html);
+				reportsListWin.wait(false);
+				$('#walletReportsList').ddrScrollTableY(400);
+				
+				$('[buildsavedreport]').on(tapEvent, function() {
+					reportsListWin.wait();
+					let reportId = $(this).attr('buildsavedreport'),
+						reportTitle = $(this).closest('tr').find('[reporttitle]').text(),
+						reportDate = $(this).closest('tr').find('[reportdate]').text();
+						
+					getAjaxHtml('reports/wallet/get_saved_report', {report_id: reportId}, function(html) {
+						$('#walletReport').html(html);
+						ddrInitTabs();
+						reportsListWin.close();
+						$('#savedReportTitle').text(reportTitle);
+						$('#savedReportDate').text('от '+reportDate);
+						
+					}, function() {
+						reportsListWin.wait(false);
+					});
+				});
+				
+			}, function() {
+				reportsListWin.wait(false);
+			});
+		});
+	});
+	
+	
+	
+	/*$('#walletOrders').on(tapEvent, function() {
+		popUp({
+			title: 'Платежные поручения',
+		    //width: 500,
+		    //buttons: [{id: 'newWalletReport', title: 'Новое плат. поручение'}],
+		    //closeButton: 'Закрыть',
+		}, function(walletOrdersWin) {
+			
+			(function getWalletOrdersList() {
+				console.log('getWalletOrdersList');
+				walletOrdersWin.setTitle('Платежные поручения');
+				walletOrdersWin.setButtons([{id: 'newWalletReport', title: 'Новое плат. поручение'}], 'Закрыть');
+				walletOrdersWin.setWidth(500);
+				
+				$(newWalletReport).on(tapEvent, function() {
+					walletOrdersWin.setTitle('Новое платежное поручение');
+					walletOrdersWin.setButtons([{id: 'addWalletReport', title: 'Создать', cls: 'alt'}, {id: 'toWalletOrdersList', title: 'Назад'}], 'Закрыть');
+					
+					$('#toWalletOrdersList').on(tapEvent, function() {
+						getWalletOrdersList();
+					});
+					
+					
+					$('#addWalletReport').on(tapEvent, function() {
+						console.log('addWalletReport');
+					});
+					
+				});
+			})();
+			
+			
+			
+			
+		});
+	});*/
+	
+	
+	
+	
 	
 	
 	
