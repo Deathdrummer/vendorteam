@@ -26,8 +26,8 @@
 										<p>{{user.nickname}}</p>
 									</div>
 								</td>
-								<td>{% if user.summ %}{{user.summ|number_format(1, '.', ' ')}} ₽{% else %}0 ₽{% endif %}</td>
-								<td>{% if user.to_deposit %}{{user.to_deposit|number_format(1, '.', ' ')}} ₽{% else %}0 ₽{% endif %}</td>
+								<td>{% if user.summ %}{{user.summ|number_format(1, '.', ' ')}} <small>₽</small>{% else %}0 <small>₽</small>{% endif %}</td>
+								<td>{% if user.to_deposit %}{{user.to_deposit|number_format(1, '.', ' ')}} <small>₽</small>{% else %}0 <small>₽</small>{% endif %}</td>
 								<td class="p0"></td>
 							</tr>
 						{% endfor %}

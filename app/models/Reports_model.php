@@ -699,7 +699,7 @@ class Reports_model extends My_Model {
 			$query = $this->db->get('users u');
 			if (!$resultUsers = $query->result_array()) return $response;
 			$resultUsers = sortUsers($resultUsers); // сортировка участников по именам (сначала русские потом англ.)
-			
+			$variant = isset($pData['variant']) ? $pData['variant'] : 1;
 			
 			
 			// Добавление списка рейдов к массиву участников
@@ -708,7 +708,7 @@ class Reports_model extends My_Model {
 					$resultUsers[$key]['rank_coefficient'] = $pData['ranks'][$user['user_id']];
 				} else {
 					$coeff = json_decode($user['rank_coefficient'], true);
-					$resultUsers[$key]['rank_coefficient'] = $coeff[$pData['variant']];
+					$resultUsers[$key]['rank_coefficient'] = $coeff[$variant];
 				}
 				
 				
