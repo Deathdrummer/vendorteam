@@ -9,6 +9,13 @@
 		h = height || '90vh',
 		scrollTop = 0;
 	
+	if (container[0].localName == 'table') {
+		let rand = random(0,9999);
+		$(container).wrap('<div id="ddrScrollTableY'+rand+'"></div>');
+		container = $('#ddrScrollTableY'+rand);
+	}
+		
+
 	$(container).css('max-height', h);
 	$(container).addClass('scroll_y');
 	

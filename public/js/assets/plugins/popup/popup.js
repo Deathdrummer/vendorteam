@@ -32,7 +32,7 @@ function DdrPopUp(settings, callback) {
 		disabledButtons: false, // при старте все кнопки кроме закрытия будут disabled
 		closePos: 'right', // расположение кнопки "close" left - слева, right - справа
 		closeByButton: false, // Закрывать окно только по кнопкам [ddrpopupclose]
-		close: false, // заголовок кнопки "закрыть"
+		closeButton: false, // заголовок кнопки "закрыть"
 		winClass: false, // добавить класс к модальному окну
 		contentToCenter: false, // весь контент по центру вертикально и горизонтально
 		buttonsOnTop: false, // Кнопки сверху
@@ -66,7 +66,7 @@ function DdrPopUp(settings, callback) {
 
 
 	if (o.closePos == 'left') {
-		if (o.close) buttonsHtml += '<button class="popup__buttons_close" ddrpopupclose>'+o.close+'</button>';
+		if (o.closeButton) buttonsHtml += '<button class="popup__buttons_close" ddrpopupclose>'+o.closeButton+'</button>';
 	}
 
 	if(o.buttons) {
@@ -76,7 +76,7 @@ function DdrPopUp(settings, callback) {
 	}
 
 	if (o.closePos == 'right') {
-		if (o.close) buttonsHtml += '<button class="popup__buttons_close" ddrpopupclose>'+o.close+'</button>';
+		if (o.closeButton) buttonsHtml += '<button class="popup__buttons_close" ddrpopupclose>'+o.closeButton+'</button>';
 	}
 
 

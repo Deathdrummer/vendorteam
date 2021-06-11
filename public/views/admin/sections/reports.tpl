@@ -347,7 +347,6 @@ $(document).ready(function() {
 		    width: 500,
 		    html: '<div id="staticsCash"></div>',
 		    buttons: [{id: 'setStaticsCashButton', title: 'Задать бюджет'}],
-		    buttonsOnTop: true,
 		    closeButton: 'Отмена'
 		}, function(staticsCashWin) {
 			staticsCashWin.wait();
@@ -357,6 +356,7 @@ $(document).ready(function() {
 				if (html) {
 					$('#staticsCash').html(html);
 					$('#staticsCash').find('input').number(true, 0, '.', ' ');
+					$('#staticsCash').ddrScrollTableY('80vh');
 					
 					var checkedStat = true,
 						checks = $('#staticsCash').find('[choosestatictodeposit]');
@@ -415,14 +415,14 @@ $(document).ready(function() {
 		popUp({
 			title: 'Периоды',
 		    width: 700,
-		    buttons: [{id: 'newPeriod', title: 'Новый период', disabled: true, class: 'alt'}, {id: 'choosePeriods', title: 'Выбрать периоды', disabled: true}],
-		    buttonsOnTop: true
+		    buttons: [{id: 'newPeriod', title: 'Новый период', disabled: true, class: 'alt'}, {id: 'choosePeriods', title: 'Выбрать периоды', disabled: true}]
 		}, function(pRWin) {
 			periodsWin = pRWin;
 			periodsWin.wait();
 			
 			getAjaxHtml('reports/get_reports_periods', {edit: 1}, function(html) {
 				periodsWin.setData(html, false);
+				$('#periodsList').ddrScrollTableY('80vh');
 				
 				$('#choosePeriods').on(tapEvent, function() {
 					$('#choosenPeriodId').val(JSON.stringify(choosenPeriods));
@@ -699,6 +699,8 @@ $(document).ready(function() {
 			
 			getAjaxHtml('reports/get_main_reports_patterns', {limit: limit, offset: offset}, function(html) {
 				$('#reportPatternsList').html(html);
+				$('#reportPatternsList').ddrScrollTableY('80vh');
+				
 				if ($(html).find('tbody').children('tr').length == limit) {
 					reportPatternsWin.setButtons([{id: 'getEarlyPatterns', title: 'Вниз'}, {id: 'getOlderPatterns', title: 'Вверх'}]);
 				}
@@ -716,6 +718,7 @@ $(document).ready(function() {
 					if (stat) {
 						$('#getOlderPatterns').prop('disabled', false);
 						$('#reportPatternsList').html(html);
+						$('#reportPatternsList').ddrScrollTableY('80vh');
 					} else {
 						$('#getEarlyPatterns').prop('disabled', true);
 						notify('Это самые последние отчеты!', 'info');
@@ -981,6 +984,7 @@ $(document).ready(function() {
 			
 			getAjaxHtml('reports/get_reports_periods', {to_orders: 1}, function(html) {
 				periodsOrdersWin.setData(html, false);
+				$('#periodsList').ddrScrollTableY('80vh');
 				$('#newPeriod').prop('disabled', false);
 			}, function() {
 				periodsOrdersWin.wait(false);
@@ -1063,6 +1067,7 @@ $(document).ready(function() {
 			
 			getAjaxHtml('reports/get_patterns_list', {limit: limit, offset: offset}, function(html, stat) {
 				$('#reportPaymentsPatternsList').html(html);
+				$('#reportPaymentsPatternsList').ddrScrollTableY('80vh');
 				if (!stat) $('#getEarlyPaymentsPatterns').prop('disabled', true);
 			}, function() {
 				paymentsPatternsWin.wait(false);
@@ -1528,7 +1533,7 @@ $(document).ready(function() {
 			addictPayWin.wait();
 			getAjaxHtml('reports/get_addictpay_form', function(html) {
 				addictPayWin.setData(html, false);
-				
+				$('#salaryStatics').ddrScrollTableY('80vh');
 				
 				
 				$('#calcAddictPay').on(tapEvent, function() {
@@ -1988,7 +1993,6 @@ $(document).ready(function() {
 		    width: 500,
 		    html: '<div id="staticsCashKeys"></div>',
 		    buttons: [{id: 'setStaticsCashKeysButton', title: 'Задать бюджет'}],
-		    buttonsOnTop: true,
 		    closeButton: 'Отмена'
 		}, function(staticsCasKeyshWin) {
 			staticsCasKeyshWin.wait();
@@ -1998,6 +2002,7 @@ $(document).ready(function() {
 				if (html) {
 					$('#staticsCashKeys').html(html);
 					$('#staticsCashKeys').find('input').number(true, 0, '.', ' ');
+					$('#staticsCashKeys').ddrScrollTableY('80vh');
 					
 					var checkedStat = true,
 						checks = $('#staticsCashKeys').find('[choosestatictodeposit]');
@@ -2059,6 +2064,7 @@ $(document).ready(function() {
 			
 			getAjaxHtml('reports/get_keys_reports_patterns', {limit: limit, offset: offset}, function(html) {
 				$('#reportPatternsKeysList').html(html);
+				$('#reportPatternsKeysList').ddrScrollTableY('80vh');
 				if ($(html).find('tbody').children('tr').length == limit) {
 					reportPatternsKeysWin.setButtons([{id: 'getEarlyPatterns', title: 'Вниз'}, {id: 'getOlderPatterns', title: 'Вверх'}]);
 				}
@@ -2314,6 +2320,7 @@ $(document).ready(function() {
 			
 			getAjaxHtml('reports/get_reports_periods', function(html) {
 				periodsWin.setData(html, false);
+				$('#periodsList').ddrScrollTableY('80vh');
 			}, function() {
 				periodsWin.wait(false);
 			});
@@ -2357,6 +2364,7 @@ $(document).ready(function() {
 					rewardsPeriodsWin.setWidth(750);
 					rewardsPeriodsWin.setButtons([{id: 'newRewardPeriod', title: 'Новый период'}], 'Закрыть');
 					rewardsPeriodsWin.setData(html, false);
+					$('#rewardsPeriodsList').ddrScrollTableY('80vh');
 				}, function() {
 					rewardsPeriodsWin.wait(false);
 					

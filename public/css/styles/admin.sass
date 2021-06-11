@@ -917,15 +917,17 @@ table
 				
 				.buttons
 					margin-top: 0 !important
-					word-spacing: 0px !important
-					display: flex
+					word-spacing: 4px !important
+					display: block
 					justify-content: flex-end
+					white-space: nowrap
 					
 					&.inline
-						display: inline-flex
+						display: inline-block
 					
 					button, .button
-						+btn((white-space: nowrap, padding-left: 15px !important, padding-right: 15px !important), (noselect))
+						display: inline-block
+						+btn((padding-left: 15px !important, padding-right: 15px !important), (noselect))
 						//box-shadow: 0 0 0 1px #d0d0d0 inset
 						
 						&.small
@@ -1412,15 +1414,15 @@ table
 		+font('roboto', light)
 		
 		
-		&_1
+		&_5
 			+resp(font-size, (xs: 16px, sm: 20px, md: 28px, lg: 34px, xl: 38px), (line-height: 2))
-		&_2
+		&_4
 			+resp(font-size, (xs: 16px, sm: 20px, md: 26px, lg: 30px, xl: 34px), (line-height: 2))
 		&_3
 			+resp(font-size, (xs: 16px, sm: 18px, md: 22px, lg: 24px, xl: 28px), (line-height: 2))
-		&_4
+		&_2
 			+resp(font-size, (xs: 16px, sm: 18px, md: 20px, lg: 20px, xl: 22px), (line-height: 2))
-		&_5
+		&_1
 			+resp(font-size, (xs: 16px, sm: 18px, md: 18px, lg: 20px, xl: 20px), (line-height: 2))
 	
 	&__close
@@ -1490,6 +1492,7 @@ table
 		padding: 10px
 		
 	&__buttons
+		
 		&_main, &_close
 			margin-left: 10px
 			height: 30px

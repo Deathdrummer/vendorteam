@@ -1,4 +1,4 @@
-<table>
+<table id="rewardsPeriodsList">
 	<thead>
 		<tr>
 			<td>Название</td>
@@ -35,7 +35,7 @@
 							<button class="pay"{% if period.to_wallet %} disabled{% endif %} rewardssetstaticssumm="{{period.id}}" title="Задать бюджет статиков" periodtitle="{{period.title}}"><i class="fa fa-money"></i></button>
 							<button class="pay"{% if period.to_wallet %} disabled{% endif %} rewardssettowallet="{{period.id}}" title="{% if period.to_wallet %}Отправлено в баланс{% else %}Отправить суммы в баланс{% endif %}" ><i class="fa fa-credit-card"></i></button>
 							<button class="alt" rewardsbuildreport="{{period.id}}" title="Задать бюджет статиков" periodtitle="{{period.title}}"><i class="fa fa-bar-chart"></i></button>
-							<a class="button alt ml-1" target="_self" href="{{base_url('admin/rewards/export/'~period.id)}}" download="Премиальные выплаты ({{period.title}}).csv" title="Экспортировать отчет"><i class="fa fa-download"></i></a>
+							<a class="button alt" target="_self" href="{{base_url('admin/rewards/export/'~period.id)}}" download="Премиальные выплаты ({{period.title}}).csv" title="Экспортировать отчет"><i class="fa fa-download"></i></a>
 						</div>
 					</td>
 				</tr>

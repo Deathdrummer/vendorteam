@@ -871,6 +871,7 @@ $(document).ready(function() {
 			$.post('/admin/get_users_statics', {user_id: thisUserId, newset: newSet}, function(html) {
 				if (html) {
 					userStaticsWin.setData(html, false);
+					$('#userStatics').ddrScrollTableY('80vh');
 					
 					$('[staticpart], [staticlider]').on('change', function() {
 						var thisStaticId = $(this).attr('staticpart') || $(this).attr('staticlider'),
@@ -984,6 +985,7 @@ $(document).ready(function() {
 			$.post('/admin/get_users_classes', {user_id: thisUserId, newset: newSet}, function(html) {
 				if (html) {
 					userClassesWin.setData(html, false);
+					$('#userClasses').ddrScrollTableY('80vh');
 				} else {
 					userClassesWin.setData('<p class="empty center">Нет данных</p>', false);
 				}
@@ -1069,6 +1071,7 @@ $(document).ready(function() {
 			
 			getAjaxHtml('admin/personages/get', {from_id: thisUserId, users_list: 1}, function(html) {
 				userPersonagesWin.setData(html, false);
+				$('#userPersonagesList').ddrScrollTableY('80vh');
 				
 				$('#userPersonagesList').changeRowInputs(function(row, item) {
 					$(row).addClass('changed');
