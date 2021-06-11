@@ -979,7 +979,7 @@ $(document).ready(function() {
 		}, function(pRNewWin) {
 			pRNewWin.wait();
 			getAjaxHtml('reports/get_pay_blank', {user_id: user_id, nickname: nickname, static: static, pay0: pay0, pay1: pay1}, function(html) {
-				pRNewWin.setData(html);
+				pRNewWin.setData(html, false);
 				
 				$('#paymentRequestSumm').number(true, 2, '.', ' ');
 				
@@ -1126,7 +1126,7 @@ $(document).ready(function() {
 		}, function(showResignWin) {
 			showResignWin.wait();
 			getAjaxHtml('admin/show_resign', {id: id, disableedit: disableedit}, function(html) {
-				showResignWin.setData(html);
+				showResignWin.setData(html, false);
 				
 				if (!disableedit) {
 					let d = new Date();
@@ -1212,7 +1212,7 @@ $(document).ready(function() {
 		}, function(accessResignWin) {
 			accessResignWin.wait();
 			getAjaxHtml('admin/pay_deposit_form', {id: id}, function(html) {
-				accessResignWin.setData(html);
+				accessResignWin.setData(html, false);
 				
 				let fullSumm = parseFloat($('#confirmResignFullSumm').val()) || false;
 				

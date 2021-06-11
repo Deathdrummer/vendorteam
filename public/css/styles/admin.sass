@@ -1348,103 +1348,116 @@ table
 
 
 
+//----------------------------------------------------------- ddrpopup
+@keyframes ddrPopUpIn
+	from
+		background-color: transparent
+	to
+		background-color: #03101bd4
+
+@keyframes ddrPopUpOut
+	from
+		background-color: #03101bd4
+	to
+		background-color: transparent
 
 
 
-
-// -------------------------------------------------------- popUp
 .popup
-	background-color: rgba(170, 182, 187, 0.7)
-	+scrollbar(#c2c8ce, #6785a2)
+	+scrollbar(#283442, #cad6e4, 8px)
 	
-	&__window
-		background: #f6f6f7
-		border: 1px solid #c8d3d8
-		box-shadow: 0 0 0 1px #c8dae3
+	&_opening
+		animation: ddrPopUpIn 0.2s
+		animation-fill-mode: forwards
+	
+	&_closing
+		animation: ddrPopUpOut 0.2s
+		animation-fill-mode: forwards
+	
+	&__container
+		padding-top: 15px
+		padding-bottom: 15px
+	
+	&__win
+		background-color: #fff
+		box-shadow: 0 12px 40px -12px rgba(0, 0, 0, 0.66)
 		border-radius: 3px
-		padding: 10px
-		box-shadow: 0 12px 40px -12px rgba(#000, 0.66)
+		overflow: hidden
+		//transform: scale(5)
+		transform: scale(0.8)
+		//transform: translateY(-100vh)
 		
-	&__wait
-	
-	&__dialog
-		background-color: rgba(21, 38, 47, 0.5)
+		&_opening
+			transform: scale(1)
+			//transform: translateY(0)
 		
-		.popupdialog
-			background-color: #fff
-			padding: 10px
-			border-radius: 2px
-			box-shadow: 0 1px 8px -1px rgba(30, 40, 45, 0.62)
-			
-			.buttons
-				button
-					border-radius: 3px
-					background-color: #69a9d0
-					color: #fff
-					font-size: 14px
-					height: 30px
-					padding-left: 10px
-					padding-right: 10px
-					transition: background-color 0.16s
-					
-					&:hover
-						background-color: darken(#69a9d0, 8%)
-					
-					&.cancel
-						background-color: #e66e6e
-						color: #fff
-							
-						&:hover
-							background-color: darken(#e66e6e, 8%)
+		&_closing
+			transform: scale(1.2)
+			//transform: scale(0)
+			//opacity: 0
+			//transform: translateY(-100vh)
+				
 	
+	&__header
+		background-color: #76838e
+		position: relative
+		padding-left: 40px
+		padding-right: 40px
+		padding-top: 5px
+		padding-bottom: 5px
+	
+	&__title
+		text-align: center
+		color: #fff
+		+font('roboto', light)
+		
+		
+		&_1
+			+resp(font-size, (xs: 16px, sm: 20px, md: 28px, lg: 34px, xl: 38px), (line-height: 2))
+		&_2
+			+resp(font-size, (xs: 16px, sm: 20px, md: 26px, lg: 30px, xl: 34px), (line-height: 2))
+		&_3
+			+resp(font-size, (xs: 16px, sm: 18px, md: 22px, lg: 24px, xl: 28px), (line-height: 2))
+		&_4
+			+resp(font-size, (xs: 16px, sm: 18px, md: 20px, lg: 20px, xl: 22px), (line-height: 2))
+		&_5
+			+resp(font-size, (xs: 16px, sm: 18px, md: 18px, lg: 20px, xl: 20px), (line-height: 2))
 	
 	&__close
-		right: 10px
-		top: 10px
-		display: block
-		width: 30px
-		height: 30px
-		position: absolute
-		cursor: pointer
+		//background-color: #dc5656
+		top: calc(50% - 13px) 
 		
 		&::before, &::after
-			content: ""
-			position: absolute
-			top: calc(50% - 2px)
-			left: 0
-			width: 100%
-			height: 4px
-			background-color: #97b2bf
-			transition: background-color 0.16s
-		
+			height: 3px
+			background-color: #ddd
+			border-radius: 2px
+			
 		&::before
-			transform: rotate(45deg)
-		
+			top: calc(50% - 1.5px)
+			
 		&::after
-			transform: rotate(-45deg)
+			top: calc(50% - 1.5px)
 		
-		&:hover::before, &:hover::after
-			background-color: #477c96
+		&:hover 
+			&::before, &::after
+				background-color: #fff
 			
 		
-	
-	&__top
-		+resp(padding-top, (xs: 1rem, sm: 1rem, md: 1rem, lg: 0, xl: 0))
-		
-		h5
-			+resp(font-size, (xs: 20px, sm: 22px, md: 24px, lg: 24px, xl: 26px), (line-height: 0))
-			text-align: center
-			color: #60808e
-		
 	&__content
-		margin-top: 1rem
-		min-height: 50px
+		padding: 10px
 		
 		p
 			font-size: 16px
 			line-height: 20px
 			margin-bottom: 10px
 			color: #333	
+			
+			&_remove
+				color: #e05353
+			
+			&.dialog
+				+font('roboto', bold)
+				text-align: center
 			
 			&.center
 				text-align: center
@@ -1471,10 +1484,137 @@ table
 		success
 			h1
 				color: #fff
+				
+		
+	&__footer
+		padding: 10px
+		
+	&__buttons
+		&_main, &_close
+			margin-left: 10px
+			height: 30px
+			border-radius: 3px
+			padding-left: 15px
+			padding-right: 15px
+			transition: background-color 0.16s
+		
+		&_main
+			background-color: #4296bb
+			color: #fff
+			
+			&:hover
+				background-color: darken(#4296bb, 10%)
+			
+			&:active
+				background-color: darken(#4296bb, 30%)
+				transition: background-color 0s
+			
+			&[disabled]
+				cursor: default
+				pointer-events: none
+				background-color: #b3b3b3
+		
+		&_close
+			background-color: #e05252
+			color: #fff
+			
+			&:hover
+				background-color: darken(#e05252, 10%)
+			
+			&:active
+				background-color: darken(#e05252, 30%)
+				transition: background-color 0s
+		
+		
+		&.link
+			background: none
+			box-shadow: 0 0 0 1px #a3c0ce inset
+			color: #a3c0ce
+			height: auto
+			padding-left: 10px
+			padding-right: 10px
+			transition: box-shadow 0.1s, color 0.1s
+			
+			&:hover
+				box-shadow: 0 0 0 1px #fff inset
+				color: #fff
+				
+	
+		&[close]
+			@extend .remove
 	
 	
+	&__wait
+		background-color: #ffffffbf
+		
+		.ddrpopupwait
+			i
+				color: #335c8c
+				font-size: 50px
+			
+			p
+				color: #335c8c
+				font-size: 14px
 	
 	
+	&__dialog
+		background-color: #303e4a75
+		
+		.popupdialog
+			background-color: #fff
+			padding: 10px
+			box-shadow: 0 8px 30px -12px rgba(0, 0, 0, 0.66)
+			
+			&__message
+				+font('roboto', bold)
+				
+				.remove
+					color: #e05353
+				
+			&__buttons
+				margin-top: 15px
+				text-align: right
+				
+				button
+					margin: 0
+					height: 24px
+					border-radius: 3px
+					padding-left: 10px
+					padding-right: 10px
+					font-size: 13px
+					transition: background-color 0.16s
+					
+					+ button
+						margin-left: 8px
+					
+				
+					&:not(.cancel)
+						background-color: #e05353
+						color: #fff
+						
+						&:hover
+							background-color: darken(#e05353, 10%)
+						
+						&:active
+							background-color: darken(#e05353, 30%)
+							transition: background-color 0s
+				
+					&.cancel
+						background-color: #658ea2
+						color: #fff
+						
+						&:hover
+							background-color: darken(#658ea2, 10%)
+						
+						&:active
+							background-color: darken(#658ea2, 30%)
+							transition: background-color 0s
+
+
+
+
+
+
 	&__list
 		margin-bottom: 0
 		
@@ -1502,35 +1642,6 @@ table
 				padding-left: 10px
 				padding-right: 10px
 				color: $colorLightViolett
-				
-			
-	
-	&__buttons
-		margin-top: 1rem
-		
-		button
-			+btn()
-			
-			+ button
-				margin-right: 1rem
-			
-			
-			&.link
-				background: none
-				box-shadow: 0 0 0 1px #a3c0ce inset
-				color: #a3c0ce
-				height: auto
-				padding-left: 10px
-				padding-right: 10px
-				transition: box-shadow 0.1s, color 0.1s
-				
-				&:hover
-					box-shadow: 0 0 0 1px #fff inset
-					color: #fff
-					
-		
-			&[close]
-				@extend .remove
 	
 	
 	&__field
@@ -1637,145 +1748,135 @@ table
 				color: darken($bgColor, 65%)
 				text-transform: uppercase
 				line-height: 20px
-		
-		
+	
+	
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-.popup__form
-	&_item
-		display: flex
-		flex-wrap: wrap
-		align-items: center
-		margin-bottom: 1rem
-		
-		> div
-			flex-grow: 0
-			flex-shrink: 0
+	&__form
+		&_item
 			display: flex
+			flex-wrap: wrap
 			align-items: center
+			margin-bottom: 1rem
 			
-			
-			&:first-of-type
-				+resp(flex-basis, (xs: 100%, sm: 40%), (max-width: 0))
-				padding-right: 10px
-				justify-content: flex-end
-			
-			&:last-of-type
-				+resp(flex-basis, (xs: 100%, sm: 60%), (max-width: 0))
-			
-			
-			label
-				margin-bottom: 0
-				font-size: 14px
-				line-height: 14px
-				text-align: right
-			
-			.field
-				+field()
+			> div
+				flex-grow: 0
+				flex-shrink: 0
+				display: flex
+				align-items: center
 				
-			.select
-				+select()
-				width: 100%
+				
+				&:first-of-type
+					+resp(flex-basis, (xs: 100%, sm: 40%), (max-width: 0))
+					padding-right: 10px
+					justify-content: flex-end
+				
+				&:last-of-type
+					+resp(flex-basis, (xs: 100%, sm: 60%), (max-width: 0))
+				
+				
+				label
+					margin-bottom: 0
+					font-size: 14px
+					line-height: 14px
+					text-align: right
+				
+				.field
+					+field()
+					
+				.select
+					+select()
+					width: 100%
+					
+					&.time
+						width: 50px
+						
+						+ span
+							margin-left: 5px
+						
+						~ .time
+							margin-left: 10px
+				
+				
+				
+				&.checks
+					display: flex
+					align-items: center
+					justify-content: space-between
+					
+				
+				
+				&__item
+					position: relative
+					@extend .noselect
+					
+					label
+						font-size: 12px
+						color: #2c4952
+						
+						&:hover ~ label::after
+							color: #10262d
+					
+					input[type="checkbox"]
+						display: none
+						
+						~ label::after
+							content: "\f096"
+							position: absolute
+							top: 20px
+							left: calc(50% - 11px)
+							font: normal normal normal 14px/1 FontAwesome
+							font-size: 24px
+							display: block
+							margin-left: -3.2px
+							width: 22px
+							cursor: pointer
+							//color: #5e8090
+						
+							
+						&:checked ~ label::after
+							content: "\f046"
+							margin-left: 0
+							color: #3a6577
+							
+						&:disabled:not(:checked) ~ label::after
+							color: #aaa
+							content: "\f096"
+							cursor: default
+						
+						&:disabled:checked ~ label::after
+							content: "\f046"
+							color: #9a9d9e
+							cursor: default
+							
+						
+				
+				
+				
+			.number
+				+field()
 				
 				&.time
 					width: 50px
 					
+					input[type="number"]::-webkit-inner-spin-button,
+					input[type=number]::-webkit-outer-spin-button
+						opacity: 1
+					
 					+ span
 						margin-left: 5px
+						font-size: 14px
 					
 					~ .time
 						margin-left: 10px
-			
-			
-			
-			&.checks
-				display: flex
-				align-items: center
-				justify-content: space-between
-				
-			
-			
-			&__item
-				position: relative
-				@extend .noselect
-				
-				label
-					font-size: 12px
-					color: #2c4952
-					
-					&:hover ~ label::after
-						color: #10262d
-				
-				input[type="checkbox"]
-					display: none
-					
-					~ label::after
-						content: "\f096"
-						position: absolute
-						top: 20px
-						left: calc(50% - 11px)
-						font: normal normal normal 14px/1 FontAwesome
-						font-size: 24px
-						display: block
-						margin-left: -3.2px
-						width: 22px
-						cursor: pointer
-						//color: #5e8090
-					
-						
-					&:checked ~ label::after
-						content: "\f046"
-						margin-left: 0
-						color: #3a6577
-						
-					&:disabled:not(:checked) ~ label::after
-						color: #aaa
-						content: "\f096"
-						cursor: default
-					
-					&:disabled:checked ~ label::after
-						content: "\f046"
-						color: #9a9d9e
-						cursor: default
-						
-					
-			
-			
-			
-		.number
-			+field()
-			
-			&.time
-				width: 50px
-				
-				input[type="number"]::-webkit-inner-spin-button,
-				input[type=number]::-webkit-outer-spin-button
-					opacity: 1
-				
-				+ span
-					margin-left: 5px
-					font-size: 14px
-				
-				~ .time
-					margin-left: 10px
 					
 					
 	
 	
 	
 	
+
+
+
 
 
 

@@ -870,7 +870,7 @@ $(document).ready(function() {
 			
 			$.post('/admin/get_users_statics', {user_id: thisUserId, newset: newSet}, function(html) {
 				if (html) {
-					userStaticsWin.setData(html);
+					userStaticsWin.setData(html, false);
 					
 					$('[staticpart], [staticlider]').on('change', function() {
 						var thisStaticId = $(this).attr('staticpart') || $(this).attr('staticlider'),
@@ -903,7 +903,7 @@ $(document).ready(function() {
 						}
 					});
 				} else {
-					userStaticsWin.setData('<p class="empty center">Нет данных</p>');
+					userStaticsWin.setData('<p class="empty center">Нет данных</p>', false);
 				}
 				userStaticsWin.wait(false);
 				
@@ -983,9 +983,9 @@ $(document).ready(function() {
 			
 			$.post('/admin/get_users_classes', {user_id: thisUserId, newset: newSet}, function(html) {
 				if (html) {
-					userClassesWin.setData(html);
+					userClassesWin.setData(html, false);
 				} else {
-					userClassesWin.setData('<p class="empty center">Нет данных</p>');
+					userClassesWin.setData('<p class="empty center">Нет данных</p>', false);
 				}
 				userClassesWin.wait(false);
 				
@@ -1068,7 +1068,7 @@ $(document).ready(function() {
 			userPersonagesWin.wait();
 			
 			getAjaxHtml('admin/personages/get', {from_id: thisUserId, users_list: 1}, function(html) {
-				userPersonagesWin.setData(html);
+				userPersonagesWin.setData(html, false);
 				
 				$('#userPersonagesList').changeRowInputs(function(row, item) {
 					$(row).addClass('changed');

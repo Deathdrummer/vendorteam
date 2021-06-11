@@ -202,7 +202,7 @@
 			onChoose: function(users, uMWin) {
 				getAjaxHtml('admin/calendar/get_table', function(html) {
 					uMWin.setButtons([{id: 'uAChooseMonthes', title: 'Выбрать', disabled: 1}], 'Закрыть');
-					uMWin.setData(html);
+					uMWin.setData(html, false);
 					uMWin.setWidth(900);
 					uMWin.setTitle('Доход участников');
 					
@@ -322,7 +322,7 @@
 							
 							getAjaxHtml('admin/calendar/get_table', function(html) {
 								ranksAmountWin.setButtons([{id: 'rAChooseMonthes', title: 'Выбрать', disabled: 1}], 'Закрыть');
-								ranksAmountWin.setData(html);
+								ranksAmountWin.setData(html, false);
 								ranksAmountWin.setWidth(900);
 								
 								$('#calendarPopup').find('input[type="checkbox"]').on(tapEvent, function() {
@@ -436,7 +436,7 @@
 				}, function(addreportWin) {
 					addreportWin.wait();
 					getAjaxHtml('admin/statistics/get_calendar_reports', {type: reportType}, function(html) {
-						addreportWin.setData(html);
+						addreportWin.setData(html, false);
 						$('#reportsAmountList').ddrScrollTableY('400px');
 						
 						$('#reportsAmountType').on('change', function() {

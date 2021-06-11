@@ -89,7 +89,7 @@ $(document).ready(function() {
 		}, function(newChapterWin) {
 			newChapterWin.wait();
 			getAjaxHtml('admin/guide_chapters_new', {}, function(html) {
-				newChapterWin.setData(html);
+				newChapterWin.setData(html, false);
 				
 				initEditors($('.popup__content').find('[editor]'));
 				
@@ -145,7 +145,7 @@ $(document).ready(function() {
 			newChapterWin.wait();
 			getAjaxHtml('admin/guide_chapters_edit', {id: id}, function(html) {
 				
-				newChapterWin.setData(html);
+				newChapterWin.setData(html, false);
 				initEditors($('.popup__content').find('[editor]'));
 				
 				$('#guidesUpdateChapter').on(tapEvent, function() {

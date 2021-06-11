@@ -80,7 +80,7 @@ $(document).ready(function() {
 		}, function(newChapterWin) {
 			newChapterWin.wait();
 			getAjaxHtml('admin/guide_chapters_new', {to_operator: 1}, function(html) {
-				newChapterWin.setData(html);
+				newChapterWin.setData(html, false);
 				initEditors();
 				
 				$('#guidesAddChapter').on(tapEvent, function() {
@@ -131,7 +131,7 @@ $(document).ready(function() {
 		}, function(newChapterWin) {
 			newChapterWin.wait();
 			getAjaxHtml('admin/guide_chapters_edit', {id: id, to_operator: 1}, function(html) {
-				newChapterWin.setData(html);
+				newChapterWin.setData(html, false);
 				initEditors();
 				
 				$('#guidesUpdateChapter').on(tapEvent, function() {

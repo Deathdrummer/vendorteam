@@ -134,9 +134,9 @@ $(document).ready(function() {
 			periodsWin.wait();
 			
 			getAjaxHtml('operator/get_reports_periods', function(html, stat) {
-				if (stat) periodsWin.setData(html);
+				if (stat) periodsWin.setData(html, false);
 				else {
-					periodsWin.setData('<p class="empty">Нет периодов!</p>');
+					periodsWin.setData('<p class="empty">Нет периодов!</p>', false);
 				}
 				
 				$('[chooseperiod]').on(tapEvent, function() {
@@ -454,7 +454,7 @@ $(document).ready(function() {
 			newRaidWin.wait();			
 			$.post('/operator/get_period', {period_id: newRaidPeriod}, function(period) {
 				getAjaxHtml('account/get_new_raid_data', {static: newRaidStatic, period: period}, function(html) {
-					newRaidWin.setData(html);
+					newRaidWin.setData(html, false);
 					newRaidWin.setButtons([{id: 'addRaid', title: "Создать рейд"}, {id: 'newRaidWinClose', title: "Отмена", cls: 'close'}]);
 					
 					

@@ -58,7 +58,7 @@ $(document).ready(function() {
 			timesheetPeriodsWin = tPWin;
 			timesheetPeriodsWin.wait();
 			getAjaxHtml('timesheet/get_timesheet_periods', function(html) {
-				timesheetPeriodsWin.setData(html);
+				timesheetPeriodsWin.setData(html, false);
 				$('#newTimesheetPeriod').prop('disabled', false);
 			}, function() {
 				timesheetPeriodsWin.wait(false);
@@ -113,7 +113,7 @@ $(document).ready(function() {
 				if (thisName != '') {
 					timesheetPeriodsWin.wait();
 					getAjaxHtml('timesheet/get_timesheet_periods', {to_user: 1, attr: 'chooseperiodtocopy'}, function(html) {
-						timesheetPeriodsWin.setData(html);
+						timesheetPeriodsWin.setData(html, false);
 						timesheetPeriodsWin.setTitle('Скопировать период');
 						timesheetPeriodsWin.removeButtons();
 						timesheetPeriodsWin.wait(false);
@@ -231,7 +231,7 @@ $(document).ready(function() {
 		    closeButton: 'Отмена',
 		}, function(timesheetItemWin) {
 			$.post('/timesheet/new_timesheet_raid', {day: thisItem[1]}, function(html) {
-				timesheetItemWin.setData(html);
+				timesheetItemWin.setData(html, false);
 				$('#addTimesheetRaid').prop('disabled', false);
 				
 				$('#newTimesheetRaidType').on('change', function() {
@@ -332,7 +332,7 @@ $(document).ready(function() {
 		    closeButton: 'Отмена',
 		}, function(timesheetItemWin) {
 			$.post('/timesheet/edit_timesheet_raid', {params: params}, function(html) {
-				timesheetItemWin.setData(html);
+				timesheetItemWin.setData(html, false);
 				$('#updateTimesheetRaid').prop('disabled', false);
 				
 				$('#newTimesheetRaidType').on('change', function() {

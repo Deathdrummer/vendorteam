@@ -214,7 +214,7 @@
 		}, function(showResignWin) {
 			showResignWin.wait();
 			getAjaxHtml('admin/show_resign', {id: id, disableedit: disableedit}, function(html) {
-				showResignWin.setData(html);
+				showResignWin.setData(html, false);
 				
 				if (!disableedit) {
 					let d = new Date();
@@ -298,7 +298,7 @@
 		}, function(accessResignWin) {
 			accessResignWin.wait();
 			getAjaxHtml('admin/pay_deposit_form', {id: id}, function(html) {
-				accessResignWin.setData(html);
+				accessResignWin.setData(html, false);
 				
 				let fullSumm = parseFloat($('#confirmResignFullSumm').val()) || false;
 				

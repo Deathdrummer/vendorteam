@@ -84,7 +84,7 @@ $(document).ready(function() {
 		}, function(newFolderWin) {
 			newFolderWin.wait();
 			getAjaxHtml('filemanager/dirs_new', function(html) {
-				newFolderWin.setData(html);
+				newFolderWin.setData(html, false);
 				$('#addFolder').on(tapEvent, function() {
 					newFolderWin.wait();
 					sendFormData('#newFolderForm', {
@@ -147,7 +147,7 @@ $(document).ready(function() {
 				name: dirName,
 				path: dirPath
 			}, function(html) {
-				updateFolderWin.setData(html);
+				updateFolderWin.setData(html, false);
 				$('#updateDir').on(tapEvent, function() {
 					sendFormData('#editFolderForm', {
 						url: 'filemanager/dirs_update',
@@ -315,7 +315,7 @@ $(document).ready(function() {
 		}, function(replaceFilesWin) {
 			replaceFilesWin.wait();
 			getAjaxHtml('filemanager/files_replace', {currentdir: dirPath}, function(html) {
-				replaceFilesWin.setData(html);
+				replaceFilesWin.setData(html, false);
 			}, function() {
 				replaceFilesWin.wait(false);
 			});
@@ -373,7 +373,7 @@ $(document).ready(function() {
 		}, function(setWidthHeightWin) {
 			setWidthHeightWin.wait();
 			getAjaxHtml('filemanager/set_width_height', {width: hasImgWidth, height: hasImgHeight}, function(html) {
-				setWidthHeightWin.setData(html);
+				setWidthHeightWin.setData(html, false);
 				
 				$('#setWidthHeightButton').on(tapEvent, function() {
 					$('#sectionWait').addClass('visible filemanager');

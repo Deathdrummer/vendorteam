@@ -111,7 +111,7 @@ $(document).ready(function() {
 		}, function(statisticsUsersWin) {
 			statisticsUsersWin.wait();
 			getAjaxHtml('admin/statistics_get_users', {static_id: thisStaticId}, function(html) {
-				statisticsUsersWin.setData(html);
+				statisticsUsersWin.setData(html, false);
 				
 				$('[choosepopupcustomer]').on(tapEvent, function() {
 					var thisCustomer = $(this).attr('choosepopupcustomer').split('|'),

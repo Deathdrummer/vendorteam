@@ -201,7 +201,7 @@ $(document).ready(function() {
 			vacationDisabledWin.wait();
 			
 			getAjaxHtml('vacation/get_disabled_days', {week_days: $(weekInput).val(), month_days: $(monthInput).val(), static_html: staticCard}, function(html) {
-				vacationDisabledWin.setData(html);
+				vacationDisabledWin.setData(html, false);
 			}, function() {
 				vacationDisabledWin.wait(false);
 			});
@@ -246,7 +246,7 @@ $(document).ready(function() {
 		}, function(vacationRanksWin) {
 			vacationRanksWin.wait();
 			getAjaxHtml('vacation/get_enabled_ranks', {enabled_ranks: $(ranksInput).val(), static_html: staticCard}, function(html) {
-				vacationRanksWin.setData(html);
+				vacationRanksWin.setData(html, false);
 			}, function() {
 				vacationRanksWin.wait(false);
 			});

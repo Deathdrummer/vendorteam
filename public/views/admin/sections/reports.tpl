@@ -310,7 +310,7 @@ $(document).ready(function() {
 			}, function(reportVariantWin) {
 				reportVariantWin.wait();
 				getAjaxHtml('reports/get_report_variants', function(html) {
-					reportVariantWin.setData(html);
+					reportVariantWin.setData(html, false);
 					
 					$('[choosereportrariant]').on(tapEvent, function() {
 						reportVariantWin.wait();
@@ -422,7 +422,7 @@ $(document).ready(function() {
 			periodsWin.wait();
 			
 			getAjaxHtml('reports/get_reports_periods', {edit: 1}, function(html) {
-				periodsWin.setData(html);
+				periodsWin.setData(html, false);
 				
 				$('#choosePeriods').on(tapEvent, function() {
 					$('#choosenPeriodId').val(JSON.stringify(choosenPeriods));
@@ -980,7 +980,7 @@ $(document).ready(function() {
 			periodsOrdersWin.wait();
 			
 			getAjaxHtml('reports/get_reports_periods', {to_orders: 1}, function(html) {
-				periodsOrdersWin.setData(html);
+				periodsOrdersWin.setData(html, false);
 				$('#newPeriod').prop('disabled', false);
 			}, function() {
 				periodsOrdersWin.wait(false);
@@ -1378,7 +1378,7 @@ $(document).ready(function() {
 		}, function(salaryWin) {
 			salaryWin.wait();
 			getAjaxHtml('reports/get_periods_to_salary', function(html) {
-				salaryWin.setData(html);
+				salaryWin.setData(html, false);
 				
 				$('[periodid]').on(tapEvent, function() {
 					var id = $(this).attr('periodid'),
@@ -1388,7 +1388,7 @@ $(document).ready(function() {
 					getAjaxHtml('reports/get_salary_form', {period_id: id, period_title: title}, function(html) {
 						salaryWin.setWidth(600);
 						salaryWin.setButtons([{id : 'calcSalary', title: 'Рассчитать'}], 'Отмена');
-						salaryWin.setData(html);
+						salaryWin.setData(html, false);
 						
 						$('#salaryStatics').ddrScrollTableY(360);
 						$('[salarysumm]').number(true, 0, ',', ' ');
@@ -1463,7 +1463,7 @@ $(document).ready(function() {
 								salaryWin.wait();
 								getAjaxHtml('reports/calc_salary_orders', {period_id: id, data: data, order: salesOrder, comment: salesComment, to_deposit: toDeposit}, function(html) {
 									salaryWin.setWidth(1000);
-									salaryWin.setData(html);
+									salaryWin.setData(html, false);
 									salaryWin.setButtons([{id : 'setSalary', title: 'Сформировать заявки'}], 'Отмена');
 									
 									$('#setSalary').on(tapEvent, function() {
@@ -1527,7 +1527,7 @@ $(document).ready(function() {
 		}, function(addictPayWin) {
 			addictPayWin.wait();
 			getAjaxHtml('reports/get_addictpay_form', function(html) {
-				addictPayWin.setData(html);
+				addictPayWin.setData(html, false);
 				
 				
 				
@@ -1564,7 +1564,7 @@ $(document).ready(function() {
 						
 						getAjaxHtml('reports/calc_addictpay', {statics: choosedStatics, to_deposit: toDeposit}, function(html) {
 							addictPayWin.setWidth(700);
-							addictPayWin.setData(html);
+							addictPayWin.setData(html, false);
 							addictPayWin.setButtons([{id: 'setAddictPayUsers', title: 'Сформировать заявки'}]);
 							
 							$('[addictpayuser]').on('change', function() {
@@ -1698,7 +1698,7 @@ $(document).ready(function() {
 			
 			(function paymentRequestsGetList() {
 				getAjaxHtml('admin/paymentrequests/main', {}, function(html) {
-					pRTWin.setData(html);
+					pRTWin.setData(html, false);
 					
 					$('#paymentRequestsTemplatesList').ddrCRUD({
 						addSelector: '#paymentRequestsTemplatesAdd',
@@ -1719,7 +1719,7 @@ $(document).ready(function() {
 							pRTWin.setWidth(600);
 							pRTWin.wait();
 							getAjaxHtml('admin/paymentrequests/get_users', {pr_id: thisRowId}, function(html) {
-								pRTWin.setData(html);
+								pRTWin.setData(html, false);
 								pRTWin.setButtons([
 									{id: 'paymentRequestsSetFromTemp', title: 'Оформить'},
 									{id: 'paymentRequestsSave', title: 'Сохранить'},
@@ -2313,7 +2313,7 @@ $(document).ready(function() {
 			periodsWin.wait();
 			
 			getAjaxHtml('reports/get_reports_periods', function(html) {
-				periodsWin.setData(html);
+				periodsWin.setData(html, false);
 			}, function() {
 				periodsWin.wait(false);
 			});
@@ -2356,7 +2356,7 @@ $(document).ready(function() {
 					rewardsPeriodsWin.setTitle('Премиальные периоды');
 					rewardsPeriodsWin.setWidth(750);
 					rewardsPeriodsWin.setButtons([{id: 'newRewardPeriod', title: 'Новый период'}], 'Закрыть');
-					rewardsPeriodsWin.setData(html);
+					rewardsPeriodsWin.setData(html, false);
 				}, function() {
 					rewardsPeriodsWin.wait(false);
 					
@@ -2389,7 +2389,7 @@ $(document).ready(function() {
 							params = periodId ? {period_id: periodId} : {};
 						
 						getAjaxHtml('admin/rewards/'+url, params, function(html) {
-							rewardsPeriodsWin.setData(html);
+							rewardsPeriodsWin.setData(html, false);
 							rewardsPeriodsWin.setTitle(title);
 							rewardsPeriodsWin.setButtons(button, 'Отмена');
 							rewardsPeriodsWin.setWidth(500);
@@ -2480,7 +2480,7 @@ $(document).ready(function() {
 						let rewardPeriodId = $(this).attr('rewardssetstaticssumm');
 						
 						getAjaxHtml('admin/rewards/get_statics_form', {period_id: rewardPeriodId}, function(html) {
-							rewardsPeriodsWin.setData(html);
+							rewardsPeriodsWin.setData(html, false);
 							rewardsPeriodsWin.setTitle('Премии: Задать бюджет статиков');
 							rewardsPeriodsWin.setButtons([{id: 'setStaticsSumm', title: 'Задать'}, {id: 'goBack', title: 'Назад'}], 'Отмена');
 							rewardsPeriodsWin.setWidth(900);
@@ -2575,7 +2575,7 @@ $(document).ready(function() {
 								}, function(rewardStaticReportWin) {
 									rewardStaticReportWin.wait();
 									getAjaxHtml('admin/rewards/get_static_report', {period_id: rewardPeriodId, static_id: staticId}, function(html) {
-										rewardStaticReportWin.setData(html);
+										rewardStaticReportWin.setData(html, false);
 									}, function() {
 										rewardStaticReportWin.wait(false);
 									});
@@ -2629,7 +2629,7 @@ $(document).ready(function() {
 		}, function(buildWPDataWin) {
 			buildWPDataWin.wait();
 			getAjaxHtml('reports/wallet/get_params_to_build', function(html) {
-				buildWPDataWin.setData(html);
+				buildWPDataWin.setData(html, false);
 				$('#buildWPData').removeAttrib('disabled');
 			}, function() {
 				buildWPDataWin.wait(false);
@@ -2810,7 +2810,7 @@ $(document).ready(function() {
 								}, function(saveAndPayoutWin) {
 									saveAndPayoutWin.wait();
 									getAjaxHtml('reports/wallet/get_save_blank', function(html) {
-										saveAndPayoutWin.setData(html);
+										saveAndPayoutWin.setData(html, false);
 									}, function() {
 										saveAndPayoutWin.wait(false);
 									});
@@ -2898,7 +2898,7 @@ $(document).ready(function() {
 		}, function(reportsListWin) {
 			reportsListWin.wait();
 			getAjaxHtml('reports/wallet/get_reports', function(html) {
-				reportsListWin.setData(html);
+				reportsListWin.setData(html, false);
 				reportsListWin.wait(false);
 				$('#walletReportsList').ddrScrollTableY(400);
 				

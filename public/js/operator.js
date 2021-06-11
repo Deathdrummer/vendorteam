@@ -51,7 +51,7 @@ jQuery(document).ready(function($) {
 			operatorDataWin.wait();
 			
 			getAjaxHtml('operator/get_operator_data', function(html) {
-				operatorDataWin.setData(html);
+				operatorDataWin.setData(html, false);
 				
 				
 				$('#operatorFormAvatar').chooseInputFile(function(data, thisItem) {

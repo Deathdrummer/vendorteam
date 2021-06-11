@@ -1,303 +1,389 @@
-;function Popup(settings, callback) {
-	var ops = $.extend({
-		title: false,
-		width: 500,
-		height: false,
-		html: '',
-		wrapToClose: true,
-		buttons: false,
-		closeButton: false,
-		buttonsOnTop: false,
-		winClass: false,
-	}, settings);
-	
-	
-	
-	var html = '',
-		popUpId = 'popup'+random(0, 9999),
-		winW,
-		winH,
-		top,
-		domModifedTimeout;
-	
-	
-	if($('.popup').length > 0) $('.popup').remove();
-	
-	winW = $(window).outerWidth();
-	winH = $(window).height();
-	
-	
-	html += '<div class="popup">';
-	html +=     '<div id="'+popUpId+'" class="popup__window'+(ops.winClass ? ' '+ops.winClass : '')+'">';
-	html +=         '<div class="popup__wait"><i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i></div>';
-	html +=         '<div class="popup__close" close title="Закрыть окно"></div>';       
-	if (ops.title) {
-	html +=         '<div class="popup__top">';
-	html +=             '<h5 class="text-overflow">'+ops.title+'</h5>';
-	html +=         '</div>';
-	}
-	
-	if (!ops.buttonsOnTop) html += '<div class="popup__content">'+(ops.html ? ops.html : '')+'</div>';
-	
-	if(ops.closeButton || ops.buttons) {
-	html +=         '<div class="popup__buttons">';
-	
-	if(ops.closeButton) {
-	html +=             '<button close>'+ops.closeButton+'</button>' ;  
-	}
-	
-	if(ops.buttons) {
-	$.each(ops.buttons.reverse(), function(k, b) {
-	html +=             '<button'+(b.disabled ? ' disabled' : '')+' id="'+b.id+'"'+(b.metrikaId ? ' onclick="yaCounter'+(b.metrikaId)+'.reachGoal('+'\''+(b.metrikaTargetId)+'\''+'); return true;"' : '')+(b.class ? ' class="'+b.class+'"' : '')+'>'+b.title+'</button>';
-	});
-	}            
-	html +=         '</div>';
-	}
-	
-	if (ops.buttonsOnTop) html += '<div class="popup__content">'+(ops.html ? ops.html : '')+'</div>';
-	
-	html +=     '</div>';
-	html += '</div>';
-	
-	$('body').prepend(html);
-	disableScroll();
-	
-	
-	var popupH = ops.height ? ops.height : $('#'+popUpId).outerHeight() + parseInt($('#'+popUpId).css('margin-top')) + parseInt($('#'+popUpId).css('margin-bottom'));
-	
-	$('#'+popUpId).css({
-		'width': typeof ops.width == 'number' ? ((ops.width + 20 > winW) ? 'calc(100% - 20px)' : ops.width+'px') : ops.width,
-		'min-height': ops.height ? ops.height+'px' : '100px',
-		'left': (ops.width + 20 > winW) ? '10px' : typeof ops.width == 'number' ? (winW / 2) - (ops.width / 2)+'px' : (100 - parseInt(ops.width)) / 2 + '%',
-		'top': popupH < winH ? 'calc(50vh - ('+popupH+'px / 2 + 20px))' : 0
-	});
-	
-	$(window).resize(function() {
-		winW = $(window).width();
-		winH = $(window).height();
-		top = 'calc(50vh - ('+popupH+'px / 2 + 20px))';
-		
-		$('#'+popUpId).css({
-			'width': typeof ops.width == 'number' ? ((ops.width + 20 > winW) ? 'calc(100% - 20px)' : ops.width+'px') : ops.width,
-			'left': (ops.width + 20 > winW) ? '10px' : typeof ops.width == 'number' ? (winW / 2) - (ops.width / 2)+'px' : (100 - parseInt(ops.width)) / 2 + '%',
-			'top': popupH < winH ? (top < 0 ? 0 : top) : 0
-		});
-	});
-	
-	
-	
+/*
+	Модальное окно (21.01.2020) Создано в глубочайшем стрессе. (08.10.2020) - все супер, работа идет, стресса нет! Митя привыкает к школе
+	- опции
+		- title: заголовок
+		- width: ширина окна
+		- html: контент
+		- buttons: кнопки
+		- buttonsAlign: выравнивание кнопок по левому или правому краю [left - слева, right - справа]
+		- closeByButton: закрывать только по кнопкам
+		- closePos: расположение кнопки "close" [left - слева, right - справа]
+		- close: заголовок кнопки "закрыть"
+		- topClose: верхний крестик "закрыть"
 
-	$('#'+popUpId).on('DOMSubtreeModified', function() {
-		clearTimeout(domModifedTimeout);
-		domModifedTimeout = setTimeout(function() {
-			if(popupH && popupH != $('#'+popUpId).outerHeight()) {
-				popupH = $('#'+popUpId).outerHeight() + parseInt($('#'+popUpId).css('margin-top')) + parseInt($('#'+popUpId).css('margin-bottom'));
-				top = (winH / 2) - (popupH / 2);
-				$('#'+popUpId).css({top: popupH < winH ? (top < 0 ? 0 : top) : 0});
-				$('#'+popUpId).fadeIn(50);
-			}
-		}, 20);
-	});
-	
-	$('.popup').addClass('visible');
-	
-	
-	
-	
-	
-	//----------------------------------------------- Закрыть окно
-	$('#'+popUpId).on(tapEvent, '[close], .close', function() {
-		$('.popup').removeClass('visible');
-		setTimeout(function() {
-			$('.popup').remove();
-			enableScroll();
-			$(document).trigger('popup:close');
-		}, 100);
-	});
-	
-	if (ops.wrapToClose) {
-		$('.popup').on(tapEvent, function(e) {
-			if (/\bpopup\b/.test(e.target.className) && $('.popup__wait.visible').length == 0 && $('.popup__window').find('*:focus').length == 0) {
-				$('.popup').removeClass('visible');
-				setTimeout(function() {
-					$('.popup').remove();
-					enableScroll();
-					$(document).trigger('popup:close');
-				}, 100);
-			}
+	- методы
+		- wait: окно в режиме ожидания
+		- close: закрыть окно
+		- setData: задать контент [url или строка, параметры (или false, если строка), ширина окна]
+		- setTitle: задать заголовок
+		- onScroll: событие прокрутки окна
+		- setButtons: задать кнопки [массив кнопок, кнопка "закрыть"]
+		- setWidth: задать ширину окна
+		- buttonsOnTop: кнопки сверху
+		- dialog: вывести диалог [диалог, заголовок "да", заголовок "нет", каллбэк]
+*/
+function DdrPopUp(settings, callback) {
+	var o = $.extend({
+		title: false,
+		width: false, // ширина окна
+		html: '', // контент
+		buttons: false, // массив кнопок
+		buttonsAlign: 'right', // выравнивание вправо
+		disabledButtons: false, // при старте все кнопки кроме закрытия будут disabled
+		closePos: 'right', // расположение кнопки "close" left - слева, right - справа
+		closeByButton: false, // Закрывать окно только по кнопкам [ddrpopupclose]
+		close: false, // заголовок кнопки "закрыть"
+		winClass: false, // добавить класс к модальному окну
+		contentToCenter: false, // весь контент по центру вертикально и горизонтально
+		buttonsOnTop: false, // Кнопки сверху
+		topClose: true, // верхний крестик "закрыть"
+		lang: 'ru'
+	}, settings),
+		animationTime = 0.2,
+		popupCloseTOut,
+		buttonsHtml = '',
+		topCloseHtml = '',
+		titleHtml = '',
+		popupHtml = '',
+		ddrPopupId = 'ddrpopup'+generateCode('LlnlL'),
+		ddrPopupSelector = '#'+ddrPopupId,
+		language = {ru: {
+			closeWin: 'Закрыть окно',
+			noData: 'Нет данных',
+			systemError: 'Системная ошибка!'
+		}, en: {
+			closeWin: 'Close window',
+			noData: 'No data',
+			systemError: 'System error!'
+		}};
+
+
+
+	var openingDdrPopup = $('body').find('.popup.popup_opening');
+	if ($(openingDdrPopup).length) {
+		$(openingDdrPopup).remove();
+	}
+
+
+	if (o.closePos == 'left') {
+		if (o.close) buttonsHtml += '<button class="popup__buttons_close" ddrpopupclose>'+o.close+'</button>';
+	}
+
+	if(o.buttons) {
+		$.each(o.buttons, function(k, b) {
+			buttonsHtml += '<button'+((b.disabled || o.disabledButtons) ? ' disabled' : '')+(b.close ? ' ddrpopupclose' : '')+'  id="'+b.id+'"'+(b.metrikaId ? ' onclick="yaCounter'+(b.metrikaId)+'.reachGoal('+'\''+(b.metrikaTargetId)+'\''+'); return true;"' : '')+' class="popup__buttons_'+(b.type ? b.type : 'main')+''+(b.class ? ' '+b.class : '')+'">'+b.title+'</button>';
 		});
 	}
-	
-	
-	
-	
-	
-	function _getWinHeight() {
-		return $('#'+popUpId).outerHeight();
+
+	if (o.closePos == 'right') {
+		if (o.close) buttonsHtml += '<button class="popup__buttons_close" ddrpopupclose>'+o.close+'</button>';
+	}
+
+
+	if (o.title) {
+		var tData = o.title.split('|'),
+			title = tData[0],
+			titleSize = tData[1] || '1',
+			titleOverflow = (tData[2] == 1) ? ' popup__title_overflow' : '',
+			titleHtml = '<h5 ddrpopuptitle class="popup__title'+titleOverflow+' popup__title_'+titleSize+'">'+title+'</h5>';
+	}
+
+	if (o.topClose) topCloseHtml = '<div ddrpopupclose class="popup__close" title="'+language[o.lang]['closeWin']+'"></div>';
+
+
+	popupHtml += '';
+	popupHtml += '<div class="popup" id="'+ddrPopupId+'">';
+	popupHtml += 	'<div class="popup__wrap">';
+	popupHtml += 		'<div class="popup__container">';
+	popupHtml += 			'<div class="popup__win'+(o.winClass ? ' '+o.winClass : '')+' noselect" ddrpopupwin>';
+	popupHtml += 				'<div class="popup__wait">';
+	popupHtml += 					'<div class="popupwait" ddrpopupwaitblock>';
+	popupHtml += 						'<i class="fa fa-spinner fa-pulse fa-fw"></i>';
+	popupHtml += 						'<p ddrpopupwait></p>';
+	popupHtml += 					'</div>';
+	popupHtml += 				'</div>';
+	if (titleHtml || topCloseHtml) {
+	popupHtml += 				'<div class="popup__header">';
+	popupHtml +=					titleHtml;
+	popupHtml +=					topCloseHtml;
+	popupHtml += 				'</div>';
 	}
 	
-	
-	function _getWinPosition() {
-		return $('#'+popUpId).parent('.popup').scrollTop();
+	if (o.buttonsOnTop && buttonsHtml) {
+	popupHtml += 				'<div class="popup__footer">';
+	popupHtml += 					'<div class="popup__buttons'+(o.buttonsAlign ? ' popup__buttons_'+o.buttonsAlign : '')+'" ddrpopupbuttons>'+buttonsHtml+'</div>';
+	popupHtml += 				'</div>';
 	}
-	
-	
-	
-	
-	//----------------------------------------------------
-	
-	var obj = {
-		close: function(callback) {
-			$('.popup').removeClass('visible');
-			setTimeout(function() {
-				$('.popup').remove();
-				enableScroll();
-				$(document).trigger('popup:close');
-				if (callback && typeof callback == 'function') callback();
-			}, 100);
-		},
-		setData: function(html, hideButtons, callback) {
-			hideButtons = hideButtons || false;
-			$('.popup__content').html(html);
-			if (hideButtons) {
-				$('.popup__buttons').hide();
+
+	if (o.contentToCenter) popupHtml += '<div class="popup__content d-flex align-items-center justify-content-center"><div ddrpopupcontent>'+o.html+'</div></div>';
+	else popupHtml += '<div class="popup__content" ddrpopupcontent>'+o.html+'</div>';
+	if (!o.buttonsOnTop && buttonsHtml) {
+	popupHtml += 				'<div class="popup__footer">';
+	popupHtml += 					'<div class="popup__buttons'+(o.buttonsAlign ? ' popup__buttons_'+o.buttonsAlign : '')+'" ddrpopupbuttons>'+buttonsHtml+'</div>';
+	popupHtml += 				'</div>';
+	}
+	popupHtml += 			'</div>';
+	popupHtml += 		'</div>';
+	popupHtml += 	'</div>';
+	popupHtml += '</div>';
+
+	$('body').append(popupHtml);
+	if (o.width) $(ddrPopupSelector).find('[ddrpopupwin]').width(o.width);
+
+	$(ddrPopupSelector).ready(function() {
+		_popupOpen();
+	});
+
+
+	// Закрыть окно
+	$(ddrPopupSelector).on(tapEvent, function(e) {
+		var isCloseButton = tapEventInfo(e, {attribute: 'ddrpopupclose'});
+		if (isCloseButton) _popupClose();
+		else if (o.closeByButton == false) {
+			var isCloseClass = tapEventInfo(e, {class: 'popup__wrap'});
+			if (isCloseClass) {
+				if (thisDevice == 'desktop' &&
+					($('.popup__win').find('input:focus').length == 0 &&
+					$('.popup__win').find('textarea:focus').length == 0 &&
+					$('.popup__win').find('select:focus').length == 0 &&
+					$('.popup__win').find('[contenteditable]:focus').length == 0 &&
+					$('.popup__win').find('input[type="checkbox"]:hover').length == 0)) {
+					_popupClose();
+				} else if (thisDevice == 'mobile') {
+					_popupClose();
+				}
 			}
-			
-			$('#'+popUpId).css({'top': popupH < winH ? (top < 0 ? 0 : top) : 0});
-			$('.popup__content').ready(function() {
-				$(document).trigger('popup:open');
-				if (callback && typeof callback == 'function') callback(obj);
+		}
+	});
+
+
+
+
+	function _popupWait(stat) {
+		if (stat != false) {
+			_setWaitPos();
+
+			$(ddrPopupSelector).scroll(function() {
+				_setWaitPos();
 			});
+
+			$(window).resize(function() {
+				_setWaitPos();
+			});
+
+			$(ddrPopupSelector).find('[ddrpopupwait]').text(stat || '');
+			$(ddrPopupSelector).find('.popup__wait').addClass('popup__wait_visible');
+		} else if (stat == false) {
+			$(ddrPopupSelector).find('.popup__wait.popup__wait_visible').removeClass('popup__wait_visible');
+			$(ddrPopupSelector).off('scroll');
+		}
+	};
+
+
+	function _setWaitPos() {
+		var winTop = $(ddrPopupSelector).scrollTop(),
+			winH = $(window).height(),
+			ppWinH = $('[ddrpopupwin]').height(),
+			trY = 0;
+		if (ppWinH > winH) {
+			trY = winTop - ((ppWinH / 2) - (winH / 2));
+			$('[ddrpopupwaitblock]').css('top', +trY+'px');
+		}
+	};
+
+	function _popupOpen() {
+		disableScroll();
+		$(ddrPopupSelector).addClass('popup_opening');
+		$(ddrPopupSelector).find('.popup__win').addClass('popup__win_opening');
+	};
+
+	function _popupClose() {
+		clearTimeout(popupCloseTOut);
+		$(document).trigger('ddrpopup:close');
+		$(ddrPopupSelector).addClass('popup_closing');
+		$(ddrPopupSelector).find('.popup__win').addClass('popup__win_closing');
+		popupCloseTOut = setTimeout(function() {
+			$(ddrPopupSelector).remove();
+			enableScroll();
+		}, (animationTime * 1000));
+	};
+
+
+	function _setScripts() {
+		setBaseScripts(ddrPopupSelector);
+	};
+
+
+	function _getWinHeight() {
+		return $(ddrPopupSelector).find('.popup__win').outerHeight();
+	}
+
+
+	function _getWinPosition() {
+		return $(ddrPopupSelector).scrollTop();
+	}
+
+
+
+	var obj = {
+		wait: function(stat) {
+			_popupWait(stat);
+		},
+		close: function() {
+			_popupClose();
+		},
+		getSelector: function() {
+			return ddrPopupSelector;
+		},
+		setData: function() {
+			let a = arguments;
+			let url = (typeof a[0] == 'string' ? ((a[0].substr(0, 1) != '/' && a[0].substr(0, 7) != 'http://') ? '/'+a[0] : a[0]) : false);
+			if (!url) {
+				throw new Error('ddrPopUp setData -> Ошибка! не передан URL');
+				return false;
+			}
+
+			let string = typeof a[0] == 'string' && a[1] === false ? a[0] : false;
+			let params = typeof a[1] == 'object' ? a[1] : false;
+			let callback = (!params && typeof a[1] == 'function') ? a[1] : ((a[2] !== undefined && typeof a[2] == 'function') ? a[2] : false);
+			let width = (typeof a[1] != 'function' && typeof a[1] != 'object') && /\d+(px|vh|\%)?/.test(a[1]) ? a[1] : ((typeof a[2] != 'function' && typeof a[2] != 'object') && /\d+(px|vh|\%)?/.test(a[2]) ? a[2] : ((typeof a[3] != 'function' && typeof a[3] != 'object') && /\d+(px|vh|\%)?/.test(a[3]) ? a[3] : false));
+
+
+			if (string) {
+				if (width) $(ddrPopupSelector).find('[ddrpopupwin]').width(width);
+				$(ddrPopupSelector).find('[ddrpopupcontent]').html(string);
+				if (o.disabledButtons) $(ddrPopupSelector).find('.popup__buttons_main').removeAttrib('disabled');
+
+				$('[ddrpopupcontent]').ready(function() {
+					if (callback && typeof callback == 'function') callback(obj);
+					$(document).trigger('popup:load');
+				});
+			} else if (url) {
+				_popupWait();
+				$.post(url, params, function(html) {
+					html = html.trim();
+					if (width) $(ddrPopupSelector).find('[ddrpopupwin]').width(width);
+					$(ddrPopupSelector).find('[ddrpopupcontent]').html(html);
+					//if (o.disabledButtons) $(ddrPopupSelector).find('.ddrpopup__buttons_main').removeAttrib('disabled');
+					_popupWait(false);
+					_setScripts();
+
+					$('[ddrpopupcontent]').ready(function() {
+						var stat = !!html
+						if (stat && callback && typeof callback == 'function') callback(html, stat);
+						else if (callback && typeof callback == 'function') callback('<p class="empty center">'+language[o.lang]['noData']+'</p>', stat);
+						$(document).trigger('popup:load');
+					});
+				}, 'html').fail(function(e) {
+					notify(language[o.lang]['systemError'], 'error');
+					showError(e);
+				});
+			}
 		},
 		setTitle: function(title) {
-			$('.popup__top h5').text(title);
+			var stData = title.split('|'),
+				title = stData[0],
+				titleSize = stData[1] || '1',
+				titleOverflow = (stData[2] == 1) ? ' popup__title_overflow' : '';
+			$(ddrPopupSelector).find('[ddrpopuptitle]').replaceWith('<h5 ddrpopuptitle class="popup__title'+titleOverflow+' popup__title_'+titleSize+'">'+title+'</h5>');
 		},
-		setButtons: function(btns, close) {
-			var btnsHtml = '';
-			if(close) btnsHtml += '<button close>'+close+'</button>' ;  
-			if (btns) {
-				$.each(btns.reverse(), function(k, b) {
-					btnsHtml += '<button'+(b.disabled ? ' disabled' : '')+' id="'+b.id+'"'+(b.cls ? ' class="'+b.cls+'"' : '')+(b.metrikaId ? ' onclick="yaCounter'+(b.metrikaId)+'.reachGoal('+'\''+(b.metrikaTargetId)+'\''+'); return true;"' : '')+'>'+b.title+'</button>';
-				});
-			}
-			
-			if ($('.popup__buttons').length == 0) {
-				$('.popup__content').after('<div class="popup__buttons">'+btnsHtml+'</div>');   
-			} else {
-				$('.popup__buttons').html(btnsHtml);
-			}
-		},
-		removeButtons: function() {
-			if ($('.popup__buttons').length > 0){
-				$('.popup__buttons').remove();   
-			}
+		onScroll: function(callback) {
+			$(ddrPopupSelector).scroll(function() {
+				if (callback && typeof callback == 'function') callback();
+				$(document).trigger('popup:scroll');
+			});
 		},
 		deleteTitle: function() {
-			$('.popup__top').remove();
+			$(ddrPopupSelector).find('[ddrpopuptitle]').empty();
 		},
-		correctPosition: function(timeout) {
-			var t = timeout || 0;
-			setTimeout(function () {
-				popupH = $('#'+popUpId).outerHeight();
-				top = (winH / 2) - (popupH / 2);
-				$('#'+popUpId).css({
-					top: popupH < winH ? (top < 0 ? 0 : top) : 0
+		setButtons: function(buttons, close) {
+			var buttonsHtml = '';
+			if(buttons) {
+				$.each(buttons, function(k, b) {
+					buttonsHtml += '<button'+(b.disabled ? ' disabled' : '')+(b.close ? ' ddrpopupclose' : '')+'  id="'+b.id+'"'+(b.metrikaId ? ' onclick="yaCounter'+(b.metrikaId)+'.reachGoal('+'\''+(b.metrikaTargetId)+'\''+'); return true;"' : '')+' class="popup__buttons_'+(b.type ? b.type : 'main')+(b.class ? ' '+b.class+'"' : '"')+'>'+b.title+'</button>';
 				});
-			}, t);	
-		},
-		setWidth: function(newWidth, callback) {
-			winW = $(window).width();
-			winH = $(window).height();
-			top = 'calc(50vh - ('+popupH+'px / 2 + 20px))',
-			ops.width = newWidth;
-			
-			$('#'+popUpId).css({
-				'width': typeof newWidth == 'number' ? ((newWidth + 20 > winW) ? 'calc(100% - 20px)' : newWidth+'px') : newWidth,
-				'left': (newWidth + 20 > winW) ? '10px' : typeof newWidth == 'number' ? (winW / 2) - (newWidth / 2)+'px' : (100 - parseInt(newWidth)) / 2 + '%',
-				'top': popupH < winH ? (top < 0 ? 0 : top) : 0
-			});
-			if (callback) callback();
-		},
-		wait: function(stat) {
-			if (stat != undefined ? stat : true) {
-				$('.popup__wait').addClass('visible');
-			} else if (stat == false) {
-				$('.popup__wait').removeClass('visible');
 			}
+			if (close) buttonsHtml += '<button class="popup__buttons_close" ddrpopupclose>'+close+'</button>';
+			$(ddrPopupSelector).find('[ddrpopupbuttons]').html(buttonsHtml);
+		},
+		removeButtons: function() {
+			$(ddrPopupSelector).find('[ddrpopupbuttons]').empty();
+		},
+		disabledButtons: function() {
+			$(ddrPopupSelector).find('.ddrpopup__buttons_main').setAttrib('disabled');
+		},
+		enabledButtons: function() {
+			$(ddrPopupSelector).find('[ddrpopupbuttons]').children('[disabled]').removeAttrib('disabled');
+		},
+		setWidth: function(width) {
+			$(ddrPopupSelector).find('[ddrpopupwin]').addClass('popup__win_animated');
+			$(ddrPopupSelector).find('[ddrpopupwin]').width(width);
+			setTimeout(function() {
+				$(ddrPopupSelector).find('[ddrpopupwin].popup__win_animated').removeClass('popup__win_animated');
+			}, (animationTime * 1000));
 		},
 		dialog: function(dialog, yBtn, nBtn, yFunc) {
 			if (dialog == false) {
-				$('#'+popUpId).find('.popup__dialog').remove();
+				$(ddrPopupSelector).find('[ddrpopupdialog]').remove();
 			} else {
-				var dhtml = '<div class="popup__dialog">';
+				var id = generateCode('LlnlL'),
+					dhtml = '<div class="popup__dialog" ddrpopupdialog>';
 					dhtml += 	'<div class="popupdialog">';
-					dhtml += 		'<div class="message">'+dialog+'</div>';
-					dhtml += 		'<div class="buttons">';
-					dhtml += 			'<button class="cancel" id="popupDialogN'+popUpId+'">'+nBtn+'</button>';
-					dhtml += 			'<button id="popupDialogY'+popUpId+'">'+yBtn+'</button>';
+					dhtml += 		'<div class="popupdialog__message">'+dialog+'</div>';
+					dhtml += 		'<div class="popupdialog__buttons">';
+					dhtml += 			'<button class="cancel" id="popupDialogN'+id+'">'+nBtn+'</button>';
+					dhtml += 			'<button id="popupDialogY'+id+'">'+yBtn+'</button>';
 					dhtml += 		'</div>';
 					dhtml += 	'</div>';
 					dhtml += '</div>';
-				$('.popup__window').prepend(dhtml);
-				
-				
-				
+				$(ddrPopupSelector).find('[ddrpopupwin]').prepend(dhtml);
+
 				var winH = $(window).height(),
 					popupH = _getWinHeight(),
 					winPos = _getWinPosition(),
-					dialogH = $('#'+popUpId).find('.popupdialog').outerHeight();
-				
+					dialogH = $(ddrPopupSelector).find('.popupdialog').outerHeight();
+
 				if (popupH > winH) {
-					$('#'+popUpId).find('.popupdialog').css('top', 'calc(50vh - '+(dialogH / 2)+'px + '+winPos+'px)');
+					$(ddrPopupSelector).find('.popupdialog').css('top', 'calc(50vh - '+(dialogH / 2)+'px + '+winPos+'px)');
 				} else {
-					$('#'+popUpId).find('.popup__dialog').css('align-items', 'center');
+					$(ddrPopupSelector).find('[ddrpopupdialog]').css('align-items', 'center');
 				}
-				
-				$('#'+popUpId).parent('.popup').scroll(function() {
+
+				$(ddrPopupSelector).scroll(function() {
 					winPos = _getWinPosition();
-					$('#'+popUpId).find('.popupdialog').css('top', 'calc(50vh - '+(dialogH / 2)+'px + '+winPos+'px)');
+					$(ddrPopupSelector).find('.popupdialog').css('top', 'calc(50vh - '+(dialogH / 2)+'px + '+winPos+'px)');
 				});
-				
-				
-				
-				$('#popupDialogN'+popUpId).on(tapEvent, function() {
-					$('#'+popUpId).find('.popup__dialog').remove();
+
+				$(ddrPopupSelector).find('[ddrpopupdialog]').addClass('popup__dialog_visible');
+
+				$('#popupDialogN'+id).on(tapEvent, function() {
+					$(ddrPopupSelector).find('[ddrpopupdialog]').remove();
 				});
-				
-				$('#popupDialogY'+popUpId).on(tapEvent, function() {
+
+				$('#popupDialogY'+id).on(tapEvent, function() {
 					if (typeof yFunc == 'function') yFunc();
 				});
 			}
-		},
-	};
-	
-	
-	
-	var popUpImg = $('.popup__content').find('img');
-	$(popUpImg).each(function() {
-		var i = new Image(),
-			imageSrc = $(this).attr('src');
-		i.onload = function() {
-			popupH = $('#'+popUpId).outerHeight();
-			winH = $(window).height();
-			top = 'calc(50vh - ('+popupH+'px / 2 + 20px))';
-			
-			$('#'+popUpId).css({
-				'top': popupH < winH ? (top < 0 ? 0 : top) : 0
-			});
 		}
-		i.src = imageSrc;
-	});
-	
-	
-	
+	};
+
+
+
+	$(document).trigger('ddrpopup:open');
 	if (callback && typeof callback == 'function') {
-		$(document).trigger('popup:open');
 		callback(obj);
+	} else {
+		return obj;
 	}
 };
 
 
 popUp = function(settings, callback) {
-	return new Popup(settings, callback);
-}
+	return new DdrPopUp(settings, callback);
+};
+
+$.fn.popUp = function(settings, callback) {
+	$(this).on(tapEvent, function() {
+		return new DdrPopUp(settings, callback);
+	});
+};

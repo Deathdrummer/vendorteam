@@ -33,7 +33,7 @@ $(document).ready(function() {
 		}, function(periodsWin) {
 			periodsWin.wait();
 			getAjaxHtml('operator/get_reports_periods', function(html) {
-				periodsWin.setData(html);
+				periodsWin.setData(html, false);
 				$('[chooseperiod]').on(tapEvent, function() {
 					var thisId = $(this).attr('chooseperiod');
 					$('#ordersReportPeriodId').val(thisId);

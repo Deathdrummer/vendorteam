@@ -554,7 +554,7 @@ $(document).ready(function() {
 					}, function(gameIdAddPersonageWin) {
 						gameIdAddPersonageWin.wait();
 						getAjaxHtml('admin/personages/get_form', {game_id: thisId}, function(html) {
-							gameIdAddPersonageWin.setData(html);
+							gameIdAddPersonageWin.setData(html, false);
 							$('#gameIdAddPersonage').on(tapEvent, function() {
 								var nickname = $('.nickname'),
 									armor = $('.armor'),
@@ -622,8 +622,8 @@ $(document).ready(function() {
 					}, function(gameIdAddPersonageFromUsersWin) {
 						var thisUserId = $(thisRow).find('[name="user_id"]').val() || false;
 						getAjaxHtml('admin/personages/get', {from_id: thisUserId, popup: 1}, function(html, stat) {
-							if (stat) gameIdAddPersonageFromUsersWin.setData(html);
-							else gameIdAddPersonageFromUsersWin.setData('<p class="empty center">Нет данных</p>');
+							if (stat) gameIdAddPersonageFromUsersWin.setData(html, false);
+							else gameIdAddPersonageFromUsersWin.setData('<p class="empty center">Нет данных</p>', false);
 							
 							if ($('#userPersonagesListPopup').find('tr').length > 0) $('#gameIdAddPersonageFromUsers').removeAttrib('disabled');
 							

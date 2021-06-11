@@ -164,7 +164,7 @@ $('#ratingPeriods').on(tapEvent, function() {
 				ratingsReportsWin.setTitle('Рейтинговые отчеты');
 				ratingsReportsWin.setWidth(700);
 				ratingsReportsWin.setButtons([{id: 'newRatingPeriod', title: 'Новый период'}], 'Закрыть');
-				ratingsReportsWin.setData(html);
+				ratingsReportsWin.setData(html, false);
 				
 				
 				
@@ -261,7 +261,7 @@ $('#ratingPeriods').on(tapEvent, function() {
 				$('#newRatingPeriod').on(tapEvent, function() {
 					ratingsReportsWin.wait();
 					getAjaxHtml('admin/ratings/new_period', function(html) {
-						ratingsReportsWin.setData(html);
+						ratingsReportsWin.setData(html, false);
 						ratingsReportsWin.setTitle('Новый период');
 						ratingsReportsWin.setButtons([{id: 'addRatingPeriod', title: 'Создать'}], 'Отмена');
 						ratingsReportsWin.setWidth(500);
@@ -479,9 +479,9 @@ function getStatistics() {
 				setRatingWin.wait();
 				getAjaxHtml('admin/ratings/get_coeffs_info', {static_id: staticId}, function(html, stat) {
 					if (stat) {
-						setRatingWin.setData(html);
+						setRatingWin.setData(html, false);
 					} else {
-						setRatingWin.setData('<p class="info">Нет активных периодов!</p>');
+						setRatingWin.setData('<p class="info">Нет активных периодов!</p>', false);
 					}
 				}, function() {
 					setRatingWin.wait(false);
@@ -601,9 +601,9 @@ function setForcemajeure(row, userId) {
 		setForcemajeureWin.wait();
 		getAjaxHtml('admin/forcemajeure/get_list', {user_id: userId}, function(html, stat) {
 			if (stat) {
-				setForcemajeureWin.setData(html);
+				setForcemajeureWin.setData(html, false);
 			} else {
-				setForcemajeureWin.setData('<p class="empty center">Нет данных</p>');
+				setForcemajeureWin.setData('<p class="empty center">Нет данных</p>', false);
 			}
 		}, function() {
 			setForcemajeureWin.wait(false);
@@ -613,7 +613,7 @@ function setForcemajeure(row, userId) {
 				setForcemajeureWin.wait();
 				getAjaxHtml('admin/forcemajeure/new', function(html) {
 					setForcemajeureWin.setWidth(500);
-					setForcemajeureWin.setData(html);
+					setForcemajeureWin.setData(html, false);
 					setForcemajeureWin.setButtons([{id: 'forcemajeureAdd', title: 'Добавить'}], 'Отмена');
 					setForcemajeureWin.setTitle('Добавить выходной');
 					datePicker('#forcemajeureDate');
@@ -666,7 +666,7 @@ function setForcemajeure(row, userId) {
 				setForcemajeureWin.wait();
 				getAjaxHtml('admin/forcemajeure/edit', {id: id}, function(html) {
 					setForcemajeureWin.setWidth(500);
-					setForcemajeureWin.setData(html);
+					setForcemajeureWin.setData(html, false);
 					setForcemajeureWin.setButtons([{id: 'forcemajeureEdit', title: 'Обновить'}], 'Отмена');
 					setForcemajeureWin.setTitle('Редактировать выходной');
 					datePicker('#forcemajeureDate');
@@ -720,7 +720,7 @@ function setForcemajeure(row, userId) {
 				setForcemajeureWin.wait();
 				getAjaxHtml('admin/forcemajeure/remove_form', function(html) {
 					setForcemajeureWin.setWidth(500);
-					setForcemajeureWin.setData(html);
+					setForcemajeureWin.setData(html, false);
 					setForcemajeureWin.setButtons([{id: 'forcemajeureRemove', title: 'Удалить'}], 'Отмена');
 					setForcemajeureWin.setTitle('Удалить выходной');
 					
@@ -785,9 +785,9 @@ function setReprimand(row, userId) {
 		setReprimandsWin.wait();
 		getAjaxHtml('admin/reprimands/get_list', {user_id: userId}, function(html, stat) {
 			if (stat) {
-				setReprimandsWin.setData(html);
+				setReprimandsWin.setData(html, false);
 			} else {
-				setReprimandsWin.setData('<p class="empty center">Нет данных</p>');
+				setReprimandsWin.setData('<p class="empty center">Нет данных</p>', false);
 			}
 		}, function() {
 			setReprimandsWin.wait(false);
@@ -797,7 +797,7 @@ function setReprimand(row, userId) {
 				setReprimandsWin.wait();
 				getAjaxHtml('admin/reprimands/new', function(html) {
 					setReprimandsWin.setWidth(500);
-					setReprimandsWin.setData(html);
+					setReprimandsWin.setData(html, false);
 					setReprimandsWin.setButtons([{id: 'reprimandsAdd', title: 'Добавить'}], 'Отмена');
 					setReprimandsWin.setTitle('Добавить выговор');
 					datePicker('#reprimandsDate');
@@ -855,7 +855,7 @@ function setReprimand(row, userId) {
 				setReprimandsWin.wait();
 				getAjaxHtml('admin/reprimands/edit', {id: id}, function(html) {
 					setReprimandsWin.setWidth(500);
-					setReprimandsWin.setData(html);
+					setReprimandsWin.setData(html, false);
 					setReprimandsWin.setButtons([{id: 'reprimandsEdit', title: 'Обновить'}], 'Отмена');
 					setReprimandsWin.setTitle('Редактировать выговор');
 					datePicker('#reprimandsDate');
@@ -909,7 +909,7 @@ function setReprimand(row, userId) {
 				setReprimandsWin.wait();
 				getAjaxHtml('admin/reprimands/remove_form', function(html) {
 					setReprimandsWin.setWidth(500);
-					setReprimandsWin.setData(html);
+					setReprimandsWin.setData(html, false);
 					setReprimandsWin.setButtons([{id: 'reprimandsRemove', title: 'Удалить'}], 'Отмена');
 					setReprimandsWin.setTitle('Удалить выговор');
 					
@@ -972,7 +972,7 @@ function setStimulation(row, userId) {
 	}, function(setStimulationWin) {
 		setStimulationWin.wait();
 		getAjaxHtml('admin/stimulation/get_form', {user_id: userId}, function(html) {
-			setStimulationWin.setData(html);
+			setStimulationWin.setData(html, false);
 			
 			$('#stimulationSet').on(tapEvent, function() {
 				var userId = $('#stimulationUserId').val(),

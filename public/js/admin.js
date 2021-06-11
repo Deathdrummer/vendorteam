@@ -264,7 +264,7 @@ jQuery(document).ready(function($) {
 		
 		function init() {
 			getAjaxHtml('admin/usersmanager/init', {choose_type: ops.chooseType}, function(html) {
-				usersManagerWin.setData(html);
+				usersManagerWin.setData(html, false);
 				
 				if (choosedUsers) {
 					choosedUsers.forEach(function(item, index) {

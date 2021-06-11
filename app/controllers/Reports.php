@@ -1202,7 +1202,7 @@ class Reports extends MY_Controller {
 						$dataToExport .= iconv('UTF-8', 'windows-1251', 'Статик'."\r\n");
 						$dataToExport .= $data['statics'][$staticId]."\r\n";
 						
-						$dataToExport .= iconv('UTF-8', 'windows-1251', 'Никнейм;Выплата;Отправлено в депозит')."\r\n";
+						$dataToExport .= iconv('UTF-8', 'windows-1251', 'Никнейм;Выплата;Отправлено в резерв')."\r\n";
 						foreach ($users as $userId => $userData) {
 							$dataToExport .= iconv('UTF-8', 'windows-1251', $userData['nickname'].';'.str_replace('.', ',', $userData['summ']).';'.str_replace('.', ',', $userData['to_deposit']))."\r\n";
 						}

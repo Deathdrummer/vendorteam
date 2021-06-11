@@ -64,7 +64,7 @@ $(document).ready(function() {
 			accountWin.wait();
 			
 			getAjaxHtml('main/auth', {template: 1}, function(html) {
-				accountWin.setData(html);
+				accountWin.setData(html, false);
 				accountWin.correctPosition();
 				
 				
@@ -108,7 +108,7 @@ $(document).ready(function() {
 					accountWin.wait();
 					getAjaxHtml('main/reg', {template: 1}, function(html) {
 						accountWin.setTitle('Регистрация');
-						accountWin.setData(html);
+						accountWin.setData(html, false);
 						accountWin.setButtons([{id: 'getReg', title: 'Зарегистрироваться'}]);
 						accountWin.correctPosition();
 						
@@ -131,7 +131,8 @@ $(document).ready(function() {
 										notify('Ошибка! такой E-mail уже зарегистрирован!', 'error');
 									} else if (response == 3) {
 										notify('E-mail успешно зарегистрирован');
-										accountWin.setData('<p class="center">Ваш аккаунт успешно зарегистрирован</p><p class="center">Письмо с регистрационными данными отправлено на ваш E-mail адрес</p>', true);
+										accountWin.setData('<p class="center">Ваш аккаунт успешно зарегистрирован</p><p class="center">Письмо с регистрационными данными отправлено на ваш E-mail адрес</p>', false);
+										accountWin.removeButtons();
 									}
 								}, 'json').done(function() {
 									accountWin.wait(false);
@@ -241,7 +242,7 @@ $(document).ready(function() {
 		}, function(resignWin) {
 			resignWin.wait();
 			getAjaxHtml('account/resign/get_form', function(html) {
-				resignWin.setData(html);
+				resignWin.setData(html, false);
 				
 				var d = new Date();
 	
@@ -338,7 +339,7 @@ $(document).ready(function() {
 			userDataWin.wait();
 			var isLider = $('#isLider').val() == 1 ? 1 : 0;
 			getAjaxHtml('account/get_account_data', {lider: isLider}, function(html) {
-				userDataWin.setData(html);
+				userDataWin.setData(html, false);
 				
 				$('#updateUserAvatar').chooseInputFile(function(data, thisItem) {
 					$('#userAvatarImg').attr('src', data.src);
@@ -630,7 +631,7 @@ $(document).ready(function() {
 		}, function(operatorsWin) {
 			operatorsWin.wait();
 			getAjaxHtml('account/get_operators', function(html) {
-				operatorsWin.setData(html);
+				operatorsWin.setData(html, false);
 				
 				$('[operatorsendmess], [operatorsendcomplain]').on(tapEvent, function(e) {
 					operatorsWin.wait();
@@ -656,7 +657,7 @@ $(document).ready(function() {
 						id: operatorId, 
 						nickname: operatorNickname
 					}, function(html) {
-						operatorsWin.setData(html);
+						operatorsWin.setData(html, false);
 						operatorsWin.setWidth(500);
 						operatorsWin.setTitle(title);
 						operatorsWin.setButtons([{id: 'sendMessToOperator', title: button}]);
@@ -854,7 +855,7 @@ $(document).ready(function() {
 			
 			$.post('/account/get_active_period', {static: newRaidStatic}, function(period) {
 				if (!period) {
-					newRaidWin.setData('<p class="empty center">Нет активных периодов!</p>');
+					newRaidWin.setData('<p class="empty center">Нет активных периодов!</p>', false);
 					newRaidWin.wait(false);
 				} else {
 					activePeriod = period;
@@ -875,7 +876,7 @@ $(document).ready(function() {
 	
 	function getNewRaidData(newRaidStatic) {
 		getAjaxHtml('account/get_new_raid_data', {static: newRaidStatic, period: activePeriod}, function(html) {
-			newRaidWin.setData(html);
+			newRaidWin.setData(html, false);
 			newRaidWin.setButtons([{id: 'addRaid', title: "Создать рейд"}]);
 			
 			$('#raidStaticTabs').find('li').on(tapEvent, function() {
@@ -1000,8 +1001,8 @@ $(document).ready(function() {
 			setCompoundWin.wait();
 			
 			getAjaxHtml('account/get_reports_periods', function(html, stat) {
-				if (stat) setCompoundWin.setData(html);
-				else setCompoundWin.setData('<p class="empty center">Нет активных периодов!</p>');
+				if (stat) setCompoundWin.setData(html, false);
+				else setCompoundWin.setData('<p class="empty center">Нет активных периодов!</p>', false);
 			}, function() {
 				setCompoundWin.wait(false);
 			});
@@ -1022,10 +1023,10 @@ $(document).ready(function() {
 		$.post('/account/get_users_to_compound', {period_id: compoundPeriodId, static_id: compoundStaticId, is_lider: compoundIsLider}, function(html) {
 			if (html) {
 				setCompoundWin.setWidth(1300);
-				setCompoundWin.setData(html);
+				setCompoundWin.setData(html, false);
 				if (compoundIsLider == 1) setCompoundWin.setButtons([{id: 'setCompoundButton', title: "Обновить"}]);
 			} else {
-				setCompoundWin.setData('<p class="empty center">Нет данных</p>');
+				setCompoundWin.setData('<p class="empty center">Нет данных</p>', false);
 			}
 			setCompoundWin.wait(false);
 		}, 'html').fail(function(e) {
@@ -1123,14 +1124,14 @@ $(document).ready(function() {
 			$.post('/account/get_active_period', {static: staticId}, function(period) { // period.id period.name
 				activePeriod = period;
 				if (!activePeriod) {
-					keysWin.setData('<p class="empty center">Нет активных периодов!</p>');
+					keysWin.setData('<p class="empty center">Нет активных периодов!</p>', false);
 					keysWin.wait(false);
 				} else {
 					keysWin.setTitle('Ключи - '+activePeriod.name);
 					
 					funct = function() {
 						getAjaxHtml('account/get_users_to_keys', {period_id: activePeriod.id, static_id: staticId, is_lider: isLider}, function(html, stat) {
-							keysWin.setData(html);
+							keysWin.setData(html, false);
 							if (stat && !!isLider) keysWin.setButtons([{id: 'saveKeyCoefficients', title: "Сохранить", 'disabled': 1}, {id: 'newKeyButton', title: "Новый ключ"}]);
 						}, function() {
 							keysWin.wait(false);
@@ -1215,7 +1216,7 @@ $(document).ready(function() {
 	//---------------------------------------- Новый ключ
 	function getNewKeyData(newKeyStatic, activePeriod, newKeyWin) {
 		getAjaxHtml('account/get_new_key_data', {static: newKeyStatic, period: activePeriod}, function(html) {
-			newKeyWin.setData(html);
+			newKeyWin.setData(html, false);
 			newKeyWin.setButtons([{id: 'addKey', title: "Создать ключ"}]);
 			
 			$('#keyStaticTabs').find('li').on(tapEvent, function() {
@@ -1316,9 +1317,9 @@ $(document).ready(function() {
 			setRatingWin.wait();
 			getAjaxHtml('account/get_users_for_rating', {static_id: staticId}, function(html, stat) {
 				if (stat) {
-					setRatingWin.setData(html);
+					setRatingWin.setData(html, false);
 				} else {
-					setRatingWin.setData('<p class="info">Нет активных периодов!</p>');
+					setRatingWin.setData('<p class="info">Нет активных периодов!</p>', false);
 				}
 			}, function() {
 				setRatingWin.wait(false);
@@ -1368,13 +1369,13 @@ $(document).ready(function() {
 		}, function(myRewardWin) {
 			myRewardWin.wait();
 			getAjaxHtml('account/rewards/get_periods', function(html) {
-				myRewardWin.setData(html);
+				myRewardWin.setData(html, false);
 				
 				$('[chooseperiodtoreward]').on(tapEvent, function() {
 					let periodId = $(this).attr('chooseperiodtoreward');
 					myRewardWin.wait();
 					getAjaxHtml('account/rewards/get_report', {period_id: periodId, static_id: staticId}, function(html) {
-						myRewardWin.setData(html);
+						myRewardWin.setData(html, false);
 					}, function() {
 						myRewardWin.wait(false);
 					});
@@ -1486,10 +1487,12 @@ $(document).ready(function() {
 			
 			if (stat) {
 				reportWin.setWidth(1330, function() {
-					reportWin.setData(html, true);
+					reportWin.setData(html, false);
+					reportWin.removeButtons();
 				});
 			} else {
-				reportWin.setData('<p class="empty center">Нет данных</p>', true);
+				reportWin.setData('<p class="empty center">Нет данных</p>', false);
+				reportWin.removeButtons();
 			}
 		}, function() {
 			reportWin.wait(false);
@@ -1507,10 +1510,12 @@ $(document).ready(function() {
 			reportWin.setTitle('Отчет по выплатам - '+thisPatternName);
 			if (stat) {
 				reportWin.setWidth(1058, function() {
-					reportWin.setData(html, true);
+					reportWin.setData(html, false);
+					reportWin.removeButtons();
 				});
 			} else {
-				reportWin.setData('<p class="empty center">Нет данных</p>', true);
+				reportWin.setData('<p class="empty center">Нет данных</p>', false);
+				reportWin.removeButtons();
 			}
 		}, function() {
 			reportWin.wait(false);
@@ -1562,9 +1567,9 @@ $(document).ready(function() {
 			
 			$.post('/timesheet/get_timesheet_periods', {to_user: 1}, function(html) {
 				if (html) {
-					timesheetPeriodsWin.setData(html);
+					timesheetPeriodsWin.setData(html, false);
 				} else {
-					timesheetPeriodsWin.setData('<p class="empty center">Нет данных</p>');
+					timesheetPeriodsWin.setData('<p class="empty center">Нет данных</p>', false);
 				}
 				timesheetPeriodsWin.wait(false);
 			}, 'html').fail(function(e) {
@@ -1588,7 +1593,7 @@ $(document).ready(function() {
 					staticName = $(html).find('[statictotimesheet] span').text();
 				getTimesheetData(staticId, staticName, periodId);
 			} else {
-				timesheetPeriodsWin.setData(html);
+				timesheetPeriodsWin.setData(html, false);
 			}
 			timesheetPeriodsWin.wait(false);
 		}, 'html').fail(function(e) {
@@ -1612,12 +1617,12 @@ $(document).ready(function() {
 			console.log(html);
 			if (html) {
 				timesheetPeriodsWin.setWidth(1330, function() {
-					timesheetPeriodsWin.setData(html);
+					timesheetPeriodsWin.setData(html, false);
 					timesheetPeriodsWin.setTitle(periodName);
 				});
 			} else {
 				timesheetPeriodsWin.setTitle(periodName);
-				timesheetPeriodsWin.setData('<p class="empty dark center">Нет данных</p>');
+				timesheetPeriodsWin.setData('<p class="empty dark center">Нет данных</p>', false);
 			}
 			timesheetPeriodsWin.wait(false);
 		}, 'html').fail(function(e) {
@@ -1666,7 +1671,7 @@ $(document).ready(function() {
 				if ($(html).find('[statictoofftime]').length == 1) {
 					getOfftimeDates($(html).find('[statictoofftime]').attr('statictoofftime'));
 				} else {
-					offtimeWin.setData(html);
+					offtimeWin.setData(html, false);
 				}
 			}, function() {
 				offtimeWin.wait(false);
@@ -1694,7 +1699,7 @@ $(document).ready(function() {
 	function getOfftimeDates(st, hWeeks) {
 		$.post('/offtime/get_offtime_dates', {static: st, history: hWeeks}, function(html) {
 			if (!hWeeks) offtimeWin.setWidth(1330);
-			offtimeWin.setData(html);
+			offtimeWin.setData(html, false);
 			offtimeWin.wait(false);
 		}, 'html').fail(function(e) {
 			showError(e);
@@ -1726,7 +1731,7 @@ $(document).ready(function() {
 			} else if (html == '-4') { // если у этого участника в этот день уже есть выходной
 				notify('У Вас в этот день уже есть выходной!', 'info');
 			} else {
-				offtimeWin.setData(html);
+				offtimeWin.setData(html, false);
 				notify('Выходной успешно забронирован!');
 			}
 		}, 'html').fail(function(e) {
@@ -1740,7 +1745,7 @@ $(document).ready(function() {
 		var thisData = $(this).attr('unsetofftime').split('|');
 		$.post('/offtime/unset_offtime', {id: thisData[0], static: thisData[1], history: historyWeeks}, function(html) {
 			if (html) {
-				offtimeWin.setData(html);
+				offtimeWin.setData(html, false);
 				notify('Выходной отменен!', 'info');
 			} else {
 				notify('Ошибка! Выходной не отменен!', 'error');
@@ -1785,7 +1790,7 @@ $(document).ready(function() {
 					currentStatic = $(html).find('[statictovacation]').attr('statictovacation');
 					getVacationDates(currentStatic, datesShift);
 				} else {
-					vacationWin.setData(html);
+					vacationWin.setData(html, false);
 				}
 			}, function() {
 				vacationWin.wait(false);
@@ -1817,13 +1822,13 @@ $(document).ready(function() {
 		shift == shift || 0;
 		$.post('/vacation/get_vacation_dates', {static: st, shift: shift}, function(html) {
 			if (!html) {
-				vacationWin.setData('<p class="empty text-center">Запрещено бронировать отпуск в текущем звании!</p>');
+				vacationWin.setData('<p class="empty text-center">Запрещено бронировать отпуск в текущем звании!</p>', false);
 				vacationWin.wait(false);
 				return true;
 			}
 			
 			vacationWin.setWidth(1330);
-			vacationWin.setData(html);
+			vacationWin.setData(html, false);
 			vacationWin.wait(false);
 			
 			var space = parseInt($('#vacationsSpace').val()), //---- промежуток между партиями
@@ -2091,7 +2096,7 @@ $(document).ready(function() {
 		}, function(statisticsWin) {
 			statisticsWin.wait();
 			getAjaxHtml('account/statistics_get', function(html) {
-				statisticsWin.setData(html);
+				statisticsWin.setData(html, false);
 				statisticsWin.wait(false);
 			}, function() {});
 		});
@@ -2120,7 +2125,7 @@ $(document).ready(function() {
 		}, function(myRatingWin) {
 			myRatingWin.wait();
 			getAjaxHtml('account/get_rating', function(html) {
-				myRatingWin.setData(html);
+				myRatingWin.setData(html, false);
 				onChangeTabs(function(titles, content) {
 					myRatingWin.correctPosition();
 				});
@@ -2157,7 +2162,7 @@ $(document).ready(function() {
 					myRatingWin.wait();
 					getAjaxHtml('account/mentors/get', function(html) {
 						myRatingWin.setTitle('Выбрать наставника');
-						myRatingWin.setData(html);
+						myRatingWin.setData(html, false);
 						myRatingWin.setButtons([{id: 'setMyRating', title: 'Мой рейтинг'}], 'Закрыть');
 						myRatingWin.wait(false);
 					}, function() {
@@ -2173,7 +2178,7 @@ $(document).ready(function() {
 						$('.mentors').on(tapEvent, '[choosementor]', function() {
 							const classes = $(this).attr('choosementor');
 							getAjaxHtml('account/mentors/show_classes', {classes: classes}, function(html) {
-								myRatingWin.setData(html);
+								myRatingWin.setData(html, false);
 								myRatingWin.setWidth(400);
 								myRatingWin.setTitle('Запросить обучение');
 							}, function() {
@@ -2236,7 +2241,7 @@ $(document).ready(function() {
 			getPersonagesWin.wait();
 			
 			getAjaxHtml('account/personages/main', function(html) {
-				getPersonagesWin.setData(html);
+				getPersonagesWin.setData(html, false);
 				$('#personesList').ddrCRUD({
 					addSelector: '#addPersonage',
 					functions: 'account/personages',
@@ -2262,7 +2267,7 @@ $(document).ready(function() {
 			
 			gameIdsPersonagesWin.wait();
 			getAjaxHtml('account/personages/get_game_ids', function(html) {
-				gameIdsPersonagesWin.setData(html);
+				gameIdsPersonagesWin.setData(html, false);
 			}, function() {
 				gameIdsPersonagesWin.wait(false);
 				$('#popupNewPersonage').removeAttrib('disabled');
@@ -2272,7 +2277,7 @@ $(document).ready(function() {
 			$('body').on(tapEvent, '#popupNewPersonage', function() {
 				gameIdsPersonagesWin.wait();
 				getAjaxHtml('account/personages/new', function(html) {
-					gameIdsPersonagesWin.setData(html);
+					gameIdsPersonagesWin.setData(html, false);
 					gameIdsPersonagesWin.setButtons([{id: 'addPersonage', title: 'Добавить'}, {title: 'Отмена', cls: 'close'}]);
 					
 					
@@ -2304,7 +2309,7 @@ $(document).ready(function() {
 									notify('Заявка успешно отправлена!');
 									
 									getAjaxHtml('account/personages/get_game_ids', function(html) {
-										gameIdsPersonagesWin.setData(html);
+										gameIdsPersonagesWin.setData(html, false);
 										gameIdsPersonagesWin.setButtons([{id: 'popupNewPersonage', title: 'Добавить персонаж'}, {title: 'Отмена', cls: 'close'}]);
 									}, function() {
 										gameIdsPersonagesWin.wait(false);
@@ -2471,7 +2476,7 @@ $(document).ready(function() {
 		}, function(walletBalanceWin) {
 			walletBalanceWin.wait();
 			getAjaxHtml('account/get_balance', function(html) {
-				walletBalanceWin.setData(html);
+				walletBalanceWin.setData(html, false);
 				$('#walletUserBalance').ddrScrollTableY(400);
 			}, function() {
 				walletBalanceWin.wait(false);
@@ -2572,7 +2577,7 @@ $(document).ready(function() {
 			}, function(ratingNotificationsWin) {
 				ratingNotificationsWin.wait();
 				getAjaxHtml('account/get_rating_notifications', {statics: ratingsStatics}, function(html) {
-					ratingNotificationsWin.setData(html);
+					ratingNotificationsWin.setData(html, false);
 				}, function() {
 					ratingNotificationsWin.wait(false);
 				});

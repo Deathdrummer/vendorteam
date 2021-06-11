@@ -70,6 +70,9 @@
 					<li data-block="statistics_settings">Статистика (настройки)</li>
 					{#<li data-block=""></li>#}
 				</ul>
+				<ul>
+					<li data-block="kpi_planes">KPI планы</li>
+				</ul>
 			</nav>
 		</div>
 		<div class="header__item mr-auto">

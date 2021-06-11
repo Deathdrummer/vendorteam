@@ -135,9 +135,9 @@ $(document).ready(function() {
 			periodsWin.wait();
 			
 			getAjaxHtml('operator/get_reports_periods', function(html, stat) {
-				if (stat) periodsWin.setData(html);
+				if (stat) periodsWin.setData(html, false);
 				else {
-					periodsWin.setData('<p class="empty">Нет периодов!</p>');
+					periodsWin.setData('<p class="empty">Нет периодов!</p>', false);
 				}
 				
 				$('[chooseperiod]').on(tapEvent, function() {
@@ -451,7 +451,7 @@ $(document).ready(function() {
 			newKeyWin.wait();			
 			$.post('/operator/get_period', {period_id: newKeyPeriod}, function(period) {
 				getAjaxHtml('account/get_new_key_data', {static: newKeyStatic, period: period}, function(html) {
-					newKeyWin.setData(html);
+					newKeyWin.setData(html, false);
 					newKeyWin.setButtons([{id: 'addKey', title: "Создать ключ"}, {id: 'newKeyWinClose', title: "Отмена", cls: 'close'}]);
 					
 					

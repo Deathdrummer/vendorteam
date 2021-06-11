@@ -467,7 +467,7 @@ $(document).ready(function() {
 			
 			$.post('/admin/get_users_statics', {user_id: thisUserId, newset: newSet}, function(html) {
 				if (html) {
-					userStaticsWin.setData(html);
+					userStaticsWin.setData(html, false);
 					
 					$('[staticpart], [staticlider]').on('change', function() {
 						var thisStaticId = $(this).attr('staticpart') || $(this).attr('staticlider'),
@@ -500,7 +500,7 @@ $(document).ready(function() {
 						}
 					});
 				} else {
-					userStaticsWin.setData('<p class="empty center">Нет данных</p>');
+					userStaticsWin.setData('<p class="empty center">Нет данных</p>', false);
 				}
 				userStaticsWin.wait(false);
 				
@@ -575,7 +575,7 @@ $(document).ready(function() {
 			userPersonagesWin.wait();
 			
 			getAjaxHtml('admin/personages/get', {user_id: thisUserId}, function(html) {
-				userPersonagesWin.setData(html);
+				userPersonagesWin.setData(html, false);
 				
 				
 				$('#personagesForm').on('keypress change', 'input, select', function() {

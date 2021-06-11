@@ -172,6 +172,66 @@ enableScroll = function() {
 	
 	
 	
+	
+	
+	
+	
+	
+	
+/*
+	Передать в функцию event
+	- можно передать объект с предполагаемым атрибутом или склассом {attribute: 'любое зачение'} или {class: ['любое зачение 1', 'любое зачение 2']}
+	возвращает аттрибуты и классы элемента или true/false если находит заданный атрибут(ы) или класс(ы)
+*/
+tapEventInfo = function(e, d) {
+	var data, attrs, classes, at = '';
+	if (thisDevice == 'mobile') {
+		attrs = e.changedTouches != undefined ? e.changedTouches[0].target.attributes : false;
+		classes = e.changedTouches != undefined ? e.changedTouches[0].target.className : false;
+	} else {
+		attrs = e.target.attributes || false;
+		classes = e.target.className || false;
+	}
+
+	if (attrs.length) {
+		$.each(attrs, function(k, a) {
+			at += ' '+a.name;
+		});
+	}
+
+	data = {
+		classes: (classes && typeof classes == 'string') ? classes.split(' ') : false,
+		attributes: (at && typeof at == 'string') ? at.trim().split(' ') : false
+	};
+
+	if (d != undefined && d.class) {
+		if (data.classes) {
+			var fStat = false;
+			if (typeof d.class == 'object') {
+				$.each(d.class, function(k, cls) {
+					if (data.classes.indexOf(cls) != -1) fStat = true;
+				});
+				return fStat;
+			} else return (data.classes.indexOf(d.class) != -1);
+		} else return false;
+	}
+
+	if (d != undefined && d.attribute) {
+		if (data.attributes) {
+			var fStat = false;
+			if (typeof d.attribute == 'object') {
+				$.each(d.attribute, function(k, attr) {
+					if (data.attributes.indexOf(attr) != -1) fStat = true;
+				});
+				return fStat;
+			} else return (data.attributes.indexOf(d.attribute) != -1);
+		} else return false;
+	}
+
+	return data.classes || data.attributes ? data : false;
+};
+	
+	
 
 
 

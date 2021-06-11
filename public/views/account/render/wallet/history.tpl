@@ -21,7 +21,7 @@
 				{% for item in history|reverse %}
 					<tr{% if item.transfer == '-' %} class="wallet__payout"{% endif %}>
 						{% if item.transfer == '-' %}
-							<td colspan="2"><strong>{{item.title}}</strong></td>
+							<td colspan="2">{{item.title}}</td>
 						{% else %}
 							<td>{{types[item.type]}}</td>
 							<td>{{item.title}}</td>

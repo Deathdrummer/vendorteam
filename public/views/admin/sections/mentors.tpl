@@ -188,7 +188,7 @@ $(document).ready(function() {
 		}, function(mrSetToPayWin) {
 			mrSetToPayWin.wait();
 			getAjaxHtml('admin/mentors/get_pay_blank', {id: reqId}, function(html) {
-				mrSetToPayWin.setData(html);
+				mrSetToPayWin.setData(html, false);
 			}, function() {
 				mrSetToPayWin.wait(false);
 			});
