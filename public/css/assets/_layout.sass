@@ -559,12 +559,22 @@ $bPoints: map-remove($grid-breakpoints, xs)
 
 
 
+//-------------------------------------------------------- Размер шрифтов
+@for $i from 1 through 100
+	.fz#{$i}px
+		font-size: #{$i}px !important
+		line-height: #{$i}px !important
 
 
 
-
-
-
+$bPoints: map-remove($grid-breakpoints, xs)
+@each $breakpoint, $minWidth in $bPoints
+	@media (min-width: $minWidth)
+		@for $i from 1 through 100
+			.fz-#{$breakpoint}-#{$i}px
+				font-size: #{$i}px !important
+				line-height: #{$i}px !important
+				
 
 
 

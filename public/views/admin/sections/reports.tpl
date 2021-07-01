@@ -356,7 +356,7 @@ $(document).ready(function() {
 				if (html) {
 					$('#staticsCash').html(html);
 					$('#staticsCash').find('input').number(true, 0, '.', ' ');
-					$('#staticsCash').ddrScrollTableY('80vh');
+					$('#staticsCash').ddrScrollTableY({height: '80vh', wrapBorderColor: '#d7dbde'});
 					
 					var checkedStat = true,
 						checks = $('#staticsCash').find('[choosestatictodeposit]');
@@ -422,7 +422,7 @@ $(document).ready(function() {
 			
 			getAjaxHtml('reports/get_reports_periods', {edit: 1}, function(html) {
 				periodsWin.setData(html, false);
-				$('#periodsList').ddrScrollTableY('80vh');
+				$('#periodsList').ddrScrollTableY({height: '80vh', wrapBorderColor: '#d7dbde'});
 				
 				$('#choosePeriods').on(tapEvent, function() {
 					$('#choosenPeriodId').val(JSON.stringify(choosenPeriods));
@@ -699,7 +699,7 @@ $(document).ready(function() {
 			
 			getAjaxHtml('reports/get_main_reports_patterns', {limit: limit, offset: offset}, function(html) {
 				$('#reportPatternsList').html(html);
-				$('#reportPatternsList').ddrScrollTableY('80vh');
+				$('#reportPatternsList').ddrScrollTableY({height: '80vh', wrapBorderColor: '#d7dbde'});
 				
 				if ($(html).find('tbody').children('tr').length == limit) {
 					reportPatternsWin.setButtons([{id: 'getEarlyPatterns', title: 'Вниз'}, {id: 'getOlderPatterns', title: 'Вверх'}]);
@@ -718,7 +718,7 @@ $(document).ready(function() {
 					if (stat) {
 						$('#getOlderPatterns').prop('disabled', false);
 						$('#reportPatternsList').html(html);
-						$('#reportPatternsList').ddrScrollTableY('80vh');
+						$('#reportPatternsList').ddrScrollTableY({height: '80vh', wrapBorderColor: '#d7dbde'});
 					} else {
 						$('#getEarlyPatterns').prop('disabled', true);
 						notify('Это самые последние отчеты!', 'info');
@@ -984,7 +984,7 @@ $(document).ready(function() {
 			
 			getAjaxHtml('reports/get_reports_periods', {to_orders: 1}, function(html) {
 				periodsOrdersWin.setData(html, false);
-				$('#periodsList').ddrScrollTableY('80vh');
+				$('#periodsList').ddrScrollTableY({height: '80vh', wrapBorderColor: '#d7dbde'});
 				$('#newPeriod').prop('disabled', false);
 			}, function() {
 				periodsOrdersWin.wait(false);
@@ -1067,7 +1067,7 @@ $(document).ready(function() {
 			
 			getAjaxHtml('reports/get_patterns_list', {limit: limit, offset: offset}, function(html, stat) {
 				$('#reportPaymentsPatternsList').html(html);
-				$('#reportPaymentsPatternsList').ddrScrollTableY('80vh');
+				$('#reportPaymentsPatternsList').ddrScrollTableY({height: '80vh', wrapBorderColor: '#d7dbde'});
 				if (!stat) $('#getEarlyPaymentsPatterns').prop('disabled', true);
 			}, function() {
 				paymentsPatternsWin.wait(false);
@@ -1172,7 +1172,7 @@ $(document).ready(function() {
 		}, function(pRNewWin) {
 			pRNewWin.wait();
 			getAjaxHtml('reports/get_users', {start: 1}, function(startHtml) {
-				pRNewWin.setData(startHtml);
+				pRNewWin.setData(startHtml, false);
 				$('#setPaymentRequest').removeAttrib('disabled');
 				$('#paymentRequestSumm').number(true, 2, '.', ' ');
 				
@@ -1395,7 +1395,7 @@ $(document).ready(function() {
 						salaryWin.setButtons([{id : 'calcSalary', title: 'Рассчитать'}], 'Отмена');
 						salaryWin.setData(html, false);
 						
-						$('#salaryStatics').ddrScrollTableY(360);
+						$('#salaryStatics').ddrScrollTableY({height: '360px', wrapBorderColor: '#d7dbde'});
 						$('[salarysumm]').number(true, 0, ',', ' ');
 						
 						
@@ -1533,7 +1533,7 @@ $(document).ready(function() {
 			addictPayWin.wait();
 			getAjaxHtml('reports/get_addictpay_form', function(html) {
 				addictPayWin.setData(html, false);
-				$('#salaryStatics').ddrScrollTableY('80vh');
+				$('#salaryStatics').ddrScrollTableY({height: '80vh', wrapBorderColor: '#d7dbde'});
 				
 				
 				$('#calcAddictPay').on(tapEvent, function() {
@@ -2002,7 +2002,7 @@ $(document).ready(function() {
 				if (html) {
 					$('#staticsCashKeys').html(html);
 					$('#staticsCashKeys').find('input').number(true, 0, '.', ' ');
-					$('#staticsCashKeys').ddrScrollTableY('80vh');
+					$('#staticsCashKeys').ddrScrollTableY({height: '80vh', wrapBorderColor: '#d7dbde'});
 					
 					var checkedStat = true,
 						checks = $('#staticsCashKeys').find('[choosestatictodeposit]');
@@ -2064,7 +2064,7 @@ $(document).ready(function() {
 			
 			getAjaxHtml('reports/get_keys_reports_patterns', {limit: limit, offset: offset}, function(html) {
 				$('#reportPatternsKeysList').html(html);
-				$('#reportPatternsKeysList').ddrScrollTableY('80vh');
+				$('#reportPatternsKeysList').ddrScrollTableY({height: '80vh', wrapBorderColor: '#d7dbde'});
 				if ($(html).find('tbody').children('tr').length == limit) {
 					reportPatternsKeysWin.setButtons([{id: 'getEarlyPatterns', title: 'Вниз'}, {id: 'getOlderPatterns', title: 'Вверх'}]);
 				}
@@ -2320,7 +2320,7 @@ $(document).ready(function() {
 			
 			getAjaxHtml('reports/get_reports_periods', function(html) {
 				periodsWin.setData(html, false);
-				$('#periodsList').ddrScrollTableY('80vh');
+				$('#periodsList').ddrScrollTableY({height: '80vh', wrapBorderColor: '#d7dbde'});
 			}, function() {
 				periodsWin.wait(false);
 			});
@@ -2364,7 +2364,7 @@ $(document).ready(function() {
 					rewardsPeriodsWin.setWidth(750);
 					rewardsPeriodsWin.setButtons([{id: 'newRewardPeriod', title: 'Новый период'}], 'Закрыть');
 					rewardsPeriodsWin.setData(html, false);
-					$('#rewardsPeriodsList').ddrScrollTableY('80vh');
+					$('#rewardsPeriodsList').ddrScrollTableY({height: '80vh', wrapBorderColor: '#d7dbde'});
 				}, function() {
 					rewardsPeriodsWin.wait(false);
 					
@@ -2908,7 +2908,7 @@ $(document).ready(function() {
 			getAjaxHtml('reports/wallet/get_reports', function(html) {
 				reportsListWin.setData(html, false);
 				reportsListWin.wait(false);
-				$('#walletReportsList').ddrScrollTableY(400);
+				$('#walletReportsList').ddrScrollTableY({height: '400px', wrapBorderColor: '#d7dbde'});
 				
 				$('[buildsavedreport]').on(tapEvent, function() {
 					reportsListWin.wait();

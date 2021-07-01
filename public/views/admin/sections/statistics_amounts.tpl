@@ -90,7 +90,7 @@
 			staticsAmountWin.wait();
 			getAjaxHtml('admin/statistics/get_statics', {}, function(html) {
 				staticsAmountWin.setData(html, false, function() {
-					$('#staticsAmountList').ddrScrollTableY('400px');
+					$('#staticsAmountList').ddrScrollTableY({height: '400px', wrapBorderColor: '#d7dbde'});
 				});
 				
 				
@@ -119,7 +119,7 @@
 					getAjaxHtml('admin/statistics/get_reports', {}, function(html) {
 						staticsAmountWin.setButtons([{id: 'sAChooseReports', title: 'Выбрать', disabled: 1}], 'Закрыть');
 						staticsAmountWin.setData(html, false, function() {
-							$('#reportsAmountList').ddrScrollTableY('400px');
+							$('#reportsAmountList').ddrScrollTableY({height: '400px', wrapBorderColor: '#d7dbde'});
 						});
 						
 						
@@ -262,7 +262,7 @@
 			ranksAmountWin.wait();
 			getAjaxHtml('admin/statistics/get_statics', {}, function(html) {
 				ranksAmountWin.setData(html, false, function() {
-					$('#staticsAmountList').ddrScrollTableY('400px');
+					$('#staticsAmountList').ddrScrollTableY({height: '400px', wrapBorderColor: '#d7dbde'});
 				});
 				
 				
@@ -291,7 +291,7 @@
 					getAjaxHtml('admin/statistics/get_ranks', {statics: choosedStatics}, function(html) {
 						ranksAmountWin.setButtons([{id: 'rAChooseRanks', title: 'Выбрать', disabled: 1}], 'Закрыть');
 						ranksAmountWin.setData(html, false, function() {
-							$('#ranksAmountList').ddrScrollTableY('400px');
+							$('#ranksAmountList').ddrScrollTableY({height: '400px', wrapBorderColor: '#d7dbde'});
 						});
 						
 						$('#ranksAmountSetAll').on(tapEvent, function() {
@@ -437,7 +437,7 @@
 					addreportWin.wait();
 					getAjaxHtml('admin/statistics/get_calendar_reports', {type: reportType}, function(html) {
 						addreportWin.setData(html, false);
-						$('#reportsAmountList').ddrScrollTableY('400px');
+						$('#reportsAmountList').ddrScrollTableY({height: '400px', wrapBorderColor: '#d7dbde'});
 						
 						$('#reportsAmountType').on('change', function() {
 							addreportWin.wait();

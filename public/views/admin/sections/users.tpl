@@ -105,6 +105,7 @@
 													<!-- <td>Ранг</td> -->
 													<td class="w100px{% if sort_field == 'u.role' %} active{% endif %}">Роль <i class="fa fa-sort" userssortfield="u.role" sortorder="{{sort_order}}"></i></td>
 													<td class="w100px">Доступ</td>
+													<td class="w50px" title="Соглашение о неразглашении конфиденциальной информации">NDA</td>
 													<td class="nowidth">Статики</td>
 													<td class="nowidth">Классы</td>
 													{% if tabid == 'verifyUsers' %}<td class="nowidth" title="Персонажи">Персон.</td>{% endif %}
@@ -209,6 +210,12 @@
 															{% else %}
 																<p class="empty">Создайте доступы</p>
 															{% endif %}
+														</td>
+														<td class="center">
+															<div class="checkblock">
+																<input type="checkbox" id="checkNDA{{user.id}}" setusernda="{{user.id}}"{% if user.nda %} checked{% endif %}>
+																<label for="checkNDA{{user.id}}"></label>
+															</div>
 														</td>
 														<td class="nowidth center">
 															<input type="hidden" class="user_statics" value="{{user.static}}">
@@ -871,7 +878,7 @@ $(document).ready(function() {
 			$.post('/admin/get_users_statics', {user_id: thisUserId, newset: newSet}, function(html) {
 				if (html) {
 					userStaticsWin.setData(html, false);
-					$('#userStatics').ddrScrollTableY('80vh');
+					$('#userStatics').ddrScrollTableY({height: '80vh', wrapBorderColor: '#d7dbde'});
 					
 					$('[staticpart], [staticlider]').on('change', function() {
 						var thisStaticId = $(this).attr('staticpart') || $(this).attr('staticlider'),
@@ -985,7 +992,7 @@ $(document).ready(function() {
 			$.post('/admin/get_users_classes', {user_id: thisUserId, newset: newSet}, function(html) {
 				if (html) {
 					userClassesWin.setData(html, false);
-					$('#userClasses').ddrScrollTableY('80vh');
+					$('#userClasses').ddrScrollTableY({height: '80vh', wrapBorderColor: '#d7dbde'});
 				} else {
 					userClassesWin.setData('<p class="empty center">Нет данных</p>', false);
 				}
@@ -1071,7 +1078,7 @@ $(document).ready(function() {
 			
 			getAjaxHtml('admin/personages/get', {from_id: thisUserId, users_list: 1}, function(html) {
 				userPersonagesWin.setData(html, false);
-				$('#userPersonagesList').ddrScrollTableY('80vh');
+				$('#userPersonagesList').ddrScrollTableY({height: '80vh', wrapBorderColor: '#d7dbde'});
 				
 				$('#userPersonagesList').changeRowInputs(function(row, item) {
 					$(row).addClass('changed');
@@ -1372,6 +1379,27 @@ $(document).ready(function() {
 		});
 	});
 	
+	
+	
+	
+	
+	
+	$('[setusernda]').on(tapEvent, function() {
+		let userId = $(this).attr('setusernda'),
+			isChecked = $(this).is(':checked');
+		
+		$.post('/admin/change_nda_stat', {user_id: userId, stat: isChecked}, function(response) {
+			if (response) {
+				notify('NDA статус успешно изменен!');
+			} else {
+				notify('Ошибка изменения NDA статуса!', 'error');
+			}
+		}).fail(function(e) {
+			notify('Системная ошибка!', 'error');
+			showError(e);
+		});
+		console.log(userId);
+	});
 	
 	
 	

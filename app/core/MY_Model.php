@@ -2,6 +2,9 @@
 
 class MY_Model extends CI_Model {
 	
+	protected $monthes = [1 => 'января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+	
+	
 	public function __construct() {
 		parent::__construct();
 	}
@@ -124,7 +127,7 @@ class MY_Model extends CI_Model {
 		if (!$concatTest || !$concatData || !$fieldname) return '';
 		
 		$finalConcat = '';
-		if ($cData = preg_split("/,\s+/", $concatData)) {
+		if ($cData = preg_split("/[\s,]+/", $concatData)) {
 			foreach ($cData as $k => $item) {
 				$item = explode(':', $item);
 				$finalConcat .= "'$item[0]'".", ".(isset($item[1]) ? $item[1] : $item[0]).", ";

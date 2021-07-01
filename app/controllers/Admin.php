@@ -2276,6 +2276,22 @@ class Admin extends MY_Controller {
 	
 	
 	
+	/**
+	 * Изменить статус NDA соглашения
+	 * @param 
+	 * @return 
+	*/
+	public function change_nda_stat() {
+		if (!$this->input->is_ajax_request()) return false;
+		$post = bringTypes($this->input->post());
+		if (!$this->admin_model->changeNdaStat($post)) exit('0');
+		echo '1';
+		
+	}
+	
+	
+	
+	
 	
 	
 	

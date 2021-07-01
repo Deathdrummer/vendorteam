@@ -119,7 +119,7 @@
 					</div>
 				</div>
 				
-				<table class="table_hover">
+				<table class="table_hover" id="gamesIdsTable">
 					<thead>
 						<tr>
 							<td class="w450px">ID игры</td>

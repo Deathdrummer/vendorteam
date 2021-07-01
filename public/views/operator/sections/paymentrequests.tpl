@@ -132,7 +132,7 @@ $(document).ready(function() {
 		}, function(pRNewWin) {
 			pRNewWin.wait();
 			getAjaxHtml('reports/get_users', {start: 1}, function(startHtml) {
-				pRNewWin.setData(startHtml);
+				pRNewWin.setData(startHtml, false);
 				$('#setPaymentRequest').setAttrib('disabled', false);
 				$('#paymentRequestSumm').number(true, 2, '.', ' ');
 				

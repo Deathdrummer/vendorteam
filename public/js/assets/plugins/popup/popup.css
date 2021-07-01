@@ -42,7 +42,7 @@
 	min-height: 100vh;
 	overflow-x: hidden;
 	overflow-y: auto;
-	z-index: 1000;
+	z-index: 1200;
 	/* тут стиль скроллбара */
 }
 	
@@ -121,7 +121,7 @@
 		align-items: center;
 		justify-content: center;
 		cursor: pointer;
-		z-index: 1000;
+		z-index: 1200;
 	}
 		
 		.popup__close:hover::before, .popup__close:hover::after {
@@ -163,7 +163,7 @@
 		opacity: 0;
 		pointer-events: none;
 		transition: opacity 0.3s;
-		z-index: 1002;
+		z-index: 1201;
 	}
 		
 		
@@ -202,7 +202,7 @@
 		display: flex;
 		align-items: flex-start;
 		justify-content: center;
-		z-index: 1001;
+		z-index: 1201;
 	}
 	
 		.popup__dialog_visible {
@@ -278,7 +278,7 @@
 	.popup__buttons {
 		display: flex;
 		justify-content: flex-end;
-		z-index: 1000;
+		z-index: 1200;
 		position: relative;
 	}
 		

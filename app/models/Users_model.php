@@ -43,7 +43,6 @@ class Users_model extends MY_Model {
 		
 		$query = $this->db->get('users u');
 		if (!$usersData = $query->result_array()) return false;
-		
 		if ($returnFields) $usersData = setArrKeyFromField($usersData, 'id', true, $returnFields);
 		
 		return $usersData ?: false;
@@ -275,6 +274,39 @@ class Users_model extends MY_Model {
 	}
 	
 	
+	
+	
+	
+	
+	/**
+	 * Получить список персонажей
+	 * @param ID участника
+	 * @param Вернуть только тех, у кого указан ID игры
+	 * @return array [iser_id => [personage_id => data]] или [personage_id => data]
+	*/
+	public function getUsersPersonages($userId = false, $onlyWithGameId = false) {
+		if ($userId && is_numeric($userId)) $this->db->where('from_id', $userId);
+		elseif ($userId && is_array($userId)) $this->db->where_in('from_id', $userId);
+		if ($onlyWithGameId) $this->db->where('game_id IS NOT NULL');
+		if (!$usersPersonages = $this->_result('users_personages')) return false;
+		
+		$uPData = [];
+		
+		if ($userId && is_numeric($userId)) {
+			foreach ($usersPersonages as $row) {
+				$personageId = arrTakeItem($row, 'id');
+				$uPData[$personageId][] = $row;
+			}
+			return $uPData;
+		}
+		
+		foreach ($usersPersonages as $row) {
+			$fromId = arrTakeItem($row, 'from_id');
+			$personageId = arrTakeItem($row, 'id');
+			$uPData[$fromId][$personageId] = $row;
+		}
+		return $uPData;
+	}
 	
 	
 	

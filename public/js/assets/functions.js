@@ -73,6 +73,44 @@ $.fn.removeAttrib = function(attr) {
 
 
 
+
+/*
+	Является ли строка json
+	- строка
+*/
+isJson = function(str) {
+	if (str == undefined || typeof str == 'undefined') return false;
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
+};
+
+
+/*
+	Является ли строка целым числом
+*/
+isInt = function(n) {
+	if (n == undefined || typeof n == 'undefined') return false;
+	if (typeof n != 'string') return Number(n) === n && n % 1 === 0;
+	return Number(n)+'' === n;
+};
+
+
+/*
+	Является ли строка числом с плавающей точкой
+*/
+isFloat = function(n) {
+	if (n == undefined || typeof n == 'undefined') return false;
+	if (typeof n != 'string') return Number(n) === n && n % 1 !== 0;
+	return Number(n)+'' === n && Number(n) % 1 !== 0;
+};
+
+
+
+
 /*
 	Проверка наличия атрибута
 		- название атрибута
@@ -91,22 +129,28 @@ $.fn.hasAttrib = function(a) {
 
 /*
 	Изменение цифрового поля стрелками и цифрами
+		- вернет
+			- значение
+			- селетор инпут
+			- тип изменения arrow или key
+		
 */
 $.fn.onChangeNumberInput = function(callback) {
 	let wPStat, selector = this;
 	
 	$(selector).on('keyup mousedown mouseup', function(e) {
 		let input = this,
-			inpVal = parseFloat($(this).val());
+			inpVal = parseFloat($(this).val()),
+			type = e.type == 'mouseup' ? 'arrow' : 'key';
 		if (e.type == 'mousedown') {
 			wPStat = inpVal;
 		} else if (e.type == 'mouseup') {
 			if (inpVal != wPStat) {
-				if (callback && typeof callback == 'function') callback(inpVal, input);
+				if (callback && typeof callback == 'function') callback(inpVal, input, type);
 			}
 			wPStat = null;
 		} else if (e.type == 'keyup' && [190, 13].indexOf(e.keyCode) == -1) {
-			if (callback && typeof callback == 'function') callback(inpVal, input);
+			if (callback && typeof callback == 'function') callback(inpVal, input, type);
 		}
 	});
 };
@@ -520,7 +564,6 @@ $.fn.changeRowInputs = function(callback) {
 	}
 	
 	
-	
 	$(selector).on('change', 'select, input[type="checkbox"], input[type="radio"], input[type="color"], input[type="number"]', function(event) {
 		var eData = _getEventData(event);
 		_setAction(this, eData.st);
@@ -590,7 +633,7 @@ getAjaxHtml = function() {
 		params = typeof a[1] == 'object' ? a[1] : {},
 		callback = typeof a[1] == 'function' ? a[1] : (a[2] !== undefined ? a[2] : false),
 		always = typeof a[1] != 'object' ? (a[2] !== undefined && typeof a[2] == 'function' ? a[2] : false) : (a[3] !== undefined && typeof a[3] == 'function' ? a[3] : false);
-	
+		
 	$.post(url, params, function(html) {
 		html = html.trim();
 		if (html && callback) callback(html, true);
@@ -933,13 +976,14 @@ ddrInitTabs = function() {
 
 
 
-$.fn.setWaitToBlock = function(mess) {
+$.fn.setWaitToBlock = function(mess, cls, bg) {
 	var selector = this;
 	if (mess === false) {
 		$(selector).css('background-color', 'none');
+		$(selector).find('#ddrWaitBlock').remove();
 	} else {
-		$(selector).css('background-color', 'rgba(255, 255, 255, 0.2)');
-		$(selector).html('<div class="d-flex align-items-center justify-content-center flex-column"><i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i><p>'+mess+'</p></div>');
+		$(selector).css('background-color', (bg || 'rgba(255, 255, 255, 0.2)'));
+		$(selector).html('<div id="ddrWaitBlock" class="d-flex align-items-center justify-content-center flex-column'+(' '+cls || '')+'"><i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i><p>'+mess+'</p></div>');
 	}
 		
 };
@@ -951,7 +995,27 @@ $.fn.setWaitToBlock = function(mess) {
 
 
 
-
+/*
+	Повесить ошибку на input
+*/
+$.fn.errorLabel = function(html) {
+	var selectors = '.field, .textarea, .select, .file, .ddrselect, .popup__field, .popup__textarea, .popup__select, .popup__file, .ddrselect';
+	if ($(this).closest(selectors).length == 0) {
+		if ($(this).siblings('span.error').length > 0) {
+			$(this).siblings('span.error').html(html);
+		} else {
+			$(this).after('<span class="error">'+html+'</span>');
+		}
+		$(this).addClass('error');
+	} else {
+		if ($(this).closest(selectors).find('span.error').length == 0) {
+			$(this).closest(selectors).append('<span class="error">'+html+'</span>');
+		} else {
+			$(this).closest(selectors).find('span.error').html(html);
+		}
+		$(this).closest(selectors).addClass('error');
+	}
+};
 
 
 

@@ -141,7 +141,7 @@
             
             clearTimeout(hTOut);
             hTOut = setTimeout(function() {
-                questionsWin.setData(finalHtml);
+                questionsWin.setData(finalHtml, false);
                 questionsWin.setTitle(finalTitle);
                 questionsWin.correctPosition();
                 

@@ -2042,6 +2042,7 @@ class Admin_model extends My_Model {
 		
 		$finaData = [];
 		foreach ($resignsList as $k => $item) {
+			if (!isset($usersData[$item['user_id']])) continue;
 			$item['nickname'] = $usersData[$item['user_id']]['nickname'];
 			$item['date_reg'] = $usersData[$item['user_id']]['reg_date'];
 			$item['avatar'] = $usersData[$item['user_id']]['avatar'];
@@ -2241,6 +2242,22 @@ class Admin_model extends My_Model {
 	}
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function changeNdaStat($data = false) {
+		$this->db->where('id', $data['user_id']);
+		if (!$this->db->update('users', ['nda' => $data['stat']])) return false;
+		return true;
+	}
 	
 	
 	

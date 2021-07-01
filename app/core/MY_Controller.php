@@ -169,7 +169,7 @@ class MY_Controller extends CI_Controller {
 		
 		$this->twig->addFilter('padej', function($num, $variants = ['день', 'дня', 'дней'], $variantsEng = ['day', 'day', 'days']) {
 			$lang = get_cookie('language') ?: 'ru';
-			$v = $lang == 'ru' ? $variants : $variantsEng;
+			$v = $lang == 'ru' ? $variants : ($variantsEng ?: $variants);
 			if (in_array($num, explode(' ', '11 12 13 14')) || in_array(substr($num, -1), explode(' ', '5 6 7 8 9 0'))) return $v[2];
 			elseif (in_array(substr($num, -1), explode(' ', '2 3 4'))) return $v[1];
 			elseif (substr($num, -1) == '1') return $v[0];

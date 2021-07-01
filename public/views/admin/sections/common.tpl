@@ -38,6 +38,18 @@
 				
 			</fieldset>
 			
+			<fieldset>
+				<legend>SMTP</legend>
+				
+				<div class="drow dgutter-10">
+					<div class="dcol-5">{% include form~'field.tpl' with {'label': 'Заголовок сайта', 'name': 'setting_smtp|host', 'placeholder': 'Имя сервера', 'class': 'w100'} %}</div>
+					<div class="dcol-5">{% include form~'field.tpl' with {'label': 'Почта', 'name': 'setting_smtp|user', 'class': 'w100'} %}</div>
+					<div class="dcol-5">{% include form~'field.tpl' with {'label': 'Пароль', 'name': 'setting_smtp|pass', 'placeholder': 'Пароль от почты', 'class': 'w100'} %}</div>
+					<div class="dcol-5">{% include form~'field.tpl' with {'label': 'Порт', 'name': 'setting_smtp|port', 'class': 'w100'} %}</div>
+					<div class="dcol-5">{% include form~'field.tpl' with {'label': 'Шифрование', 'name': 'setting_smtp|crypto', 'placeholder': 'STARTTLS', 'class': 'w100'} %}</div>
+				</div>
+				
+			</fieldset>
 			
 			<fieldset>
 				<legend>Элементы главной страницы</legend>
@@ -499,6 +511,7 @@
 				<li id="tabDeposit">Депозит</li>
 				<li id="tabRating">Рейтинг</li>
 				<li id="tabResigns">Увольнения</li>
+				<li id="tabDNA">NDA</li>
 			</ul>
 			
 			<div class="tabscontent">
@@ -600,6 +613,17 @@
 					
 					</fieldset>
 				</div>
+				
+				<div tabid="tabDNA">
+					<fieldset>
+						<legend>Коэффициент DNA</legend>
+						
+						{% include form~'field.tpl' with {'label': 'Коэффициент NDA', 'name': 'nda_coeff', 'type': 'number', 'step': '0.01', 'class': 'w130px'} %}
+						
+					</fieldset>
+				</div>
+				
+				
 			</div>
 		</div>
 		

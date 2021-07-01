@@ -208,9 +208,9 @@ function DdrPopUp(settings, callback) {
 		}, (animationTime * 1000));
 	};
 
-
+	// Сюда подставить скрипты, которые должны активироваться при загрузке контента
 	function _setScripts() {
-		setBaseScripts(ddrPopupSelector);
+		//setBaseScripts(ddrPopupSelector);
 	};
 
 
@@ -331,8 +331,8 @@ function DdrPopUp(settings, callback) {
 					dhtml += 	'<div class="popupdialog">';
 					dhtml += 		'<div class="popupdialog__message">'+dialog+'</div>';
 					dhtml += 		'<div class="popupdialog__buttons">';
-					dhtml += 			'<button class="cancel" id="popupDialogN'+id+'">'+nBtn+'</button>';
 					dhtml += 			'<button id="popupDialogY'+id+'">'+yBtn+'</button>';
+					dhtml += 			'<button class="cancel" id="popupDialogN'+id+'">'+nBtn+'</button>';
 					dhtml += 		'</div>';
 					dhtml += 	'</div>';
 					dhtml += '</div>';

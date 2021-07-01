@@ -2477,7 +2477,7 @@ $(document).ready(function() {
 			walletBalanceWin.wait();
 			getAjaxHtml('account/get_balance', function(html) {
 				walletBalanceWin.setData(html, false);
-				$('#walletUserBalance').ddrScrollTableY(400);
+				$('#walletUserBalance').ddrScrollTableY({height: '400px', wrapBorderColor: '#d7dbde'});
 			}, function() {
 				walletBalanceWin.wait(false);
 			});

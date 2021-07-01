@@ -10,28 +10,38 @@ if (!function_exists('arrRestructure')) {
      * Перебор многомерного массива с коллбэк функцией для каждого элемента
      * @param массив
      * @param поля для реструктуризации. Строка или массив
-     * @param Удалить ли поля. По-умолчанию - нет
+     * @param поля - которые нужно вернуть в конечных значениях. Можно задать несуществующее поле со знасением через двоеточие, тогда оно вернется со значением NULL (это нужно для создания бланка массива)
+     * @param вернуть сразу значение поля. По-умолчанию: массив [поле => значение]
      * @return реструктурированный массив
     */
-    function arrRestructure($array = false, $regroupFields = false, $removeFields = false) {
+    function arrRestructure($array = false, $regroupFields = false, $values = false, $onlyValue = false) {
         if (!$array || !$regroupFields) return false;
-        if (!is_array($regroupFields)) $regroupFields = preg_split("/,\s+/", $regroupFields);
+        if (!is_array($regroupFields)) $regroupFields = preg_split("/[\s,]+/", $regroupFields);
+        if (!is_array($values)) $values = preg_split("/[\s,]+/", $values);
         
         $restructArr = [];
         $path = '';
-        $unset = '';
         
-        foreach ($regroupFields as $field) {
-            $path .= "[\$item['".$field."']]";
-            if ($removeFields) $unset .= "\$values['".$field."'], ";
-        }
-        
-        $unset = rtrim($unset, ', ');
+        foreach ($regroupFields as $field) $path .= "[\$item['".$field."']]";
         
         foreach ($array as $item) {
-            $values = $item;
-            if ($removeFields) eval("unset($unset);");
-            eval("return \$restructArr$path"."[] = \$values;");
+            if ($values && count($values) > 1) {
+                $v = [];
+                foreach ($values as $val) {
+                    if (isset($item[$val])) $v[$val] = $item[$val];
+                    else {
+                        $val = explode(':', $val);
+                        $v[reset($val)] = isset($val[1]) ? $val[1] : null;
+                    }
+                } 
+            } elseif (isset($item[reset($values)])) {
+                if ($onlyValue) $v = $item[reset($values)];
+                else $v[reset($values)] = $item[reset($values)];
+            } else {
+                $v = array_diff_key($item, array_flip($regroupFields));
+            }
+            
+            eval("return \$restructArr$path"." = \$v;");
         }
             
         return $restructArr ?: false;
@@ -57,7 +67,7 @@ if (!function_exists('formatArray')) {
     */
     function formatArray($arr = false, $key = false, $fields = false, $noFieldName = false) {
         if (!$arr || !$key || !$fields) return false;
-        if (!$fields = preg_split("/,\s+/", $fields)) return false;
+        if (!$fields = preg_split("/[\s,]+/", $fields)) return false;
         $data = [];
         foreach ($arr as $k => $row) {
             if (!isset($row[$key])) continue;

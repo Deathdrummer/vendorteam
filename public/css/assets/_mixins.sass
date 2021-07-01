@@ -178,10 +178,11 @@
 
 =field()
 	display: inline-block
+	position: relative
 	vertical-align: top
 	border: 1px solid #d0d6da
 	width: 100%
-	overflow: hidden
+	//overflow: hidden
 	border-radius: 3px
 	transition: border-color 0.16s, box-shadow 0.16s
 	
@@ -210,6 +211,45 @@
 			font-size: 13px
 			line-height: 13px
 			color: #fff
+	
+	&.error
+		border-color: #ff1e1e
+		background-color: #fff0f0
+		
+		span.error:not(:empty)
+			opacity: 1
+			z-index: 1210
+			
+	span.error
+		position: absolute
+		overflow: hidden
+		text-overflow: ellipsis
+		top: 100%
+		left: 0
+		font-size: 12px
+		line-height: 13px
+		+font('roboto', medium)
+		opacity: 0
+		background-color: #f88
+		box-shadow: 0 1px 0 0 #ff1e1e, 1px 0 0 0 #ff1e1e, -1px 0 0 0 #ff1e1e
+		padding: 2px 4px
+		width: 100%
+		color: #fff
+		pointer-events: none
+		transition: opacity 0.16s
+	
+	.postfix
+		font-size: 12px
+		line-height: 12px
+		display: inline-block
+		margin-left: 6px
+		
+		&_bottom
+			vertical-align: bottom
+		
+		&_top
+			vertical-align: top
+			
 		
 	input
 		background: none
@@ -289,11 +329,12 @@
 
 
 =textarea()
+	position: relative
 	display: inline-block
 	vertical-align: top
 	border: 1px solid #d0d6da
 	width: 100%
-	overflow: hidden
+	//overflow: hidden
 	border-radius: 3px
 	transition: border-color 0.16s, box-shadow 0.16s
 	
@@ -318,6 +359,31 @@
 			font-size: 13px
 			line-height: 13px
 			color: #fff
+	
+	&.error
+		border-color: #ff1e1e
+		background-color: #fff0f0
+		
+		span.error:not(:empty)
+			opacity: 1
+			z-index: 1210
+			
+	span.error
+		position: absolute
+		top: 100%
+		left: 0
+		font-size: 12px
+		line-height: 12px
+		+font('roboto', medium)
+		opacity: 0
+		background-color: #f88
+		box-shadow: 0 1px 0 0 #ff1e1e, 1px 0 0 0 #ff1e1e, -1px 0 0 0 #ff1e1e
+		padding: 2px 4px
+		width: 100%
+		color: #fff
+		pointer-events: none
+		transition: opacity 0.16s
+		
 		
 	textarea
 		background: none
@@ -619,6 +685,37 @@
 			line-height: 100%
 			height: 100%
 			transition: color 0.16s
+	
+	
+	&.error
+		border-color: #ff1e1e
+		background-color: #fff0f0
+		
+		span.error:not(:empty)
+			opacity: 1
+			z-index: 1210
+	
+	&:not(.nowidth)
+		width: 100%
+		
+	&.nowidth
+		width: auto
+			
+	span.error
+		position: absolute
+		top: 100%
+		left: 0
+		font-size: 12px
+		line-height: 12px
+		+font('roboto', medium)
+		opacity: 0
+		background-color: #f88
+		box-shadow: 0 1px 0 0 #ff1e1e, 1px 0 0 0 #ff1e1e, -1px 0 0 0 #ff1e1e
+		padding: 2px 4px
+		width: 100%
+		color: #fff
+		pointer-events: none
+		transition: opacity 0.16s
 			
 		
 	select
@@ -761,6 +858,12 @@
 		padding-left: 15px
 		padding-right: 15px
 	
+	&.custom
+		font-size: initial
+		height: initial
+		padding-left: initial
+		padding-right: initial
+	
 	&.fieldheight
 		height: 60px
 		min-width: 60px
@@ -832,6 +935,16 @@
 		
 		&:active
 			background-color: darken(#466580, 20%)
+			transition: background-color 0s
+	
+	&.alt2
+		background-color: #63717d
+		
+		&:hover
+			background-color: darken(#63717d, 7%)
+		
+		&:active
+			background-color: darken(#63717d, 20%)
 			transition: background-color 0s
 	
 	&.pay

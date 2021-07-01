@@ -95,7 +95,7 @@ jQuery(document).ready(function($) {
 						
 						if (! errors) {
 							if (callback) window[callback]($('#'+popupContainerId+' popupform').formSerialize());
-							formWin.setData(formSuccessHtml, true);
+							formWin.setData(formSuccessHtml, false);
 							if (formSuccessTitle) {
 								formWin.deleteTitle();
 							}

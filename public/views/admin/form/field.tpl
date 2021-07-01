@@ -19,6 +19,7 @@
 		<label for="{{id}}"><span>{{label}}</span></label>
 		<input 
 			type="{% if type %}{{type}}{% else %}text{% endif %}" 
+			{% if type == 'number' %} showrows{% endif %}
 			{% if step %}step="{{step}}"{% endif %}
 			autocomplete="off"
 			readonly

@@ -329,11 +329,11 @@ html
 				align-items: center
 				list-style: none
 				font-size: 14px
-				line-height: 16px
+				line-height: 14px
 				text-align: center
 				height: 100%
-				padding-left: 15px
-				padding-right: 15px
+				padding-left: 10px
+				padding-right: 10px
 				cursor: pointer
 				max-width: 250px
 				transition: background-color 0.16s
@@ -347,6 +347,10 @@ html
 				
 				&:hover:not(.active)
 					background-color: darken($bgColor, 8%)
+				
+				small
+					font-size: 12px
+					line-height: 12px
 			
 			&.sub
 				height: 30px
@@ -468,6 +472,7 @@ html
 			
 			.select
 				+select()
+				
 		
 		
 		
@@ -588,14 +593,37 @@ html
 	
 
 .scroll_y
-	+scrollbar(#b1bac2, #808f9c, 8px, 0px)
 	overflow-x: hidden
-	overflow-y: scroll	
+	overflow-y: scroll
 	
+	&:not(.scroll_y_thin)
+		+scrollbar(#b1bac2, #808f9c, 8px, 0px)
+		
+	&_thin
+		+scrollbar(#dde3e8, #b3c0d0, 6px, 0px)
+		
+
+
+
+img.avatar
+	object-fit: cover
+	border: 1px solid #d5dbe0
+	border-radius: 3px
+	display: block
+
+
 	
 //---------------------------------------------------------------- Чекбок модифицированный
 .checkblock
-	+checkblock(3px);		
+	+checkblock(3px);
+
+
+
+//---------------------------------------------------------------- срезание текста три точки в конце
+.text-overflow
+	white-space: nowrap
+	text-overflow: ellipsis
+	overflow: hidden
 			
 			
 		
@@ -685,6 +713,9 @@ table
 				pointer-events: none
 				@extend .noselect
 			
+			&.error
+				background-color: #ffd5d5 !important
+			
 			&.opened
 				background-color: #a3c3d2 !important
 			
@@ -717,12 +748,22 @@ table
 				&.noheight
 					height: auto !important
 				
+				&.pointer
+					&:hover
+						background-color: #e7eaec !important
+					
+					&:active
+						background-color: #cad7e0 !important
+				
 				p, strong, span
 					font-size: 14px !important
 					margin-bottom: 0 !important
 				
-				&.texttop, &.top
+				&.texttop
 					vertical-align: text-top
+				
+				&.top
+					vertical-align: top
 				
 				img
 					max-width: 50px
@@ -925,6 +966,9 @@ table
 					&.inline
 						display: inline-block
 					
+					&.right
+						text-align: right
+					
 					button, .button
 						display: inline-block
 						+btn((padding-left: 15px !important, padding-right: 15px !important), (noselect))
@@ -1005,6 +1049,10 @@ table
 				padding-top: 5px
 				padding-bottom: 5px
 				border: 1px solid darken(#eceff1, 10%)
+				
+				.buttons
+					&.right
+						text-align: right
 				
 				button, .button
 					+btn()
@@ -1401,33 +1449,36 @@ table
 				
 	
 	&__header
-		background-color: #76838e
+		background-color: transparent //#76838e
 		position: relative
 		padding-left: 40px
 		padding-right: 40px
-		padding-top: 5px
-		padding-bottom: 5px
+		padding-top: 10px
+		padding-bottom: 10px
 	
 	&__title
 		text-align: center
-		color: #fff
+		color: #76838e
 		+font('roboto', light)
+		+resp(font-size, (xs: 20px, sm: 22px, md: 22px, lg: 24px, xl: 24px), (line-height: 0))
 		
-		
-		&_5
-			+resp(font-size, (xs: 16px, sm: 20px, md: 28px, lg: 34px, xl: 38px), (line-height: 2))
-		&_4
-			+resp(font-size, (xs: 16px, sm: 20px, md: 26px, lg: 30px, xl: 34px), (line-height: 2))
-		&_3
-			+resp(font-size, (xs: 16px, sm: 18px, md: 22px, lg: 24px, xl: 28px), (line-height: 2))
-		&_2
-			+resp(font-size, (xs: 16px, sm: 18px, md: 20px, lg: 20px, xl: 22px), (line-height: 2))
-		&_1
-			+resp(font-size, (xs: 16px, sm: 18px, md: 18px, lg: 20px, xl: 20px), (line-height: 2))
+		//
+		//&_5
+		//	+resp(font-size, (xs: 16px, sm: 20px, md: 28px, lg: 34px, xl: 38px), (line-height: 2))
+		//&_4
+		//	+resp(font-size, (xs: 16px, sm: 20px, md: 26px, lg: 30px, xl: 34px), (line-height: 2))
+		//&_3
+		//	+resp(font-size, (xs: 16px, sm: 18px, md: 22px, lg: 24px, xl: 28px), (line-height: 2))
+		//&_2
+		//	+resp(font-size, (xs: 16px, sm: 18px, md: 20px, lg: 20px, xl: 22px), (line-height: 2))
+		//&_1
+		//	+resp(font-size, (xs: 16px, sm: 18px, md: 18px, lg: 20px, xl: 20px), (line-height: 2))
 	
 	&__close
 		//background-color: #dc5656
-		top: calc(50% - 13px) 
+		//top: 10px
+		width: 30px
+		height: 30px
 		
 		&::before, &::after
 			height: 3px
@@ -1442,7 +1493,11 @@ table
 		
 		&:hover 
 			&::before, &::after
-				background-color: #fff
+				background-color: #a5b7d0
+		
+		&:active
+			&::before, &::after
+				background-color: #6b8ab5
 			
 		
 	&__content
@@ -1499,6 +1554,10 @@ table
 			border-radius: 3px
 			padding-left: 15px
 			padding-right: 15px
+			font-size: 14px
+			line-height: 14px
+			+font('roboto', medium)
+			text-transform: uppercase
 			transition: background-color 0.16s
 		
 		&_main
@@ -1562,17 +1621,24 @@ table
 	
 	&__dialog
 		background-color: #303e4a75
+		z-index: 1011
 		
 		.popupdialog
 			background-color: #fff
 			padding: 10px
 			box-shadow: 0 8px 30px -12px rgba(0, 0, 0, 0.66)
 			
+			
 			&__message
 				+font('roboto', bold)
+				padding: 20px
+				min-width: 290px
 				
-				.remove
+				.remove, .red
 					color: #e05353
+				
+				.green
+					color: #2cb34f
 				
 			&__buttons
 				margin-top: 15px
@@ -1592,17 +1658,6 @@ table
 					
 				
 					&:not(.cancel)
-						background-color: #e05353
-						color: #fff
-						
-						&:hover
-							background-color: darken(#e05353, 10%)
-						
-						&:active
-							background-color: darken(#e05353, 30%)
-							transition: background-color 0s
-				
-					&.cancel
 						background-color: #658ea2
 						color: #fff
 						
@@ -1611,6 +1666,17 @@ table
 						
 						&:active
 							background-color: darken(#658ea2, 30%)
+							transition: background-color 0s
+				
+					&.cancel
+						background-color: #e05353
+						color: #fff
+						
+						&:hover
+							background-color: darken(#e05353, 10%)
+						
+						&:active
+							background-color: darken(#e05353, 30%)
 							transition: background-color 0s
 
 
@@ -2550,6 +2616,7 @@ table
 	right: calc(100% - 100vw) !important
 	margin: 0 !important
 	margin-right: 25px !important
+	z-index: 99999 !important
 
 
 .notifyjs-wrapper 
@@ -3340,4 +3407,639 @@ p
 			transition: color 0.16s
 		
 		
+
+
+
+
+
+
+
+
+
+.kpitasksblock
+	+scrollbar(#dce4ea, #8da7bb, 3px)
+	min-width: 250px
+	width: 100%
+	overflow-x: scroll
+	overflow-y: hidden
+
+
+.kpiparamsfield
+	position: relative
+	
+	&__saved
+		&::after
+			display: flex
+			align-items: center
+			justify-content: center	
+			content: 'Сохранение'
+			font-size: 11px
+			position: absolute	
+			top: 0
+			left: 0
+			right: 0
+			bottom: 0
+			background-color: rgba(#fff, 0.9)
+	
+	
+	&__changed
+		border-color: #55de55
+		box-shadow: 0 0 0 1px #55de55
 		
+		input
+			background-color: #efe !important
+	
+	&__error
+		border-color: #f39c9c
+		box-shadow: 0 0 0 1px #f39c9c
+		
+		input
+			background-color: #fee !important
+	
+
+
+	
+.kpitasks
+	word-spacing: 10px
+	white-space: nowrap
+	width: calc(100vw - 600px)
+	
+	&__item
+		display: inline-block
+		word-spacing: normal
+		width: 250px
+		vertical-align: top
+		//flex-grow: 0
+		//flex-shrink: 0
+		//flex-basis: 250px
+
+.kpitasksgriditemwrap
+	> input[type="checkbox"]
+		display: none
+		
+		&:checked ~ .kpitasksgriditem
+			border-color: #5fbade
+			box-shadow: 0 0 0 2px inset #5fbade
+			
+			.kpitasksgriditem__field
+				opacity: 1
+				pointer-events: auto
+			
+			
+			
+			
+			
+	
+.kpitasksgriditem
+	text-align: center
+	border: 1px solid #e0e5e6
+	background-color: #fefefe
+	margin-bottom: 10px
+	padding: 10px
+	border-radius: 3px
+	display: block
+	cursor: pointer
+	transition: border-color 0.16s
+	
+	&:hover
+		border-color: #91baca
+	
+	&__task
+		font-size: 12px !important
+		line-height: 12px !important
+		color: #5c686d !important
+		min-height: 36px
+		margin-bottom: 5px !important 
+		
+	&__label
+		font-size: 10px
+		color: #888
+		display: block
+		
+	&__field
+		width: 52px
+		margin: 0 auto
+		opacity: 0.2
+		pointer-events: none
+		
+		input
+			height: 26px
+	
+
+	
+.kpitasksitem
+	position: relative
+	
+	&:not(:last-of-type)::after
+		content: ''
+		position: absolute
+		right: -8px
+		top: 0
+		width: 1px
+		height: 100%
+		background-color: #d7dbde
+		
+		
+	&__top
+		display: flex
+		justify-content: space-between
+		align-items: center
+		border-bottom: 2px solid #cdd7e0
+		height: 30px
+	
+	&__personage
+		display: flex
+		
+		> * + *::before
+			content: '|'
+			width: 20px
+			display: inline-block
+			width: 12px
+			text-align: center
+			
+	
+	&__buttons
+		white-space: nowrap
+		word-spacing: 3px
+		font-size: 0
+		
+		button
+			display: inline-flex
+			font-size: 11px
+			align-items: center
+			justify-content: center
+			width: 26px
+			height: 20px
+			border: none
+			border-radius: 3px
+			
+			i
+				font-size: 10px
+				color: #fff
+			
+			&.edit
+				background-color: #3981a1
+				
+				&:hover
+					background-color: darken(#3981a1, 7%)
+				
+				&:active
+					background-color: darken(#3981a1, 20%)
+					transition: background-color 0s
+			
+			&.remove
+				background-color: #c54747
+				
+				&:hover
+					background-color: darken(#c54747, 7%)
+				
+				&:active
+					background-color: darken(#c54747, 20%)
+					transition: background-color 0s
+	
+	&__list
+		padding: 0
+		
+		li
+			position: relative
+			border: none
+			
+			> :first-of-type
+				white-space: normal
+				flex-grow: 1
+				flex-shrink: 1
+				border-right: 1px solid #eee
+				font-size: 11px
+				line-height: 12px
+				margin-right: 5px
+				padding-right: 5px
+			
+			+ li
+				margin-top: 5px
+				margin-bottom: 5px
+				
+				&::after
+					content: ''
+					position: absolute
+					display: block
+					top: -3px
+					width: 100%
+					height: 1px
+					background-color: #eee
+					
+	
+	&__empty
+		font-size: 11px !important
+		display: inline-block
+		margin-bottom: 5px !important
+		
+
+
+
+
+
+
+
+
+
+.kpiprocessblock
+	margin-top: -15px
+	
+.kpiprocesscard
+	border: 1px solid #d0d5dc
+	background-color: #f8fafb
+	border-radius: 3px
+	margin-top: 15px
+	padding: 10px
+	
+	&__user
+		display: flex
+		margin-bottom: 15px
+		
+	&__bars
+		margin-bottom: 20px
+	
+	&__tasks
+	
+	&__label
+		font-size: 14px
+		line-height: 14px
+		margin-bottom: 10px
+		+font(roboto, bold)
+		
+		
+		
+
+.process
+	+ .process
+		margin-top: 10px
+	
+	&__label
+		position: relative
+		top: 3px
+		font-size: 14px
+		line-height: 14px
+		margin-bottom: 0
+		+font(roboto, bold)
+	
+	
+.progressbar
+	display: flex
+	align-items: center
+	justify-content: space-between
+	
+	&__progress
+		flex: 0 1 100%
+		border: none
+		height: 12px
+		border-radius: 6px
+		overflow: hidden
+		
+		&::-webkit-progress-bar
+			background-color: #f6fcff
+			border: 1px solid #62b8de
+			border-radius: 6px
+		
+		&::-webkit-progress-value
+			background-color: #62b8de
+		
+		&_red
+			&::-webkit-progress-bar
+				border: 1px solid #c16363
+				background-color: #fff2f2
+			
+			&::-webkit-progress-value
+				background-color: #c16363
+		
+	
+	&__value
+		margin-left: auto
+		flex: 1 0 84px
+		max-width: 84px
+		white-space: nowrap
+		margin-left: 10px
+		margin-right: 10px
+		
+		strong
+			font-size: 12px
+			+font(roboto, bold)
+		
+		
+		
+		
+	&__stat
+		font-size: 20px
+		flex: 1 0 20px
+		text-align: center
+		
+		&_empty
+			color: #c1bfbf
+		
+		&_done
+			color: #2fd42f
+		
+		&_fail
+			color: #dc7878
+		
+	
+		
+	
+	
+.personagetasks
+	+ .personagetasks
+		margin-top: 25px
+	
+	&__personage
+		display: flex
+		align-items: center
+		margin-bottom: 5px
+		background-color: #f0f2f4
+		padding: 2px
+		//border-bottom: 2px solid #b6c1ca
+		
+		span
+			font-size: 14px
+			margin-left: 10px
+			
+			&::before
+				content: '|'
+				margin-right: 10px
+			
+	
+	&__list
+		
+	
+	&__item
+		display: flex
+		align-items: center
+		justify-content: space-between
+		position: relative
+		padding: 5px
+		border-radius: 3px
+		overflow: hidden
+		background-color: #f1f5d6
+		
+		+ .personagetasks__item
+			margin-top: 5px
+		
+		&_done
+			background-color: #c2efbc
+		
+		&_verydone
+			background-color: #81f192
+		
+		&_wait::after
+			content: 'Сохранение...'
+			position: absolute
+			display: flex
+			align-items: center
+			justify-content: center
+			font-size: 12px
+			color: #27586d
+			top: 0
+			left: 0
+			width: 100%
+			height: 100%
+		
+		&_wait.personagetasks__item_done::after
+			background-color: rgba(#c2efbc, 0.9)
+			
+		&_wait.personagetasks__item_verydone::after
+			background-color: rgba(#81f192, 0.9)
+		
+		&_wait:not(.personagetasks__item_done):not(.personagetasks__item_verydone)::after
+			background-color: rgba(#f1f5d6, 0.9)
+		
+		
+			
+			
+			
+			
+		
+	&__task
+		flex: 0 1 100%
+		font-size: 12px
+		line-height: 12px
+		margin-right: 4px
+		
+		
+	
+	&__repeats
+		display: flex
+		align-items: center
+		justify-content: space-between
+		width: 100px
+		margin-left: 5px
+	
+	
+		
+	&__need
+		+font(roboto, bold)
+		margin-left: 5px
+		color: #555
+		
+		&::before
+			content: 'x'
+			position: relative
+			top: -1px
+			+font(roboto, regular)
+			
+
+
+.counterblock
+	display: flex
+	align-items: center
+	border: 1px solid #aebbc1
+	border-radius: 3px
+	background-color: #f8fafb
+	
+	&_vertical
+		.counterblock__rows
+			display: flex
+			flex-direction: column
+	
+	&__value
+		width: 30px
+		text-align: center
+		
+		span
+			+font(roboto, medium)
+			font-size: 14px
+		
+		
+	&__rows
+		display: flex
+		flex-direction: row
+		
+		button
+			width: 20px
+			height: 24px
+			display: flex
+			align-items: center
+			justify-content: center
+			font-size: 18px
+			line-height: 18px
+			color: #2f6279
+			background-color: #eee
+			
+			+ button
+				border-left: 1px solid #c3dde8
+			
+			&:hover
+				background-color: #e5e6e6
+			
+			&:active
+				background-color: #cbdada
+		
+		
+		&_minus
+			&::after
+				content: '-'
+				position: relative
+				top: -1.5px
+				
+		&_plus
+			&::before
+				content: '+'
+			
+			
+				
+	
+	
+	
+	
+	
+	
+	
+
+
+
+.customtasks
+	margin-bottom: 30px
+		
+	&__item
+		display: flex
+		align-items: center
+		justify-content: space-between
+		position: relative
+		padding: 5px
+		border-radius: 3px
+		overflow: hidden
+		min-height: 60px
+		background-color: #f1f5d6
+		
+		+ .customtasks__item
+			margin-top: 5px
+		
+		&_done
+			background-color: #c2efbc
+		
+		&_verydone
+			background-color: #81f192
+		
+		&_wait::after
+			content: 'Сохранение...'
+			position: absolute
+			display: flex
+			align-items: center
+			justify-content: center
+			font-size: 12px
+			color: #27586d
+			top: 0
+			left: 0
+			width: 100%
+			height: 100%
+		
+		&_wait.personagetasks__item_done::after
+			background-color: rgba(#c2efbc, 0.9)
+			
+		&_wait.personagetasks__item_verydone::after
+			background-color: rgba(#81f192, 0.9)
+		
+		&_wait:not(.personagetasks__item_done):not(.personagetasks__item_verydone)::after
+			background-color: rgba(#f1f5d6, 0.9)
+	
+		
+	&__checkblock
+		+checkblock();
+	
+	&__need
+		+font(roboto, bold)
+		margin-left: 5px
+		color: #555
+		
+		//&::before
+		//	content: 'x'
+		//	position: relative
+		//	top: -1px
+		//	+font(roboto, regular)
+
+
+
+
+
+
+
+
+
+
+
+.kpireport
+	display: flex
+	
+	table
+		thead
+			tr
+				height: 60px
+	
+	&__table_left
+		flex 0 0 500px
+		max-width: 500px
+	
+	&__table_right
+		flex 0 0 150px
+		max-width: 150px
+	
+	.scroll
+		display: flex
+		flex-grow: 1
+		flex-shrink: 1
+		+resp(flex-basis, (xs: 200px, sm: auto))
+		min-width: 200px
+		//max-width: 100%
+		width: 100%
+		overflow-x: scroll
+		overflow-y: hidden
+		+scrollbar(#8e8a93, #1e1528, 8px)
+
+		table
+			flex: 1 0 100%
+			max-width: 100%	
+	
+	.kpireportitem
+		width: 200px
+		max-width: 200px
+		
+		&__row
+			display: flex
+			justify-content: space-between
+			position: relative
+			
+			+ .kpireportitem__row
+				margin-top: 6px
+				
+				&::after
+					content: ''
+					width: 100%
+					height: 1px
+					background-color: #d7dbde
+					position: absolute
+					top: -3px
+					left: 0
+			
+	
+	input[name="payout"]
+		font-weight: 600
+			
+			
+			

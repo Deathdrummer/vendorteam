@@ -136,19 +136,35 @@ class Main extends MY_Controller {
 		
 		if (! $this->main_model->resetPass($email, $newPassword)) exit('2');
 		
-		$this->load->library('email');
-		$config['mailtype'] = 'html';
-		$this->email->initialize($config);
-		
 		$emailTitle = $this->admin_model->getSettings('email_title');
 		$emailFrom = $this->admin_model->getSettings('email_from');
+		$smtp = $this->admin_model->getSettings('setting_smtp');
+		
+		$this->load->library('email');
+		$this->email->initialize([
+			'mailtype' 		=> 'html',
+			'protocol' 		=> 'smtp',
+			'priority' 		=> 1,
+			'smtp_host' 	=> $smtp['host'],
+			'smtp_user' 	=> $smtp['user'],
+			'smtp_pass' 	=> $smtp['pass'],
+			'smtp_port' 	=> $smtp['port'],
+			'smtp_crypto' 	=> $smtp['crypto']
+		]);
+		
+
 
 		$this->email->from($emailFrom);
 		$this->email->to($email);
+		
 
 		$this->email->subject($emailTitle.' | Новый пароль');
 		$this->email->message($this->twig->render('views/account/email/reset_pass', ['email' => $email, 'password' => $newPassword]));
-		$this->email->send();
+		
+		if (!$this->email->send()) {
+			toLog($this->email->print_debugger());
+		}
+		
 		echo '3';
 	}
 	

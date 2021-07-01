@@ -19,7 +19,7 @@ jQuery(document).ready(function($) {
 	
 	
 	
-	$('body').on('focus', 'input.error, textarea.error, select.error', function() {
+	$('body').on('focus', 'input.error, textarea.error, select.error, .field, .textarea, .select, .file, .ddrselect, .popup__field, .popup__textarea, .popup__select, .popup__file', function() {
 		$(this).removeClass('error');
 	});
 	
@@ -152,6 +152,7 @@ jQuery(document).ready(function($) {
 		if ($(thisTabsTitles).hasClass('sub') == false) {
 			if (!noroute) location.hash = section+'.'+thisId;
 		} else {
+			if (!hashData[1]) hashData[1] = $(thisItem).closest('#'+section).find('.tabstitles:not(.sub)').children(':first').attr('id');
 			if (!noroute) location.hash = section+'.'+hashData[1]+'.'+thisId;
 		}
 		
