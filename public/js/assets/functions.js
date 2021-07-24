@@ -928,10 +928,10 @@ $.fn.multiChoose = function(settings, callback) {
 
 
 // -------------------------------------------------------------------- Динамически инициализировать табы
-ddrInitTabs = function() {
+ddrInitTabs = function(container) {
 	
 	var hashData = location.hash.substr(1, location.hash.length).split('.'),
-		section = hashData[0];
+		section = container != undefined ? container.replace('#', '') : hashData[0];
 	
 	if (hashData[1] != undefined) {
 		$('#'+section).find('.tabstitles:not(.sub) li').removeClass('active');

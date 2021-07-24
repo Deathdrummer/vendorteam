@@ -42,7 +42,7 @@
 									{% if has_fields.visits %}
 										<td class="top">
 											<div class="popup__field kpiparamsfield mt4px">
-												<input type="number" kpiformparam="visits|{{userId}}" showrows value="{{formdata[stId][userId]['params']['visits']|default(0)}}">
+												<input type="number" kpiformparam="visits|{{userId}}" showrows value="{{formdata[stId][userId]['params']['visits']}}">
 											</div>
 										</td>
 									{% endif %}
@@ -50,7 +50,7 @@
 									{% if has_fields.fine %}
 										<td class="top">
 											<div class="popup__field kpiparamsfield mt4px">
-												<input type="number" kpiformparam="fine|{{userId}}" showrows value="{{formdata[stId][userId]['params']['fine']|default(0)}}">
+												<input type="number" kpiformparam="fine|{{userId}}" showrows value="{{formdata[stId][userId]['params']['fine']}}">
 											</div>
 										</td>
 									{% endif %}
@@ -60,7 +60,7 @@
 											{% if field.type == 'koeff' %}
 												<td class="top">
 													<div class="popup__field kpiparamsfield mt4px">
-														<input type="number" showrows value="{{formdata[stId][userId]['params']['custom_fields'][fName]|default(0)}}" kpiformcustomparam="{{fName}}|{{userId}}">
+														<input type="number" showrows value="{{formdata[stId][userId]['params']['custom_fields'][fName]}}" kpiformcustomparam="{{fName}}|{{userId}}">
 													</div>
 												</td>
 											{% endif %}
@@ -78,7 +78,7 @@
 															<div class="kpitasks__item kpitasksitem" kpitasksitem>
 																<div class="kpitasksitem__top">
 																	<div class="kpitasksitem__personage">
-																		<strong class="fz12px">{{personage.game_id}}</strong>
+																		<strong class="fz12px">{{personage.game_id_name}}</strong>
 																		<span class="fz12px">{{personage.nick}}</span>
 																		<span class="fz12px">{{personage.server}}</span>
 																		<span class="fz12px">{{personage.armor}}</span>

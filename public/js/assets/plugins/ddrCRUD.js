@@ -283,7 +283,7 @@ $.fn.ddrCRUD = function(settings, callback) {
 						ops.popup.dialog(false);
 					});
 				} else {
-					ddrPopUp({
+					popUp({
 						title: 'Удалить запись|4',
 						width: 400,
 						html: '<p class="center red strong">Вы действительно хотите удалить запись?</p>',

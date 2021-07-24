@@ -2,25 +2,27 @@
 	<div class="reports" style="min-width: 0px !important">
 		{% if compounds_data %}
 			<div class="report">
-				<table class="popup__table report__table_left minheight" style="min-width: 230px !important;">
-					<thead>
-						<tr>
-							<td></td>
-							<td><strong>Никнейм</strong></td>
-						</tr>
-					</thead>
-					<tbody>
-						{% for id, user in compounds_data %}
-							<tr{% if user.color %} style="background-color: {{user.color}}"{% endif %}>
-								<td class="w1 nopadding">
-									<div class="image mini" style="background-image: url('public/images/{% if user.avatar %}users/mini/{{user.avatar}}{% else %}user_mini.jpg{% endif %}')">{% if user.is_resign and is_lider %}<div class="resign" title="Увольняется"></div>{% endif %}</div>
-								</td>
-								<td>{{user.nickname}}</td>
+				<div>
+					<table class="popup__table report__table_left minheight" style="min-width: 230px !important;">
+						<thead>
+							<tr>
+								<td></td>
+								<td><strong>Никнейм</strong></td>
 							</tr>
-						{% endfor %}
-					</tbody>
-				</table>
-				
+						</thead>
+						<tbody>
+							{% for id, user in compounds_data %}
+								<tr{% if user.color %} style="background-color: {{user.color}}"{% endif %}>
+									<td class="w1 nopadding">
+										<div class="image mini" style="background-image: url('public/images/{% if user.avatar %}users/mini/{{user.avatar}}{% else %}user_mini.jpg{% endif %}')">{% if user.is_resign and is_lider %}<div class="resign" title="Увольняется"></div>{% endif %}</div>
+									</td>
+									<td>{{user.nickname}}</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+
 				<div class="scroll" style="max-width: 714px !important">
 					<table class="popup__table report__table_center minheight" id="koeffsData">
 						<thead>

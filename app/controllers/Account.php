@@ -29,6 +29,8 @@ class Account extends MY_Controller {
 		// вставляем SVG спрайт
 		$this->userData['svg_sparite'] = getSprite('public/svg/sprite.svg');
 		
+		$this->load->model('wallet_model', 'wallet');
+		
 		$this->userData['set_rating_statics'] = $this->account->getRatingNotifications();
 		
 		$this->account->getUserRating();
@@ -48,6 +50,10 @@ class Account extends MY_Controller {
 		$this->userData['friends'] = $this->get_friends();
 		$this->userData['agreement'] = $this->get_agreement_stat();
 		$this->userData['feed_messages'] = $this->admin->getFeedMessagesStatic(array_keys($this->userData['statics']));
+		$this->userData['balance'] = $this->wallet->getUserBalance($this->userData['id']);
+		
+		
+		
 		
 		$this->userData['is_resignation'] = $this->account->isResignation();
 		$this->userData['resign_notify'] = $this->account->getResignNotifiy();
@@ -1267,11 +1273,65 @@ class Account extends MY_Controller {
 	public function get_balance() {
 		if (!$userId = $this->userData['id']) exit('');
 		$this->load->model('wallet_model', 'wallet');
-		
 		$data = $this->wallet->getUserHistory($userId);
 		$data['balance'] = $this->wallet->getUserBalance($userId);
 		echo $this->twig->render('views/account/render/wallet/history.tpl', $data);
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function kpiplan($action = false) {
+		if (!$action) return false;
+		$this->load->model('kpi_model', 'kpi');
+		$post = bringTypes($this->input->post());
+		switch ($action) {
+			case 'get_periods':
+				$data['periods'] = $this->kpi->getPeriods();
+				
+				echo $this->twig->render('views/account/render/kpiplan/periods.tpl', $data);
+				break;
+			
+			case 'get_user_progress':
+				$this->load->model(['admin_model' => 'admin', 'users_model' => 'users']);
+				$periodData = $this->kpi->getPeriod($post['kpi_period_id']);
+				
+				if (!$formdata = $this->kpi->getUserProgressForm($periodData, $post['user_id'])) exit('');
+				$data['custom_fields'] = $this->kpi->getPeriodCustomFields($periodData['custom_fields']);
+				
+				$data['progress'] = $this->kpi->getProgressTasks($periodData['id']);
+				$data['statics'] = $this->admin->getStatics(true, array_keys($formdata));
+				$data['ranks'] = $this->admin->getRanks();
+				$usersIds = [$post['user_id']];
+				
+				$data['personages'] = $this->users->getUsersPersonages($usersIds, true);
+				$data['formdata'] = $formdata;
+				$data['user_id'] = $post['user_id'];
+				$data['default_text'] = $this->admin->getSettings('kpi_default_text');
+				
+				echo $this->twig->render('views/account/render/kpiplan/user.tpl', $data);
+				break;
+			
+			
+			default: break;
+		}
+	}
+	
+	
+	
+	
+	
 	
 	
 	

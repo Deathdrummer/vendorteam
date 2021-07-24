@@ -170,110 +170,362 @@ body
 
 
 
+.scroll_y
+	overflow-x: hidden
+	overflow-y: scroll
+	
+	&:not(.scroll_y_thin)
+		+scrollbar(#b1bac2, #808f9c, 8px, 0px)
+		
+	&_thin
+		+scrollbar(#dde3e8, #b3c0d0, 6px, 0px)
 
+
+
+
+
+
+
+@keyframes ddrPopUpIn
+	from
+		background-color: transparent
+	to
+		background-color: rgba(#13050d, 0.88)
+
+@keyframes ddrPopUpOut
+	from
+		background-color: rgba(#13050d, 0.88)
+	to
+		background-color: transparent
 
 
 
 .popup
-	+scrollbar(#cec7d4, #a38eb7)
+	+scrollbar(#283442, #cad6e4, 8px)
 	
-	&.visible
-		background-color: rgba(#000, 0.5)
-		
+	&_opening
+		animation: ddrPopUpIn 0.2s
+		animation-fill-mode: forwards
 	
-	&__window
+	&_closing
+		animation: ddrPopUpOut 0.2s
+		animation-fill-mode: forwards
+	
+	&__container
+		padding-top: 15px
+		padding-bottom: 15px
+	
+	&__win
 		background-color: #fff
-		box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.58)
-		border-radius: 5px
+		box-shadow: 0 12px 40px -12px rgba(0, 0, 0, 0.66)
+		border-radius: 0
 		overflow: hidden
+		min-height: 100px
+		//+resp(padding-left, (sm: 10px, md: 20px, lg: 30px, xl: 70px), (padding-right: 0))
+		//+resp(padding-top, (sm: 10px, md: 20px, lg: 24px, xl: 40px), (padding-bottom: 0))
+		//transform: scale(5)
+		transform: scale(0.8)
+		//transform: translateY(-100vh)
 		
-	&__wait
-		i
-			color: #775d94
+		&_modelview
+			padding: 0px
+		
+		&_cardimage
+			padding: 0px
+			//background: transparent
+			
+			.ddrpopup__header
+				position: absolute
+				top: 0
+				left: 0
+				width: 100%
+			
+			.ddrpopup__content
+				padding: 0
+				
+				
+			.ddrpopup__close
+				&::before, &::after
+					background-color: #ddd!important
+				&:hover 
+					&::before, &::after
+						background-color: #fff!important
+				
+		
+		&_callback
+			+resp(padding-left, (sm: 10px, md: 15px, lg: 20px), (padding-right: 0))
+			+resp(padding-top, (sm: 10px, md: 15px, lg: 20px), (padding-bottom: 0))
+		
+		&_opening
+			transform: scale(1)
+			//transform: translateY(0)
+		
+		&_closing
+			transform: scale(1.2)
+			//transform: scale(0)
+			//opacity: 0
+			//transform: translateY(-100vh)
+				
+	
+	&__header
+		background-color: #443868
+		position: relative
+		padding-left: 10px
+		padding-right: 50px
+		padding-top: 15px
+		padding-bottom: 5px
+		min-height: 40px
+		justify-content: flex-start
+	
+	&__title
+		color: #fff
+		+font(roboto, regular)
+		font-weight: 300
+		margin-bottom: 0
+		
+		&_1
+			+resp(font-size, (xs: 16px, sm: 18px, md: 20px, lg: 22px, xl: 24px), (line-height: 2))
+		&_2
+			+resp(font-size, (xs: 24px, sm: 26px, md: 28px, lg: 34px, xl: 38px), (line-height: 2))
+		&_3
+			+resp(font-size, (xs: 20px, sm: 24px, md: 28px, lg: 30px, xl: 32px), (line-height: 2))
+		&_4
+			+resp(font-size, (xs: 18px, sm: 20px, md: 22px, lg: 24px, xl: 28px), (line-height: 2))
+		&_5
+			+resp(font-size, (xs: 16px, sm: 18px, md: 20px, lg: 22px, xl: 24px), (line-height: 2))
 	
 	&__close
-		display: block
-		width: 20px
-		height: 20px
-		position: absolute
-		+resp(top, (xs: 15px, sm: 20px, lg: 25px), (right: -5))
-		cursor: pointer
-		
-		
-		&:hover::before, &:hover::after
-			background-color: #fff			
-		
+		//background-color: #dc5656
+		top: calc(50% - 13px) 
+		right: 15px
 		
 		&::before, &::after
-			content: ''
-			height: 2px
-			width: 100%
-			display: block
-			background-color: #776e90
-			position: absolute
-			top: calc(50% - 1px)
-			transition: background-color 0.16s
-		
+			height: 3px
+			background-color: #8c84a2
+			border-radius: 2px
+			
 		&::before
-			transform: rotate(45deg)
+			top: calc(50% - 1.5px)
 			
 		&::after
-			transform: rotate(-45deg)
-			
-	
-	&__top
-		background-color: #443868
-		+resp(height, (xs: 50px, sm: 60px, lg: 70px))
-		display: flex
-		align-items: center
-		+resp(padding-left, (xs: 10px, sm: 20px, lg: 25px))
-		+resp(padding-right, (xs: 40px, sm: 50px, lg: 55px))
+			top: calc(50% - 1.5px)
 		
+		&:hover 
+			&::before, &::after
+				background-color: lighten(#8c84a2, 15%)
+				transition: background-color 0.16s
 		
-		h5
-			color: #fff
-			+font(roboto, bold)
-			+resp(font-size, (xs: 16px, sm: 16px, md: 18px), (line-height: 0))
+		&:active 
+			&::before, &::after
+				background-color: lighten(#8c84a2, 30%)
+				transition: background-color 0s
 			
-	
+		
 	&__content
-		+resp(padding, (xs: 8px, sm: 8px, md: 10px, lg: 15px, xl: 20px))
+		padding: 10px
 		
-		
-	&__buttons
-		+resp(padding, (xs: 8px, sm: 8px, md: 10px, lg: 15px))
-		
-		button
-			background-color: $colorBlue
-			color: #1e1528
+		p.dialog
 			+font(roboto, bold)
-			+resp(font-size, (xs: 14px, md: 16px), (line-height: 0))
-			border-radius: 3px
-			+resp(padding-left, (xs: 6px, sm: 10px, md: 15px, lg: 20px), (padding-right: 0))
-			padding-top: 6px
-			padding-bottom: 6px
-			transition: background-color 0.16s
+			text-align: center
 			
-			+ button
-				margin-right: 10px
+			&_remove
+				color: #e05353
+				
+		
+	&__footer
+		padding: 10px
+	
+	&__buttons
+		display: flex
+		
+		&_left
+			justify-content: flex-start
+			
+			button
+				margin-right: 20px !important
+			
+		&_right
+			justify-content: flex-end
+			
+			button
+				margin-left: 20px !important
+			
+		&_center
+			justify-content: center
+			
+			button
+				margin-left: 5px
+				margin-right: 5px
+			
+		&_between
+			justify-content: space-between
+			
+			button
+				margin-left: 0px !important
+				margin-right: 0px !important
+			
+		
+		
+		&_main, &_close
+			height: 30px
+			border-radius: 3px
+			padding-left: 15px
+			padding-right: 15px
+			font-size: 16px
+			+font(roboto, bold)
+			transition: background-color 0.16s
+		
+		&_main
+			background-color: #54e9ff
+			box-shadow: 0px 20px 25px rgba(0, 0, 0, 0.25)
+			color: #1e1528
 			
 			&:hover
-				background-color: darken($colorBlue, 10%)
+				background-color: darken(#54e9ff, 10%)
 			
-			&[close], &.close
-				background-color: #e2573a
-				color: #fff
-				opacity: 1
-				
-				&:hover
-					background-color: darken(#e2573a, 10%)
+			&:active
+				background-color: darken(#54e9ff, 20%)
+				box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.25)
+				transition: background-color 0s
 			
-			&:disabled, &.disabled, &[disabled]
-				background-color: #e4e4e4
-				color: #868686
+			&[disabled]
 				cursor: default
-
-
+				pointer-events: none
+				background-color: #b3b3b3
+		
+		&_close
+			//border: 1px solid #444
+			background-color: #e2573a
+			transition: border-color 0.16s	
+			color: #fff
+			
+			&:hover
+				background-color: darken(#e2573a, 10%)
+				
+			&:active
+				background-color: darken(#e2573a, 20%)
+				transition: background-color 0s
+		
+			&:hover
+				span
+					color: #ab2d77
+			
+			
+			&:hover
+				//background-color: darken(#e05252, 10%)
+			
+			&:active
+				//background-color: darken(#e05252, 30%)
+				transition: background-color 0s
+	
+	
+	&__wait
+		background-color: rgba(255, 255, 255, 0.74)
+		
+		.ddrpopupwait
+			i
+				color: #335c8c
+				font-size: 50px
+			
+			p
+				color: #335c8c
+				font-size: 14px
+	
+	
+	&__dialog
+		background-color: rgba(48, 62, 74, 0.45)
+		
+		.popupdialog
+			background-color: #fff
+			padding: 10px
+			box-shadow: 0 8px 30px -12px rgba(0, 0, 0, 0.66)
+			
+			&__message
+				+font(roboto, bold)
+				
+				.remove
+					color: #e05353
+				
+			&__buttons
+				margin-top: 15px
+				text-align: right
+				
+				button
+					margin: 0
+					height: 24px
+					border-radius: 3px
+					padding-left: 10px
+					padding-right: 10px
+					font-size: 13px
+					transition: background-color 0.16s
+					
+					+ button
+						margin-left: 8px
+					
+				
+					&:not(.cancel)
+						background-color: #e05353
+						color: #fff
+						
+						&:hover
+							background-color: darken(#e05353, 10%)
+						
+						&:active
+							background-color: darken(#e05353, 30%)
+							transition: background-color 0s
+				
+					&.cancel
+						background-color: #658ea2
+						color: #fff
+						
+						&:hover
+							background-color: darken(#658ea2, 10%)
+						
+						&:active
+							background-color: darken(#658ea2, 30%)
+							transition: background-color 0s
+		
+	
+	&__field
+		+field()
+		
+		&_date
+			+date()
+	
+	&__select
+		+select()
+	
+	&__checkbox
+		+checkblock(2px)
+			
+	
+	&__textarea
+		+textarea()
+	
+	&__scrollblock
+		height: 200px
+		overflow-y: scroll
+		border: 1px solid #bcc6ca
+		+scrollbar(#eee, #aaa, 7px, 3px, 3px)
+		
+		li
+			padding: 5px
+			font-size: 12px
+			line-height: 12px
+			cursor: pointer
+			transition: background-color 0.16s
+			color: #86979e
+			
+			&:hover
+				background-color: #e8edef
+			
+			+ li
+				border-top: 1px solid #e0dcdc
+			
+			&.choosed
+				background-color: #9fd8f1
+				color: #0c4a65
+		
 
 	//------------------ Заголовок (в контенте)
 	&__title
@@ -2714,3 +2966,638 @@ table
 				
 // 				&:hover
 // 					background-color: darken(#8d869e, 10%)
+
+
+
+
+
+
+
+
+.kpitasksblock
+	+scrollbar(#dce4ea, #8da7bb, 3px)
+	min-width: 250px
+	width: 100%
+	overflow-x: scroll
+	overflow-y: hidden
+
+
+.kpiparamsfield
+	position: relative
+	
+	&__saved
+		&::after
+			display: flex
+			align-items: center
+			justify-content: center	
+			content: 'Сохранение'
+			font-size: 11px
+			position: absolute	
+			top: 0
+			left: 0
+			right: 0
+			bottom: 0
+			background-color: rgba(#fff, 0.9)
+	
+	
+	&__changed
+		border-color: #55de55
+		box-shadow: 0 0 0 1px #55de55
+		
+		input
+			background-color: #efe !important
+	
+	&__error
+		border-color: #f39c9c
+		box-shadow: 0 0 0 1px #f39c9c
+		
+		input
+			background-color: #fee !important
+	
+
+
+	
+.kpitasks
+	word-spacing: 10px
+	white-space: nowrap
+	width: calc(100vw - 600px)
+	
+	&__item
+		display: inline-block
+		word-spacing: normal
+		width: 250px
+		vertical-align: top
+		//flex-grow: 0
+		//flex-shrink: 0
+		//flex-basis: 250px
+
+.kpitasksgriditemwrap
+	> input[type="checkbox"]
+		display: none
+		
+		&:checked ~ .kpitasksgriditem
+			border-color: #5fbade
+			box-shadow: 0 0 0 2px inset #5fbade
+			
+			.kpitasksgriditem__field
+				opacity: 1
+				pointer-events: auto
+			
+			
+			
+			
+			
+	
+.kpitasksgriditem
+	text-align: center
+	border: 1px solid #e0e5e6
+	background-color: #fefefe
+	margin-bottom: 10px
+	padding: 10px
+	border-radius: 3px
+	display: block
+	cursor: pointer
+	transition: border-color 0.16s
+	
+	&:hover
+		border-color: #91baca
+	
+	&__task
+		font-size: 12px !important
+		line-height: 12px !important
+		color: #5c686d !important
+		min-height: 36px
+		margin-bottom: 5px !important 
+		
+	&__label
+		font-size: 10px
+		color: #888
+		display: block
+		
+	&__field
+		width: 52px
+		margin: 0 auto
+		opacity: 0.2
+		pointer-events: none
+		
+		input
+			height: 26px
+	
+
+	
+.kpitasksitem
+	position: relative
+	
+	&:not(:last-of-type)::after
+		content: ''
+		position: absolute
+		right: -8px
+		top: 0
+		width: 1px
+		height: 100%
+		background-color: #d7dbde
+		
+		
+	&__top
+		display: flex
+		justify-content: space-between
+		align-items: center
+		border-bottom: 2px solid #cdd7e0
+		height: 30px
+	
+	&__personage
+		display: flex
+		
+		> * + *::before
+			content: '|'
+			width: 20px
+			display: inline-block
+			width: 12px
+			text-align: center
+			
+	
+	&__buttons
+		white-space: nowrap
+		word-spacing: 3px
+		font-size: 0
+		
+		button
+			display: inline-flex
+			font-size: 11px
+			align-items: center
+			justify-content: center
+			width: 26px
+			height: 20px
+			border: none
+			border-radius: 3px
+			
+			i
+				font-size: 10px
+				color: #fff
+			
+			&.edit
+				background-color: #3981a1
+				
+				&:hover
+					background-color: darken(#3981a1, 7%)
+				
+				&:active
+					background-color: darken(#3981a1, 20%)
+					transition: background-color 0s
+			
+			&.remove
+				background-color: #c54747
+				
+				&:hover
+					background-color: darken(#c54747, 7%)
+				
+				&:active
+					background-color: darken(#c54747, 20%)
+					transition: background-color 0s
+	
+	&__list
+		padding: 0
+		
+		li
+			position: relative
+			border: none
+			
+			> :first-of-type
+				white-space: normal
+				flex-grow: 1
+				flex-shrink: 1
+				border-right: 1px solid #eee
+				font-size: 11px
+				line-height: 12px
+				margin-right: 5px
+				padding-right: 5px
+			
+			+ li
+				margin-top: 5px
+				margin-bottom: 5px
+				
+				&::after
+					content: ''
+					position: absolute
+					display: block
+					top: -3px
+					width: 100%
+					height: 1px
+					background-color: #eee
+					
+	
+	&__empty
+		font-size: 11px !important
+		display: inline-block
+		margin-bottom: 5px !important
+		
+
+
+
+
+
+
+
+
+
+.kpiprocessblock
+	margin-top: -15px
+	
+.kpiprocesscard
+	border: 1px solid #d0d5dc
+	background-color: #f8fafb
+	border-radius: 3px
+	margin-top: 15px
+	padding: 10px
+	
+	&__user
+		display: flex
+		margin-bottom: 15px
+		
+	&__bars
+		margin-bottom: 20px
+	
+	&__tasks
+	
+	&__label
+		font-size: 14px
+		line-height: 14px
+		margin-bottom: 10px
+		+font(roboto, bold)
+		
+		
+		
+
+.process
+	+ .process
+		margin-top: 10px
+	
+	&__label
+		position: relative
+		top: 3px
+		font-size: 14px
+		line-height: 14px
+		margin-bottom: 0
+		+font(roboto, bold)
+	
+	
+.progressbar
+	display: flex
+	align-items: center
+	justify-content: space-between
+	
+	&__progress
+		flex: 0 1 100%
+		border: none
+		height: 12px
+		border-radius: 6px
+		overflow: hidden
+		
+		&::-webkit-progress-bar
+			background-color: #f6fcff
+			border: 1px solid #62b8de
+			border-radius: 6px
+		
+		&::-webkit-progress-value
+			background-color: #62b8de
+		
+		&_red
+			&::-webkit-progress-bar
+				border: 1px solid #c16363
+				background-color: #fff2f2
+			
+			&::-webkit-progress-value
+				background-color: #c16363
+		
+	
+	&__value
+		margin-left: auto
+		flex: 1 0 84px
+		max-width: 84px
+		white-space: nowrap
+		margin-left: 10px
+		margin-right: 10px
+		
+		strong
+			font-size: 12px
+			+font(roboto, bold)
+		
+		
+		
+		
+	&__stat
+		font-size: 20px
+		flex: 1 0 20px
+		text-align: center
+		
+		&_empty
+			color: #c1bfbf
+		
+		&_done
+			color: #2fd42f
+		
+		&_fail
+			color: #dc7878
+		
+	
+		
+	
+	
+.personagetasks
+	+ .personagetasks
+		margin-top: 25px
+	
+	&__personage
+		display: flex
+		align-items: center
+		margin-bottom: 5px
+		background-color: #f0f2f4
+		padding: 2px
+		//border-bottom: 2px solid #b6c1ca
+		
+		span
+			font-size: 14px
+			margin-left: 10px
+			
+			&::before
+				content: '|'
+				margin-right: 10px
+			
+	
+	&__list
+		
+	
+	&__item
+		display: flex
+		align-items: center
+		justify-content: space-between
+		position: relative
+		padding: 5px
+		border-radius: 3px
+		overflow: hidden
+		background-color: #f1f5d6
+		
+		+ .personagetasks__item
+			margin-top: 5px
+		
+		&_done
+			background-color: #c2efbc
+		
+		&_verydone
+			background-color: #81f192
+		
+		&_wait::after
+			content: 'Сохранение...'
+			position: absolute
+			display: flex
+			align-items: center
+			justify-content: center
+			font-size: 12px
+			color: #27586d
+			top: 0
+			left: 0
+			width: 100%
+			height: 100%
+		
+		&_wait.personagetasks__item_done::after
+			background-color: rgba(#c2efbc, 0.9)
+			
+		&_wait.personagetasks__item_verydone::after
+			background-color: rgba(#81f192, 0.9)
+		
+		&_wait:not(.personagetasks__item_done):not(.personagetasks__item_verydone)::after
+			background-color: rgba(#f1f5d6, 0.9)
+		
+		
+			
+			
+			
+			
+		
+	&__task
+		flex: 0 1 100%
+		font-size: 12px
+		line-height: 12px
+		margin-right: 4px
+		
+		
+	
+	&__repeats
+		display: flex
+		align-items: center
+		justify-content: space-between
+		width: 100px
+		margin-left: 5px
+	
+	
+		
+	&__need
+		+font(roboto, bold)
+		margin-left: 5px
+		color: #555
+		
+		&::before
+			content: 'x'
+			position: relative
+			top: -1px
+			+font(roboto, regular)
+			
+
+
+.counterblock
+	display: flex
+	align-items: center
+	border: 1px solid #aebbc1
+	border-radius: 3px
+	background-color: #f8fafb
+	
+	&_vertical
+		.counterblock__rows
+			display: flex
+			flex-direction: column
+	
+	&__value
+		width: 30px
+		text-align: center
+		
+		span
+			+font(roboto, medium)
+			font-size: 14px
+		
+		
+	&__rows
+		display: flex
+		flex-direction: row
+		
+		button
+			width: 20px
+			height: 24px
+			display: flex
+			align-items: center
+			justify-content: center
+			font-size: 18px
+			line-height: 18px
+			color: #2f6279
+			background-color: #eee
+			
+			+ button
+				border-left: 1px solid #c3dde8
+			
+			&:hover
+				background-color: #e5e6e6
+			
+			&:active
+				background-color: #cbdada
+		
+		
+		&_minus
+			&::after
+				content: '-'
+				position: relative
+				top: -1.5px
+				
+		&_plus
+			&::before
+				content: '+'
+			
+			
+				
+	
+	
+	
+	
+	
+	
+	
+
+
+
+.customtasks
+	margin-bottom: 30px
+		
+	&__item
+		display: flex
+		align-items: center
+		justify-content: space-between
+		position: relative
+		padding: 5px
+		border-radius: 3px
+		overflow: hidden
+		min-height: 60px
+		background-color: #f1f5d6
+		
+		+ .customtasks__item
+			margin-top: 5px
+		
+		&_done
+			background-color: #c2efbc
+		
+		&_verydone
+			background-color: #81f192
+		
+		&_wait::after
+			content: 'Сохранение...'
+			position: absolute
+			display: flex
+			align-items: center
+			justify-content: center
+			font-size: 12px
+			color: #27586d
+			top: 0
+			left: 0
+			width: 100%
+			height: 100%
+		
+		&_wait.personagetasks__item_done::after
+			background-color: rgba(#c2efbc, 0.9)
+			
+		&_wait.personagetasks__item_verydone::after
+			background-color: rgba(#81f192, 0.9)
+		
+		&_wait:not(.personagetasks__item_done):not(.personagetasks__item_verydone)::after
+			background-color: rgba(#f1f5d6, 0.9)
+	
+		
+	&__checkblock
+		+checkblock();
+	
+	&__need
+		+font(roboto, bold)
+		margin-left: 5px
+		color: #555
+		
+		//&::before
+		//	content: 'x'
+		//	position: relative
+		//	top: -1px
+		//	+font(roboto, regular)
+
+
+
+
+
+
+
+
+
+
+
+.kpireport
+	display: flex
+	
+	table
+		thead
+			tr
+				height: 60px
+	
+	&__table_left
+		flex 0 0 500px
+		max-width: 500px
+	
+	&__table_right
+		flex 0 0 150px
+		max-width: 150px
+	
+	.scroll
+		display: flex
+		flex-grow: 1
+		flex-shrink: 1
+		+resp(flex-basis, (xs: 200px, sm: auto))
+		min-width: 200px
+		//max-width: 100%
+		width: 100%
+		overflow-x: scroll
+		overflow-y: hidden
+		+scrollbar(#8e8a93, #1e1528, 8px)
+
+		table
+			flex: 1 0 100%
+			max-width: 100%	
+	
+	.kpireportitem
+		width: 200px
+		max-width: 200px
+		
+		&__row
+			display: flex
+			justify-content: space-between
+			position: relative
+			
+			+ .kpireportitem__row
+				margin-top: 6px
+				
+				&::after
+					content: ''
+					width: 100%
+					height: 1px
+					background-color: #d7dbde
+					position: absolute
+					top: -3px
+					left: 0
+			
+	
+	input[name="payout"]
+		font-weight: 600
+			
+			
+			

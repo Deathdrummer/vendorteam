@@ -285,10 +285,23 @@ class Users_model extends MY_Model {
 	 * @return array [iser_id => [personage_id => data]] или [personage_id => data]
 	*/
 	public function getUsersPersonages($userId = false, $onlyWithGameId = false) {
-		if ($userId && is_numeric($userId)) $this->db->where('from_id', $userId);
-		elseif ($userId && is_array($userId)) $this->db->where_in('from_id', $userId);
+		$this->db->select('id, user_id');
+		if ($userId && is_numeric($userId)) {
+			$this->db->where('user_id', $userId);
+		} elseif ($userId && is_array($userId)) {
+			$this->db->where_in('user_id', $userId);
+		} 
 		if ($onlyWithGameId) $this->db->where('game_id IS NOT NULL');
-		if (!$usersPersonages = $this->_result('users_personages')) return false;
+		if (!$usersGamesIds = $this->_result('personages_game_ids')) return false;
+		
+		$usersgamesMap = setArrKeyFromField($usersGamesIds, 'id', 'user_id');
+		$usersGamesIds = array_column($usersGamesIds, 'id');
+		
+		$this->db->select('up.*, pgi.game_id AS game_id_name');
+		$this->db->join('personages_game_ids pgi', 'pgi.id = up.game_id', 'LEFT OUTER');
+		$this->db->where_in('up.game_id', $usersGamesIds);
+		if (!$usersPersonages = $this->_result('users_personages up')) return false;
+		
 		
 		$uPData = [];
 		
@@ -301,10 +314,12 @@ class Users_model extends MY_Model {
 		}
 		
 		foreach ($usersPersonages as $row) {
-			$fromId = arrTakeItem($row, 'from_id');
+			$userId = $usersgamesMap[$row['game_id']];
+			//$fromId = arrTakeItem($row, 'from_id');
 			$personageId = arrTakeItem($row, 'id');
-			$uPData[$fromId][$personageId] = $row;
+			$uPData[$userId][$personageId] = $row;
 		}
+		
 		return $uPData;
 	}
 	

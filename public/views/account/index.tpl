@@ -36,13 +36,13 @@
 	
 	<main class="main">
 		<div class="row no-gutters align-items-stretch flex-nowrap account">
-			<div class="col-auto hidden-sm-down">
+			<div class="col-auto hidden-md-down">
 				{% include 'views/account/layout/aside.tpl' with {} %}
 			</div>
 			<div class="col">
 				<div class="contentblock">
 					{% if is_verify_user %}
-						<div class="row justify-content-between align-items-center hidden-md-up mobileheader">
+						<div class="row justify-content-between align-items-center hidden-lg-up mobileheader">
 							<div class="col-auto">
 								<p>w<span>o</span>wteam</p>
 							</div>
@@ -83,9 +83,9 @@
 						{% if statics %}
 							{% for i, staticId in statics|keys %}
 								<div class="{% if i == 0 %}staticscontent staticscontent_visible{% else %}staticscontent{% endif %}" staticscontent="{{staticId}}">
-									<div class="row gutters-10 mt-4">
+									<div class="row gutters-10 mt-4 flex-md-nowrap">
 										{% if (not access or access.content.compound == 1) and statics[staticId]['stopstage'] == 0 %}
-										<div class="col-12 col-md-auto">
+										<div class="col-12 col-md-4 col-lg-3 col-xl-3">
 											<div class="column column_staticusers">
 												<div class="column__title">
 													<p>Состав команды</p>
@@ -200,8 +200,8 @@
 										{% endif %}
 										
 										{% if not access or access.content.news == 1 %}
-										<div class="col-12 col-md">
-											<div class="column">
+										<div class="col-12 col-md-8 col-lg-9 col-xl-9">
+											<div class="column column_news">
 												<div class="column__title">
 													<p>Новости</p>
 												</div>

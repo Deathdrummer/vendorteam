@@ -33,14 +33,16 @@
 			{% if rank.next_rank is defined and rank.next_rank is not empty and rank.rank_name is not empty %}
 				<li><span title="Следующее звание">След. зв.:</span> <strong>{{rank.next_rank.next_rank}}</strong> <sup>({{rank.next_rank.count_days}} дн.)</sup></li>
 			{% endif %}
-			<li><span>Резерв:</span> <strong>{{deposit|number_format(2, '.', ' ')}} руб.</strong></li>
+			<li><span>Мой резерв:</span> <strong>{{deposit|number_format(2, '.', ' ')}} руб.</strong></li>
+			
+			<li walletbalance class="pointer"><span>Мой баланс:</span> <strong>{{balance|number_format(2, '.', ' ')}} руб.</strong></li>
 			
 			{% if id in [2,21] %}
 				<li myrating class="pointer"><span>Рейтинг:</span> <strong>{{rating|default('Нет рейтинга')}}</strong></li>
 			{% endif %}
 			
-			<li>
-				<div class="row gutters-5 justifн-content-evenly">
+			<li hidden>
+				<div class="row gutters-5 justify-content-evenly">
 					{% if statistics_setting[main_static]['access'] == 1 %}
 					<div class="col-3">
 						<a class="link" showstatistics title="Посмотреть статистику">
@@ -93,7 +95,7 @@
 		
 		<div class="leftblock__logout">
 			<button logout title="Выйти из личного кабинета"><i class="fa fa-sign-out"></i>Выход</button>
-			{% if not is_resignation %}<button class="small" resign title="Создать заявку на увольнение"><i class="fa fa-user-times"></i>Уволиться</button>{% endif %}
+			{#{% if not is_resignation %}<button class="small" resign title="Создать заявку на увольнение"><i class="fa fa-user-times"></i>Уволиться</button>{% endif %}#}
 		</div>
 		
 	</div>
@@ -117,7 +119,7 @@
 					{% if not access or access.nav.personages %}<li getpersonages><svg><use xlink:href="#weekend"></use></svg><span>Мои персонажи</span></li>{% endif %}
 					{% if not access or access.nav.paymentorders %}<li paymentorders><svg><use xlink:href="#weekend"></use></svg><span>Мои заявки</span></li>{% endif %}
 					{% if not access or access.nav.visitsrate %}<li visitsrate><svg><use xlink:href="#weekend"></use></svg><span>Моя посещаемость</span></li>{% endif %}
-					<li walletbalance><svg><use xlink:href="#wallet"></use></svg><span>Мой баланс</span></li>
+					{% if not access or access.nav.kpi %}<li mykpiplan><svg><use xlink:href="#weekend"></use></svg><span>Мой KPI план</span></li>{% endif %}
 				</ul>	
 			{% endif %}
 		</div>

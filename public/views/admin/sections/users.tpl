@@ -634,6 +634,7 @@ $(document).ready(function() {
 		addClass: 'raiderscolorswrap',
 		outside: 'x',
 		ignoreDelay: true,
+		zIndex: 1200,
 		//pointer: 'left',
 		//pointTo: 'left',
 		position: {
@@ -815,7 +816,7 @@ $(document).ready(function() {
 	
 	
 	//-------------------------------------------------------------- Кнопка "сохранить" верифицированных пользователей скрыть или нет
-	if (!/verifyUsers/.test(location.hash)) $('#usersSave').addClass('hidden');
+	if (!/verifyUsers/.test(location.hash) && !/#users/.test(location.hash)) $('#usersSave').addClass('hidden');
 	$('.tabstitles:not(.sub)').on(tapEvent, 'li', function() {
 		if ($(this).attr('id') == 'verifyUsers') {
 			$('#usersSave').removeClass('hidden');
@@ -1165,7 +1166,6 @@ $(document).ready(function() {
 				access: $(thisUserAccess).val()
 			}
 			
-			debugger;
 			usersData.push(user);
 		});
 		
@@ -1398,7 +1398,6 @@ $(document).ready(function() {
 			notify('Системная ошибка!', 'error');
 			showError(e);
 		});
-		console.log(userId);
 	});
 	
 	

@@ -1789,7 +1789,7 @@ class Admin_model extends My_Model {
 		
 		$update = ['game_id' => $fields['game_id']];
 		
-		if ($fields['user_id']) $update['user_id'] = $fields['user_id'];
+		if (isset($fields['user_id']) && $fields['user_id']) $update['user_id'] = $fields['user_id'];
 		
 		if ($fields['extend']) {
 			$countMs = ($fields['extend'] * 24 * 60 * 60);

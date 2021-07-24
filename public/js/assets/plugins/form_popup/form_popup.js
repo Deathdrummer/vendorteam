@@ -59,7 +59,6 @@ jQuery(document).ready(function($) {
 			
 			
 		} else if (type == 'popup') { // ------------------------------------------------------------------------------------------ всплывающая форма
-			
 			var formId = $(thisParentBlock).attr('id'),
 				formActionButtonTitle = $(thisParentBlock).data('button') || 'Отправить',		
 				formHtml = $(thisParentBlock).find('popupform').get(0).outerHTML,
@@ -82,7 +81,6 @@ jQuery(document).ready(function($) {
 			    }],
 			    closeButton: formCancel,
 			}, function(formWin) {
-				formWin.correctPosition(100);
 				
 				$('#'+popupContainerId).find('[name=phone], .phone, [type="tel"]').mask('+7 (999) 999-99-99', {autoclear: false}).attr({'placeholder': '+7 (___) ___-__-__', 'type': 'tel'});
 				

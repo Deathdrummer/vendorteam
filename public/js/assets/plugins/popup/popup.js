@@ -109,7 +109,7 @@ function DdrPopUp(settings, callback) {
 	popupHtml += 				'</div>';
 	}
 	
-	if (o.buttonsOnTop && buttonsHtml) {
+	if (o.buttonsOnTop) {
 	popupHtml += 				'<div class="popup__footer">';
 	popupHtml += 					'<div class="popup__buttons'+(o.buttonsAlign ? ' popup__buttons_'+o.buttonsAlign : '')+'" ddrpopupbuttons>'+buttonsHtml+'</div>';
 	popupHtml += 				'</div>';
@@ -117,7 +117,7 @@ function DdrPopUp(settings, callback) {
 
 	if (o.contentToCenter) popupHtml += '<div class="popup__content d-flex align-items-center justify-content-center"><div ddrpopupcontent>'+o.html+'</div></div>';
 	else popupHtml += '<div class="popup__content" ddrpopupcontent>'+o.html+'</div>';
-	if (!o.buttonsOnTop && buttonsHtml) {
+	if (!o.buttonsOnTop) {
 	popupHtml += 				'<div class="popup__footer">';
 	popupHtml += 					'<div class="popup__buttons'+(o.buttonsAlign ? ' popup__buttons_'+o.buttonsAlign : '')+'" ddrpopupbuttons>'+buttonsHtml+'</div>';
 	popupHtml += 				'</div>';
@@ -364,7 +364,10 @@ function DdrPopUp(settings, callback) {
 					if (typeof yFunc == 'function') yFunc();
 				});
 			}
-		}
+		},
+		correctPosition: function() {
+			return true;
+		} 
 	};
 
 

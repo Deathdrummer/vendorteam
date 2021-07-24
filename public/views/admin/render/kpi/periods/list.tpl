@@ -50,8 +50,9 @@
 							</div>
 						</td>
 						<td class="center">
-							<div class="buttons inline">
+							<div class="buttons inline nowrap">
 								<button class="small w30px" kpiopenform="{{period.id}}" title="Выбрать"><i class="fa fa-check"></i></button>
+								<button class="remove small w30px" kpiremoveperiod="{{period.id}}" title="Удалить период"><i class="fa fa-trash"></i></button>
 							</div>
 						</td>
 					</tr>

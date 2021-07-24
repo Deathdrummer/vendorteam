@@ -65,8 +65,6 @@ $(document).ready(function() {
 			
 			getAjaxHtml('main/auth', {template: 1}, function(html) {
 				accountWin.setData(html, false);
-				accountWin.correctPosition();
-				
 				
 				//---------------------------------------- Авторизация
 				$('#getAuth').on(tapEvent, function() {
@@ -110,7 +108,6 @@ $(document).ready(function() {
 						accountWin.setTitle('Регистрация');
 						accountWin.setData(html, false);
 						accountWin.setButtons([{id: 'getReg', title: 'Зарегистрироваться'}]);
-						accountWin.correctPosition();
 						
 						
 						$('#getReg').on(tapEvent, function() {
@@ -356,6 +353,7 @@ $(document).ready(function() {
 					addClass: 'raiderscolorswrap',
 					outside: 'x',
 					ignoreDelay: true,
+					zIndex: 1200,
 					//pointer: 'left',
 					//pointTo: 'left',
 					position: {
@@ -811,9 +809,7 @@ $(document).ready(function() {
 			infoWin.wait();
 			getAjaxHtml('account/get_info', function(html) {
 				$('#infoBlock').html(html);
-				$('.tabstitles li').on(tapEvent, function() {
-					infoWin.correctPosition(100);
-				});
+				$('.tabstitles li').on(tapEvent, function() {});
 			}, function() {
 				infoWin.wait(false);
 			});
@@ -861,9 +857,7 @@ $(document).ready(function() {
 					activePeriod = period;
 					getNewRaidData(newRaidStatic);
 				}
-				$('.tabstitles li').on(tapEvent, function() {
-					infoWin.correctPosition(100);
-				});
+				$('.tabstitles li').on(tapEvent, function() {});
 			}, 'json').fail(function(e) {
 				showError(e);
 				notify('Системная ошибка!', 'error');
@@ -879,9 +873,7 @@ $(document).ready(function() {
 			newRaidWin.setData(html, false);
 			newRaidWin.setButtons([{id: 'addRaid', title: "Создать рейд"}]);
 			
-			$('#raidStaticTabs').find('li').on(tapEvent, function() {
-				newRaidWin.correctPosition(100);
-			});
+			$('#raidStaticTabs').find('li').on(tapEvent, function() {});
 			
 			$('[tabid="raidStaticOrders"]').on('keydown', '.popup__table tbody tr:last input[type="text"]', function() {
 				if ($(this).val().length == 0) {
@@ -1029,6 +1021,7 @@ $(document).ready(function() {
 				setCompoundWin.setData('<p class="empty center">Нет данных</p>', false);
 			}
 			setCompoundWin.wait(false);
+			$('.scroll').ddrScrollTable();
 		}, 'html').fail(function(e) {
 			showError(e);
 			notify('Системная ошибка!', 'error');
@@ -1132,6 +1125,7 @@ $(document).ready(function() {
 					funct = function() {
 						getAjaxHtml('account/get_users_to_keys', {period_id: activePeriod.id, static_id: staticId, is_lider: isLider}, function(html, stat) {
 							keysWin.setData(html, false);
+							$('.scroll').ddrScrollTable();
 							if (stat && !!isLider) keysWin.setButtons([{id: 'saveKeyCoefficients', title: "Сохранить", 'disabled': 1}, {id: 'newKeyButton', title: "Новый ключ"}]);
 						}, function() {
 							keysWin.wait(false);
@@ -1219,9 +1213,7 @@ $(document).ready(function() {
 			newKeyWin.setData(html, false);
 			newKeyWin.setButtons([{id: 'addKey', title: "Создать ключ"}]);
 			
-			$('#keyStaticTabs').find('li').on(tapEvent, function() {
-				newKeyWin.correctPosition(100);
-			});
+			$('#keyStaticTabs').find('li').on(tapEvent, function() {});
 			
 			$('#newKeyForm').on('change', 'input[type="checkbox"]', function() {
 				var thisStat = $(this).is(':checked'),
@@ -1486,14 +1478,15 @@ $(document).ready(function() {
 			reportWin.setTitle('Отчет по выплатам - '+thisPatternName);
 			
 			if (stat) {
-				reportWin.setWidth(1330, function() {
-					reportWin.setData(html, false);
-					reportWin.removeButtons();
-				});
+				reportWin.setWidth(1330);
+				reportWin.setData(html, false);
+				reportWin.removeButtons();
 			} else {
 				reportWin.setData('<p class="empty center">Нет данных</p>', false);
 				reportWin.removeButtons();
 			}
+			
+			$('.scroll').ddrScrollTable();
 		}, function() {
 			reportWin.wait(false);
 		});
@@ -1509,10 +1502,9 @@ $(document).ready(function() {
 		getAjaxHtml('reports/get_keys_report', {from_pattern: 1, to_user: 1, pattern_id: thisPatternId}, function(html, stat) {
 			reportWin.setTitle('Отчет по выплатам - '+thisPatternName);
 			if (stat) {
-				reportWin.setWidth(1058, function() {
-					reportWin.setData(html, false);
-					reportWin.removeButtons();
-				});
+				reportWin.setWidth(1058);
+				reportWin.setData(html, false);
+				reportWin.removeButtons();
 			} else {
 				reportWin.setData('<p class="empty center">Нет данных</p>', false);
 				reportWin.removeButtons();
@@ -1613,21 +1605,16 @@ $(document).ready(function() {
 	
 	
 	function getTimesheetData(staticId, staticName, period) {
-		$.post('/timesheet/get_timesheet_data', {period_id: period, static_id: staticId, static_name: staticName}, function(html) {
-			console.log(html);
-			if (html) {
-				timesheetPeriodsWin.setWidth(1330, function() {
-					timesheetPeriodsWin.setData(html, false);
-					timesheetPeriodsWin.setTitle(periodName);
-				});
+		getAjaxHtml('timesheet/get_timesheet_data', {period_id: period, static_id: staticId, static_name: staticName}, function(html, stat) {
+			if (stat) {
+				timesheetPeriodsWin.setWidth(1330);
+				timesheetPeriodsWin.setData(html, false);
+				timesheetPeriodsWin.setTitle(periodName);
 			} else {
 				timesheetPeriodsWin.setTitle(periodName);
 				timesheetPeriodsWin.setData('<p class="empty dark center">Нет данных</p>', false);
 			}
-			timesheetPeriodsWin.wait(false);
-		}, 'html').fail(function(e) {
-			showError(e);
-			notify('Системная ошибка!', 'error');
+		}, function() {
 			timesheetPeriodsWin.wait(false);
 		});
 	}
@@ -2126,9 +2113,7 @@ $(document).ready(function() {
 			myRatingWin.wait();
 			getAjaxHtml('account/get_rating', function(html) {
 				myRatingWin.setData(html, false);
-				onChangeTabs(function(titles, content) {
-					myRatingWin.correctPosition();
-				});
+				onChangeTabs(function(titles, content) {});
 			}, function() {
 				myRatingWin.wait(false);
 			});
@@ -2405,9 +2390,7 @@ $(document).ready(function() {
 			}, function() {
 				$('.tabstitles li:first').addClass('active');
 				$('.tabscontent > *:first').addClass('visible');
-				$('.tabstitles li').on(tapEvent, function() {
-					paymentRequestsWin.correctPosition(100);
-				});
+				$('.tabstitles li').on(tapEvent, function() {});
 			});
 		});
 	});
@@ -2446,7 +2429,7 @@ $(document).ready(function() {
 				getAjaxHtml('account/get_visits_coeffs', {period_id: visitsPeriodId}, function(html) {
 					visitsRateWin.setWidth(1300);
 					visitsRateWin.setData(html, false, function() {
-						visitsRateWin.correctPosition();
+						$('.scroll').ddrScrollTable();
 					});
 				}, function() {
 					visitsRateWin.wait(false);
@@ -2455,6 +2438,40 @@ $(document).ready(function() {
 			
 		});
 	});
+	
+	
+	
+	
+	
+	
+	//--------------------------------------------------- Мой KPI план
+	$('[mykpiplan]').on(tapEvent, function() {
+		popUp({
+			title: 'Мой KPI план',
+		    width: 400,
+		    height: false,
+		    wrapToClose: true,
+		    winClass: 'account',
+		    buttons: false,
+		    closeButton: false,
+		}, function(kpiPlanWin) {
+			kpiPlanWin.setData('account/kpiplan/get_periods', function() {
+				$('[kpiplanperiod]').on(tapEvent, function() {
+					let kpiPeriodId = $(this).attr('kpiplanperiod'),
+						userId = getCookie('id');
+					
+					kpiPlanWin.setData('account/kpiplan/get_user_progress', {kpi_period_id: kpiPeriodId, user_id: userId}, function() {
+						kpiPlanWin.setWidth(500);
+					});
+				});
+			});
+		});
+	});
+	
+	
+	
+	
+	
 	
 	
 	
@@ -2513,6 +2530,7 @@ $(document).ready(function() {
 		addClass: 'raiderscolorswrap',
 		outside: 'x',
 		ignoreDelay: true,
+		zIndex: 1200,
 		//pointer: 'left',
 		//pointTo: 'left',
 		position: {

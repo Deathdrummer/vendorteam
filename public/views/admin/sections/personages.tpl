@@ -117,6 +117,12 @@
 							</div>
 						</div>	
 					</div>
+					
+					<div class="item mt-0 ml-auto">
+						<div class="buttons">
+							<button id="addGameId">Добавить ID игры</button>
+						</div>
+					</div>
 				</div>
 				
 				<table class="table_hover" id="gamesIdsTable">
@@ -131,15 +137,6 @@
 						</tr>
 					</thead>
 					<tbody id="gameIdsList"></tbody>
-					<tfoot>
-						<tr>
-							<td colspan="6">
-								<div class="buttons">
-									<button id="addGameId">Добавить ID игры</button>
-								</div>
-							</td>
-						</tr>
-					</tfoot>
 				</table>
 			</div>
 		</div>
@@ -161,6 +158,18 @@
 
 <script type="text/javascript"><!--
 $(document).ready(function() {
+	
+	
+	
+	$('#gamesIdsTable').ddrScrollTableY({
+		height: 'calc(100vh - 420px)',
+		minHeight: '300px',
+		//wrapBorderColor: false,
+		offset: 0
+	});
+	
+	
+	
 	
 	$('#personagesSave').on(tapEvent, function() {
 		var saveButton = this,
@@ -271,12 +280,14 @@ $(document).ready(function() {
 		emptyList: '<tr><td colspan="6">Нет данных</td></tr>',
 		functions: 'admin/game_ids',
 		confirms: {
+			add: function() {
+				$('#gamesIdsTable').parent().scrollTop(999999);
+			},
 			remove: function(thisRow) {
 				if ($(thisRow).next('tr.personageslist').length > 0) $(thisRow).next('tr.personageslist').remove();
 			}
 		},
 		removeConfirm: true,
-		listDirection: 'bottom'
 	}, function(list) {
 		$('#gameIdsList').changeRowInputs(function(row, item) {
 			$(row).addClass('changed');
@@ -353,8 +364,6 @@ $(document).ready(function() {
 							thisUserId = $(this).attr('chooseusertogameid'),
 							thisUserNickname = $(this).find('.nickname').text(),
 							thisUserAvatar = $(this).find('.avatar').val() ? location.origin+'/public/images/users/'+($(this).find('.avatar').val()) : location.origin+'/public/images/user_mini.jpg';
-						
-						console.log(thisUserId, thisUserNickname, thisUserAvatar);
 						
 						var html = '';
 							html += '<div class="avatar w40px h40px mr-1" style="background-image: url('+thisUserAvatar+')" title="'+thisUserNickname+'"></div>';
@@ -537,7 +546,7 @@ $(document).ready(function() {
 												html += 	'<td><span>Администратор</span></td>';
 												html += 	'<td>';
 												html += 		'<div class="buttons nowrap">';
-												html +=				'<button class="remove" untiegameidpersonage="'+insetId+'" title="Отвязать персонажа"><i class="fa fa-user"></i></button>';
+												html +=				'<button class="remove" untiegameidpersonage="'+insetId+'" title="Отвязать персонажа"><i class="fa fa-user"></i></button>\n';
 												html +=				'<button class="remove" removegameidpersonage="'+insetId+'" title="Удалить персонажа"><i class="fa fa-trash"></i></button>';
 												html +=			'</div>';
 												html += 	'</td>';

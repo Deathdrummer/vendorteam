@@ -136,6 +136,13 @@ class MY_Controller extends CI_Controller {
 				'title' => 'Форс мажор, Выговоры, Стимулирование Заявки на увольнение',
 				'desc' 	=> 'Доступ к модерации "Форс мажор, Выговоры, Стимулирование, Заявки на увольнение"',
 				'icon'	=> 'optin-monster'
+			],
+			16 => [
+				'id'	=> 'kpi',
+				'url'	=> 'kpi',
+				'title' => 'KPI планы',
+				'desc' 	=> 'Доступ к KPI планам',
+				'icon'	=> 'optin-monster'
 			]
 		];
 

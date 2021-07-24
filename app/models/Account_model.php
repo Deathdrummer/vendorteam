@@ -952,7 +952,7 @@ class Account_model extends My_Model {
 	public function personagesGetGamesIds() {
 		if (!$this->userData['id']) return false;
 		$this->db->select('pgi.game_id, pgi.date_end, up.nick, up.armor, up.server');
-		$this->db->join('users_personages up', 'up.game_id = pgi.id');
+		$this->db->join('users_personages up', 'up.game_id = pgi.id', 'LEFT OUTER');
 		$this->db->where('pgi.user_id', $this->userData['id']);
 		$query = $this->db->get('personages_game_ids pgi');
 		if (!$response = $query->result_array()) return false;

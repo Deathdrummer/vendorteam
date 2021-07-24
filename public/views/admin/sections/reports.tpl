@@ -252,7 +252,7 @@
 						<div class="buttons notop">
 							<button id="buildWalletPayments" class="fieldheight" title="Сформировать платежные данные"><i class="fa fa-bar-chart"></i></button>
 							<button id="getWalletReportsList" class="fieldheight" title="Платежные поручения"><i class="fa fa-list-alt"></i></button>
-							<button id="saveWalletOrder" disabled class="fieldheight" title="Сохранить платежное поручение"><i class="fa fa-save"></i></button>
+							<button id="saveWalletOrder" disabled class="fieldheight" title="Сохранить платежное поручение и выплатить суммы"><i class="fa fa-save"></i></button>
 						</div>
 						<div class="ml30px">
 							<h3 class="mb-0" id="savedReportTitle"></h3>
@@ -442,7 +442,7 @@ $(document).ready(function() {
 					addClass: 'setperiodstarttime',
 					outside: 'x',
 					ignoreDelay: true,
-					zIndex: 1000,
+					zIndex: 1200,
 					position: {
 					  x: 'right',
 					  y: 'center'
@@ -1244,7 +1244,6 @@ $(document).ready(function() {
 								});
 							}, function() {
 								$('#paymentRequestsUsers').removeClass('wait');
-								pRNewWin.correctPosition();
 							});
 						}
 					}, 300);	
@@ -1749,7 +1748,6 @@ $(document).ready(function() {
 												$('#paymentRequestsTempUsers').html(html);
 											}, function() {
 												$('#paymentRequestsTempUsers').removeClass('wait');
-												//setgameiduserWin.correctPosition();
 											});
 										}
 									}, 300);	
@@ -2700,7 +2698,8 @@ $(document).ready(function() {
 									initPayout = parseFloat($(thisTr).find('input[initpayout]').val()),
 									initToDeposit = parseFloat($(thisTr).find('input[inittodeposit]').val()),
 									initMaxToDeposit = parseFloat($(thisTr).find('input[initmaxtodeposit]').val()),
-									toDepositInput = $(thisTr).find('[wallettodeposit]');
+									toDepositInput = $(thisTr).find('[wallettodeposit]'),
+									toDepositValue = parseFloat($(toDepositInput).val());
 								
 								
 								if (value >= initPayout && value <= initBalance) {
@@ -2709,6 +2708,8 @@ $(document).ready(function() {
 									$(payoutInput).val(initBalance.toFixed(1));
 									$(toDepositInput).val(0);
 									notify('Достигнута максимальная сумма для выплаты!', 'info');
+								} else if (value + toDepositValue > initBalance) {
+									$(toDepositInput).val(initBalance - value);
 								}
 							});
 							
@@ -2723,10 +2724,12 @@ $(document).ready(function() {
 									initToDeposit = parseFloat($(thisTr).find('input[inittodeposit]').val()),
 									initMaxToDeposit = parseFloat($(thisTr).find('input[initmaxtodeposit]').val()),
 									payoutInput = $(thisTr).find('[walletpayout]'),
-									payoutValue = parseFloat($(payoutInput).val()).toFixed(1);
+									payoutValue = parseFloat($(payoutInput).val());
 								
-								
-								if (value >= (initBalance - payoutValue)) {
+								if (initMaxToDeposit == 0) {
+									$(toDepositInput).val(0);
+									notify('Резерв полностью заполнен или отключен!', 'info');
+								} else if (value >= (initBalance - payoutValue)) {
 									if (initBalance - payoutValue > 0) {
 										$(toDepositInput).val((initBalance - payoutValue).toFixed(1));
 										notify('Достигнута максимальная сумма для выплаты в резерв!', 'info');
@@ -2809,7 +2812,7 @@ $(document).ready(function() {
 							
 							
 							// Сохранить отчет и выплатить суммы
-							$('#saveWalletOrder').on(tapEvent, function() {
+							$('#saveWalletOrder').off(tapEvent).on(tapEvent, function() {
 								popUp({
 									title: 'Отчет по выплатам',
 								    width: 400,

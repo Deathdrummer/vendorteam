@@ -102,7 +102,7 @@
 									{% for personageId, tasks in user.tasks %}
 										<div class="personagetasks">
 											<div class="personagetasks__personage">
-												<strong>{{personages[userId][personageId]['game_id']}}</strong>
+												<strong>{{personages[userId][personageId]['game_id_name']}}</strong>
 												<span>{{personages[userId][personageId]['nick']}}</span>
 												<span>{{personages[userId][personageId]['server']}}</span>
 												<span>{{personages[userId][personageId]['armor']}}</span>

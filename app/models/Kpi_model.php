@@ -165,6 +165,38 @@ class Kpi_model extends MY_Model {
 	
 	
 	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function removeKpiPeriod($periodId = false) {
+		if (!$periodId) return false;
+		
+		$this->db->where('period_id', $periodId);
+		$this->db->delete($this->kpiPlanFieldsTable);
+		
+		$this->db->where('period_id', $periodId);
+		$this->db->delete($this->kpiPlanPersonagesTable);
+		
+		$this->db->where('period_id', $periodId);
+		$this->db->delete($this->kpiProgressCustomTable);
+		
+		$this->db->where('period_id', $periodId);
+		$this->db->delete($this->kpiProgressPersonagesTable);
+		
+		$this->db->where('id', $periodId);
+		$this->db->delete($this->kpiPeriodsTable);
+		
+		return true;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -547,11 +579,17 @@ class Kpi_model extends MY_Model {
 		if (!$periodId || !$userId || !$personageId) return false;
 		
 		$this->db->where(['period_id' => $periodId, 'user_id' => $userId, 'personage_id' => $personageId]);
+		$tasksList = $this->_result($this->kpiPlanPersonagesTable);
+		$tableTasksIds = $tasksList ?  array_column($tasksList, 'task_id') : [];
+		
+		$this->db->where(['period_id' => $periodId, 'user_id' => $userId, 'personage_id' => $personageId]);
 		if (!$this->db->delete($this->kpiPlanPersonagesTable)) return false;
 		if (!$tasks) return true;
 									
 		$dataToTable = [];
 		foreach ($tasks as $task) {
+			if (in_array($task['task_id'], $tableTasksIds)) unset($tableTasksIds[array_search($task['task_id'], $tableTasksIds)]);
+			
 			$dataToTable[] = [
 				'period_id'		=> $periodId,
 				'user_id'		=> $userId,
@@ -562,6 +600,9 @@ class Kpi_model extends MY_Model {
 		}
 		
 		if ($dataToTable) $this->db->insert_batch($this->kpiPlanPersonagesTable, $dataToTable);
+		
+		if ($tableTasksIds) $this->removeProgressTasks($periodId, $userId, $personageId, $tableTasksIds);
+		
 		return true;
 	}
 	
@@ -623,9 +664,64 @@ class Kpi_model extends MY_Model {
 			
 			unset($formData[$staticId][$userId]['params']);
 		}
-		
 		return $formData;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Получить форму для заполнения достижений
+	 * @param данные активного периода
+	 * @return 
+	*/
+	public function getUserProgressForm($periodData = false, $uId = null) {
+		if (!$periodData) return false;
+		
+		if (!$formData = $this->getPlanForm($periodData)) return false;
+		
+		$fines = $this->_getUsersFines($periodData['report_period']);
+		$koeffs = $this->_getUsersVisits($periodData['report_period']);
+		$customFieldsData = $this->_getCustomFieldsData($periodData['id']);
+		
+		foreach ($formData as $staticId => $users) foreach ($users as $userId => $userData) {
+			if ($userId == $uId) {
+				if (isset($userData['params']['visits'])) {
+					$formData[$staticId][$userId]['visits'] = [
+						'need' => $userData['params']['visits'],
+						'fact' => isset($koeffs[$userId]) ? $koeffs[$userId] : null
+					];
+				}
+					
+				if ($userData['params']['fine']) {
+					$formData[$staticId][$userId]['fine'] = [
+						'need' => $userData['params']['fine'],
+						'fact' => isset($fines[$userId]) ? $fines[$userId] : null
+					];
+				}
+				
+				if ($planCustomFields = $userData['params']['custom_fields']) {
+					foreach ($planCustomFields as $field => $needValue) {
+						$formData[$staticId][$userId]['custom_fields'][$field] = [
+							'need' => $needValue,
+							'fact' => isset($customFieldsData[$userId][$field]) ? $customFieldsData[$userId][$field] : null
+						];
+					}
+				}
+				unset($formData[$staticId][$userId]['params']);
+				return $formData[$staticId][$userId];
+			}
+			
+		}
+	}
+	
+	
 	
 	
 	
@@ -723,6 +819,28 @@ class Kpi_model extends MY_Model {
 	
 	
 	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function removeProgressTasks($periodId = false, $userId = false, $personageId = false, $tasksIds = false) {
+		if (!$periodId || !$userId || !$personageId || !$tasksIds) return false;
+		$this->db->where(['period_id' => $periodId, 'user_id' => $userId, 'personage_id' => $personageId]);
+		$this->db->where_in('task_id', $tasksIds);
+		$this->db->delete($this->kpiProgressPersonagesTable);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	/**
 	 * Получить суммы к выплате
 	 * @param 
@@ -732,7 +850,7 @@ class Kpi_model extends MY_Model {
 		if (!$result = $this->_result($this->kpiAmountsTable)) return false;
 		$amountsData = [];
 		foreach ($result as $item) {
-			$amountsData[$item['static_id']][$item['rank_id']] = $item['amount'];
+			$amountsData[$item['static_id']][$item['rank_id']][$item['payout_type']] = $item['amount'];
 		}
 		return $amountsData;
 	}
@@ -749,18 +867,19 @@ class Kpi_model extends MY_Model {
 	public function setAmount($data = false) {
 		if (!$data) return false;
 		
-		$this->db->where(['static_id' => $data['static_id'], 'rank_id' => $data['rank_id']]);
+		$this->db->where(['static_id' => $data['static_id'], 'rank_id' => $data['rank_id'], 'payout_type' => $data['payout_type']]);
 		$tableData = $this->_row($this->kpiAmountsTable);
 		
 		if ($tableData) {
-			$this->db->where(['static_id' => $data['static_id'], 'rank_id' => $data['rank_id']]);
+			$this->db->where(['static_id' => $data['static_id'], 'rank_id' => $data['rank_id'], 'payout_type' => $data['payout_type']]);
 			return $this->db->update($this->kpiAmountsTable, ['amount' => $data['amount']]);
 		} 
 		
 		return $this->db->insert($this->kpiAmountsTable, [
-			'static_id'	=> $data['static_id'],
-			'rank_id' 	=> $data['rank_id'],
-			'amount'	=> $data['amount']
+			'static_id'		=> $data['static_id'],
+			'rank_id' 		=> $data['rank_id'],
+			'amount'		=> $data['amount'],
+			'payout_type'	=> $data['payout_type']
 		]);
 	}
 	
@@ -786,9 +905,11 @@ class Kpi_model extends MY_Model {
 		
 		$planPregressData = $progressPersonages ? array_replace_recursive($planPersonages, $progressPersonages) : $planPersonages;
 		
-		foreach ($planPregressData as $userId => $personages) foreach ($personages as $personageId => $tasks) foreach ($tasks as $taskId => $taskData) {
-			//$planPregressData[$userId][$personageId][$taskId]['name'] = isset($tasksPersonages[$taskId]['task'])? $tasksPersonages[$taskId]['task'] : null;
-			$planPregressData[$userId][$personageId][$taskId]['score'] = isset($tasksPersonages[$taskId]['score'])? $tasksPersonages[$taskId]['score'] : null;
+		if ($planPregressData) {
+			foreach ($planPregressData as $userId => $personages) foreach ($personages as $personageId => $tasks) foreach ($tasks as $taskId => $taskData) {
+				//$planPregressData[$userId][$personageId][$taskId]['name'] = isset($tasksPersonages[$taskId]['task'])? $tasksPersonages[$taskId]['task'] : null;
+				$planPregressData[$userId][$personageId][$taskId]['score'] = isset($tasksPersonages[$taskId]['score'])? $tasksPersonages[$taskId]['score'] : null;
+			}
 		}
 		
 		return $planPregressData;
@@ -866,6 +987,7 @@ class Kpi_model extends MY_Model {
 	 * @return 
 	*/
 	public function getReports() {
+		$this->db->order_by('id', 'DESC');
 		if (!$reports = $this->_result($this->kpiReportsTable)) return false;
 		return $reports;
 	}
@@ -1079,8 +1201,8 @@ class Kpi_model extends MY_Model {
 	 * @return 
 	*/
 	private function _getCustomTasksToStat($customFields = false) {
-		$customTasksIds = array_column($customFields, 'custom_task_id');
-		$periodCustomFields = setArrKeyfromField($customFields, 'custom_task_id', true);
+		$customTasksIds = $customFields ? array_column($customFields, 'custom_task_id') : false;
+		$periodCustomFields = $customFields ? setArrKeyfromField($customFields, 'custom_task_id', true) : [];
 		
 		$this->db->select('id, type, task, score');
 		if ($customTasksIds) $this->db->where_in('id', (array)$customTasksIds);

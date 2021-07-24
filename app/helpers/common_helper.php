@@ -416,7 +416,7 @@ if (!function_exists('setArrKeyFromField')) {
         
         $newArr = [];
         foreach ($array as $key => $val) {
-            $newKey = $field ? $val[$field] : $key;
+            $newKey = ($field && isset($val[$field])) ? $val[$field] : $key;
             if (!$preserveField) unset($val[$field]);
             if ($returnFields) {
                 if (count($returnFields) == 1) $newArr[$newKey] = $val[reset($returnFields)];

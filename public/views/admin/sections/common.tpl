@@ -511,7 +511,8 @@
 				<li id="tabDeposit">Депозит</li>
 				<li id="tabRating">Рейтинг</li>
 				<li id="tabResigns">Увольнения</li>
-				<li id="tabDNA">NDA</li>
+				<li id="tabNDA">NDA</li>
+				<li id="tabKPIText">KPI текст</li>
 			</ul>
 			
 			<div class="tabscontent">
@@ -614,11 +615,20 @@
 					</fieldset>
 				</div>
 				
-				<div tabid="tabDNA">
+				<div tabid="tabNDA">
 					<fieldset>
 						<legend>Коэффициент DNA</legend>
 						
 						{% include form~'field.tpl' with {'label': 'Коэффициент NDA', 'name': 'nda_coeff', 'type': 'number', 'step': '0.01', 'class': 'w130px'} %}
+						
+					</fieldset>
+				</div>
+				
+				<div tabid="tabKPIText">
+					<fieldset>
+						<legend>Дефолтный текст для KPI плана в ЛК</legend>
+						
+						{% include form~'textarea.tpl' with {'label': 'Текст', 'name': 'kpi_default_text', 'class': 'w40'} %}
 						
 					</fieldset>
 				</div>

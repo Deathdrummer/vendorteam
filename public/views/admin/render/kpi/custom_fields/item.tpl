@@ -1,5 +1,5 @@
 <tr>
-	<td colspan="2">
+	<td>
 		<div class="popup__select w100">
 			<select newkpicustomfieldtask class="fz12px">
 				{% if custom_tasks.total %}

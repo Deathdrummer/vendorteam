@@ -1158,11 +1158,14 @@ class Reports extends MY_Controller {
 				
 				$amountsData = []; $toDepositdata = []; $toReportData = [];
 				foreach ($postData['paydata'] as $payUser) {
-					
-					$amountSumm = (float)($payUser['payout'] + $payUser['to_deposit']);
+					$amountSumm = (float)$payUser['payout'];
 					$depositSumm = (float)$payUser['to_deposit'];
 					
-					if ($amountSumm > 0) $amountsData[(int)$payUser['user_id']] = $amountSumm;
+					if ($amountSumm > 0) $amountsData[(int)$payUser['user_id']] = [
+						'amount'		=> $amountSumm,
+						'to_deposit'	=> $depositSumm,
+					];
+					
 					if ($depositSumm > 0) $toDepositdata[(int)$payUser['user_id']] = $depositSumm;
 					
 					$toReportData[] = [
@@ -1194,6 +1197,8 @@ class Reports extends MY_Controller {
 				$this->load->model('admin_model', 'admin');
 				if (!$report = $this->wallet->getReportData($postData['report_id'] ?: $reportId)) exit('');
 				
+				//toLog($report);
+				
 				$data['statics'] = $this->admin->getStatics(true, array_keys($report));
 				
 				if ($reportId) {
@@ -1202,9 +1207,9 @@ class Reports extends MY_Controller {
 						$dataToExport .= iconv('UTF-8', 'windows-1251', 'Статик'."\r\n");
 						$dataToExport .= $data['statics'][$staticId]."\r\n";
 						
-						$dataToExport .= iconv('UTF-8', 'windows-1251', 'Никнейм;Выплата;Отправлено в резерв')."\r\n";
+						$dataToExport .= iconv('UTF-8', 'windows-1251', 'Никнейм;Выплата;Отправлено в резерв;Платежные данные')."\r\n";
 						foreach ($users as $userId => $userData) {
-							$dataToExport .= iconv('UTF-8', 'windows-1251', $userData['nickname'].';'.str_replace('.', ',', $userData['summ']).';'.str_replace('.', ',', $userData['to_deposit']))."\r\n";
+							$dataToExport .= iconv('UTF-8', 'windows-1251', $userData['nickname'].';'.str_replace('.', ',', $userData['summ']).';'.str_replace('.', ',', $userData['to_deposit']).';'.str_replace('.', ',', $userData['payment']))."\r\n";
 						}
 						$dataToExport .= "\r\n";
 					}

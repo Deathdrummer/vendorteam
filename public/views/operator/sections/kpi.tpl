@@ -1,32 +1,25 @@
-<div class="section" id="{{id}}">
-	<div class="section_title">
-		<h2>KPI планы</h2>
+<div class="section" id="kpi">
+	<div class="section__title">
+		<h1>KPI планы</h1>
 	</div>
-
-	<fieldset>
-		<legend>Панель управления</legend>
-		
-		<div class="item inline">
-			<div class="buttons notop">
-				<button id="kpiPeriodsButton" class="fieldheight" title="Новый KPI период"><i class="fa fa-list-alt"></i></button>
-				<button id="kpiFormButton" class="fieldheight" title="Заполнить KPI план"><i class="fa fa-vcard-o"></i></button>
-				<button id="kpiCheckPlanButton" class="fieldheight" title="Отметить достижения KPI плана"><i class="fa fa-check-square-o"></i></button>
-				
-				<button id="kpiReportsButton" class="fieldheight alt" title="Сохраненные отчеты"><i class="fa fa-list"></i></button>
-				<button id="kpiStatisticsButton" class="fieldheight alt" title="Статистика выполнения задач"><i class="fa fa-bar-chart-o"></i></button>
-				<button id="kpiStatisticsSaveButton" hidden class="fieldheight alt" title="Сохранить статистику"><i class="fa fa-save"></i></button>
-			</div>
+	
+	<div class="section__buttons d-flex justify-content-between" id="sectionButtons">
+		<div class="">
+			<button id="kpiPeriodsButton" title="Новый KPI период"><i class="fa fa-list-alt"></i></button>
+			<button id="kpiFormButton" title="Заполнить KPI план"><i class="fa fa-vcard-o"></i></button>
+			<button id="kpiCheckPlanButton" title="Отметить достижения KPI плана"><i class="fa fa-check-square-o"></i></button>
+			
+			<button id="kpiReportsButton" class="alt" title="Сохраненные отчеты"><i class="fa fa-list"></i></button>
+			<button id="kpiStatisticsButton" class="alt" title="Статистика выполнения задач"><i class="fa fa-bar-chart-o"></i></button>
+			<button id="kpiStatisticsSaveButton" hidden class="alt" title="Сохранить статистику"><i class="fa fa-save"></i></button>
 		</div>
 		
-		<div class="item inline right">
-			<div class="buttons notop">
-				<button id="kpiPersonagesTasksButton" class="fieldheight alt2 ml-5" title="Задачи для персонажей"><i class="fa fa-users"></i></button>
-				<button id="kpiCustomTasksButton" class="fieldheight alt2" title="Задачи для кастомных полей"><i class="fa fa-tasks"></i></button>
-				<button id="kpiAmountsButton" class="fieldheight pay" title="Задать суммы выплат"><i class="fa fa-money"></i></button>
-			</div>
-		</div>
 		
-		<div class="item inline right" hidden id="kpiSearchBlock">
+		<div class="mr-auto ml-3"><h3 id="kpiDataTitle"></h3></div>
+		
+		
+		
+		<div class="ml-auto" hidden id="kpiSearchBlock">
 			<div class="d-flex align-items-center">
 				<div class="field w300px mr5px">
 					<input type="text" autocomplete="off" id="kpiSearchString" placeholder="Введите никнейм...">
@@ -38,7 +31,7 @@
 			</div>
 		</div>
 		
-		<div class="item inline right" hidden id="kpiProgressSearchBlock">
+		<div class="ml-auto" hidden id="kpiProgressSearchBlock">
 			<div class="d-flex align-items-center">
 				<div class="field w300px mr5px">
 					<input type="text" autocomplete="off" id="kpiProgressSearchString" placeholder="Введите никнейм...">
@@ -50,16 +43,21 @@
 			</div>
 		</div>
 		
-		<div class="item inline"><h3 id="kpiDataTitle"></h3></div>
 		
-		<div id="kpiDataContainer" class="reports mt-3"></div>
-	</fieldset>
-
-
+		
+		
+		<div>
+			<button id="kpiPersonagesTasksButton" class="alt2 ml-5" title="Задачи для персонажей"><i class="fa fa-users"></i></button>
+			<button id="kpiCustomTasksButton" class="alt2" title="Задачи для кастомных полей"><i class="fa fa-tasks"></i></button>
+			<button id="kpiAmountsButton" class="pay" title="Задать суммы выплат"><i class="fa fa-money"></i></button>
+		</div>
+	</div>
+	
+	
+	<div class="section__content" id="sectionContent">
+		<div id="kpiDataContainer" class="reports"></div>
+	</div>
 </div>
-
-
-
 
 
 
@@ -81,8 +79,7 @@
 				datePicker('#newKpiPeriodDateStart', '#newKpiPeriodDateEnd');
 				$('#kpiPeriodsList').ddrScrollTableY({height: '64vh', wrapBorderColor: '#d7dbde'});
 				$('#kpiStaticsList').ddrScrollTableY({height: '64vh', wrapBorderColor: '#d7dbde'});
-				//const srcTableFields = $('#kpiFieldsList').ddrScrollTableY({height: '64vh', offset: 1});
-				//const srcTableCustomFields = $('#kpiCustomFieldsList').ddrScrollTableY({height: '64vh', offset: 1});
+				const srcTableFields = $('#kpiFieldsList').ddrScrollTableY({height: '64vh', offset: 1});
 				
 				let checkAllStatics = false;
 				$('[newkpiperiodcheckallstatics]').on(tapEvent, function() {
@@ -97,7 +94,7 @@
 				$('#newKpiPeriodAddField').on(tapEvent, function() {
 					getAjaxHtml('kpi/periods/add_custom_field', function(html) {
 						$('#newKpiPeriodCustomFields').append(html);
-						//srcTableCustomFields.reInit();
+						srcTableFields.reInit();
 					});
 				});
 				
@@ -108,17 +105,6 @@
 				
 				$('#newKpiPeriodCustomFields').changeInputs(function(item) {
 					$(item).closest('tr.error').removeClass('error');
-				});
-				
-				
-				let isCheckedCustomTasks = false;
-				$('#kpiFieldsCustomTasks').on(tapEvent, function() {
-					isCheckedCustomTasks = $(this).is(':checked');
-					if (isCheckedCustomTasks) {
-						$('#kpiCustomFieldsListContainer').removeAttrib('hidden');
-					} else {
-						$('#kpiCustomFieldsListContainer').setAttrib('hidden');
-					}
 				});
 				
 				
@@ -133,7 +119,6 @@
 						fields = $('#newKpiPeriodFields').find('[newkpiperiodfield]:checked'),
 						customFields = $('#newKpiPeriodCustomFields').find('tr'),
 						stat = true;
-					
 					
 						
 					let fieldsData = [], scores = {}, fSHasError = false;
@@ -151,30 +136,23 @@
 						scores[$(this).val()] = scrore;
 					});
 					
-					
 					let customFieldsData = []; cFHasError = false;
-					if (isCheckedCustomTasks && customFields.length > 0) {
-						customFields.each(function() {
-							let thisBlock = this,
-								customTaskId = $(thisBlock).find('[newkpicustomfieldtask]').val(),
-								rand = random(0, 9999);
-							
-							if (!customTaskId) {
-								$(thisBlock).addClass('error');
-								cFHasError = true;
-								return true;
-							}
-							
-							customFieldsData.push({
-								name: 'custom_field_'+rand,
-								custom_task_id: parseInt(customTaskId)
-							});
-						});
-					} else if (isCheckedCustomTasks && customFields.length == 0) {
-						notify('Ошибка! Необходимо задать хотя бы одно дополнительное поле!', 'error');
-						stat = false;
-					}
+					customFields.each(function() {
+						let thisBlock = this,
+							customTaskId = $(thisBlock).find('[newkpicustomfieldtask]').val(),
+							rand = random(0, 9999);
 						
+						if (!customTaskId) {
+							$(thisBlock).addClass('error');
+							cFHasError = true;
+							return true;
+						}
+						
+						customFieldsData.push({
+							name: 'custom_field_'+rand,
+							custom_task_id: parseInt(customTaskId)
+						});
+					});
 					
 					
 					if (fSHasError) {
@@ -407,7 +385,7 @@
 					let periodTitle = $(this).closest('tr').find('[periodtitle]').text(),
 						periodId = $(this).attr('kpiopenform');
 					
-					location.hash = 'kpi_planes';
+					location.hash = 'kpi';
 					
 					openForm(periodId, periodTitle);
 					
@@ -457,7 +435,7 @@
 						$('#kpiDataContainer').html(html);
 						$('#kpiStatisticsSaveButton').setAttrib('hidden');
 						$('#kpiDataTitle').text('KPI план: '+periodTitle);
-						ddrInitTabs();
+						ddrInitTabs('kpiDataContainer');
 						
 						$('#kpiProgressSearchBlock').setAttrib('hidden');
 						$('#kpiSearchBlock').removeAttrib('hidden');
@@ -468,7 +446,7 @@
 						});
 						
 						$('[userspersonagesform]').each(function() {
-							$(this).ddrScrollTableY({height: 'calc(100vh - 420px)', wrapBorderColor: '#d7dbde'});
+							$(this).ddrScrollTableY({height: 'calc(100vh - 230px)', wrapBorderColor: '#d7dbde'});
 						})
 						kpiFormWin.close();
 						
@@ -647,7 +625,7 @@
 	
 	//------------------------------------------------------- Отметить достижения KPI плана
 	$('#kpiCheckPlanButton').on(tapEvent, function() {
-		location.hash = 'kpi_planes';
+		location.hash = 'kpi';
 		$('#kpiProgressSearchString').val('');
 		
 		$('#kpiDataContainer').setWaitToBlock('Загрузка плана...', 'pt40px pb40px', 'transparent');
@@ -669,7 +647,7 @@
 		getAjaxHtml('kpi/progressplan/get_form', (params || {}), function(html, stat) {
 			if (stat) {
 				$('#kpiDataContainer').html(html);
-				ddrInitTabs();
+				ddrInitTabs('kpiDataContainer');
 				$('.kpiprocessblock').ddrUnitHeight('.kpiprocesscard');
 				$('#kpiSearchBlock').setAttrib('hidden');
 				$('#kpiProgressSearchBlock').removeAttrib('hidden');
@@ -877,7 +855,7 @@
 	
 	//------------------------------------------------------- Статистика выполнения задач
 	$('#kpiStatisticsButton').on(tapEvent, function() {
-		location.hash = 'kpi_planes';
+		location.hash = 'kpi';
 		$('#kpiProgressSearchBlock').setAttrib('hidden');
 		
 		popUp({
@@ -906,7 +884,7 @@
 					calcKpiStatWin.wait();
 					getAjaxHtml('kpi/statistics/calc_statistics', {periods: choosedPeriods}, function(html) {
 						$('#kpiDataContainer').html(html);
-						ddrInitTabs();
+						ddrInitTabs('kpiDataContainer');
 						$('.scroll').ddrScrollTable();
 						$('#kpiStatisticsSaveButton').removeAttrib('hidden');
 						$('#kpiDataContainer').find('input[name="payout"]').number(true, 2, '.', ' ');
@@ -970,7 +948,7 @@
 			kpiReportsWin.setData('kpi/statistics/get_reports_list', function() {
 				$('[kpireport]').on(tapEvent, function() {
 					kpiReportsWin.wait();
-					location.hash = 'kpi_planes';
+					location.hash = 'kpi';
 					$('#kpiProgressSearchBlock').setAttrib('hidden');
 					$('#kpiStatisticsSaveButton').setAttrib('hidden');
 		
@@ -980,7 +958,7 @@
 						
 					getAjaxHtml('kpi/statistics/get_report', {report_id: reportId, periods: periods}, function(html) {
 						$('#kpiDataContainer').html(html);
-						ddrInitTabs();
+						ddrInitTabs('kpiDataContainer');
 						kpiReportsWin.close();
 					}, function() {kpiReportsWin.wait(false);
 						kpiReportsWin.wait(false);

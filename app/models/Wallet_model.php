@@ -27,27 +27,28 @@ class Wallet_model extends MY_Model {
 		if (!$items || $type === false || !$title) return false;
 		if (!$titleId = $this->_addTitle($title)) return false;
 		
-		
 		$toHistoryData = []; $toAmountsData = [];
 		$date = time();
-		foreach ((array)$items as $userId => $summ) {
+		foreach ((array)$items as $userId => $item) { 
 			$toHistoryData[] = [
 				'user_id'	=> $userId,
 				'type'		=> $type,
 				'title_id'	=> $titleId,
-				'summ'		=> round((float)$summ, 1),
+				'summ'		=> is_numeric($item) ? (float)$item : round((float)$item['amount'], 1),
+				'deposit'	=> is_numeric($item) ? 0 : round((float)$item['to_deposit'], 1),
 				'transfer'	=> $transfer,
 				'date'		=> $date,
 			];
 			
 			$toAmountsData[] = [
 				'user_id'	=> $userId,
-				'summ'		=> round((float)$summ, 1),
+				'summ'		=> is_numeric($item) ? (float)$item : round((float)$item['amount'] + (float)$item['to_deposit'], 1),
 			];
 		}
 		
-		$this->_addToHistory($toHistoryData);
-		$this->_addToAmounts($toAmountsData, $transfer);
+		
+		$this->_addToHistory($toHistoryData); // Добавить записи в историю
+		$this->_addToAmounts($toAmountsData, $transfer); // Прибавить\отнять суммы у участников
 		
 		return true;
 	}
@@ -195,7 +196,7 @@ class Wallet_model extends MY_Model {
 		$usersIds = array_keys($data);
 		
 		$this->load->model('users_model', 'users');
-		$usersData = $this->users->getUsers(['where_in' => ['field' => 'u.id', 'values' => $usersIds], 'where' => ['us.main' => 1], 'fields' => 'nickname avatar static']);
+		$usersData = $this->users->getUsers(['where_in' => ['field' => 'u.id', 'values' => $usersIds], 'where' => ['us.main' => 1], 'fields' => 'nickname avatar static payment']);
 		
 		if (!$fullData = array_replace_recursive($usersData, $data)) return false;
 		
@@ -228,12 +229,12 @@ class Wallet_model extends MY_Model {
 
 		$userGlobalSumm = 0;
 		foreach ($userHistory as $k => $item) {
-			$userHistory[$k]['current_balance'] = $item['transfer'] == '+' ? ($userGlobalSumm += $item['summ']) : ($userGlobalSumm -= $item['summ']);
+			$totalSumm = (float)$item['summ'] + (float)$item['deposit'];
+			$userHistory[$k]['current_balance'] = $item['transfer'] == '+' ? ($userGlobalSumm += $totalSumm) : ($userGlobalSumm -= $totalSumm);
 		}
 		
 		$data['history'] = $userHistory;
 		$data['types'] = $this->types;
-		
 		
 		return $data;
 	}
@@ -315,11 +316,12 @@ class Wallet_model extends MY_Model {
 		$update = [];
 		if ($updateAmountsData) {
 			foreach ($updateAmountsData as $userId => $summ) {
-				$tableSumm = isset($amountsTableData[$userId]) ? $amountsTableData[$userId] : 0;
+				$tableSumm = isset($amountsTableData[$userId]) ? (float)$amountsTableData[$userId] : 0;
 				$update[] = [
 					'user_id'	=> $userId,
 					'summ'		=> $transfer == '+' ? ($tableSumm + $summ) : ($tableSumm - $summ < 0 ? 0 : round($tableSumm - $summ, 1))
 				];
+				toLog('Добавление суммы в баланс, участник: '.$userId.' было: '.$tableSumm.($transfer == '+' ? ' прибавляется: ' : ' отнимается: ').$summ.' стало: '.($transfer == '+' ? ($tableSumm + $summ) : ($tableSumm - $summ < 0 ? 0 : round($tableSumm - $summ, 1))));
 			}
 		}
 		

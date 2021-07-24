@@ -31,7 +31,7 @@
     color: #3780A5;
 	-webkit-transition: opacity .15s;
 	transition: opacity .15s;
-    z-index: 9999;
+    z-index: 1200;
 }
     .jBox-content a {
         color: #3780A5;

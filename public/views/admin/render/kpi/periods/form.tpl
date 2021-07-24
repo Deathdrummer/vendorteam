@@ -1,8 +1,19 @@
 <div class="row gutters-5 mb20px">
-	<div class="col-6">
+	<div class="col-3">
 		<label class="d-block w100">Название периода:</label>
 		<div class="popup__field">
 			<input type="text" id="newKpiPeriodTitle" placeholder="Введите название" autocomplete="off">
+		</div>
+	</div>
+	<div class="col-3">
+		<label class="d-block w100">Вариант выплаты:</label>
+		<div class="popup__select">
+			<select id="newKpiPeriodPayoutType" class="fz14px">
+				<option disabled selected value="">Выбрать...</option>
+				<option value="1">Регулярный</option>
+				<option value="2">Высокий</option>
+			</select>
+			<div class="popup__select__caret"></div>
 		</div>
 	</div>
 	<div class="col-3">
@@ -130,20 +141,44 @@
 						</div>
 					</td>
 				</tr>
-			</tbody>
-				
-			<tbody id="newKpiPeriodCustomFields"></tbody>
-			
-			<tfoot>
 				<tr>
-					<td colspan="4">
-						<div class="buttons right">
-							<button class="custom small pl10px pr10px h22px fz12px" id="newKpiPeriodAddField">Добавить поле</button>
+					<td><small>Дополнительные задачи</small></td>
+					<td>
+						<div class="popup__field">
+							<input type="number" min="1" max="100" showrows newkpiperiodfieldscore>
+						</div>
+					</td>
+					<td class="center">
+						<div class="checkblock">
+							<input type="checkbox" id="kpiFieldsCustomTasks" newkpiperiodfield value="customfields">
+							<label for="kpiFieldsCustomTasks"></label>
 						</div>
 					</td>
 				</tr>
-			</tfoot>
+			</tbody>
 		</table>
+		
+		<div class="mt20px" id="kpiCustomFieldsListContainer" hidden>
+			<label>Дополнительные задачи:</label>
+			<table class="popup__table" id="kpiCustomFieldsList">
+				<thead>
+					<tr class="h32px">
+						<td>Задача</td>
+						<td class="w42px"></td>
+					</tr>
+				</thead>
+				<tbody id="newKpiPeriodCustomFields"></tbody>
+				<tfoot>
+					<tr>
+						<td colspan="2">
+							<div class="buttons right">
+								<button class="custom small pl10px pr10px h22px fz12px" id="newKpiPeriodAddField">Добавить поле</button>
+							</div>
+						</td>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
 	</div>
 </div>
 

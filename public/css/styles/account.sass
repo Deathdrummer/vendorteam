@@ -270,9 +270,14 @@ body
 	
 
 .scroll_y
-	+scrollbar(#b1bac2, #808f9c, 8px, 0px)
 	overflow-x: hidden
-	overflow-y: scroll	
+	overflow-y: scroll
+	
+	&:not(.scroll_y_thin)
+		+scrollbar(#b1bac2, #808f9c, 8px, 0px)
+		
+	&_thin
+		+scrollbar(#dde3e8, #b3c0d0, 6px, 0px)
 
 
 
@@ -299,7 +304,7 @@ body
 	display: flex
 	flex-direction: column
 	justify-content: space-between
-	+resp(width, (xs: 100%, md: 230px, lg: 250px, xl: 290px))
+	+resp(width, (xs: 100%, lg: 250px, xl: 290px))
 	z-index: 998
 	transition: left 0.2s
 	background:		
@@ -791,7 +796,7 @@ body
 .contentblock
 	background-color: #eceeee
 	height: 100%
-	+resp(max-width, (xs: 100%, md: calc(100vw - 230px), lg: calc(100vw - 250px), xl: calc(100vw - 290px)))
+	+resp(max-width, (xs: 100%, lg: calc(100vw - 250px), xl: calc(100vw - 290px)))
 	padding: 20px
 	background:		
 		image: url('../images/lk_bg.png')
@@ -983,7 +988,10 @@ body
 		
 		&_staticusers
 			// +resp(width, (xs: 100%, md: 100%, lg: 680px, xl: 680px))
-			+resp(width, (xs: 100%, md: 100%, lg: 290px))
+			//+resp(width, (xs: 100%, md: 100%, xl: 290px))
+			+resp(margin-bottom, (sm-down: 30px))
+		
+		&_news
 		
 		&__title
 			border-bottom: 1px solid #e3e3e5
@@ -997,6 +1005,7 @@ body
 			
 			
 		&__content
+			
 			
 		
 		
@@ -1178,6 +1187,9 @@ body
 			line-height: 12px
 			transition: background-color 0.16s
 			
+			+ button
+				margin-left: 5px
+			
 			&:hover
 				background-color: darken($colorBlue, 10%)
 			
@@ -1314,6 +1326,7 @@ body
 		margin-right: 10px
 		margin-top: 10px
 		padding-bottom: 10px
+		
 	
 	.news
 		+scrollbar(#d4ccde, #5f4877, 6px, 3px, 3px)
@@ -1335,6 +1348,7 @@ body
 			display: flex
 			padding: 15px
 			position: relative
+			max-width: 100%
 			
 			
 			
@@ -1457,127 +1471,307 @@ body
 
 
 
+@keyframes ddrPopUpIn
+	from
+		background-color: transparent
+	to
+		background-color: rgba(#13050d, 0.88)
 
-
-
+@keyframes ddrPopUpOut
+	from
+		background-color: rgba(#13050d, 0.88)
+	to
+		background-color: transparent
 
 
 
 .popup
-	+scrollbar(#cec7d4, #a38eb7)
+	+scrollbar(#283442, #cad6e4, 8px)
 	
-	&.visible
-		background-color: rgba(#000, 0.5)
-		
+	&_opening
+		animation: ddrPopUpIn 0.2s
+		animation-fill-mode: forwards
 	
-	&__window
+	&_closing
+		animation: ddrPopUpOut 0.2s
+		animation-fill-mode: forwards
+	
+	&__container
+		padding-top: 15px
+		padding-bottom: 15px
+	
+	&__win
 		background-color: #fff
-		box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.58)
-		border-radius: 5px
+		box-shadow: 0 12px 40px -12px rgba(0, 0, 0, 0.66)
+		border-radius: 0
 		overflow: hidden
+		min-height: 100px
+		//+resp(padding-left, (sm: 10px, md: 20px, lg: 30px, xl: 70px), (padding-right: 0))
+		//+resp(padding-top, (sm: 10px, md: 20px, lg: 24px, xl: 40px), (padding-bottom: 0))
+		//transform: scale(5)
+		transform: scale(0.8)
+		//transform: translateY(-100vh)
 		
-	&__wait
-		i
-			color: #775d94
+		&_modelview
+			padding: 0px
+		
+		&_cardimage
+			padding: 0px
+			//background: transparent
+			
+			.ddrpopup__header
+				position: absolute
+				top: 0
+				left: 0
+				width: 100%
+			
+			.ddrpopup__content
+				padding: 0
+				
+				
+			.ddrpopup__close
+				&::before, &::after
+					background-color: #ddd!important
+				&:hover 
+					&::before, &::after
+						background-color: #fff!important
+				
+		
+		&_callback
+			+resp(padding-left, (sm: 10px, md: 15px, lg: 20px), (padding-right: 0))
+			+resp(padding-top, (sm: 10px, md: 15px, lg: 20px), (padding-bottom: 0))
+		
+		&_opening
+			transform: scale(1)
+			//transform: translateY(0)
+		
+		&_closing
+			transform: scale(1.2)
+			//transform: scale(0)
+			//opacity: 0
+			//transform: translateY(-100vh)
+				
+	
+	&__header
+		background-color: #443868
+		position: relative
+		padding-left: 10px
+		padding-right: 50px
+		padding-top: 15px
+		padding-bottom: 5px
+		min-height: 40px
+		justify-content: flex-start
+	
+	&__title
+		color: #fff
+		+font(roboto, regular)
+		font-weight: 300
+		margin-bottom: 0
+		
+		&_1
+			+resp(font-size, (xs: 16px, sm: 18px, md: 20px, lg: 22px, xl: 24px), (line-height: 2))
+		&_2
+			+resp(font-size, (xs: 24px, sm: 26px, md: 28px, lg: 34px, xl: 38px), (line-height: 2))
+		&_3
+			+resp(font-size, (xs: 20px, sm: 24px, md: 28px, lg: 30px, xl: 32px), (line-height: 2))
+		&_4
+			+resp(font-size, (xs: 18px, sm: 20px, md: 22px, lg: 24px, xl: 28px), (line-height: 2))
+		&_5
+			+resp(font-size, (xs: 16px, sm: 18px, md: 20px, lg: 22px, xl: 24px), (line-height: 2))
 	
 	&__close
-		display: block
-		width: 20px
-		height: 20px
-		position: absolute
-		+resp(top, (xs: 15px, sm: 20px, lg: 25px), (right: -5))
-		cursor: pointer
-		
-		
-		&:hover::before, &:hover::after
-			background-color: #fff			
-		
+		//background-color: #dc5656
+		top: calc(50% - 13px) 
+		right: 15px
 		
 		&::before, &::after
-			content: ''
-			height: 2px
-			width: 100%
-			display: block
-			background-color: #776e90
-			position: absolute
-			top: calc(50% - 1px)
-			transition: background-color 0.16s
-		
+			height: 3px
+			background-color: #8c84a2
+			border-radius: 2px
+			
 		&::before
-			transform: rotate(45deg)
+			top: calc(50% - 1.5px)
 			
 		&::after
-			transform: rotate(-45deg)
-			
-	
-	&__top
-		background-color: #443868
-		+resp(height, (xs: 50px, sm: 60px, lg: 70px))
-		display: flex
-		align-items: center
-		+resp(padding-left, (xs: 10px, sm: 20px, lg: 25px))
-		+resp(padding-right, (xs: 40px, sm: 50px, lg: 55px))
+			top: calc(50% - 1.5px)
 		
+		&:hover 
+			&::before, &::after
+				background-color: lighten(#8c84a2, 15%)
+				transition: background-color 0.16s
 		
-		h5
-			color: #fff
-			+font(roboto, bold)
-			+resp(font-size, (xs: 16px, sm: 16px, md: 18px), (line-height: 0))
-			
-	
-	&__content
-		+resp(padding, (xs: 8px, sm: 8px, md: 10px, lg: 15px, xl: 20px))
-		
-		button.small.main
-			+btn()
-			
-			
-			
-		
-	&__buttons
-		+resp(padding, (xs: 8px, sm: 8px, md: 10px, lg: 15px))
-		
-		button
-			background-color: $colorBlue
-			color: #1e1528
-			+font(roboto, bold)
-			+resp(font-size, (xs: 14px, md: 16px), (line-height: 0))
-			border-radius: 3px
-			+resp(padding-left, (xs: 6px, sm: 10px, md: 15px, lg: 20px), (padding-right: 0))
-			padding-top: 6px
-			padding-bottom: 6px
-			transition: background-color 0.16s
-			
-			+ button
-				margin-right: 10px
-			
-			&:hover
-				background-color: darken($colorBlue, 10%)
-			
-			&:active
-				background-color: darken($colorBlue, 20%)
+		&:active 
+			&::before, &::after
+				background-color: lighten(#8c84a2, 30%)
 				transition: background-color 0s
 			
-			&[close], &.close
-				background-color: #e2573a
-				color: #fff
-				opacity: 1
-				
-				&:hover
-					background-color: darken(#e2573a, 10%)
-				
-				&:active
-					background-color: darken(#e2573a, 20%)
-					transition: background-color 0s
+		
+	&__content
+		padding: 10px
+		
+		p.dialog
+			+font(roboto, bold)
+			text-align: center
 			
-			&:disabled, &.disabled, &[disabled]
-				background-color: #e4e4e4
-				color: #868686
+			&_remove
+				color: #e05353
 				
-
-
-
-
+		
+	&__footer
+		padding: 10px
+	
+	&__buttons
+		display: flex
+		
+		&_left
+			justify-content: flex-start
+			
+			button
+				margin-right: 20px !important
+			
+		&_right
+			justify-content: flex-end
+			
+			button
+				margin-left: 20px !important
+			
+		&_center
+			justify-content: center
+			
+			button
+				margin-left: 5px
+				margin-right: 5px
+			
+		&_between
+			justify-content: space-between
+			
+			button
+				margin-left: 0px !important
+				margin-right: 0px !important
+			
+		
+		
+		&_main, &_close
+			height: 30px
+			border-radius: 3px
+			padding-left: 15px
+			padding-right: 15px
+			font-size: 16px
+			+font(roboto, bold)
+			transition: background-color 0.16s
+		
+		&_main
+			background-color: #54e9ff
+			box-shadow: 0px 20px 25px rgba(0, 0, 0, 0.25)
+			color: #1e1528
+			
+			&:hover
+				background-color: darken(#54e9ff, 10%)
+			
+			&:active
+				background-color: darken(#54e9ff, 20%)
+				box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.25)
+				transition: background-color 0s
+			
+			&[disabled]
+				cursor: default
+				pointer-events: none
+				background-color: #b3b3b3
+		
+		&_close
+			//border: 1px solid #444
+			background-color: #e2573a
+			transition: border-color 0.16s	
+			color: #fff
+			
+			&:hover
+				background-color: darken(#e2573a, 10%)
+				
+			&:active
+				background-color: darken(#e2573a, 20%)
+				transition: background-color 0s
+		
+			&:hover
+				span
+					color: #ab2d77
+			
+			
+			&:hover
+				//background-color: darken(#e05252, 10%)
+			
+			&:active
+				//background-color: darken(#e05252, 30%)
+				transition: background-color 0s
+	
+	
+	&__wait
+		background-color: rgba(255, 255, 255, 0.74)
+		
+		.ddrpopupwait
+			i
+				color: #335c8c
+				font-size: 50px
+			
+			p
+				color: #335c8c
+				font-size: 14px
+	
+	
+	&__dialog
+		background-color: rgba(48, 62, 74, 0.45)
+		
+		.popupdialog
+			background-color: #fff
+			padding: 10px
+			box-shadow: 0 8px 30px -12px rgba(0, 0, 0, 0.66)
+			
+			&__message
+				+font(roboto, bold)
+				
+				.remove
+					color: #e05353
+				
+			&__buttons
+				margin-top: 15px
+				text-align: right
+				
+				button
+					margin: 0
+					height: 24px
+					border-radius: 3px
+					padding-left: 10px
+					padding-right: 10px
+					font-size: 13px
+					transition: background-color 0.16s
+					
+					+ button
+						margin-left: 8px
+					
+				
+					&:not(.cancel)
+						background-color: #e05353
+						color: #fff
+						
+						&:hover
+							background-color: darken(#e05353, 10%)
+						
+						&:active
+							background-color: darken(#e05353, 30%)
+							transition: background-color 0s
+				
+					&.cancel
+						background-color: #658ea2
+						color: #fff
+						
+						&:hover
+							background-color: darken(#658ea2, 10%)
+						
+						&:active
+							background-color: darken(#658ea2, 30%)
+							transition: background-color 0s
+		
+	
+	
 
 
 
@@ -1595,16 +1789,16 @@ body
 			margin-right: 10px
 		
 		.image
-				width: 30px
-				border: 1px solid #cbc7d8
-				background-color: #fff
-				border-radius: 3px
-				box-shadow: 0 0 5px -2px rgba(0, 0, 0, 0.49)
-				margin-right: 5px
-				
-				img
-					max-width: 100%
-					height: auto
+			width: 30px
+			border: 1px solid #cbc7d8
+			background-color: #fff
+			border-radius: 3px
+			box-shadow: 0 0 5px -2px rgba(0, 0, 0, 0.49)
+			margin-right: 5px
+			
+			img
+				max-width: 100%
+				height: auto
 		
 		h6
 			+resp(font-size, (xs: 16px, sm: 16px, md: 16px, lg: 16px, xl: 16px), (line-height: 0))
@@ -2144,6 +2338,11 @@ body
 				img
 					max-width: 100%
 					height: auto
+	
+		
+		&_vertical
+			li
+				flex-direction: column
 	
 	
 	
@@ -3641,3 +3840,261 @@ body
 		+font(roboto, bold)
 		margin-left: 3px
 		
+		
+		
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.kpiuserplan
+	&__row
+		position: relative
+		
+		+ .kpiuserplan__row
+			margin-top: 40px
+			
+	
+	&__title
+		font-size: 16px
+		+font(roboto, bold)
+		margin-bottom: 5px
+
+.process
+	+ .process
+		margin-top: 10px
+	
+	&__label
+		position: relative
+		top: 3px
+		font-size: 16px
+		line-height: 16px
+		margin-bottom: 0
+		+font(roboto, bold)
+	
+	
+.progressbar
+	display: flex
+	align-items: center
+	justify-content: space-between
+	
+	&__progress
+		flex: 0 1 100%
+		border: none
+		height: 12px
+		border-radius: 6px
+		overflow: hidden
+		
+		&::-webkit-progress-bar
+			background-color: #f6fcff
+			border: 1px solid #62b8de
+			border-radius: 6px
+		
+		&::-webkit-progress-value
+			background-color: #62b8de
+		
+		&_red
+			&::-webkit-progress-bar
+				border: 1px solid #c16363
+				background-color: #fff2f2
+			
+			&::-webkit-progress-value
+				background-color: #c16363
+		
+	
+	&__value
+		margin-left: auto
+		flex: 1 0 84px
+		max-width: 84px
+		white-space: nowrap
+		margin-left: 10px
+		margin-right: 10px
+		
+		strong
+			font-size: 12px
+			+font(roboto, bold)
+		
+		
+		
+		
+	&__stat
+		font-size: 20px
+		flex: 1 0 20px
+		text-align: center
+		
+		&_empty
+			color: #c1bfbf
+		
+		&_done
+			color: #2fd42f
+		
+		&_fail
+			color: #dc7878
+
+
+
+
+
+
+
+
+
+
+
+.kpiusercustomtasks
+	&__row
+		display: flex
+		align-items: center
+		justify-content: space-between
+		margin-bottom: 4px
+		position: relative
+		
+		+ .kpiusercustomtasks__row
+			&::after
+				content: ''
+				width: 100%
+				height: 1px
+				background-color: #eee
+				position: absolute
+				top: -2px	
+	
+	&__item
+		width: 100%
+		min-height: 34px
+	
+	&__title
+		font-size: 14px
+		line-height: 16px
+	
+	&__values
+		display: flex
+		align-items: center
+		
+		span
+			padding-left: 5px
+			padding-right: 5px
+		
+		strong
+		
+		i
+			&.done
+				color: #2fd42f
+		
+			.fail
+				color: #dc7878
+	
+
+
+
+
+
+
+
+
+.personagetasks
+	+ .personagetasks
+		margin-top: 25px
+	
+	&__personage
+		display: flex
+		align-items: center
+		margin-bottom: 5px
+		background-color: #f0f2f4
+		padding: 2px
+		//border-bottom: 2px solid #b6c1ca
+		
+		span
+			font-size: 14px
+			margin-left: 10px
+			
+			&::before
+				content: '|'
+				margin-right: 10px
+			
+	
+	&__list
+		
+	
+	&__item
+		display: flex
+		align-items: center
+		justify-content: space-between
+		position: relative
+		padding: 5px
+		border-radius: 3px
+		overflow: hidden
+		background-color: #f1f5d6
+		
+		+ .personagetasks__item
+			margin-top: 5px
+		
+		&_done
+			background-color: #c2efbc
+		
+		&_verydone
+			background-color: #81f192
+		
+		
+		
+			
+			
+			
+			
+		
+	&__task
+		flex: 0 1 100%
+		font-size: 12px
+		line-height: 12px
+		margin-right: 4px
+	
+	
+	&__values
+		display: flex
+		align-items: center
+		
+		span
+			padding-left: 5px
+			padding-right: 5px
+		
+		strong
+		
+		i
+			&.done
+				color: #2fd42f
+		
+			.fail
+				color: #dc7878
+		
+		
+	
+	&__repeats
+		display: flex
+		align-items: center
+		justify-content: space-between
+		width: 100px
+		margin-left: 5px
+	
+	
+		
+	&__need
+		+font(roboto, bold)
+		margin-left: 5px
+		color: #555
+		
+		&::before
+			content: 'x'
+			position: relative
+			top: -1px
+			+font(roboto, regular)
