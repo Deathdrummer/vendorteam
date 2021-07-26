@@ -11,7 +11,7 @@
 							</tr>
 						</thead>
 						<tbody>
-							{% for id, user in compounds_data %}
+							{% for id, user in compounds_data|sortusers %}
 								<tr{% if user.color %} style="background-color: {{user.color}}"{% endif %}>
 									<td class="w1 nopadding">
 										<div class="image mini" style="background-image: url('public/images/{% if user.avatar %}users/mini/{{user.avatar}}{% else %}user_mini.jpg{% endif %}')">{% if user.is_resign and is_lider %}<div class="resign" title="Увольняется"></div>{% endif %}</div>
@@ -48,7 +48,7 @@
 							</tr>
 						</thead>
 						<tbody>
-							{% for userId, user in compounds_data %}
+							{% for userId, user in compounds_data|sortusers %}
 								<tr{% if user.color %} style="background-color: {{user.color}}"{% endif %}>
 									{% for raidId, raid in raids %}
 										<td class="text-center">
@@ -77,7 +77,7 @@
 							</tr>
 						</thead>
 						<tbody>
-							{% for id, user in compounds_data %}
+							{% for id, user in compounds_data|sortusers %}
 								<tr{% if user.color %} style="background-color: {{user.color}}"{% endif %}>
 									<td class="w1 text-center">
 										{{user.rate_summ|default(0)}}

@@ -12,12 +12,65 @@
 	
 	
 		<ul class="tabstitles">
-			<li id="tabNewPersonages">Заявки от пользователей</li>
 			<li id="tabGamesIds">ID игр</li>
+			<li id="tabNewPersonages">Заявки от пользователей</li>
 		</ul>
 		
 		
 		<div class="tabscontent">
+			<div tabid="tabGamesIds">
+				<div class="d-flex align-items-center mb-4">
+					<p>Поиск:</p>
+					<div class="d-flex align-items-center">
+						<div class="item inline">
+							<div class="select">
+								<select gameidsfilterfield>
+									<option value="pgi.game_id">ID игры</option>
+									<option value="pgi.nickname">Владелец</option>
+								</select>
+								<div class="select__caret"></div>
+							</div>
+						</div>
+						
+						<div class="item mt-0 ml-2">
+							<div class="field">
+								<input type="text" gameidsfilterval>
+							</div>
+						</div>
+						
+						<div class="item mt-0 ml-2">
+							<div class="buttons mt-0">
+								<button id="gameIdsSetSearch">Поиск</button>
+								<button id="gameIdsSetFilter7" class="ml-5">Истекает через 7 дней</button>
+								<button id="gameIdsSetFilter10">Истекает через 10 дней</button>
+								<button id="gameIdsSetFilterUnactive">Неактивные</button>
+								<button id="gameIdsResetFilter" class="remove">Сбросить</button>
+							</div>
+						</div>	
+					</div>
+					
+					<div class="item mt-0 ml-auto">
+						<div class="buttons">
+							<button id="addGameId">Добавить ID игры</button>
+						</div>
+					</div>
+				</div>
+				
+				<table class="table_hover" id="gamesIdsTable">
+					<thead>
+						<tr>
+							<td class="w450px">ID игры</td>
+							<td class="w200px">Кол-во персонажей</td>
+							<td></td>
+							<td class="w320px">Действует до</td>
+							<td class="w350px">Владелец</td>
+							<td class="w100px">Операции</td>
+						</tr>
+					</thead>
+					<tbody id="gameIdsList"></tbody>
+				</table>
+			</div>
+			
 			<div tabid="tabNewPersonages">
 				{% if personages %}	
 					<table>
@@ -81,63 +134,6 @@
 				{% else %}
 					<p class="empty">Нет данных</p>
 				{% endif %}
-			</div>
-			
-			
-			
-			
-			
-			<div tabid="tabGamesIds">
-				<div class="d-flex align-items-center mb-4">
-					<p>Поиск:</p>
-					<div class="d-flex align-items-center">
-						<div class="item inline">
-							<div class="select">
-								<select gameidsfilterfield>
-									<option value="pgi.game_id">ID игры</option>
-									<option value="pgi.nickname">Владелец</option>
-								</select>
-								<div class="select__caret"></div>
-							</div>
-						</div>
-						
-						<div class="item mt-0 ml-2">
-							<div class="field">
-								<input type="text" gameidsfilterval>
-							</div>
-						</div>
-						
-						<div class="item mt-0 ml-2">
-							<div class="buttons mt-0">
-								<button id="gameIdsSetSearch">Поиск</button>
-								<button id="gameIdsSetFilter7" class="ml-5">Истекает через 7 дней</button>
-								<button id="gameIdsSetFilter10">Истекает через 10 дней</button>
-								<button id="gameIdsSetFilterUnactive">Неактивные</button>
-								<button id="gameIdsResetFilter" class="remove">Сбросить</button>
-							</div>
-						</div>	
-					</div>
-					
-					<div class="item mt-0 ml-auto">
-						<div class="buttons">
-							<button id="addGameId">Добавить ID игры</button>
-						</div>
-					</div>
-				</div>
-				
-				<table class="table_hover" id="gamesIdsTable">
-					<thead>
-						<tr>
-							<td class="w450px">ID игры</td>
-							<td class="w200px">Кол-во персонажей</td>
-							<td></td>
-							<td class="w320px">Действует до</td>
-							<td class="w350px">Владелец</td>
-							<td class="w100px">Операции</td>
-						</tr>
-					</thead>
-					<tbody id="gameIdsList"></tbody>
-				</table>
 			</div>
 		</div>
 	

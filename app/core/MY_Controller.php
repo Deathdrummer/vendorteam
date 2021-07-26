@@ -143,6 +143,13 @@ class MY_Controller extends CI_Controller {
 				'title' => 'KPI планы',
 				'desc' 	=> 'Доступ к KPI планам',
 				'icon'	=> 'optin-monster'
+			],
+			17 => [
+				'id'	=> 'users_addict',
+				'url'	=> 'users_addict',
+				'title' => 'Список участников',
+				'desc' 	=> 'Список участников',
+				'icon'	=> 'optin-monster'
 			]
 		];
 

@@ -210,6 +210,27 @@ class Admin_model extends My_Model {
 	
 	
 	
+	
+	/**
+	 * Сохранить
+	 * @param 
+	 * @return 
+	*/
+	public function setUsersField($userId = false, $field = false, $value = false) {
+		$this->db->where('id', $userId);
+		if (!$this->db->update('users', [$field => $value])) return false;
+		return true;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	/**
 	 * Удалить файл
 	 * @param 

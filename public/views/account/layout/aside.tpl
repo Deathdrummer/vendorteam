@@ -124,7 +124,31 @@
 			{% endif %}
 		</div>
 	</div>
-	<div class="leftblock__block leftblock__block_bottom mt-2 mt-md-3{% if not is_verify_user %} p-0{% endif %}" id="accountBottomBlock">
+	
+	<div class="leftblock__block leftblock__block_icons mt-2 mt-md-3">
+		<ul class="drow dgutter-10">
+			{% if notionlink_setting %}
+				<li class="dcol-5"><a href="{{notionlink_setting}}" target="_blank" title="Notion"><img src="{{base_url('public/images/navicons/icon_notion.png')}}" alt=""></a></li>
+			{% endif %}
+			
+			{% if screenshot %}
+				<li class="dcol-5"><a href="{{screenshot}}" target="_blank" title="Скриншот"><img src="{{base_url('public/images/navicons/icon_screenshot.png')}}" alt=""></a></li>
+			{% endif %}
+			
+			{% if paydataformlink_setting %}
+				<li class="dcol-5"><a href="{{paydataformlink_setting}}" target="_blank" title="Заполнить форму"><img src="{{base_url('public/images/navicons/icon_paydata.png')}}" alt=""></a></li>
+			{% endif %}
+			
+			{% if raidliderreport_setting and is_lider %}
+				<li class="dcol-5"><a href="{{raidliderreport_setting}}" target="_blank" title="Перейти к отчету"><img src="{{base_url('public/images/navicons/icon_report.png')}}" alt=""></a></li>
+			{% endif %}
+			
+			{#<li><img src="{{base_url('public/images/navicons/icon_paydata.png')}}" alt=""></li>#}
+		</ul>
+	</div>
+	
+	
+	<div class="leftblock__block leftblock__block_bottom{% if not is_verify_user %} p-0{% endif %}" id="accountBottomBlock">
 		<div class="leftblock__nav leftblock__nav_bottom noselect">
 			{% if is_verify_user %}
 				<ul>
@@ -147,7 +171,7 @@
 						{% include 'views/account/render/payment_order.tpl' %}
 					{% endif %}
 					
-					{% if not access or access.navdown.message %}<li onclick="window.open('{{callbackform_setting}}')"><svg><use xlink:href="#message"></use></svg><span>Форма для обращений</span></li>{% endif %}
+					{% if not access or access.navdown.message %}<li onclick="window.open('{{callbackform_setting}}')"><svg><use xlink:href="#message"></use></svg><span>Обращение в Support отдел</span></li>{% endif %}
 					{#{% include 'views/account/render/complaints.tpl' %}#}
 				</ul>
 			{% endif %}

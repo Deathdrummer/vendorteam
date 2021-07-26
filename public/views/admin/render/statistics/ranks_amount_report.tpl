@@ -11,22 +11,25 @@
 			<div tabid="tabStaticAmount{{static}}">
 				
 				<div class="report">
-					<table class="w-16rem">
-						<thead>
-							<tr>
-								<td>Звание</td>
-							</tr>	
-						</thead>
-						<tbody>
-							{% for rank in ranksData|keys|sort %}
+					<div>
+						<table class="w-16rem">
+							<thead>
 								<tr>
-									<td class="h52px">
-										<p>{{ranks[rank]['name']}}</p>
-									</td>
-								</tr>
-							{% endfor %}
-						</tbody>
-					</table>
+									<td>Звание</td>
+								</tr>	
+							</thead>
+							<tbody>
+								{% for rank in ranksData|keys|sort %}
+									<tr>
+										<td class="h52px">
+											<p>{{ranks[rank]['name']}}</p>
+										</td>
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+						
 					<div class="scroll">
 						<table>
 							<thead>
@@ -55,28 +58,31 @@
 							</tbody>
 						</table>
 					</div>
-					<table class="w-24rem table_fixed">
-						<thead>
-							<td>Медианное значение</td>
-							<td>Среднее значение</td>
-							<td>Сумма</td>
-						</thead>
-						<tbody>
-							{% for rId, timepoints in ranksData|sort %}
-								<tr>
-									<td class="h52px">
-										{% if totals[static][rId]['median'] %}<strong>{{totals[static][rId]['median']|number_format(2, '.', ' ')}} ₽</strong>{% else %}-{% endif %}
-									</td>
-									<td class="h52px">
-										{% if totals[static][rId]['avg'] %}<strong>{{totals[static][rId]['avg']|number_format(2, '.', ' ')}} ₽</strong>{% else %}-{% endif %}
-									</td>
-									<td class="h52px">
-										{% if totals[static][rId]['summ'] %}<strong>{{totals[static][rId]['summ']|number_format(2, '.', ' ')}} ₽</strong>{% else %}-{% endif %}
-									</td>
-								</tr>
-							{% endfor %}
-						</tbody>
-					</table>
+					
+					<div>
+						<table class="w-24rem table_fixed">
+							<thead>
+								<td>Медианное значение</td>
+								<td>Среднее значение</td>
+								<td>Сумма</td>
+							</thead>
+							<tbody>
+								{% for rId, timepoints in ranksData|sort %}
+									<tr>
+										<td class="h52px">
+											{% if totals[static][rId]['median'] %}<strong>{{totals[static][rId]['median']|number_format(2, '.', ' ')}} ₽</strong>{% else %}-{% endif %}
+										</td>
+										<td class="h52px">
+											{% if totals[static][rId]['avg'] %}<strong>{{totals[static][rId]['avg']|number_format(2, '.', ' ')}} ₽</strong>{% else %}-{% endif %}
+										</td>
+										<td class="h52px">
+											{% if totals[static][rId]['summ'] %}<strong>{{totals[static][rId]['summ']|number_format(2, '.', ' ')}} ₽</strong>{% else %}-{% endif %}
+										</td>
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
 				</div>
 				
 				

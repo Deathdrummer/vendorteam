@@ -330,6 +330,25 @@ class Operator extends MY_Controller {
 			case 'resigns':
 				$data['resigns'] = $this->admin_model->getResigns();
 			
+			case 'users_addict':
+				$this->load->model('users_model');
+				if ($usersData = $this->users_model->getUsers($params)) {
+					$data['statics'] = $this->admin_model->getStatics();
+					$data['ranks'] = $this->admin_model->getRanks();
+					
+					$data['users'] = [];
+					foreach ($usersData as $user) {
+						if ($user['verification'] == 0 && $user['deleted'] == 0) $userStat = 'new';
+						elseif ($user['deleted'] == 1) $userStat = 'deleted'; 
+						elseif ($user['verification'] == 1 && $user['deleted'] == 0) $userStat = 'active'; 
+						
+						$static = arrTakeItem($user, 'static') ?: 0;
+						$userId = arrTakeItem($user, 'id');
+						$data['users'][$userStat][$static][$userId] = $user;
+					}
+				}
+				break;
+			
 			default: 
 				break;	
 		}

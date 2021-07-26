@@ -339,7 +339,26 @@ body
 		&_bottom
 			background-color: rgba(#000, 0.5)
 			padding: 10px
+		
+		&_icons
+			background-color: rgba(91, 69, 111, 0.43)
+			padding: 10px 15px
 			
+			ul
+				li
+					img
+						width: 40px
+						height: 40px
+						cursor: pointer
+						transition: filter 0.16s
+						border-radius: 50%
+						
+						&:hover
+							filter: brightness(1.2)
+						
+						&:active
+							box-shadow: 0 0 0 1px #c7add4
+							transition: filter 0s
 	
 	
 	&__title

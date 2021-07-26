@@ -14,22 +14,24 @@
 				<h2>{{static}}</h2>
 				
 				<div class="report">
-					<table class="payment_patterns_report">
-						<thead>
-							<tr>
-								<td>Никнейм</td>
-								<td class="w34">Резерв</td>
-							</tr>
-						</thead>
-						<tbody>
-							{% for userId, userData in users %}
+					<div>
+						<table class="payment_patterns_report">
+							<thead>
 								<tr>
-									<td>{{userData.nickname}}</td>
-									<td>{{userData.deposit|number_format(2, '.', ' ')}} ₽</td>
+									<td>Никнейм</td>
+									<td class="w34">Резерв</td>
 								</tr>
-							{% endfor %}
-						</tbody>
-					</table>
+							</thead>
+							<tbody>
+								{% for userId, userData in users %}
+									<tr>
+										<td>{{userData.nickname}}</td>
+										<td>{{userData.deposit|number_format(2, '.', ' ')}} ₽</td>
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
 					
 					<div class="scroll">
 						<table>
@@ -54,41 +56,43 @@
 						</table>
 					</div>
 					
-					<table class="w700">
-						<thead>
-							<tr>
-								<td>Общая сумма</td>
-								<td>Выплачено</td>
-								<td>Зар. сумма</td>
-								<td>Не выплачено</td>
-								<td>Платежные реквизиты</td>
-								<td class="center"><i title="Статус выплаты" class="fa fa-check-square"></i></td>
-							</tr>
-						</thead>
-						<tbody>
-							{% for userId, userData in users %}
+					<div>
+						<table class="w700">
+							<thead>
 								<tr>
-									<td class="nowrap w15">{{userData.full|number_format(2, '.', ' ')}} ₽</td>
-									<td class="nowrap w15">{{userData.payout|number_format(2, '.', ' ')}} ₽</td>
-									<td class="nowrap w15">{{userData.profit|number_format(2, '.', ' ')}} ₽</td>
-									<td class="nowrap w15">{{userData.debit|number_format(2, '.', ' ')}} ₽</td>
-									<td>{{userData.pay_method}}</td>
-									<td class="square_block">
-										{% if userData.final_payment != 0 %}
-											{% if userData.pay_done == 0 %}
-												<div paydone="1" data="{{pattern_id}}|{{staticId}}|{{userId}}|{{userData.to_deposit}}" class="forbidden" title="Не рассчитан"><i class="fa fa-check-square-o"></i></div>
-											{% else %}
-												<div paydone="0" data="{{pattern_id}}|{{staticId}}|{{userId}}|{{userData.to_deposit}}" class="success" title="рассчитан"><i class="fa fa-square-o"></i></div>
-											{% endif %}
-										{% else %}
-											<div class="forbidden disabled" title="Недоступен"><i class="fa fa-check-square-o"></i></div>
-										{% endif %}
-											
-									</td>
+									<td>Общая сумма</td>
+									<td>Выплачено</td>
+									<td>Зар. сумма</td>
+									<td>Не выплачено</td>
+									<td>Платежные реквизиты</td>
+									<td class="center"><i title="Статус выплаты" class="fa fa-check-square"></i></td>
 								</tr>
-							{% endfor %}
-						</tbody>
-					</table>
+							</thead>
+							<tbody>
+								{% for userId, userData in users %}
+									<tr>
+										<td class="nowrap w15">{{userData.full|number_format(2, '.', ' ')}} ₽</td>
+										<td class="nowrap w15">{{userData.payout|number_format(2, '.', ' ')}} ₽</td>
+										<td class="nowrap w15">{{userData.profit|number_format(2, '.', ' ')}} ₽</td>
+										<td class="nowrap w15">{{userData.debit|number_format(2, '.', ' ')}} ₽</td>
+										<td>{{userData.pay_method}}</td>
+										<td class="square_block">
+											{% if userData.final_payment != 0 %}
+												{% if userData.pay_done == 0 %}
+													<div paydone="1" data="{{pattern_id}}|{{staticId}}|{{userId}}|{{userData.to_deposit}}" class="forbidden" title="Не рассчитан"><i class="fa fa-check-square-o"></i></div>
+												{% else %}
+													<div paydone="0" data="{{pattern_id}}|{{staticId}}|{{userId}}|{{userData.to_deposit}}" class="success" title="рассчитан"><i class="fa fa-square-o"></i></div>
+												{% endif %}
+											{% else %}
+												<div class="forbidden disabled" title="Недоступен"><i class="fa fa-check-square-o"></i></div>
+											{% endif %}
+												
+										</td>
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
 				</div>
 			</div>
 			{% set itercontent = itercontent + 1 %}

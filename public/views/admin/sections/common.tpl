@@ -743,6 +743,7 @@
 				
 				{% include form~'field.tpl' with {'label': 'Ссылка на отчет', 'name': 'raidliderreport', 'class': 'w100'} %}
 				{% include form~'field.tpl' with {'label': 'Ссылка на платежные данные', 'name': 'paydataformlink', 'class': 'w100'} %}
+				{% include form~'field.tpl' with {'label': 'Ссылка на notion', 'name': 'notionlink', 'class': 'w100'} %}
 				{% include form~'field.tpl' with {'label': 'Ссылка на форму обратной связи', 'name': 'callbackform', 'class': 'w100'} %}
 				
 			</fieldset>

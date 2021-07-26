@@ -217,6 +217,24 @@ class Admin extends MY_Controller {
 				$data['sort_order'] = isset($params['order']) ? $params['order'] : 'ASC';
 				break;
 			
+			case 'users_addict':
+				if ($usersData = $this->users_model->getUsers($params)) {
+					$data['statics'] = $this->admin_model->getStatics();
+					$data['ranks'] = $this->admin_model->getRanks();
+					
+					$data['users'] = [];
+					foreach ($usersData as $user) {
+						if ($user['verification'] == 0 && $user['deleted'] == 0) $userStat = 'new';
+						elseif ($user['deleted'] == 1) $userStat = 'deleted'; 
+						elseif ($user['verification'] == 1 && $user['deleted'] == 0) $userStat = 'active'; 
+						
+						$static = arrTakeItem($user, 'static') ?: 0;
+						$userId = arrTakeItem($user, 'id');
+						$data['users'][$userStat][$static][$userId] = $user;
+					}
+				}
+				break;
+			
 			case 'personages':
 				$data['game_ids'] = $this->admin_model->personagesGetGameIds(true);
 				$data['personages'] = $this->admin_model->personagesGet();
@@ -565,6 +583,30 @@ class Admin extends MY_Controller {
 		}
 		echo 0;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Задать значение для поля участника
+	 * @param 
+	 * @return 
+	*/
+	public function set_user_field() {
+		if (!$this->input->is_ajax_request()) return false;
+		
+		$data = bringTypes($this->input->post());
+		
+		if (!$this->admin_model->setUsersField($data['user_id'], $data['field'], $data['value'])) exit('0');
+		echo '1';
+	}
+	
+	
+	
 	
 	
 	

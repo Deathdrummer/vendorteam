@@ -13,38 +13,37 @@
 				<h2>{{static.static_name}}</h2>
 				
 				<div class="report">
-					<table class="main_report_names">
-						<thead>
-							<tr>
-								<td class="center w36px">№</td>
-								<td class="nowrap">Состав</td>
-								<td class="nowrap">Звание</td>
-							</tr>
-						</thead>
-						<tbody>
-							{% set index = 1 %}
-							{% for userId, userData in static.users %}
+					<div>
+						<table class="main_report_names">
+							<thead>
 								<tr>
-									<td class="center"><strong>{{index}}</strong></td>
-									<td>{{userData.nickname}}</td>
-									<td>{{userData.rank_name}}</td>
+									<td class="center w36px">№</td>
+									<td class="nowrap">Состав</td>
+									<td class="nowrap">Звание</td>
 								</tr>
-								{% set index = index + 1 %}
-							{% endfor %}
-							<tr>
-								<td colspan="2">
-									<button class="addraid" operatornewkey="{{staticId}}" report="{% if pattern_id %}1{% else %}0{% endif %}"{% if not add_raid_access[staticId] %} disabled{% endif %}>
-										<i class="fa fa-plus"></i>
-										<span>Ключ</span>
-									</button>
-								</td>
-								<td colspan="2" class="right">Сумма коэффициентов:</td>
-							</tr>
-						</tbody>
-					</table>
-					
-					
-					
+							</thead>
+							<tbody>
+								{% set index = 1 %}
+								{% for userId, userData in static.users %}
+									<tr>
+										<td class="center"><strong>{{index}}</strong></td>
+										<td>{{userData.nickname}}</td>
+										<td>{{userData.rank_name}}</td>
+									</tr>
+									{% set index = index + 1 %}
+								{% endfor %}
+								<tr>
+									<td colspan="2">
+										<button class="addraid" operatornewkey="{{staticId}}" report="{% if pattern_id %}1{% else %}0{% endif %}"{% if not add_raid_access[staticId] %} disabled{% endif %}>
+											<i class="fa fa-plus"></i>
+											<span>Ключ</span>
+										</button>
+									</td>
+									<td colspan="2" class="right">Сумма коэффициентов:</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
 					
 					<div class="scroll">
 						<table>
@@ -102,51 +101,48 @@
 						</table>
 					</div>
 					
-					
-					<table>
-						<thead>
-							<tr>
-								<td colspan="2">Сумма коэффициентов:</td>
-								<td>Выплата</td>
-								{% if pattern_id and not to_user and 7 in access %}<td class="center"><i title="Статус выплаты" class="fa fa-check-square"></i></td>{% endif %}
-							</tr>
-						</thead>
-						<tbody>
-							{% for userId, userData in static.users %}
+					<div>
+						<table>
+							<thead>
 								<tr>
-									<td colspan="2" class="nowidth center">{{userData.koeff_summ}}</td>
-
-									<td class="nowidth"><span class="nowrap">{{userData.payment|number_format(2, '.', ' ')}} ₽</span></td>
-									{% if pattern_id and not to_user and 7 in access %}
-										<td class="square_block">
-											{% if userData.payment != 0 %}
-												{% if userData.pay_done == 0 %}
-													<div paydonekey="1" data="{{pattern_id}}|{{staticId}}|{{userId}}|{{userData.payment}}" class="forbidden" title="Не рассчитан"><i class="fa fa-check-square-o"></i></div>
-												{% else %}
-													<div paydonekey="0" data="{{pattern_id}}|{{staticId}}|{{userId}}|{{userData.payment}}" class="success" title="рассчитан"><i class="fa fa-square-o"></i></div>
-												{% endif %}
-											{% else %}
-												<div class="forbidden disabled" title="Недоступен"><i class="fa fa-check-square-o"></i></div>
-											{% endif %}
-												
-										</td>
-									{% endif %}
+									<td colspan="2">Сумма коэффициентов:</td>
+									<td>Выплата</td>
+									{% if pattern_id and not to_user and 7 in access %}<td class="center"><i title="Статус выплаты" class="fa fa-check-square"></i></td>{% endif %}
 								</tr>
-							{% endfor %}
-							<tr>
-								<td class="right">Сумма коэффициентов периода:</td>
-								<td><strong>{{static.period_koeff_summ|round(3)}}</strong></td>
-								<td class="right"><span class="nowrap right">Бюджет:</span> <strong class="nowrap">{{static.cash|number_format(2, '.', ' ')}} ₽</strong></td>
-								{% if pattern_id and not to_user and 7 in access %}<td></td>{% endif %}
-							</tr>
-						</tbody>
-					</table>
+							</thead>
+							<tbody>
+								{% for userId, userData in static.users %}
+									<tr>
+										<td colspan="2" class="nowidth center">{{userData.koeff_summ}}</td>
+										<td class="nowidth"><span class="nowrap">{{userData.payment|number_format(2, '.', ' ')}} ₽</span></td>
+										{% if pattern_id and not to_user and 7 in access %}
+											<td class="square_block">
+												{% if userData.payment != 0 %}
+													{% if userData.pay_done == 0 %}
+														<div paydonekey="1" data="{{pattern_id}}|{{staticId}}|{{userId}}|{{userData.payment}}" class="forbidden" title="Не рассчитан"><i class="fa fa-check-square-o"></i></div>
+													{% else %}
+														<div paydonekey="0" data="{{pattern_id}}|{{staticId}}|{{userId}}|{{userData.payment}}" class="success" title="рассчитан"><i class="fa fa-square-o"></i></div>
+													{% endif %}
+												{% else %}
+													<div class="forbidden disabled" title="Недоступен"><i class="fa fa-check-square-o"></i></div>
+												{% endif %}
+													
+											</td>
+										{% endif %}
+									</tr>
+								{% endfor %}
+								<tr>
+									<td class="right">Сумма коэффициентов периода:</td>
+									<td><strong>{{static.period_koeff_summ|round(3)}}</strong></td>
+									<td class="right"><span class="nowrap right">Бюджет:</span> <strong class="nowrap">{{static.cash|number_format(2, '.', ' ')}} ₽</strong></td>
+									{% if pattern_id and not to_user and 7 in access %}<td></td>{% endif %}
+								</tr>
+							</tbody>
+						</table>
+					</div>
 				</div>
 			</div>
 		{% endfor %}
 	</div>
 
-
-
-		
 {% endif %}

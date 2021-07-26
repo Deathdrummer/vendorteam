@@ -44,17 +44,15 @@
 				<ul>
 					<li data-block="common">Общие настройки</li>
 					<li data-block="users">Участники</li>
-					<li data-block="personages">Персонажи</li>
+					<li data-block="users_addict">Участники доп.</li>
 					<li data-block="statics">Статики</li>
 					<li data-block="accounts_access">Уровни доступа аккаунтов</li>
 					<li data-block="ranks">Звания</li>
 					{#<li data-block="access_levels">Ранги</li>#}
 					<li data-block="roles">Роли</li>
 					<li data-block="classes">Классы</li>
-					<li data-block="mentors">Наставничество</li>
+					
 					{#<li data-block="payments_types">Средства платежа</li>#}
-					<li data-block="raids_types">Типы рейдов и ключей</li>
-					<li data-block="filemanager">Файлменеджер</li>
 				</ul>
 				<ul>
 					<li data-block="reports">Отчеты</li>
@@ -65,12 +63,17 @@
 					<li data-block="newsfeed">Лента новостей</li>
 					<li data-block="operators">Операторы</li>
 					<li data-block="guides">Образование</li>
-					<li data-block="statistics_amounts">Статистика (доходы)</li>
-					<li data-block="statistics">Статистика (участники)</li>
-					<li data-block="statistics_settings">Статистика (настройки)</li>
+					
 					{#<li data-block=""></li>#}
 				</ul>
 				<ul>
+					<li data-block="personages">Персонажи</li>
+					<li data-block="mentors">Наставничество</li>
+					<li data-block="raids_types">Типы рейдов и ключей</li>
+					<li data-block="filemanager">Файлменеджер</li>
+					<li data-block="statistics_amounts">Статистика (доходы)</li>
+					<li data-block="statistics">Статистика (участники)</li>
+					<li data-block="statistics_settings">Статистика (настройки)</li>
 					<li data-block="kpi_planes">KPI планы</li>
 				</ul>
 			</nav>

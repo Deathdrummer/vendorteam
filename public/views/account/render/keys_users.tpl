@@ -3,27 +3,29 @@
 		<div class="reports" style="min-width: 0px !important">
 			{% if keys_data %}
 				<div class="report">
-					<table class="popup__table report__table_left minheight" style="min-width: 230px !important;">
-						<thead>
-							<tr>
-								<td></td>
-								<td><strong>Никнейм</strong></td>
-							</tr>
-						</thead>
-						<tbody>
-							{% for id, user in keys_data %}
-								<tr{% if user.color %} style="background-color: {{user.color}}"{% endif %}>
-									<td class="w1 nopadding">
-										<div class="image mini" style="background-image: url('public/images/{% if user.avatar %}users/mini/{{user.avatar}}{% else %}user_mini.jpg{% endif %}')">{% if user.is_resign and is_lider %}<div class="resign" title="Увольняется"></div>{% endif %}</div>
-									</td>
-									<td><strong>{{user.nickname}}</strong></td>
+					<div>
+						<table class="popup__table report__table_left minheight" style="min-width: 230px !important;">
+							<thead>
+								<tr>
+									<td></td>
+									<td><strong>Никнейм</strong></td>
 								</tr>
-							{% endfor %}
-							<tr>
-								<td class="right" colspan="2">Сумма коэффициентов:</td>
-							</tr>
-						</tbody>
-					</table>
+							</thead>
+							<tbody>
+								{% for id, user in keys_data %}
+									<tr{% if user.color %} style="background-color: {{user.color}}"{% endif %}>
+										<td class="w1 nopadding">
+											<div class="image mini" style="background-image: url('public/images/{% if user.avatar %}users/mini/{{user.avatar}}{% else %}user_mini.jpg{% endif %}')">{% if user.is_resign and is_lider %}<div class="resign" title="Увольняется"></div>{% endif %}</div>
+										</td>
+										<td><strong>{{user.nickname}}</strong></td>
+									</tr>
+								{% endfor %}
+								<tr>
+									<td class="right" colspan="2">Сумма коэффициентов:</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
 					
 					<div class="scroll" style="max-width: 714px !important">
 						<table class="popup__table report__table_center minheight">
@@ -72,28 +74,29 @@
 								</tr>
 							</tbody>
 						</table>
-						
 					</div>
 					
-					<table class="minheight report__table_right">
-						<thead>
-							<tr>
-								<td><strong>Сумм. коэфф.</strong></td>
-							</tr>
-						</thead>
-						<tbody>
-							{% for id, user in keys_data %}
-								<tr{% if user.color %} style="background-color: {{user.color}}"{% endif %}>
-									<td class="w1 text-center">
-										{{user.rate_summ|default(0)}}
-									</td>
+					<div>
+						<table class="minheight report__table_right">
+							<thead>
+								<tr>
+									<td><strong>Сумм. коэфф.</strong></td>
 								</tr>
-							{% endfor %}
-							<tr>
-								<td>{{all_summ_koeff}}</td>
-							</tr>
-						</tbody>
-					</table>
+							</thead>
+							<tbody>
+								{% for id, user in keys_data %}
+									<tr{% if user.color %} style="background-color: {{user.color}}"{% endif %}>
+										<td class="w1 text-center">
+											{{user.rate_summ|default(0)}}
+										</td>
+									</tr>
+								{% endfor %}
+								<tr>
+									<td>{{all_summ_koeff}}</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
 				</div>
 			{% endif %}
 		</div>
