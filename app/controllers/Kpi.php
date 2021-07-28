@@ -490,18 +490,26 @@ class Kpi extends MY_Controller {
 								$visitsNeed = (isset($visitsField['need']) && $visitsField['need'] > 0) ? $visitsField['need'] : false;
 								$visitsFact = isset($visitsField['fact']) ? $visitsField['fact'] : 0;
 								
-								$donePercentVisits = $visitsNeed ? round(($visitsFact / $visitsNeed) * $scoresVisitsPercent, 3) : 0;
-								$calcData[$userId]['visits'] = $donePercentVisits > $scoresVisitsPercent ? $scoresVisitsPercent : $donePercentVisits;
+								if (!$visitsNeed) {
+									$calcData[$userId]['visits'] = 0;
+								} else {
+									$donePercentVisits = $visitsNeed ? round(($visitsFact / $visitsNeed) * $scoresVisitsPercent, 3) : 0;
+									$calcData[$userId]['visits'] = $donePercentVisits > $scoresVisitsPercent ? $scoresVisitsPercent : $donePercentVisits;
+								}	
 							}
 								
 							if ($scoresFinePercent) {
 								$fineNeed = (isset($fineField['need']) && $fineField['need'] > 0) ? $fineField['need'] : false;
 								$fineFact = isset($fineField['fact']) ? $fineField['fact'] : 0;
 								
-								$fineIndex = ($i = -$fineNeed + $fineFact) > 0 ? $i  : 0;
-								$calcIndex = (($fineNeed - $fineIndex) / $fineNeed) * $scoresFinePercent;
-								$donePercentFine = $calcIndex < $scoresFinePercent ? $calcIndex : $scoresFinePercent;
-								$calcData[$userId]['fine'] = $donePercentFine > 0 ? $donePercentFine : 0;
+								if (!$fineNeed) {
+									$calcData[$userId]['fine'] = 0;
+								} else {
+									$fineIndex = ($i = -$fineNeed + $fineFact) > 0 ? $i  : 0;
+									$calcIndex = (($fineNeed - $fineIndex) / $fineNeed) * $scoresFinePercent;
+									$donePercentFine = $calcIndex < $scoresFinePercent ? $calcIndex : $scoresFinePercent;
+									$calcData[$userId]['fine'] = $donePercentFine > 0 ? $donePercentFine : 0;
+								}	
 							}
 							
 							

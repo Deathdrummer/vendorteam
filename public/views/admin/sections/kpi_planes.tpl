@@ -467,6 +467,20 @@
 							mouseWheelScrollStep: 50
 						});
 						
+						
+						
+						$('[userspersonagesform]').ready(function() {
+							let cellsWidth = 0;
+							$('[userspersonagesform]:first').find('[kpifieldcell]').each(function() {
+								let w = $(this).outerWidth();
+								console.log(w);
+								cellsWidth += w;
+							});
+							$('[userspersonagesform]').find('.kpitasksblock').width('calc(100vw - '+(cellsWidth+92)+'px)');
+						});
+						
+						
+						
 						$('[userspersonagesform]').each(function() {
 							$(this).ddrScrollTableY({height: 'calc(100vh - 420px)', wrapBorderColor: '#d7dbde'});
 						})
@@ -506,6 +520,7 @@
 						
 						
 						
+						// --------------------------------------------- Для чекбоксов
 						$('[kpiformcustomparam]').on('change', function() {
 							if (this.type != 'checkbox') return false;
 							let d = $(this).attr('kpiformcustomparam').split('|'),
@@ -524,7 +539,7 @@
 						});
 						
 						
-						
+						// --------------------------------------------- Для number полей
 						let setCustomParamTOut;
 						$('[kpiformcustomparam]').onChangeNumberInput(function(value, thisInput, type) {
 							if (thisInput.type == 'checkbox') return false;
@@ -533,7 +548,6 @@
 								userId 		= d[1];
 							
 							$(thisInput).parent().removeClass('kpiparamsfield__error kpiparamsfield__changed');
-							
 							
 							function _saveCustomParam() {
 								$(thisInput).parent().addClass('kpiparamsfield__saved');
@@ -670,7 +684,12 @@
 			if (stat) {
 				$('#kpiDataContainer').html(html);
 				ddrInitTabs();
-				$('.kpiprocessblock').ddrUnitHeight('.kpiprocesscard');
+				$('.kpiprocessblock:visible').ddrUnitHeight('.kpiprocesscard');
+				
+				$(document).on('changetabs', function() {
+					$('.kpiprocessblock:visible').ddrUnitHeight('.kpiprocesscard');
+				});
+				
 				$('#kpiSearchBlock').setAttrib('hidden');
 				$('#kpiProgressSearchBlock').removeAttrib('hidden');
 				$('#kpiStatisticsSaveButton').setAttrib('hidden');

@@ -483,7 +483,6 @@ class Kpi_model extends MY_Model {
 		if ($userId) $this->db->where('user_id', $userId);
 		if (!$tableData = $this->_result($this->kpiPlanFieldsTable)) return false;
 		
-		
 		if ($periodCustomFields = $this->getPeriod($periodId, 'custom_fields')) {
 			$periodCustomFields = json_decode($periodCustomFields, true);
 			$periodCustomFields = array_column($periodCustomFields, 'name');
@@ -655,6 +654,7 @@ class Kpi_model extends MY_Model {
 			
 			if ($planCustomFields = $userData['params']['custom_fields']) {
 				foreach ($planCustomFields as $field => $needValue) {
+					
 					$formData[$staticId][$userId]['custom_fields'][$field] = [
 						'need' => $needValue,
 						'fact' => isset($customFieldsData[$userId][$field]) ? $customFieldsData[$userId][$field] : null
@@ -1104,6 +1104,187 @@ class Kpi_model extends MY_Model {
 		if (!$this->reports->insertUsersOrders($orders)) return false;
 		return true;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function calcUserStatistics($periodId = false, $uId = false) {
+		if (!$periodId || !$uId) return false;
+		$this->load->model(['admin_model' => 'admin', 'users_model' => 'users']);
+				
+		$ndaCoeff = $this->admin->getSettings('nda_coeff');
+		$ranks = $this->admin->getRanks();
+		$amountsData = $this->getAmounts();
+		
+		$calcData = [];
+
+		if (!$period = $this->getPeriod($periodId)) return false;
+		
+		$scoresPersonages = isset($period['scores']['personages']) ? (float)$period['scores']['personages'] : 0;
+		$scoresVisits = isset($period['scores']['visits']) ? (float)$period['scores']['visits'] : 0;
+		$scoresFine = isset($period['scores']['fine']) ? (float)$period['scores']['fine'] : 0;
+		$scoresCustom = isset($period['scores']['customfields']) ? (float)$period['scores']['customfields'] : 0;
+		
+		$allScrores = $scoresPersonages + $scoresVisits + $scoresFine + $scoresCustom;
+		$oneScorePercent = 100 / $allScrores;
+		
+		$scoresPersonagesPercent = $scoresPersonages ? round($scoresPersonages * $oneScorePercent, 3) : false; // макс. проц. активность на персонажах
+		$scoresVisitsPercent = $scoresVisits ? round($scoresVisits * $oneScorePercent, 3) : false; // макс. проц. Посещаемость
+		$scoresFinePercent = $scoresFine ? round($scoresFine * $oneScorePercent, 3) : false; // макс. проц. штрафы
+		$scoresCustomPercent = $scoresCustom ? round($scoresCustom * $oneScorePercent, 3) : false; // макс. проц. доп. поля
+		
+		
+		// ----------------------------------------------------------------------------------------
+		
+		if ($scoresPersonagesPercent && ($usersPersonagesData = $this->getPersonagesToStat($period))) {
+			$allScrores = []; $doneScores = [];
+			foreach ($usersPersonagesData as $userId => $personages) foreach ($personages as $pId => $tasks) foreach ($tasks as $tId => $task) {
+				$done = isset($task['done']) ? $task['done'] : 0;
+				$repeats = $task['repeats'];
+				$score = $task['score'];
+				
+				if (!isset($allScrores[$userId])) $allScrores[$userId] = ($repeats * $score);
+				else $allScrores[$userId] += ($repeats * $score);
+				
+				if (!isset($doneScores[$userId])) $doneScores[$userId] = ($done * $score);
+				else $doneScores[$userId] += ($done * $score);
+			}
+			
+			foreach ($allScrores as $userId => $scores) {
+				$donePercentPersonages = round(($doneScores[$userId] / $scores) * $scoresPersonagesPercent, 3);
+				$calcData[$userId]['personages'] = $donePercentPersonages > $scoresPersonagesPercent ? $scoresPersonagesPercent : $donePercentPersonages;
+			}
+			
+			//суммируется общее кодичество баллов умноженное на кол-во повторний
+			//и откуда какая задача выполнена те баллы и высчитываются
+		}
+		
+		
+		
+		
+		// ----------------------------------------------------------------------------------------
+		
+		if ($usersFieldsData = $this->getFieldsToStat($period)) {
+			
+			foreach($usersFieldsData as $userId => $fields) {
+				$visitsField = arrTakeItem($fields, 'visits');
+				$fineField = arrTakeItem($fields, 'fine');
+				
+				if ($scoresVisitsPercent) {
+					$visitsNeed = (isset($visitsField['need']) && $visitsField['need'] > 0) ? $visitsField['need'] : false;
+					$visitsFact = isset($visitsField['fact']) ? $visitsField['fact'] : 0;
+					
+					$donePercentVisits = $visitsNeed ? round(($visitsFact / $visitsNeed) * $scoresVisitsPercent, 3) : 0;
+					$calcData[$userId]['visits'] = $donePercentVisits > $scoresVisitsPercent ? $scoresVisitsPercent : $donePercentVisits;
+				}
+					
+				if ($scoresFinePercent) {
+					$fineNeed = (isset($fineField['need']) && $fineField['need'] > 0) ? $fineField['need'] : false;
+					$fineFact = isset($fineField['fact']) ? $fineField['fact'] : 0;
+					
+					$fineIndex = ($i = -$fineNeed + $fineFact) > 0 ? $i  : 0;
+					$calcIndex = (($fineNeed - $fineIndex) / $fineNeed) * $scoresFinePercent;
+					$donePercentFine = $calcIndex < $scoresFinePercent ? $calcIndex : $scoresFinePercent;
+					$calcData[$userId]['fine'] = $donePercentFine > 0 ? $donePercentFine : 0;
+				}
+				
+				
+				//----------------------------------------- Кастомные поля
+				$allCustomScrores = []; $doneCustomScores = [];
+				if ($scoresCustomPercent) {
+					foreach ($fields as $field => $fData) {
+						$done = isset($fData['done']) ? $fData['done'] : 0;
+						$need = $fData['type'] == 'koeff' ? $fData['need'] : 1;
+						$score = $fData['score'];
+						
+						if (!isset($allCustomScrores[$userId])) $allCustomScrores[$userId] = ($need * $score);
+						else $allCustomScrores[$userId] += ($need * $score);
+						
+						if (!isset($doneCustomScores[$userId])) $doneCustomScores[$userId] = ($done * $score);
+						else $doneCustomScores[$userId] += ($done * $score);
+					}
+					
+					foreach ($allCustomScrores as $userId => $scores) {
+						$donePercentCustom = round(($doneCustomScores[$userId] / $scores) * $scoresCustomPercent, 3);
+						$calcData[$userId]['custom'] = $donePercentCustom > $scoresCustomPercent ? $scoresCustomPercent : $donePercentCustom;
+					}
+				}
+			}
+		}
+		
+		
+		// ----------------------------------------------------------------------------------------
+		
+		$finalData = []; $payoutData = [];
+		foreach ($calcData as $userId => $row) {
+			$finalData[$userId] = array_sum($calcData[$userId]);
+		}
+		
+		
+		if ($finalData && ($usersIds = array_keys($finalData))) {
+			$params = [
+				'where' => ['us.main' => 1, 'u.deleted' => 0],
+				'where_in' => ['field' => 'u.id', 'values' => $usersIds],
+				'fields' => 'static rank nda payment'
+			];
+			$users = $this->users->getUsers($params);
+			
+			foreach ($finalData as $userId => $scores) {
+				if ($userId != $uId) continue;
+				$userStatic = $users[$userId]['static'];
+				$userRank = $users[$userId]['rank'];
+				
+				$amount = isset($amountsData[$userStatic][$userRank][$period['payout_type']]) ? $amountsData[$userStatic][$userRank][$period['payout_type']] : 0;
+				$payout = 0;
+				
+				if ($amount) {
+					$payout = $amount ? (($amount / 100) * $scores) : 0;
+					$payout = $payout * ($users[$userId]['nda'] ?: $ndaCoeff);
+					$payout = $payout > $amount ? $amount : $payout;
+				}
+				
+				
+				if (!isset($payoutData[$userStatic][$userId])) {
+					$payoutData[$userStatic][$userId] = [
+						'rank'			=> $ranks[$userRank]['name'],
+						'nda'			=> $users[$userId]['nda'] ? 1 : 0,
+						'payment'		=> $users[$userId]['payment'],	
+						'payout_all'	=> round($payout, 2)
+					];
+				} else {
+					$payoutData[$userStatic][$userId]['payout_all'] += $payout;
+				}
+					
+				
+				$payoutData[$userStatic][$userId]['periods'][$periodId] = [
+					'summ'		=> $amount,
+					'persent'	=> $scores,
+					'payout'	=> $payout,
+				];
+			}
+		}
+			
+		
+		return isset($payoutData[$userStatic][$uId]['periods'][$periodId]) ? $payoutData[$userStatic][$uId]['periods'][$periodId] : false;
+	}
+	
+	
+	
+	
 	
 	
 	

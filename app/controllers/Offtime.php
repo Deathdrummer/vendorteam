@@ -68,12 +68,11 @@ class Offtime extends MY_Controller {
 		if (! $this->input->is_ajax_request()) return false;
 		$this->load->model(['account_model', 'admin_model']);
 		$static = $this->input->post('static');
-		$history = $history ?: ($this->input->post('history') ?: 0);
+		$history = $this->input->post('history') ?: 0;
 		
 		$startDatePoint = (date('j', time()) == 1) ? strtotime('today') : strtotime(date('d-m-Y', strtotime('first day of '.$history.' month')));
-		
+
 		$data['offtime_dates'] = getDatesRange($startDatePoint, date('t', $startDatePoint), 'day'); // 604800 показывать предыдущую неделю
-		
 		$data['disabled'] = $this->offtime_model->getOfftimeDisabled();
 		$data['user_id'] = get_cookie('id'); //$this->session->userdata('id');
 		$data['statics_names'] = $this->admin_model->getStatics(true);
@@ -84,6 +83,9 @@ class Offtime extends MY_Controller {
 		$data['history_disabled'] = $history >= 1 ? true : false;
 		
 		$data['users'] = $this->offtime_model->getOfftimeUsers($static);
+		
+		toLog($data['users']);
+		
 		$rolesLimits = $this->offtime_model->getRolesLimits($static);
 		
 		if ($data['users']) {

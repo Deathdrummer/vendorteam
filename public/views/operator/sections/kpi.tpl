@@ -445,6 +445,17 @@
 							mouseWheelScrollStep: 50
 						});
 						
+						
+						$('[userspersonagesform]').ready(function() {
+							let cellsWidth = 0;
+							$('[userspersonagesform]:first').find('[kpifieldcell]').each(function() {
+								let w = $(this).outerWidth();
+								console.log(w);
+								cellsWidth += w;
+							});
+							$('[userspersonagesform]').find('.kpitasksblock').width('calc(100vw - '+(cellsWidth+364)+'px)');
+						});
+						
 						$('[userspersonagesform]').each(function() {
 							$(this).ddrScrollTableY({height: 'calc(100vh - 230px)', wrapBorderColor: '#d7dbde'});
 						})

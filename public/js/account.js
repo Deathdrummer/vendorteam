@@ -1656,7 +1656,8 @@ $(document).ready(function() {
 			
 			getAjaxHtml('account/get_statics', {attr: 'statictoofftime'}, function(html) {
 				if ($(html).find('[statictoofftime]').length == 1) {
-					getOfftimeDates($(html).find('[statictoofftime]').attr('statictoofftime'));
+					offtimeStatic = $(html).find('[statictoofftime]').attr('statictoofftime');
+					getOfftimeDates(offtimeStatic);
 				} else {
 					offtimeWin.setData(html, false);
 				}
@@ -1684,6 +1685,7 @@ $(document).ready(function() {
 	
 	
 	function getOfftimeDates(st, hWeeks) {
+		console.log(st, hWeeks);
 		$.post('/offtime/get_offtime_dates', {static: st, history: hWeeks}, function(html) {
 			if (!hWeeks) offtimeWin.setWidth(1330);
 			offtimeWin.setData(html, false);
@@ -2458,19 +2460,17 @@ $(document).ready(function() {
 			kpiPlanWin.setData('account/kpiplan/get_periods', function() {
 				$('[kpiplanperiod]').on(tapEvent, function() {
 					let kpiPeriodId = $(this).attr('kpiplanperiod'),
+						kpiPeriodTitle = $(this).children('strong').text(),
+						kpiPeriodDate = $(this).children('small').text(),
 						userId = getCookie('id');
 					
-					kpiPlanWin.setData('account/kpiplan/get_user_progress', {kpi_period_id: kpiPeriodId, user_id: userId}, function() {
-						kpiPlanWin.setWidth(500);
+					kpiPlanWin.setData('account/kpiplan/get_user_progress', {kpi_period_id: kpiPeriodId, user_id: userId, period_title: kpiPeriodTitle, period_date: kpiPeriodDate}, function() {
+						kpiPlanWin.setWidth(1000);
 					});
 				});
 			});
 		});
 	});
-	
-	
-	
-	
 	
 	
 	

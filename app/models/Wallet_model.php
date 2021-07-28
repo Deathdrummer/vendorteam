@@ -321,7 +321,7 @@ class Wallet_model extends MY_Model {
 					'user_id'	=> $userId,
 					'summ'		=> $transfer == '+' ? ($tableSumm + $summ) : ($tableSumm - $summ < 0 ? 0 : round($tableSumm - $summ, 1))
 				];
-				toLog('Добавление суммы в баланс, участник: '.$userId.' было: '.$tableSumm.($transfer == '+' ? ' прибавляется: ' : ' отнимается: ').$summ.' стало: '.($transfer == '+' ? ($tableSumm + $summ) : ($tableSumm - $summ < 0 ? 0 : round($tableSumm - $summ, 1))));
+				toLog(date('Y-m-d H:i').' Добавление суммы в баланс, участник: '.$userId.' было: '.$tableSumm.($transfer == '+' ? ' прибавляется: ' : ' отнимается: ').$summ.' стало: '.($transfer == '+' ? ($tableSumm + $summ) : ($tableSumm - $summ < 0 ? 0 : round($tableSumm - $summ, 1))));
 			}
 		}
 		

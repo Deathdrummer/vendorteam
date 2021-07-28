@@ -13,13 +13,13 @@
 					<table userspersonagesform>
 						<thead>
 							<tr class="h60px">
-								<td class="w250px">Участник</td>
-								{% if has_fields.visits %}<td class="w100px" title="Посещаемость"><p class="text-overflow w100px">Посещаемость</p></td>{% endif %}
-								{% if has_fields.fine %}<td class="w100px" title="Штрафы"><p class="text-overflow w100px">Штрафы</p></td>{% endif %}
+								<td class="w250px" kpifieldcell>Участник</td>
+								{% if has_fields.visits %}<td class="w100px" kpifieldcell title="Посещаемость"><p class="text-overflow w100px">Посещаемость</p></td>{% endif %}
+								{% if has_fields.fine %}<td class="w100px" kpifieldcell title="Штрафы"><p class="text-overflow w100px">Штрафы</p></td>{% endif %}
 								{% if custom_fields %}
 									{% for field in custom_fields %}
 										{% if field.type != 'bool' %}
-											<td class="w100px" title="{{field.title}}"><p class="fz11px">{{field.title}}</p></td>
+											<td class="w100px" kpifieldcell title="{{field.title}}"><p class="fz11px">{{field.title}}</p></td>
 										{% endif %}
 									{% endfor %}
 								{% endif %}
@@ -110,7 +110,7 @@
 								</tr>
 							{% endfor %}
 						</tbody>
-					</table>	
+					</table>
 				</div>
 			{% endif %}
 		{% endfor %}

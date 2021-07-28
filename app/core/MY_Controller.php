@@ -285,6 +285,7 @@ class MY_Controller extends CI_Controller {
 		$this->twig->addFilter('sortusers', function($arr, $field = 'nickname') {
 			if (!$arr || !$field) return false;
 	        uasort($arr, function($a, $b) use ($field) {
+	        	if (!isset($a[$field]) || !isset($b[$field])) return 0;
 			    if (preg_match('/[а-яё.]+/ui', $a[$field]) && preg_match('/[a-z.]+/ui', $b[$field])) {
 			        return -1;
 			    } elseif (preg_match('/[a-z.]+/ui', $a[$field]) && preg_match('/[а-яё.]+/ui', $b[$field])) {

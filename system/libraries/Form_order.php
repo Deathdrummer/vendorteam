@@ -84,7 +84,7 @@ class CI_Form_order {
     	$dataToEmail = [];
 		foreach ($postData as $name => $data) $dataToEmail[$name] = isset($data['value']) ? $data['value'] : $data;
 		
-		$title = $dataToEmail['title'] ? $dataToEmail['title'] : 'Новое предложение или жалоба';
+		$title = isset($dataToEmail['title']) ? $dataToEmail['title'] : 'Новое предложение или жалоба';
 		
 		$this->CI->load->library('email');
 		$config['mailtype'] = 'html';

@@ -1310,6 +1310,8 @@ class Account extends MY_Controller {
 				if (!$formdata = $this->kpi->getUserProgressForm($periodData, $post['user_id'])) exit('');
 				$data['custom_fields'] = $this->kpi->getPeriodCustomFields($periodData['custom_fields']);
 				
+				$data['statistics'] = $this->kpi->calcUserStatistics($post['kpi_period_id'], $post['user_id']);
+				
 				$data['progress'] = $this->kpi->getProgressTasks($periodData['id']);
 				$data['statics'] = $this->admin->getStatics(true, array_keys($formdata));
 				$data['ranks'] = $this->admin->getRanks();
@@ -1319,6 +1321,8 @@ class Account extends MY_Controller {
 				$data['formdata'] = $formdata;
 				$data['user_id'] = $post['user_id'];
 				$data['default_text'] = $this->admin->getSettings('kpi_default_text');
+				$data['period_title'] = $post['period_title'];
+				$data['period_date'] = $post['period_date'];
 				
 				echo $this->twig->render('views/account/render/kpiplan/user.tpl', $data);
 				break;

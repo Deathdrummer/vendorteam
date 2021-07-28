@@ -72,7 +72,7 @@
 											<div class="customtasks__item{% if user['custom_fields'][field]['fact'] == user['custom_fields'][field]['need'] %} customtasks__item_done{% elseif user['custom_fields'][field]['fact'] > user['custom_fields'][field]['need'] %} customtasks__item_verydone{% endif %}" ctasksitem>
 												<small class="fz12px mr10px">{{cFData['task']}}</small>
 												
-												<strong class="customtasks__need ml-auto" customtasksneed="{{user['custom_fields'][field]['need']}}">{{user['custom_fields'][field]['need']}}</strong>
+												<strong class="customtasks__need ml-auto" customtasksneed="{{user['custom_fields'][field]['need']}}">{{user['custom_fields'][field]['need']|default('-')}}</strong>
 												
 												<div class="counterblock counterblock_vertical ml5px">
 													<div class="counterblock__value"><span customprogressdata="{{userId}}|{{field}}">{{user['custom_fields'][field]['fact']|default(0)}}</span></div>

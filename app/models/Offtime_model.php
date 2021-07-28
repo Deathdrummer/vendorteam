@@ -120,6 +120,7 @@ class Offtime_model extends My_Model {
 	 * @return 
 	 */
 	public function setOfftime($data) {
+		if ($data['static'] == 0) return 0;
 		$this->load->model('admin_model');
 		$offtimeUserMonthLimit = $this->admin_model->getSettings('offtime_user_limit'); // лимит выходных на одного в месяц
 		$periodStart = strtotime(date('Y-m-d', strtotime('first day of 0 month', $data['date'])));
@@ -323,7 +324,7 @@ class Offtime_model extends My_Model {
 		$this->load->model('admin_model');
 		$offtimeUserLimit = $this->admin_model->getSettings('offtime_user_limit');
 		
-		$periodStart = (date('j', time()) == 1) ? strtotime('today') : strtotime(date('Y-m-d', strtotime('first day of 0 month')));
+		$periodStart = strtotime(date('Y-m-d', strtotime('first day of 0 month')));
 		$periodEnd = strtotime(date('Y-m-d', strtotime('first day of next month')));
 		
 		$this->db->where([

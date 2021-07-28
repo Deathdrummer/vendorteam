@@ -136,21 +136,20 @@ $.fn.hasAttrib = function(a) {
 		
 */
 $.fn.onChangeNumberInput = function(callback) {
-	let wPStat, selector = this;
+	let inpVal, selector = this;
 	
 	$(selector).on('keyup mousedown mouseup', function(e) {
-		let input = this,
-			inpVal = parseFloat($(this).val()),
-			type = e.type == 'mouseup' ? 'arrow' : 'key';
+		let input = this;
 		if (e.type == 'mousedown') {
-			wPStat = inpVal;
+			inpVal = parseFloat($(input).val()) || null;
 		} else if (e.type == 'mouseup') {
-			if (inpVal != wPStat) {
-				if (callback && typeof callback == 'function') callback(inpVal, input, type);
+			let v = parseFloat($(input).val()) || null;
+			if (inpVal != v) {
+				if (callback && typeof callback == 'function') callback(v, input, e.type);
 			}
-			wPStat = null;
 		} else if (e.type == 'keyup' && [190, 13].indexOf(e.keyCode) == -1) {
-			if (callback && typeof callback == 'function') callback(inpVal, input, type);
+			let v = parseFloat($(input).val());
+			if (callback && typeof callback == 'function') callback(v, input, e.type);
 		}
 	});
 };
