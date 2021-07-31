@@ -707,8 +707,9 @@ class Users_model extends MY_Model {
 	 * Пометить участника как удаленного
 	 * @param ID пользователя
 	 * @return статус
-	 */
-	public function deleteUser($id) {
+ 	*/
+	public function deleteUser($id = false) {
+		if (!$id) return false;
 		$this->db->where('id', $id);
 		$query = $this->db->get('users');
 		if ($userData = $query->row_array()) {
@@ -735,6 +736,19 @@ class Users_model extends MY_Model {
 	
 	
 	
+	
+	
+	/**
+	 * Пометить участника как отстраненного
+	 * @param ID пользователя
+	 * @return статус
+ 	*/
+	public function excludeUser($id = false) {
+		if (!$id) return false;
+		$this->db->where('id', $id);
+		if (!$this->db->update('users', ['excluded' => 1])) return 0;
+		return 1;
+	}
 	
 	
 	

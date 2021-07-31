@@ -119,7 +119,11 @@
 													<tr userid="{{user.id}}"{% if user.nickname %} usernickname="{{user.nickname}}"{% endif %}{% if user.payment %} userpayment="{{user.payment}}"{% endif %}>
 														<td class="nowidth nopadding">
 															{% if user.avatar %}
-																<div class="avatar" style="background-image: url('{{base_url('public/images/users/mini/'~user.avatar)}}')" title="{{user.nickname}}"></div>
+																<div class="avatar" style="background-image: url('{{base_url('public/images/users/mini/'~user.avatar)}}')" title="{{user.nickname}}">
+																	{% if user.excluded %}
+																		<i class="fa fa-minus-circle fz18px mt3px ml3px" style="color: #c54747;" title="Отстранен"></i>
+																	{% endif %}
+																</div>
 															{% elseif user.deleted %}
 																<div class="avatar" style="background-image: url({{base_url('public/images/deleted_mini.jpg')}})" title="Нет аватарки"></div>
 															{% else %}
@@ -1272,31 +1276,59 @@ $(document).ready(function() {
 	
 	
 
-	//-------------------------------------------------------------- Пометить пользователя как удаленного
+	//-------------------------------------------------------------- Пометить участника как удаленного
 	$('body').off(tapEvent, '[deleteuser]').on(tapEvent, '[deleteuser]', function() {
 		var thisItem = this;
 		popUp({
-			title: 'Удалить пользователя?',
+			title: 'Удалить участника?',
 		    width: 500,
-		    buttons: [{id: 'deleteuserConfirm', title: 'Удалить'}],
 		    closeButton: 'Отмена',
-		}, function(deleteuserWin) {
-			$('#deleteuserConfirm').on(tapEvent, function() {
-				var thisUserId = $(thisItem).attr('deleteuser');
-				$.post('/admin/delete_user', {id: thisUserId}, function(response) {
-					if (response) {
-						notify('Пользователь удален!');
-						renderSection({field: thisField, order: thisOrder});
-					} else {
-						notify('Ошибка удаления пользователя!', 'error');
+		}, function(deleteUserWin) {
+			
+			deleteUserWin.setData('admin/get_delete_user_form', function() {
+				
+				$('[deleteuserbtn]').on(tapEvent, function() {
+					let type = $(this).attr('deleteuserbtn');
+					if (type == 'exclude') {
+						let thisUserId = $(thisItem).attr('deleteuser');
+						$.post('/admin/exclude_user', {id: thisUserId}, function(response) {
+							if (response) {
+								notify('Участник отстранен!');
+								renderSection({field: thisField, order: thisOrder});
+							} else {
+								notify('Ошибка отстранения участника!', 'error');
+							}
+							deleteUserWin.close();
+						}, 'json').fail(function(e) {
+							notify('Системная ошибка!', 'error');
+							showError(e);
+							deleteUserWin.close();
+						});
+					} else if (type == 'delete') {
+						let thisUserId = $(thisItem).attr('deleteuser');
+						$.post('/admin/delete_user', {id: thisUserId}, function(response) {
+							if (response) {
+								notify('Участник удален!');
+								renderSection({field: thisField, order: thisOrder});
+							} else {
+								notify('Ошибка удаления участника!', 'error');
+							}
+							deleteUserWin.close();
+						}, 'json').fail(function(e) {
+							notify('Системная ошибка!', 'error');
+							showError(e);
+							deleteUserWin.close();
+						});
 					}
-					deleteuserWin.close();
-				}, 'json').fail(function(e) {
-					notify('Системная ошибка!', 'error');
-					showError(e);
-					deleteuserWin.close();
 				});
 			});
+			
+			
+			
+			
+			
+			
+				
 		});
 	});
 	

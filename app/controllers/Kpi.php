@@ -129,9 +129,10 @@ class Kpi extends MY_Controller {
 						unset($customField['custom_task_id']);
 						$customFields[$name] = $customField;
 					}
-					
 					$data['custom_fields'] = $customFields;
 				}
+				
+				$data['types'] = [1 => 'Плановые', 2 => 'Бонусные'];
 				
 				echo $this->twig->render($this->viewsPath.'render/kpi/plan/form.tpl', $data);
 				break;
@@ -296,8 +297,12 @@ class Kpi extends MY_Controller {
 				$tasks = isset($post['tasks']) ? $post['tasks'] : false;
 				$tasksList = isset($post['to_list']) ? $post['to_list'] : null;
 				
+				$tasksListData = [];
+				foreach ($tasksList as $tId => $task) $tasksListData[$task['type']][$tId] = $task;
+				$types = [1 => 'Плановые', 2 => 'Бонусные'];
+				
 				if (!$this->kpi->saveTasks($post['period_id'], $post['user_id'], $post['personage_id'], $tasks)) exit('');
-				echo $this->twig->render($this->viewsPath.'render/kpi/personages_tasks/list.tpl', ['tasks_list' => $tasksList]);
+				echo $this->twig->render($this->viewsPath.'render/kpi/personages_tasks/list.tpl', ['tasks_list' => $tasksListData, 'types' => $types]);
 				break;
 			
 			
@@ -336,6 +341,7 @@ class Kpi extends MY_Controller {
 				$data['custom_fields'] = $this->kpi->getPeriodCustomFields($periodData['custom_fields']);
 				
 				$data['progress'] = $this->kpi->getProgressTasks($periodData['id']);
+				
 				$data['statics'] = $this->admin->getStatics(true, array_keys($formdata));
 				$data['ranks'] = $this->admin->getRanks();
 				$usersIds = [];
@@ -345,6 +351,7 @@ class Kpi extends MY_Controller {
 				
 				$data['personages'] = $this->users->getUsersPersonages($usersIds, true);
 				$data['formdata'] = $formdata;
+				$data['types'] = [1 => 'Плановые', 2 => 'Бонусные'];
 				
 				echo $this->twig->render($this->viewsPath.'render/kpi/progressplan/form.tpl', $data);
 				break;
@@ -432,7 +439,7 @@ class Kpi extends MY_Controller {
 				$ranks = $this->admin_model->getRanks();
 				$amountsData = $this->kpi->getAmounts();
 				
-				$calcData = [];
+				$calcData = []; $calcDataOver = []; // сверх проценты
 				foreach ($periods as $periodId) {
 					if (!$period = $this->kpi->getPeriod($periodId)) continue;
 					
@@ -468,7 +475,9 @@ class Kpi extends MY_Controller {
 						
 						foreach ($allScrores as $userId => $scores) {
 							$donePercentPersonages = round(($doneScores[$userId] / $scores) * $scoresPersonagesPercent, 3);
+							
 							$calcData[$userId]['personages'] = $donePercentPersonages > $scoresPersonagesPercent ? $scoresPersonagesPercent : $donePercentPersonages;
+							$calcDataOver[$userId]['personages'] = $donePercentPersonages > $scoresPersonagesPercent ? $donePercentPersonages - $scoresPersonagesPercent : 0;
 						}
 						
 						//суммируется общее кодичество баллов умноженное на кол-во повторний
@@ -488,19 +497,21 @@ class Kpi extends MY_Controller {
 							
 							if ($scoresVisitsPercent) {
 								$visitsNeed = (isset($visitsField['need']) && $visitsField['need'] > 0) ? $visitsField['need'] : false;
-								$visitsFact = isset($visitsField['fact']) ? $visitsField['fact'] : 0;
+								$visitsFact = $visitsNeed; //isset($visitsField['fact']) ? $visitsField['fact'] : 0;
 								
 								if (!$visitsNeed) {
 									$calcData[$userId]['visits'] = 0;
 								} else {
 									$donePercentVisits = $visitsNeed ? round(($visitsFact / $visitsNeed) * $scoresVisitsPercent, 3) : 0;
+									
 									$calcData[$userId]['visits'] = $donePercentVisits > $scoresVisitsPercent ? $scoresVisitsPercent : $donePercentVisits;
+									$calcDataOver[$userId]['visits'] = $donePercentVisits > $scoresVisitsPercent ? $donePercentVisits - $scoresVisitsPercent : 0;
 								}	
 							}
 								
 							if ($scoresFinePercent) {
 								$fineNeed = (isset($fineField['need']) && $fineField['need'] > 0) ? $fineField['need'] : false;
-								$fineFact = isset($fineField['fact']) ? $fineField['fact'] : 0;
+								$fineFact = 0; //isset($fineField['fact']) ? $fineField['fact'] : 0;
 								
 								if (!$fineNeed) {
 									$calcData[$userId]['fine'] = 0;
@@ -531,6 +542,7 @@ class Kpi extends MY_Controller {
 								foreach ($allCustomScrores as $userId => $scores) {
 									$donePercentCustom = round(($doneCustomScores[$userId] / $scores) * $scoresCustomPercent, 3);
 									$calcData[$userId]['custom'] = $donePercentCustom > $scoresCustomPercent ? $scoresCustomPercent : $donePercentCustom;
+									$calcDataOver[$userId]['custom'] = $donePercentCustom > $scoresCustomPercent ? $donePercentCustom - $scoresCustomPercent : 0;
 								}
 							}
 						}
@@ -539,6 +551,7 @@ class Kpi extends MY_Controller {
 					
 					// ----------------------------------------------------------------------------------------
 					
+					// $calcDataOver - сверх процент выполнения
 					$finalData = []; $payoutData = [];
 					foreach ($calcData as $userId => $row) {
 						$finalData[$userId] = array_sum($calcData[$userId]);

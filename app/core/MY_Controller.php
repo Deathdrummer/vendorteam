@@ -298,6 +298,13 @@ class MY_Controller extends CI_Controller {
 		});
 		
 		
+		$this->twig->addFilter('ksort', function($arr) {
+			if (!$arr) return false;
+			ksort($arr);
+			return $arr;
+		});
+		
+		
 	}
 	
 	

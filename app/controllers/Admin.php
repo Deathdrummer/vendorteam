@@ -541,7 +541,14 @@ class Admin extends MY_Controller {
 	
 	
 	
-	
+	/**
+	 * Форма удаления или отстронения участника
+	 * @param 
+	 * @return 
+	*/
+	public function get_delete_user_form() {
+		echo $this->twig->render($this->viewsPath.'render/delete_user');
+	}
 	
 	
 	/**
@@ -555,6 +562,17 @@ class Admin extends MY_Controller {
 		echo $this->users_model->deleteUser($userId);
 	}
 	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function exclude_user() {
+		if (! $this->input->is_ajax_request()) return false;
+		$userId = $this->input->post('id');
+		echo $this->users_model->excludeUser($userId);
+	}
 	
 	
 	

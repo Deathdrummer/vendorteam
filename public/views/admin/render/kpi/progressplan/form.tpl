@@ -75,7 +75,7 @@
 												<strong class="customtasks__need ml-auto" customtasksneed="{{user['custom_fields'][field]['need']}}">{{user['custom_fields'][field]['need']|default('-')}}</strong>
 												
 												<div class="counterblock counterblock_vertical ml5px">
-													<div class="counterblock__value"><span customprogressdata="{{userId}}|{{field}}">{{user['custom_fields'][field]['fact']|default(0)}}</span></div>
+													<div class="counterblock__value" customcounterblockvalue contenteditable><span customprogressdata="{{userId}}|{{field}}">{{user['custom_fields'][field]['fact']|default(0)}}</span></div>
 													<div class="counterblock__rows">
 														<button class="counterblock__rows_plus" customprogresschangebutton="+"></button>
 														<button class="counterblock__rows_minus" customprogresschangebutton="-"></button>
@@ -109,20 +109,23 @@
 											</div>
 											
 											<ul class="personagetasks__list">
-												{% for taskId, task in tasks %}
-													<li class="personagetasks__item{% if progress[userId][personageId][taskId] == task.repeats %} personagetasks__item_done{% elseif progress[userId][personageId][taskId] > task.repeats %} personagetasks__item_verydone{% endif %}" ptasksitem>
-														<small class="personagetasks__task">{{task.task}}</small>
-														<div class="personagetasks__need" personagetasksneed="{{task.repeats}}">{{task.repeats}}</div>
-														<div class="personagetasks__repeats">
-															<div class="counterblock">
-																<div class="counterblock__value"><span tasksprogressdata="{{userId}}|{{personageId}}|{{taskId}}">{{progress[userId][personageId][taskId]|default(0)}}</span></div>
-																<div class="counterblock__rows">
-																	<button class="counterblock__rows_minus" tasksprogresschangebutton="-"></button>
-																	<button class="counterblock__rows_plus" tasksprogresschangebutton="+"></button>
+												{% for type, tasksPart in tasks|ksort %}
+													<strong class="fz12px">{{types[type]}}</strong>
+													{% for taskId, task in tasksPart %}
+														<li class="personagetasks__item{% if progress[userId][personageId][type][taskId] == task.repeats %} personagetasks__item_done{% elseif progress[userId][personageId][type][taskId] > task.repeats %} personagetasks__item_verydone{% endif %}" ptasksitem>
+															<small class="personagetasks__task">{{task.task}}</small>
+															<div class="personagetasks__need" personagetasksneed="{{task.repeats}}">{{task.repeats}}</div>
+															<div class="personagetasks__repeats">
+																<div class="counterblock">
+																	<div class="counterblock__value" personagescounterblockvalue contenteditable><span tasksprogressdata="{{userId}}|{{personageId}}|{{taskId}}|{{type}}">{{progress[userId][personageId][type][taskId]|default(0)}}</span></div>
+																	<div class="counterblock__rows">
+																		<button class="counterblock__rows_minus" tasksprogresschangebutton="-"></button>
+																		<button class="counterblock__rows_plus" tasksprogresschangebutton="+"></button>
+																	</div>
 																</div>
 															</div>
-														</div>
-													</li>
+														</li>
+													{% endfor %}
 												{% endfor %}
 											</ul>
 										</div>	

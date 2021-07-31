@@ -103,7 +103,7 @@
 				
 				$('#newKpiPeriodCustomFields').on(tapEvent, '[newkpiperiodremovefield]', function() {
 					$(this).closest('tr').remove();
-					srcTableFields.reInit();
+					//srcTableFields.reInit();
 				});
 				
 				$('#newKpiPeriodCustomFields').changeInputs(function(item) {
@@ -473,7 +473,6 @@
 							let cellsWidth = 0;
 							$('[userspersonagesform]:first').find('[kpifieldcell]').each(function() {
 								let w = $(this).outerWidth();
-								console.log(w);
 								cellsWidth += w;
 							});
 							$('[userspersonagesform]').find('.kpitasksblock').width('calc(100vw - '+(cellsWidth+92)+'px)');
@@ -529,9 +528,7 @@
 								userId 		= d[1];
 							
 							$.post('/kpi/plan/save_custom_param', {period_id: periodId, user_id: userId, field: fieldName, value: isChecked}, function(response) {
-								if (!response) {
-									notify('Ошибка сохранения параметра!', 'error');
-								} 
+								if (!response) notify('Ошибка сохранения параметра!', 'error');
 							}).fail(function(e) {
 								showError(e);
 								notify('Системная ошибка!', 'error');
@@ -598,6 +595,8 @@
 									$('[kpitaskitemrepeats]').on('focus', function(e) {
 										e.preventDefault();
 									});
+									
+									ddrInitTabs('progressPlanPersonages');
 								});
 								
 								$('#setPersonageTasks').on(tapEvent, function() {
@@ -606,14 +605,18 @@
 									$('#kpiTasksItemms').find('[kpitaskitemtask]:checked').each(function() {
 										let task = $(this).siblings('label').find('[kpitaskitemtasktext]').text(),
 											taskId = parseInt($(this).val()),
-											repeats = parseInt($(this).siblings('label').find('[kpitaskitemrepeats]').val());
+											repeats = parseInt($(this).siblings('label').find('[kpitaskitemrepeats]').val()),
+											type = $(this).siblings('label').find('[kpitaskitemtasktype]').val();
+										
 										tasksData.push({
 											task_id: taskId,
+											type: type,
 											repeats: repeats
 										});
 										
 										tasksList.push({
 											task: task,
+											type: type,
 											repeats: repeats
 										});
 									});
@@ -631,8 +634,6 @@
 										setPersonageTasksWin.wait(false);
 									});
 								});
-								
-								
 							});
 						});
 						
@@ -694,17 +695,26 @@
 				$('#kpiProgressSearchBlock').removeAttrib('hidden');
 				$('#kpiStatisticsSaveButton').setAttrib('hidden');
 				
-				let saveProgPersTOut;
 				$('[tasksprogresschangebutton]').on(tapEvent, function() {
+					changePersonagesProgressValue(this, 'button');
+				});
+				$('[personagescounterblockvalue]').on('keyup', function() {
+					changePersonagesProgressValue(this, 'key');
+				});
+				
+				
+				let saveProgPersTOut;
+				function changePersonagesProgressValue(thisItem, type) {
 					clearTimeout(saveProgPersTOut);
-					let dir = $(this).attr('tasksprogresschangebutton'),
-						blockSelector = $(this).closest('.personagetasks__item'),
-						selector = $(this).closest('.counterblock').find('[tasksprogressdata]'),
-						needValue = parseInt($(this).closest('[ptasksitem]').find('[personagetasksneed]').attr('personagetasksneed')),
+					let dir = type == 'button' ? $(thisItem).attr('tasksprogresschangebutton') : false,
+						blockSelector = $(thisItem).closest('.personagetasks__item'),
+						selector = $(thisItem).closest('.counterblock').find('[tasksprogressdata]'),
+						needValue = parseInt($(thisItem).closest('[ptasksitem]').find('[personagetasksneed]').attr('personagetasksneed')),
 						d = $(selector).attr('tasksprogressdata').split('|'),
 						userId = d[0],
 						personageId = d[1],
 						taskId = d[2],
+						taskType = d[3],
 						value = parseInt($(selector).text()) || 0;
 					
 					
@@ -719,29 +729,39 @@
 					
 					saveProgPersTOut = setTimeout(function() {
 						$(blockSelector).addClass('personagetasks__item_wait');
-						$.post('/kpi/progressplan/check_task', {user_id: userId, personage_id: personageId, task_id: taskId, value: value}, function(response) {
-							if (response) {
-								
-							} else {
-								notify('Ошибка сохранения параметра!', 'error');
-							}
+						$.post('/kpi/progressplan/check_task', {user_id: userId, personage_id: personageId, task_id: taskId, type: taskType, value: value}, function(response) {
+							if (!response) notify('Ошибка сохранения параметра!', 'error');
 							$(blockSelector).removeClass('personagetasks__item_wait');
 						}, 'json').fail(function(e) {
 							showError(e);
 							notify('Системная ошибка!', 'error');
 							$(blockSelector).removeClass('personagetasks__item_wait');
 						});
-					}, 500);	
+					}, 500);
+				}
+				
+				
+				
+				
+				
+				
+				
+				$('[customprogresschangebutton]').on(tapEvent, function() {
+					changeCustomProgressValue(this, 'button');
+				});
+				$('[customcounterblockvalue]').on('keyup', function() {
+					changeCustomProgressValue(this, 'key');
 				});
 				
 				
+				
 				let saveProgCostomTOut;
-				$('[customprogresschangebutton]').on(tapEvent, function() {
+				function changeCustomProgressValue(thisItem, type) {
 					clearTimeout(saveProgCostomTOut);
-					let dir = $(this).attr('customprogresschangebutton'),
-						blockSelector = $(this).closest('.customtasks__item'),
-						selector = $(this).closest('.counterblock').find('[customprogressdata]'),
-						needValue = parseInt($(this).closest('[ctasksitem]').find('[customtasksneed]').attr('customtasksneed')),
+					let dir = type == 'button' ? $(thisItem).attr('customprogresschangebutton') : false,
+						blockSelector = $(thisItem).closest('.customtasks__item'),
+						selector = $(thisItem).closest('.counterblock').find('[customprogressdata]'),
+						needValue = parseInt($(thisItem).closest('[ctasksitem]').find('[customtasksneed]').attr('customtasksneed')),
 						d = $(selector).attr('customprogressdata').split('|'),
 						userId = d[0],
 						field = d[1]
@@ -759,9 +779,7 @@
 					saveProgCostomTOut = setTimeout(function() {
 						$(blockSelector).addClass('customtasks__item_wait');
 						$.post('/kpi/progressplan/check_custom', {user_id: userId, field: field, value: value}, function(response) {
-							if (!response) {
-								notify('Ошибка сохранения параметра!', 'error');
-							}
+							if (!response) notify('Ошибка сохранения параметра!', 'error');
 							$(blockSelector).removeClass('customtasks__item_wait');
 						}, 'json').fail(function(e) {
 							showError(e);
@@ -769,7 +787,7 @@
 							$(blockSelector).removeClass('customtasks__item_wait');
 						});
 					}, 500);
-				});
+				}
 				
 				
 				

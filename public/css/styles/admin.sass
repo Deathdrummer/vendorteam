@@ -624,6 +624,12 @@ img.avatar
 	white-space: nowrap
 	text-overflow: ellipsis
 	overflow: hidden
+
+
+
+
+.ddrlist
+	+ddrlist(15px)
 			
 			
 		
@@ -2838,12 +2844,12 @@ p
 			 color: #333
 			 
 			 &:hover
-			 	background-color: #eee
+				background-color: #eee
 			 
 			 &:active
-			 	background-color: #4296bb
-			 	color: #fff
-			 	transition: background-color 0s, color 0s
+				background-color: #4296bb
+				color: #fff
+				transition: background-color 0s, color 0s
 	
 	
 	&__statics
@@ -3857,10 +3863,15 @@ p
 		.counterblock__rows
 			display: flex
 			flex-direction: column
+		
+		.counterblock__value
+			border-right: none !important
 	
 	&__value
 		width: 30px
 		text-align: center
+		border: none
+		border-right: 1px solid #aebbc1
 		
 		span
 			+font(roboto, medium)

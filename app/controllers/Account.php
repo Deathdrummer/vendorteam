@@ -598,7 +598,7 @@ class Account extends MY_Controller {
 	 * @return array [static ID => data]
 	 */
 	public function get_friends() {
-		$friends = $this->account->getUsers(false, ['verification' => 1, 'deleted' => 0/*, 'agreement' => 1*/], false, true);
+		$friends = $this->account->getUsers(false, ['verification' => 1, 'deleted' => 0, 'excluded' => 0], false, true);
 		return $friends;
 	}
 	
@@ -615,7 +615,7 @@ class Account extends MY_Controller {
 	public function get_new_raid_data() {
 		$this->load->model('users_model');
 		$postData = $this->input->post();
-		$staticUsers = $this->account->getUsers($postData['static'], ['verification' => 1, 'deleted' => 0/*, 'agreement' => 1*/], true);
+		$staticUsers = $this->account->getUsers($postData['static'], ['verification' => 1, 'deleted' => 0, 'excluded' => 0], true);
 		$raidsTypes = $this->account->getRaidsTypes();
 		$adminUsers = $this->getAdminUsers();
 		$offtimeUsers = $this->users_model->getOfftimeUsers($postData['static']);

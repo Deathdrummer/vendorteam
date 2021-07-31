@@ -19,7 +19,7 @@
 						<td periodtitle>{{period.title}}</td>
 						<td>
 							<p>с {{period.date_start|d}}</p>
-							<p>по {{period.date_start|d}}</p>
+							<p>по {{period.date_end|d}}</p>
 						</td>
 						<td>
 							{% if period.report_period %}

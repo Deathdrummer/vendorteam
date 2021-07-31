@@ -87,18 +87,25 @@
 																		<button class="edit" setpersonagetasks="{{personage.nick}}|{{userId}}|{{pId}}" title="Задачи"><i class="fa fa-edit"></i></button>
 																	</div>
 																</div>
-																<ul class="kpitasksitem__list" kpitaskslist>
+																<div kpitaskslist class="ddrlist">
 																	{% if formdata[stId][userId]['tasks'][pId] %}
-																		{% for tId, task in formdata[stId][userId]['tasks'][pId] %}
-																			<li>
-																				<small>{{task.task}}</small>
-																				<small><strong class="fz11px d-block w22px">Х{{task.repeats}}</strong></small>
-																			</li>
+																		{% for type, tasksData in formdata[stId][userId]['tasks'][pId]|ksort %}
+																			<div>
+																				<strong class="fz12px">{{types[type]}}</strong>
+																				<ul class="kpitasksitem__list">
+																					{% for tId, task in tasksData %}
+																						<li>
+																							<small>{{task.task}}</small>
+																							<small><strong class="fz11px d-block w22px">Х{{task.repeats}}</strong></small>
+																						</li>
+																					{% endfor %}
+																				</ul>
+																			</div>
 																		{% endfor %}
 																	{% else %}
 																		<p class="kpitasksitem__empty">Нет задач</p>
 																	{% endif %}
-																</ul>
+																</div>
 															</div>
 														{% endfor %}
 													</div>
