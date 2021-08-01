@@ -489,7 +489,10 @@
 									_saveParam();
 								}, 300);
 							} else {
-								_saveParam();
+								clearTimeout(setParamTOut);
+								setParamTOut = setTimeout(function() {
+									_saveParam();
+								}, 300);
 							}	
 						});
 						

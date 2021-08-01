@@ -383,7 +383,7 @@ $(document).ready(function() {
 		
 		// отвязать пользователя
 		$('#gameIdsList').on(tapEvent, '[removegameiduser]', function() {
-			var gameId = $(this).attr('removegameiduser'),
+			let gameId = $(this).attr('removegameiduser'),
 				thisRow = $(this).closest('tr');
 			
 			popUp({
@@ -413,7 +413,7 @@ $(document).ready(function() {
 		
 		// поиск
 		$('#gameIdsSetSearch').on(tapEvent, function() {
-			var field = $('[gameidsfilterfield]').val(),
+			let field = $('[gameidsfilterfield]').val(),
 				value = $('[gameidsfilterval]').val();
 			list.search(field, value, 'both');
 		});
@@ -421,7 +421,7 @@ $(document).ready(function() {
 		
 		// истекает через 7 дней
 		$('#gameIdsSetFilter7').on(tapEvent, function() {
-			var date7 = getTimePoint('d:8', 's'),
+			let date7 = getTimePoint('d:8', 's'),
 				dateNow = getTimePoint('s');
 			list.where([
 				{
@@ -439,7 +439,7 @@ $(document).ready(function() {
 		
 		//  истекает через 10 дней
 		$('#gameIdsSetFilter10').on(tapEvent, function() {
-			var date10 = getTimePoint('d:11', 's'),
+			let date10 = getTimePoint('d:11', 's'),
 				dateNow = getTimePoint('s');
 			list.where([
 				{
@@ -457,7 +457,7 @@ $(document).ready(function() {
 		
 		// неактивные
 		$('#gameIdsSetFilterUnactive').on(tapEvent, function() {
-			var dateNow = getTimePoint('s');
+			let dateNow = getTimePoint('s');
 			list.where([
 				{
 					method: 'where',

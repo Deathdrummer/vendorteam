@@ -112,23 +112,28 @@
 							</div>
 							
 							<ul class="personagetasks__list">
-								{% for taskId, task in tasks %}
-									<li class="personagetasks__item{% if progress[user_id][personageId][taskId] == task.repeats %} personagetasks__item_done{% elseif progress[user_id][personageId][taskId] > task.repeats %} personagetasks__item_verydone{% endif %}" ptasksitem>
-										<small class="personagetasks__task">{{task.task}}</small>
-										<div class="personagetasks__values">
-											{% if task.repeats == 1 %}
-												{% if progress[user_id][personageId][taskId] == 1 %}
-													<i class="fa fa-check done"></i>
-												{% else %}
-													<i class="fa fa-close fail"></i>
-												{% endif %}
-											{% else %}
-												<strong>{{progress[user_id][personageId][taskId]|default(0)}}</strong>
-												<span>из</span>
-												<strong>{{task.repeats}}</strong>
-											{% endif %}
-										</div>
-									</li>
+								{% for type, tasksPart in tasks %}
+									<div class="mb10px">
+										<strong class="fz12px">{{types[type]}}</strong>
+										{% for taskId, task in tasksPart %}
+											<li class="personagetasks__item{% if progress[user_id][personageId][taskId] == task.repeats %} personagetasks__item_done{% elseif progress[user_id][personageId][taskId] > task.repeats %} personagetasks__item_verydone{% endif %}" ptasksitem>
+												<small class="personagetasks__task">{{task.task}}</small>
+												<div class="personagetasks__values">
+													{% if task.repeats == 1 %}
+														{% if progress[user_id][personageId][taskId] == 1 %}
+															<i class="fa fa-check done"></i>
+														{% else %}
+															<i class="fa fa-close fail"></i>
+														{% endif %}
+													{% else %}
+														<strong>{{progress[user_id][personageId][taskId]|default(0)}}</strong>
+														<span>из</span>
+														<strong>{{task.repeats}}</strong>
+													{% endif %}
+												</div>
+											</li>
+										{% endfor %}
+									</div>
 								{% endfor %}
 							</ul>
 						</div>	

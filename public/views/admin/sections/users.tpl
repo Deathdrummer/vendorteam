@@ -59,6 +59,7 @@
 		<ul class="tabstitles">
 			<li id="verifyUsers">Верифицированные</li>
 			<li id="newUsers">Новые</li>
+			<li id="excludedUsers">Отстраненные</li>
 			<li id="deletedUsers">Удаленные</li>
 			<li id="depositUsers">Резерв</li>
 			<li id="balance">Баланс</li>
@@ -67,7 +68,7 @@
 		
 		
 		<div class="tabscontent">
-			{% for tabid, udata in {'verifyUsers': users.verify, 'newUsers': users.new, 'deletedUsers': users.deleted} %}
+			{% for tabid, udata in {'verifyUsers': users.verify, 'newUsers': users.new, 'excludedUsers': users.excluded, 'deletedUsers': users.deleted} %}
 				<div tabid="{{tabid}}">
 					{% if udata|length > 0 %}
 						<ul class="tabstitles sub">
@@ -110,7 +111,7 @@
 													<td class="nowidth">Классы</td>
 													{% if tabid == 'verifyUsers' %}<td class="nowidth" title="Персонажи">Персон.</td>{% endif %}
 													{% if tabid == 'deletedUsers' %}<td class="nowidth" title="Восстановить участника">Восст.</td>{% endif %}
-													<td class="nowidth" {% if tabid == 'newUsers' %}colspan="2{% endif %}">Опции</td>
+													<td class="nowidth" {% if tabid == 'newUsers' or tabid == 'excludedUsers' %}colspan="2{% endif %}">Опции</td>
 												</tr>
 											</thead>
 											
@@ -264,7 +265,18 @@
 															</td>
 															<td class="nowidth center">
 																<div class="buttons inline notop">
-																	<button class="large" setuserdata="{{user.id}}" title="Обновить"><i class="fa fa-repeat"></i></button>
+																	<button class="large" setuserdata="{{user.id}}" title="Обновить"><i class="fa fa-save"></i></button>
+																</div>
+															</td>
+														{% elseif tabid == 'excludedUsers' %}
+															<td class="nowidth center">
+																<div class="buttons inline notop">
+																	<button class="large" setuserdata="{{user.id}}" title="Обновить"><i class="fa fa-save"></i></button>
+																</div>
+															</td>
+															<td class="nowidth center">
+																<div class="buttons inline notop">
+																	<button class="large alt2" includeuser="{{user.id}}" title="Восстановить исключенного участника"><i class="fa fa-refresh"></i></button>
 																</div>
 															</td>
 														{% endif %}
@@ -1269,6 +1281,23 @@ $(document).ready(function() {
 	
 	
 	
+	
+	
+	
+	
+	
+	//-------------------------------------------------------------- Вернуть исключенного участника
+	$('body').off(tapEvent, '[includeuser]').on(tapEvent, '[includeuser]', function() {
+		let userId = $(this).attr('includeuser');
+		$.post('/admin/include_user', {id: userId}, function(response) {
+			if (response) {
+				notify('Участник успешно восстановлен!');
+				renderSection({field: thisField, order: thisOrder});
+			} else {
+				notify('Ошибка восстановления участника!', 'error');
+			}
+		});
+	});
 	
 	
 	

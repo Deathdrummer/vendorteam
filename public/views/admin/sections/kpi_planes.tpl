@@ -408,7 +408,6 @@
 						periodId = $(this).attr('kpiopenform');
 					
 					location.hash = 'kpi_planes';
-					
 					openForm(periodId, periodTitle);
 					
 					$('#kpiSearchButton').on(tapEvent, function() {
@@ -423,10 +422,6 @@
 					});
 					
 				});
-				
-				
-				
-				
 				
 				
 				
@@ -457,6 +452,7 @@
 						$('#kpiDataContainer').html(html);
 						$('#kpiStatisticsSaveButton').setAttrib('hidden');
 						$('#kpiDataTitle').text('KPI план: '+periodTitle);
+						location.hash = 'kpi_planes';
 						ddrInitTabs();
 						
 						$('#kpiProgressSearchBlock').setAttrib('hidden');
@@ -513,7 +509,10 @@
 									_saveParam();
 								}, 300);
 							} else {
-								_saveParam();
+								clearTimeout(setParamTOut);
+								setParamTOut = setTimeout(function() {
+									_saveParam();
+								}, 300);
 							}	
 						});
 						

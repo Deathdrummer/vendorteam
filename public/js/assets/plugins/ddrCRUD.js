@@ -71,6 +71,7 @@ $.fn.ddrCRUD = function(settings, callback) {
 			listDirection: 'bottom', // направление списка: top bottom (добавление новой записи внизу или вверху)
 			popup: false // Если список в попап окне - указать объект окна
 		}, settings),
+		initParams = ops.data.getList,
 		functions = ops.functions.substr(-1) != '/' ? ops.functions+'/' : ops.functions,
 		functions = functions.substr(0, 1) != '/' ? '/'+functions : functions,
 		countCols = $(ops.emptyList).find('td').attr('colspan') || false,
@@ -312,7 +313,7 @@ $.fn.ddrCRUD = function(settings, callback) {
 		//---------------------------------- Методы
 		// Сбросить фильтр и поиск
 		obj.reset = function() {
-			getAjaxHtml(functions+'get', ops.data.getList, function(html, getListStat) {
+			getAjaxHtml(functions+'get', $.extend(initParams, {where: []}), function(html, getListStat) {
 				if (!getListStat) $(selector).html(ops.emptyList);
 				else $(selector).html(html);
 				$(selector).find('[update]').setAttrib('disabled');
@@ -322,7 +323,7 @@ $.fn.ddrCRUD = function(settings, callback) {
 
 		// before after none both
 		obj.search = function(field, search, place) {
-			getAjaxHtml(functions+'get', $.extend(ops.data.getList, {field: field, search: search, place: place}), function(html, getListStat) {
+			getAjaxHtml(functions+'get', $.extend(initParams, {field: field, search: search, place: place}), function(html, getListStat) {
 				if (!getListStat) $(selector).html(ops.emptyList);
 				else $(selector).html(html);
 				$(selector).find('[update]').setAttrib('disabled');
@@ -332,7 +333,7 @@ $.fn.ddrCRUD = function(settings, callback) {
 
 		// where: метод (where) => [условие => значение]
 		obj.where = function(where) {
-			getAjaxHtml(functions+'get', $.extend(ops.data.getList, {where: where}), function(html, getListStat) {
+			getAjaxHtml(functions+'get', $.extend(initParams, {where: where}), function(html, getListStat) {
 				if (!getListStat) $(selector).html(ops.emptyList);
 				else $(selector).html(html);
 				$(selector).find('[update]').setAttrib('disabled');

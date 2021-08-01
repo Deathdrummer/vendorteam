@@ -139,10 +139,13 @@
 				<li class="dcol-5"><a href="{{paydataformlink_setting}}" target="_blank" title="Заполнить форму"><img src="{{base_url('public/images/navicons/icon_paydata.png')}}" alt=""></a></li>
 			{% endif %}
 			
+			{% if psyhologylink_setting %}
+				<li class="dcol-5"><a href="{{psyhologylink_setting}}" target="_blank" title="Запись к Психологу"><img src="{{base_url('public/images/navicons/icon_psyhology.png')}}" alt=""></a></li>
+			{% endif %}
+			
 			{% if raidliderreport_setting and is_lider %}
 				<li class="dcol-5"><a href="{{raidliderreport_setting}}" target="_blank" title="Перейти к отчету"><img src="{{base_url('public/images/navicons/icon_report.png')}}" alt=""></a></li>
 			{% endif %}
-			
 			{#<li><img src="{{base_url('public/images/navicons/icon_paydata.png')}}" alt=""></li>#}
 		</ul>
 	</div>
