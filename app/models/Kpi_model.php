@@ -1204,18 +1204,26 @@ class Kpi_model extends MY_Model {
 					$visitsNeed = (isset($visitsField['need']) && $visitsField['need'] > 0) ? $visitsField['need'] : false;
 					$visitsFact = isset($visitsField['fact']) ? $visitsField['fact'] : 0;
 					
-					$donePercentVisits = $visitsNeed ? round(($visitsFact / $visitsNeed) * $scoresVisitsPercent, 3) : 0;
-					$calcData[$userId]['visits'] = $donePercentVisits > $scoresVisitsPercent ? $scoresVisitsPercent : $donePercentVisits;
+					if (!$visitsNeed) {
+						$calcData[$userId]['visits'] = 0;
+					} else {
+						$donePercentVisits = $visitsNeed ? round(($visitsFact / $visitsNeed) * $scoresVisitsPercent, 3) : 0;
+						$calcData[$userId]['visits'] = $donePercentVisits > $scoresVisitsPercent ? $scoresVisitsPercent : $donePercentVisits;
+					}
 				}
 					
 				if ($scoresFinePercent) {
 					$fineNeed = (isset($fineField['need']) && $fineField['need'] > 0) ? $fineField['need'] : false;
 					$fineFact = isset($fineField['fact']) ? $fineField['fact'] : 0;
 					
-					$fineIndex = ($i = -$fineNeed + $fineFact) > 0 ? $i  : 0;
-					$calcIndex = (($fineNeed - $fineIndex) / $fineNeed) * $scoresFinePercent;
-					$donePercentFine = $calcIndex < $scoresFinePercent ? $calcIndex : $scoresFinePercent;
-					$calcData[$userId]['fine'] = $donePercentFine > 0 ? $donePercentFine : 0;
+					if (!$fineNeed) {
+						$calcData[$userId]['fine'] = 0;
+					} else {
+						$fineIndex = ($i = -$fineNeed + $fineFact) > 0 ? $i  : 0;
+						$calcIndex = (($fineNeed - $fineIndex) / $fineNeed) * $scoresFinePercent;
+						$donePercentFine = $calcIndex < $scoresFinePercent ? $calcIndex : $scoresFinePercent;
+						$calcData[$userId]['fine'] = $donePercentFine > 0 ? $donePercentFine : 0;
+					}
 				}
 				
 				
@@ -1259,39 +1267,42 @@ class Kpi_model extends MY_Model {
 			];
 			$users = $this->users->getUsers($params);
 			
-			foreach ($finalData as $userId => $scores) {
-				if ($userId != $uId) continue;
-				$userStatic = $users[$userId]['static'];
-				$userRank = $users[$userId]['rank'];
-				
-				$amount = isset($amountsData[$userStatic][$userRank][$period['payout_type']]) ? $amountsData[$userStatic][$userRank][$period['payout_type']] : 0;
-				$payout = 0;
-				
-				if ($amount) {
-					$payout = $amount ? (($amount / 100) * $scores) : 0;
-					$payout = $payout * ($users[$userId]['nda'] ?: $ndaCoeff);
-					$payout = $payout > $amount ? $amount : $payout;
-				}
-				
-				
-				if (!isset($payoutData[$userStatic][$userId])) {
-					$payoutData[$userStatic][$userId] = [
-						'rank'			=> $ranks[$userRank]['name'],
-						'nda'			=> $users[$userId]['nda'] ? 1 : 0,
-						'payment'		=> $users[$userId]['payment'],	
-						'payout_all'	=> round($payout, 2)
-					];
-				} else {
-					$payoutData[$userStatic][$userId]['payout_all'] += $payout;
-				}
-					
-				
-				$payoutData[$userStatic][$userId]['periods'][$periodId] = [
-					'summ'		=> $amount,
-					'persent'	=> $scores,
-					'payout'	=> $payout,
-				];
+			$userStatic = '';
+			
+			if (!isset($finalData[$uId])) return false;
+			$scores = $finalData[$uId];
+			
+			$userStatic = isset($users[$uId]['static']) ? $users[$uId]['static'] : 'Статик не задан';
+			$userRank = isset($users[$uId]['rank']) ? $users[$uId]['rank'] : 'Звание не задано';
+			
+			$amount = isset($amountsData[$userStatic][$userRank][$period['payout_type']]) ? $amountsData[$userStatic][$userRank][$period['payout_type']] : 0;
+			$payout = 0;
+			
+			if ($amount) {
+				$payout = $amount ? (($amount / 100) * $scores) : 0;
+				$payout = $payout * ($users[$uId]['nda'] ?: $ndaCoeff);
+				$payout = $payout > $amount ? $amount : $payout;
 			}
+			
+			
+			if (!isset($payoutData[$userStatic][$uId])) {
+				$payoutData[$userStatic][$uId] = [
+					'rank'			=> $ranks[$userRank]['name'],
+					'nda'			=> $users[$uId]['nda'] ? 1 : 0,
+					'payment'		=> $users[$uId]['payment'],	
+					'payout_all'	=> round($payout, 2)
+				];
+			} else {
+				$payoutData[$userStatic][$uId]['payout_all'] += $payout;
+			}
+				
+			
+			$payoutData[$userStatic][$uId]['periods'][$periodId] = [
+				'summ'		=> $amount,
+				'persent'	=> round($scores, 1),
+				'payout'	=> $payout,
+			];
+			
 		}
 			
 		
@@ -1305,6 +1316,44 @@ class Kpi_model extends MY_Model {
 	
 	
 	
+	
+	
+	
+	
+	/**
+	 * 
+	 * @param 
+	 * @return 
+	*/
+	public function removePersonages($personagesIds = false) {
+		if (!$personagesIds) return false;
+		$this->db->where_in('personage_id', $personagesIds);
+		$this->db->delete($this->kpiPlanPersonagesTable);
+		
+		$this->db->where_in('personage_id', $personagesIds);
+		$this->db->delete($this->kpiProgressPersonagesTable);
+		return true;
+	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * Удалить из отчета удаленного персонажа
+	 * @param 
+	 * @return 
+	*/
+	public function removeDeletedPersonage($personageId = false) {
+		if (!$personageId) return false;
+		$this->db->where('personage_id', $personageId);
+		$this->db->delete($this->kpiPlanPersonagesTable);
+		
+		$this->db->where('personage_id', $personageId);
+		$this->db->delete($this->kpiProgressPersonagesTable);
+		return true;
+	}
 	
 	
 	

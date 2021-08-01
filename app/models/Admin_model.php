@@ -1671,6 +1671,10 @@ class Admin_model extends My_Model {
 	 */
 	public function personagesRemove($id = false) {
 		if (!$id) return false;
+		$this->load->model('kpi_model', 'kpi');
+		
+		$this->kpi->removePersonages($id);
+		
 		$this->db->where('id', $id);
 		if ($this->db->delete('users_personages')) return true;
 		return false;
@@ -1684,6 +1688,10 @@ class Admin_model extends My_Model {
 	 */
 	public function personagesUntie($id = false) {
 		if (!$id) return false;
+		$this->load->model('kpi_model', 'kpi');
+		
+		$this->kpi->removePersonages($id);
+		
 		$this->db->where('id', $id);
 		if ($this->db->update('users_personages', ['game_id' => null])) return true;
 		return false;
@@ -1788,9 +1796,17 @@ class Admin_model extends My_Model {
 	 */
 	public function gameIdRemove($id = false, $removePersonages = false) {
 		if (!$id) return false;
+		$this->load->model('kpi_model', 'kpi');
 		$this->db->where('id', $id);
 		if ($this->db->delete('personages_game_ids')) {
+			$this->db->select('id');
 			$this->db->where('game_id', $id);
+			if (!$personagesToRemove = $this->_result('users_personages')) return false;
+			$personagesToRemove = array_column($personagesToRemove, 'id');
+			
+			$this->kpi->removePersonages($personagesToRemove); // удаление персонажей из KPI
+			
+			$this->db->where_in('id', $personagesToRemove);
 			if ($removePersonages) {
 				if ($this->db->delete('users_personages')) return true;
 			} else {

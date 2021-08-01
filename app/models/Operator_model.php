@@ -27,7 +27,7 @@ class Operator_model extends MY_Model {
 		$data['statics'] = [];
 		if ($statics = $this->admin_model->getStatics(true)) {
 			
-			$data['statics'] = array_intersect_key($statics, array_flip($accessStatics));
+			$data['statics'] = array_intersect_key((array)$statics, array_flip((array)$accessStatics));
 		}
 		
 		return $data;

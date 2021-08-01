@@ -158,14 +158,14 @@ class Admin extends MY_Controller {
 				break;
 			
 			case 'users':
-				$usersData = $this->users_model->getUsers($params);
+				$usersData = $this->users_model->getUsers(array_merge((array)$params, ['where' => ['us.main' => 1]]));
 				$data['statics'] = $this->admin_model->getStatics();
 				$data['ranks'] = $this->admin_model->getRanks();
 				$data['roles'] = $this->admin_model->getRoles();
 				$data['classes'] = $this->admin_model->getClasses();
 				$data['accounts_access'] = $this->admin_model->getAccountsAccess(false);
 				$data['raiders_colors'] = $this->admin_model->getRaidersColors();
-				$data['users'] = ['new' => [], 'verify' => [], 'deleted' => []];
+				$data['users'] = ['new' => [], 'verify' => [], 'excluded' => [], 'deleted' => []];
 				$data['deposit_users'] = [];
 				$data['deposit'] = ['global' => 0, 'statics' => []];
 				$data['deposit_history'] = $this->admin_model->globalDepositHistoryGet();
@@ -179,8 +179,10 @@ class Admin extends MY_Controller {
 						$user['rank'] = isset($data['ranks'][$user['rank']]) ? $data['ranks'][$user['rank']]['name'] : false;
 						if ($user['verification'] == 0 && $user['deleted'] == 0) {
 							$data['users']['new'][0][] = $user;
-						} elseif ($user['verification'] == 1 && $user['deleted'] == 0) {
+						} elseif ($user['verification'] == 1 && $user['deleted'] == 0 && $user['excluded'] == 0) {
 							$data['users']['verify'][$user['static']][] = $user;
+						} elseif ($user['verification'] == 1 && $user['excluded'] == 1 && $user['deleted'] == 0) {
+							$data['users']['excluded'][$user['static']][] = $user;
 						} elseif ($user['deleted'] == 1) {
 							$data['users']['deleted'][$user['static'] ?: 0][] = $user;
 						}
@@ -573,6 +575,19 @@ class Admin extends MY_Controller {
 		$userId = $this->input->post('id');
 		echo $this->users_model->excludeUser($userId);
 	}
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function include_user() {
+		if (! $this->input->is_ajax_request()) return false;
+		$userId = $this->input->post('id');
+		echo $this->users_model->includeUser($userId);
+	}
+	
 	
 	
 	

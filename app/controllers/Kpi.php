@@ -367,6 +367,13 @@ class Kpi extends MY_Controller {
 				if (!$this->kpi->checkProgressCustom($periodData['id'], $post)) exit('0');
 				echo '1';
 				break;
+			
+			case 'remove_personage':
+				if (!$this->kpi->removeDeletedPersonage($post['personage_id'])) exit('0');
+				echo '1';
+				break;
+			
+			
 				
 			default: break;
 		}
@@ -455,6 +462,7 @@ class Kpi extends MY_Controller {
 					$scoresVisitsPercent = $scoresVisits ? round($scoresVisits * $oneScorePercent, 3) : false; // макс. проц. Посещаемость
 					$scoresFinePercent = $scoresFine ? round($scoresFine * $oneScorePercent, 3) : false; // макс. проц. штрафы
 					$scoresCustomPercent = $scoresCustom ? round($scoresCustom * $oneScorePercent, 3) : false; // макс. проц. доп. поля
+					
 					
 					
 					// ----------------------------------------------------------------------------------------
@@ -597,7 +605,7 @@ class Kpi extends MY_Controller {
 							
 							$payoutData[$userStatic][$userId]['periods'][$periodId] = [
 								'summ'		=> $amount,
-								'persent'	=> $scores,
+								'persent'	=> round($scores, 1),
 								'payout'	=> $payout,
 							];
 						}

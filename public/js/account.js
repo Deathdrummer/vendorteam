@@ -2464,8 +2464,11 @@ $(document).ready(function() {
 						kpiPeriodDate = $(this).children('small').text(),
 						userId = getCookie('id');
 					
-					kpiPlanWin.setData('account/kpiplan/get_user_progress', {kpi_period_id: kpiPeriodId, user_id: userId, period_title: kpiPeriodTitle, period_date: kpiPeriodDate}, function() {
-						kpiPlanWin.setWidth(1000);
+					kpiPlanWin.setData('account/kpiplan/get_user_progress', {kpi_period_id: kpiPeriodId, user_id: userId, period_title: kpiPeriodTitle, period_date: kpiPeriodDate}, function(html, stat) {
+						if (!stat) kpiPlanWin.setData(html, false);
+						else {
+							kpiPlanWin.setWidth(1000);
+						}
 					});
 				});
 			});

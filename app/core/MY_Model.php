@@ -49,7 +49,7 @@ class MY_Model extends CI_Model {
 		$query = $this->db->get($table);
 		if (!$result = $query->result_array()) return false;
 		if ($rand) shuffle($result);
-		if ($fieldAsKey) return arrSetKeyFromField($result, $fieldAsKey, true);
+		if ($fieldAsKey) return setArrKeyFromField($result, $fieldAsKey, true);
 		return $result;
 	}
 	

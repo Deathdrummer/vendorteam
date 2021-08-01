@@ -84,6 +84,13 @@ class CI_Form_order {
     	$dataToEmail = [];
 		foreach ($postData as $name => $data) $dataToEmail[$name] = isset($data['value']) ? $data['value'] : $data;
 		
+		if (!isset($dataToEmail['from']) || !isset($dataToEmail['to'])) {
+			toLog('form_order/sendEmail - ошибка! нет нужных полей для отправки E-mail');
+			toLog($dataToEmail);
+			return false;
+		} 
+		
+		
 		$title = isset($dataToEmail['title']) ? $dataToEmail['title'] : 'Новое предложение или жалоба';
 		
 		$this->CI->load->library('email');

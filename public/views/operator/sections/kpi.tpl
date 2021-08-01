@@ -785,6 +785,26 @@
 					});
 				});
 				
+				
+				//---------------------------------------------- временная копка для удаления несуществующего персонажа
+				$('[kpiremovedeletedpersonage]').on(tapEvent, function() {
+					let personageId = $(this).attr('kpiremovedeletedpersonage'),
+						personageBlock = $(this).closest('.personagetasks');
+					$.post('/kpi/progressplan/remove_personage', {personage_id: personageId}, function(response) {
+						if (response) {
+							notify('Перонаж успешно удален из KPI!');
+							$(personageBlock).remove();
+						} else {
+							notify('Ошибка удаления пермонажа!', 'error');
+						}
+					}).fail(function(e) {
+						showError(e);
+						notify('Системная ошибка!', 'error');
+						$(blockSelector).removeClass('customtasks__item_wait');
+					});
+				});
+				
+				
 			} else {
 				$('#kpiDataContainer').html('');
 				$('#kpiDataContainer').setWaitToBlock(false);

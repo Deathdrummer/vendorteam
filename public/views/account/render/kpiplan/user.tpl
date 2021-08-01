@@ -116,17 +116,17 @@
 									<div class="mb10px">
 										<strong class="fz12px">{{types[type]}}</strong>
 										{% for taskId, task in tasksPart %}
-											<li class="personagetasks__item{% if progress[user_id][personageId][taskId] == task.repeats %} personagetasks__item_done{% elseif progress[user_id][personageId][taskId] > task.repeats %} personagetasks__item_verydone{% endif %}" ptasksitem>
+											<li class="personagetasks__item{% if progress[personageId][type][taskId] == task.repeats %} personagetasks__item_done{% elseif progress[user_id][personageId][taskId] > task.repeats %} personagetasks__item_verydone{% endif %}" ptasksitem>
 												<small class="personagetasks__task">{{task.task}}</small>
 												<div class="personagetasks__values">
 													{% if task.repeats == 1 %}
-														{% if progress[user_id][personageId][taskId] == 1 %}
+														{% if progress[personageId][type][taskId] == 1 %}
 															<i class="fa fa-check done"></i>
 														{% else %}
 															<i class="fa fa-close fail"></i>
 														{% endif %}
 													{% else %}
-														<strong>{{progress[user_id][personageId][taskId]|default(0)}}</strong>
+														<strong>{{progress[personageId][type][taskId]|default(0)}}</strong>
 														<span>из</span>
 														<strong>{{task.repeats}}</strong>
 													{% endif %}

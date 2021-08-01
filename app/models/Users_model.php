@@ -753,6 +753,18 @@ class Users_model extends MY_Model {
 	
 	
 	
+	/**
+	 * Восстановить отстраненного участника
+	 * @param ID пользователя
+	 * @return статус
+ 	*/
+	public function includeUser($id = false) {
+		if (!$id) return false;
+		$this->db->where('id', $id);
+		if (!$this->db->update('users', ['excluded' => 0])) return 0;
+		return 1;
+	}
+	
 	
 	
 	

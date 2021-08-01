@@ -106,6 +106,7 @@
 												<span>{{personages[userId][personageId]['nick']}}</span>
 												<span>{{personages[userId][personageId]['server']}}</span>
 												<span>{{personages[userId][personageId]['armor']}}</span>
+												<button kpiremovedeletedpersonage="{{personageId}}" class="ml-auto" title="Удалить несуществующего персонажа из KPI"><i class="fa fa-trash" style="color: red;"></i></button>
 											</div>
 											
 											<ul class="personagetasks__list">
