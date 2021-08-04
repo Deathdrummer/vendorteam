@@ -1351,12 +1351,6 @@ $(document).ready(function() {
 					}
 				});
 			});
-			
-			
-			
-			
-			
-			
 				
 		});
 	});

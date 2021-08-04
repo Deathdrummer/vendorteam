@@ -513,6 +513,7 @@
 				<li id="tabResigns">Увольнения</li>
 				<li id="tabNDA">NDA</li>
 				<li id="tabKPIText">KPI текст</li>
+				<li id="tabGifts">Подарки</li>
 			</ul>
 			
 			<div class="tabscontent">
@@ -632,6 +633,17 @@
 						
 					</fieldset>
 				</div>
+				
+				<div tabid="tabGifts">
+					<fieldset>
+						<legend>Дефолтная стоимость подарка в процентах</legend>
+						
+						{% include form~'field.tpl' with {'label': 'Проценты', 'name': 'gift_default_percent', 'type': 'number', 'class': 'w100px',} %}
+						
+					</fieldset>
+				</div>
+				
+				
 				
 				
 			</div>

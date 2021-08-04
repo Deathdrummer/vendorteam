@@ -12,9 +12,13 @@
 				<button id="kpiFormButton" class="fieldheight" title="Заполнить KPI план"><i class="fa fa-vcard-o"></i></button>
 				<button id="kpiCheckPlanButton" class="fieldheight" title="Отметить достижения KPI плана"><i class="fa fa-check-square-o"></i></button>
 				
-				<button id="kpiReportsButton" class="fieldheight alt" title="Сохраненные отчеты"><i class="fa fa-list"></i></button>
+				<button id="kpiReportsButton" class="fieldheight alt ml30px" title="Сохраненные отчеты"><i class="fa fa-list"></i></button>
 				<button id="kpiStatisticsButton" class="fieldheight alt" title="Статистика выполнения задач"><i class="fa fa-bar-chart-o"></i></button>
-				<button id="kpiStatisticsSaveButton" hidden class="fieldheight alt" title="Сохранить статистику"><i class="fa fa-save"></i></button>
+				<button id="kpiStatisticsSaveButton" disabled class="fieldheight alt" title="Сохранить статистику"><i class="fa fa-save"></i></button>
+				
+				<button id="kpiReportsBonusButton" class="fieldheight pay ml30px" title="Сохраненные бонусные отчеты"><i class="fa fa-list"></i><i class="fa fa-percent icon"></i></button>
+				<button id="kpiStatisticsBonusButton" class="fieldheight pay" title="Статистика перевыполнения задач"><i class="fa fa-bar-chart-o"></i><i class="fa fa-percent icon"></i></button>
+				<button id="kpiStatisticsBonusSaveButton" disabled class="fieldheight pay" title="Сохранить перевыплаты"><i class="fa fa-save"></i><i class="fa fa-percent icon"></i></button>
 			</div>
 		</div>
 		
@@ -22,6 +26,7 @@
 			<div class="buttons notop">
 				<button id="kpiPersonagesTasksButton" class="fieldheight alt2 ml-5" title="Задачи для персонажей"><i class="fa fa-users"></i></button>
 				<button id="kpiCustomTasksButton" class="fieldheight alt2" title="Задачи для кастомных полей"><i class="fa fa-tasks"></i></button>
+				<button id="kpiGiftsButton" class="fieldheight alt" title="Подарки за перевыполнение"><i class="fa fa-gift"></i></button>
 				<button id="kpiAmountsButton" class="fieldheight pay" title="Задать суммы выплат"><i class="fa fa-money"></i></button>
 			</div>
 		</div>
@@ -50,7 +55,7 @@
 			</div>
 		</div>
 		
-		<div class="item inline"><h3 id="kpiDataTitle"></h3></div>
+		<div class="item inline ml30px"><h3 id="kpiDataTitle"></h3></div>
 		
 		<div id="kpiDataContainer" class="reports mt-3"></div>
 	</fieldset>
@@ -72,10 +77,10 @@
 	$('#kpiPeriodsButton').on(tapEvent, function() {
 		popUp({
 			title: 'Новый KPI период',
-		    width: 1100,
-		    buttons: [{id : 'saveKpiPeriodButton', title: 'Создать'}],
-		    closeButton: 'Закрыть',
-		    closeByButton: true
+			width: 1100,
+			buttons: [{id : 'saveKpiPeriodButton', title: 'Создать'}],
+			closeButton: 'Закрыть',
+			closeByButton: true
 		}, function(kpiPeriodsWin) {
 			kpiPeriodsWin.setData('kpi/periods/new', function() {
 				datePicker('#newKpiPeriodDateStart', '#newKpiPeriodDateEnd');
@@ -278,15 +283,17 @@
 	$('#kpiPersonagesTasksButton').on(tapEvent, function() {
 		popUp({
 			title: 'Задачи для персонажей',
-		    width: 700,
-		    buttons: [{id: 'addTask', title: 'Добавить задачу'}],
-		    closeButton: 'Закрыть',
+			width: 700,
+			buttons: [{id: 'addTask', title: 'Добавить задачу'}],
+			closeButton: 'Закрыть',
 		}, function(kpiPersonagesTasksWin) {
 			kpiPersonagesTasksWin.setData('kpi/tasks/init', function() {
 				$('#personagesTasksList').ddrCRUD({
 					addSelector: '#addTask', // селектор для добавления новой записи
-					onInit: function(countRows) {
-						$('#personagesTasksList').closest('table').ddrScrollTableY({height: '70vh', wrapBorderColor: '#d7dbde'});
+					confirms: {
+						getList: function() {
+							$('#personagesTasksList').closest('table').ddrScrollTableY({height: '70vh', wrapBorderColor: '#d7dbde'});
+						}
 					},
 					emptyList: '<tr><td colspan="3"><p class="empty">Нет данных</p></td></tr>',
 					functions: 'kpi/tasks', // PHP функции, например: account/personages/[get,add,save,update,remove]
@@ -305,15 +312,17 @@
 	$('#kpiCustomTasksButton').on(tapEvent, function() {
 		popUp({
 			title: 'Задачи для кастомных полей',
-		    width: 700,
-		    buttons: [{id: 'addCustomTask', title: 'Добавить задачу'}],
-		    closeButton: 'Закрыть',
+			width: 700,
+			buttons: [{id: 'addCustomTask', title: 'Добавить задачу'}],
+			closeButton: 'Закрыть',
 		}, function(kpiCustomTasksWin) {
 			kpiCustomTasksWin.setData('kpi/customtasks/init', function() {
 				$('#customTasksList').ddrCRUD({
 					addSelector: '#addCustomTask', // селектор для добавления новой записи
-					onInit: function(countRows) {
-						$('#customTasksList').closest('table').ddrScrollTableY({height: '70vh', wrapBorderColor: '#d7dbde'});
+					confirms: {
+						getList: function() {
+							$('#customTasksList').closest('table').ddrScrollTableY({height: '70vh', wrapBorderColor: '#d7dbde'});
+						}
 					},
 					emptyList: '<tr><td colspan="4"><p class="empty">Нет данных</p></td></tr>',
 					functions: 'kpi/customtasks', // PHP функции, например: account/personages/[get,add,save,update,remove]
@@ -336,13 +345,13 @@
 	$('#kpiFormButton').on(tapEvent, function() {
 		popUp({
 			title: 'Заполнить KPI план',
-		    width: 1000,
-		    height: false,
-		    html: '',
-		    wrapToClose: true,
-		    winClass: false,
-		    buttons: false,
-		    closeButton: 'Закрыть',
+			width: 1000,
+			height: false,
+			html: '',
+			wrapToClose: true,
+			winClass: false,
+			buttons: false,
+			closeButton: 'Закрыть',
 		}, function(kpiFormWin) {
 			kpiFormWin.setData('kpi/periods/get', function(foo, bar) {
 				$('#kpiPeriodsList').ddrScrollTableY({height: '70vh', wrapBorderColor: '#d7dbde'});
@@ -450,7 +459,8 @@
 				function openForm(periodId, periodTitle, search) {
 					getAjaxHtml('kpi/plan/get_form', {period_id: periodId, search: search}, function(html) {
 						$('#kpiDataContainer').html(html);
-						$('#kpiStatisticsSaveButton').setAttrib('hidden');
+						$('#kpiStatisticsSaveButton').setAttrib('disabled');
+						$('#kpiStatisticsBonusSaveButton').setAttrib('disabled');
 						$('#kpiDataTitle').text('KPI план: '+periodTitle);
 						location.hash = 'kpi_planes';
 						ddrInitTabs();
@@ -686,13 +696,18 @@
 				ddrInitTabs();
 				$('.kpiprocessblock:visible').ddrUnitHeight('.kpiprocesscard');
 				
+				$('#kpiDataTitle').text('Достижения KPI плана');
+				
 				$(document).on('changetabs', function() {
-					$('.kpiprocessblock:visible').ddrUnitHeight('.kpiprocesscard');
+					setTimeout(function() {
+						$('.kpiprocessblock:visible').ddrUnitHeight('.kpiprocesscard');
+					}, 1000);
 				});
 				
 				$('#kpiSearchBlock').setAttrib('hidden');
 				$('#kpiProgressSearchBlock').removeAttrib('hidden');
-				$('#kpiStatisticsSaveButton').setAttrib('hidden');
+				$('#kpiStatisticsSaveButton').setAttrib('disabled');
+				$('#kpiStatisticsBonusSaveButton').setAttrib('disabled');
 				
 				$('[tasksprogresschangebutton]').on(tapEvent, function() {
 					changePersonagesProgressValue(this, 'button');
@@ -864,17 +879,17 @@
 	$('#kpiAmountsButton').on(tapEvent, function() {
 		popUp({
 			title: 'Суммы выплат по званиям и статикам',
-		    width: 1100,
-		    buttons: false,
-		    buttonsAlign: 'right',
-		    disabledButtons: false,
-		    closePos: 'right',
-		    closeByButton: false,
-		    closeButton: false,
-		    winClass: false,
-		    contentToCenter: false,
-		    buttonsOnTop: false,
-		    topClose: true
+			width: 1100,
+			buttons: false,
+			buttonsAlign: 'right',
+			disabledButtons: false,
+			closePos: 'right',
+			closeByButton: false,
+			closeButton: false,
+			winClass: false,
+			contentToCenter: false,
+			buttonsOnTop: false,
+			topClose: true
 		}, function(amountsWin) {
 			amountsWin.setData('kpi/amounts/get_form', function() {
 				$('#kpiAmountsForm').ddrScrollTableY({
@@ -935,12 +950,13 @@
 	$('#kpiStatisticsButton').on(tapEvent, function() {
 		location.hash = 'kpi_planes';
 		$('#kpiProgressSearchBlock').setAttrib('hidden');
+		$('#kpiStatisticsBonusSaveButton').setAttrib('disabled');
 		
 		popUp({
-			title: 'Вывести статистику',
-		    width: 500,
-		    buttons: [{id: 'calcKpiStat', title: 'Показать статистику', disabled: 1}],
-		    closeButton: 'Закрыть'
+			title: 'Статистика выполнения задач',
+			width: 500,
+			buttons: [{id: 'calcKpiStat', title: 'Показать статистику', disabled: 1}],
+			closeButton: 'Закрыть'
 		}, function(calcKpiStatWin) {
 			calcKpiStatWin.setData('kpi/statistics/get_periods', function() {
 				$('#kpiStatPeriods').find('[kpistatperiod]').on('change', function() {
@@ -964,7 +980,10 @@
 						$('#kpiDataContainer').html(html);
 						ddrInitTabs();
 						$('.scroll').ddrScrollTable();
-						$('#kpiStatisticsSaveButton').removeAttrib('hidden');
+						$('#kpiStatisticsSaveButton').removeAttrib('disabled');
+						
+						$('#kpiDataTitle').text('Статистика выполнения задач');
+						
 						$('#kpiDataContainer').find('input[name="payout"]').number(true, 2, '.', ' ');
 						calcKpiStatWin.close();
 					}, function() {
@@ -979,13 +998,163 @@
 	
 	
 	
+	
+	//------------------------------------------------------- Статистика перевыполнения задач
+	$('#kpiStatisticsBonusButton').on(tapEvent, function() {
+		$('#kpiStatisticsSaveButton:not([disabled])').setAttrib('disabled');
+		
+		popUp({
+			title: 'Статистика перевыполнения задач',
+			width: 500,
+			html: '',
+			buttons: false,
+			disabledButtons: false,
+			closeByButton: false,
+			close: false,
+			contentToCenter: false,
+			topClose: true,
+			winClass: false,
+		}, function(calcKpiBonusStatWin) {
+			calcKpiBonusStatWin.setData('kpi/statistics/get_periods', {single: 1}, function() {
+				$('[kpistatbonusperiod]').on(tapEvent, function() {
+					let periodId = $(this).attr('kpistatbonusperiod'),
+						periodTitle = $(this).find('strong').text();
+					
+					calcKpiBonusStatWin.wait();
+					getAjaxHtml('kpi/statisticsbonus/calc_statistics', {period: periodId}, function(html) {
+						$('#kpiDataContainer').html(html);
+						ddrInitTabs();
+						$('.scroll').ddrScrollTable();
+						//$('#kpiStatisticsSaveButton').removeAttrib('disabled');
+						//$('#kpiDataContainer').find('input[name="payout"]').number(true, 2, '.', ' ');
+						calcKpiBonusStatWin.close();
+						$('#kpiStatisticsBonusSaveButton').removeAttrib('disabled');
+						
+						$('#kpiDataTitle').text('Бонусные проценты по KPI плану: '+periodTitle);
+						
+						$('#kpiStatisticsBonusSaveButton').off(tapEvent).on(tapEvent, function() {
+							popUp({
+								title: 'Сохранение бонусных процентов',
+								width: 500,
+								closeByButton: true
+							}, function(kpiStatisticsBonusSaveWin) {
+								kpiStatisticsBonusSaveWin.wait();
+								
+								let kpiBonusUsersData = [];
+								$('#kpiDataContainer').find('[kpibonusstatuser]').each(function() {
+									let userId = $(this).attr('kpibonusstatuser')
+										visits = $(this).find('[kpibonusvisits]').val(),
+										custom = $(this).find('[kpibonuscustom]').val(),
+										personages = $(this).find('[kpibonuspersonages]').val(),
+										total = $(this).find('[kpibonustotal]').val();
+									
+									kpiBonusUsersData.push({
+										user_id: parseInt(userId),
+										visits: parseFloat(visits),
+										custom: parseFloat(custom),
+										personages: parseFloat(personages),
+										total: parseFloat(total)
+									});
+								});
+								
+								$.post('/kpi/statisticsbonus/save', {period_id: periodId, report_data: kpiBonusUsersData}, function(response) {
+									if (response) {
+										kpiStatisticsBonusSaveWin.setData('<p class="center info"><strong>Отчет успешно сохранен!</strong></p>', false);
+										kpiStatisticsBonusSaveWin.setButtons([], 'Закрыть');
+									}
+									kpiStatisticsBonusSaveWin.wait(false);
+								}, 'json').fail(function(e) {
+									notify('Системная ошибка!', 'error');
+									showError(e);
+								});
+							});
+						});
+						
+					}, function() {
+						calcKpiBonusStatWin.wait(false);
+					});
+				});
+			});
+		});
+		
+	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	$('#kpiReportsBonusButton').on(tapEvent, function() {
+		popUp({
+			title: 'Сохраненные бонусные отчеты',
+			width: 500,
+			closeButton: 'Закрыть'
+		}, function(kpiReportsBonusWin) {
+			kpiReportsBonusWin.setData('kpi/statisticsbonus/get_periods', function() {
+				$('[kpistatbonusreport]').on(tapEvent, function() {
+					
+					$('#kpiStatisticsBonusSaveButton').setAttrib('disabled');
+					
+					let periodId = $(this).attr('kpistatbonusreport'),
+						title = $(this).closest('tr').find('[kpireporttitle]').text();
+					
+					kpiReportsBonusWin.wait();
+					getAjaxHtml('kpi/statisticsbonus/get_report', {period_id: periodId}, function(html) {
+						$('#kpiDataContainer').html(html);
+						ddrInitTabs();
+						$('#kpiDataTitle').text('Бонусный отчет: '+title);
+						kpiReportsBonusWin.close();
+					}, function() {
+						kpiReportsBonusWin.wait(false);
+					});
+				});
+				
+				
+				$('[kpistatbonussendpercents]').on(tapEvent, function() {
+					$('#kpiStatisticsBonusSaveButton').setAttrib('disabled');
+					let periodId = $(this).attr('kpistatbonussendpercents');
+					kpiReportsBonusWin.wait();
+					$.post('/kpi/statisticsbonus/send_users_percents', {period_id: periodId}, function(response) {
+						if (response) {
+							kpiReportsBonusWin.close();
+							notify('Бонусные проценты успешно отправлены участникам!');
+						} else {
+							notify('ошибка отправки бонусых процентов!', 'error');
+							kpiReportsBonusWin.wait(false);
+						}
+					}).fail(function(e) {
+						notify('Системная ошибка!', 'error');
+						showError(e);
+					});
+				});
+				
+			});
+		});
+	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	$('#kpiStatisticsSaveButton').on(tapEvent, function() {
 		popUp({
 			title: 'Сохранить отчет',
-		    width: 400,
-		    html: '<strong>Название отчета</strong><div class="popup__field"><input type="text" id="reportTitle" autocomplete="off"></div>',
-		    buttons: [{id: 'saveReport', title: 'Сохранить'}],
-		    closeButton: 'Отмена'
+			width: 400,
+			html: '<strong>Название отчета</strong><div class="popup__field"><input type="text" id="reportTitle" autocomplete="off"></div>',
+			buttons: [{id: 'saveReport', title: 'Сохранить'}],
+			closeButton: 'Отмена'
 		}, function(saveReportWin) {
 			$('#saveReport').on(tapEvent, function() {
 				saveReportWin.wait();
@@ -1020,23 +1189,26 @@
 	$('#kpiReportsButton').on(tapEvent, function() {
 		popUp({
 			title: 'Сохраненные отчеты',
-		    width: 400,
-		    closeButton: 'Закрыть'
+			width: 400,
+			closeButton: 'Закрыть'
 		}, function(kpiReportsWin) {
 			kpiReportsWin.setData('kpi/statistics/get_reports_list', function() {
 				$('[kpireport]').on(tapEvent, function() {
 					kpiReportsWin.wait();
 					location.hash = 'kpi_planes';
 					$('#kpiProgressSearchBlock').setAttrib('hidden');
-					$('#kpiStatisticsSaveButton').setAttrib('hidden');
+					$('#kpiStatisticsSaveButton').setAttrib('disabled');
+					$('#kpiStatisticsBonusSaveButton').setAttrib('disabled');
 		
 					let d = $(this).attr('kpireport').split('|'),
 						reportId = d[0],
-						periods = JSON.parse(d[1]);
+						periods = JSON.parse(d[1]),
+						title = $(this).text();
 						
 					getAjaxHtml('kpi/statistics/get_report', {report_id: reportId, periods: periods}, function(html) {
 						$('#kpiDataContainer').html(html);
 						ddrInitTabs();
+						$('#kpiDataTitle').text('Отчет: '+title);
 						kpiReportsWin.close();
 					}, function() {kpiReportsWin.wait(false);
 						kpiReportsWin.wait(false);
@@ -1045,6 +1217,51 @@
 			});
 		});
 	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	$('#kpiGiftsButton').on(tapEvent, function() {
+		popUp({
+			title: 'Подарки за перевыполнение плана',
+		    width: 1000,
+		    buttons: [{id: 'addGift', title: 'Добавить подарок'}],
+		    closeByButton: true,
+		    closeButton: 'Закрыть'
+		}, function(kpiGiftsWin) {
+			kpiGiftsWin.setData('gifts/init', function() {
+				$('#giftsList').ddrCRUD({
+					addSelector: '#addGift', // селектор для добавления новой записи
+					data: {
+						getList: {section: 'kpi'},
+						save: {section: 'kpi'}
+					},
+					confirms: {
+						getList: function() {
+							$('#giftsList').closest('table').ddrScrollTableY({height: '70vh', wrapBorderColor: '#d7dbde'});
+						}
+					},
+					emptyList: '<tr><td colspan="6"><p class="empty">Нет данных</p></td></tr>',
+					functions: 'gifts', // PHP функции, например: account/personages/[get,add,save,update,remove]
+					removeConfirm: true,
+					popup: kpiGiftsWin
+				});
+			});
+			
+				
+		});
+	});
+	
+	
 	
 	
 	

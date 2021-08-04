@@ -627,11 +627,11 @@ showError = function(e) {
 
 
 getAjaxHtml = function() {
-	var a = arguments,
+	let a = arguments,
 		url = (typeof a[0] == 'string' ? (a[0].substr(0, 1) != '/' ? '/'+a[0] : a[0]) : false),
 		params = typeof a[1] == 'object' ? a[1] : {},
 		callback = typeof a[1] == 'function' ? a[1] : (a[2] !== undefined ? a[2] : false),
-		always = typeof a[1] != 'object' ? (a[2] !== undefined && typeof a[2] == 'function' ? a[2] : false) : (a[3] !== undefined && typeof a[3] == 'function' ? a[3] : false);
+		always = typeof a[1] == 'function' ? (typeof a[2] == 'function' ? a[2] :false) : (typeof a[2] == 'function' ? (typeof a[3] == 'function' ? a[3] :false) : false);
 		
 	$.post(url, params, function(html) {
 		html = html.trim();

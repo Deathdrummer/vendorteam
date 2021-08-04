@@ -105,7 +105,7 @@ $.fn.ddrCRUD = function(settings, callback) {
 		if (getListStat) {
 			thisItemSelector = $(selector).children()[0],
 			thisItemTag = thisItemSelector.localName,
-			thisItemClass = ''; //thisItemSelector.className ? '.'+thisItemSelector.className : '';
+			thisItemClass = thisItemSelector.className ? '.'+thisItemSelector.className : '';
 		}
 
 		$(selector).changeInputs(function(item, data) {
@@ -132,7 +132,7 @@ $.fn.ddrCRUD = function(settings, callback) {
 					$(selector).children().first().remove();
 					thisItemSelector = $(html)[0],
 					thisItemTag = thisItemSelector && thisItemSelector.localName,
-					thisItemClass = ''; //thisItemSelector.className ? '.'+thisItemSelector.className : '';
+					thisItemClass = thisItemSelector.className ? '.'+thisItemSelector.className : '';
 					if (!stat) $(selector).html(ops.emptyList);
 					else $(selector).html(html);
 					getListStat = true;
@@ -248,7 +248,7 @@ $.fn.ddrCRUD = function(settings, callback) {
 			// Удалить несохраненную запись
 			if (!thisId) {
 				$(thisItem).remove();
-				notify('Запись удалена!');
+				notify('Запись удалена!', 'info');
 				if ($(selector).find(thisItemTag+thisItemClass).length == 0) {
 					$(selector).html(ops.emptyList);
 					getListStat = false;
@@ -261,7 +261,7 @@ $.fn.ddrCRUD = function(settings, callback) {
 					if (response) {
 						if (typeof ops.confirms.remove == 'function') ops.confirms.remove(thisItem);
 						$(thisItem).remove();
-						notify('Запись удалена!');
+						notify('Запись удалена!', 'info');
 						if ($(selector).find(thisItemTag+thisItemClass).length == 0) {
 							$(selector).html(ops.emptyList);
 							getListStat = false;

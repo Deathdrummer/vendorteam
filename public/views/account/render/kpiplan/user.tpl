@@ -119,12 +119,8 @@
 											<li class="personagetasks__item{% if progress[personageId][type][taskId] == task.repeats %} personagetasks__item_done{% elseif progress[user_id][personageId][taskId] > task.repeats %} personagetasks__item_verydone{% endif %}" ptasksitem>
 												<small class="personagetasks__task">{{task.task}}</small>
 												<div class="personagetasks__values">
-													{% if task.repeats == 1 %}
-														{% if progress[personageId][type][taskId] == 1 %}
-															<i class="fa fa-check done"></i>
-														{% else %}
-															<i class="fa fa-close fail"></i>
-														{% endif %}
+													{% if task.repeats == 1 and progress[personageId][type][taskId] == 1 %}
+														<i class="fa fa-check done"></i>
 													{% else %}
 														<strong>{{progress[personageId][type][taskId]|default(0)}}</strong>
 														<span>из</span>

@@ -26,7 +26,7 @@
 							<div class="select">
 								<select gameidsfilterfield>
 									<option value="pgi.game_id">ID игры</option>
-									<option value="pgi.nickname">Владелец</option>
+									<option value="u.nickname">Владелец</option>
 								</select>
 								<div class="select__caret"></div>
 							</div>

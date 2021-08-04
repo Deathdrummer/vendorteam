@@ -55,11 +55,12 @@
 			<ul class="tabstitles">
 				<li id="newUsers" class="active">Новые</li>
 				<li id="verifyUsers">Верифицированные</li>
+				<li id="excludedUsers">Отстраненные</li>
 				<li id="deletedUsers">Удаленные</li>
 			</ul>
 			
 			<div class="tabscontent">
-				{% for tabid, udata in {'newUsers': users.new, 'verifyUsers': users.verify, 'deletedUsers': users.deleted} %}
+				{% for tabid, udata in {'newUsers': users.new, 'verifyUsers': users.verify, 'excludedUsers': users.excluded, 'deletedUsers': users.deleted} %}
 					<div tabid="{{tabid}}">
 						{% if udata|length > 0 %}
 							<div>
@@ -207,6 +208,12 @@
 																				<button class="large recovery_user" setuserdata="{{user.id}}" title="Восстановить"><i class="fa fa-repeat"></i></button>
 																			</div>
 																		</td>
+																	{% elseif tabid == 'excludedUsers' %}
+																		<td class="nowidth center">
+																			<div class="buttons inline notop">
+																				<button class="large alt2" includeuser="{{user.id}}" title="Восстановить исключенного участника"><i class="fa fa-refresh"></i></button>
+																			</div>
+																		</td>	
 																	{% endif %}
 																</tr>
 															{% endfor %}
@@ -320,6 +327,8 @@ $(document).ready(function() {
 			$('.tabstitles.sub').siblings('.tabscontent').children('div[tabid="'+tabId+'"]').addClass('visible');
 			
 			$('#resetSearchFromUsers').removeAttrib('disabled');
+			location.hash = 'users';
+			//ddrInitTabs('sectionContent');
 		}	
 	});
 	
@@ -339,6 +348,8 @@ $(document).ready(function() {
 		
 		
 		$('#resetSearchFromUsers').setAttrib('disabled');
+		location.hash = 'users';
+		//ddrInitTabs('sectionContent');
 	});
 	
 	
@@ -774,6 +785,21 @@ $(document).ready(function() {
 	
 	
 	
+	//-------------------------------------------------------------- Вернуть исключенного участника
+	$('body').off(tapEvent, '[includeuser]').on(tapEvent, '[includeuser]', function() {
+		let userId = $(this).attr('includeuser');
+		$.post('/admin/include_user', {id: userId}, function(response) {
+			if (response) {
+				notify('Участник успешно восстановлен!');
+				setContentData('users', {field: thisField, order: thisOrder});
+			} else {
+				notify('Ошибка восстановления участника!', 'error');
+			}
+		});
+	});
+	
+	
+	
 	
 	
 	
@@ -784,25 +810,45 @@ $(document).ready(function() {
 	$('body').off(tapEvent, '[deleteuser]').on(tapEvent, '[deleteuser]', function() {
 		var thisItem = this;
 		popUp({
-			title: 'Удалить пользователя?',
+			title: 'Удалить участника?',
 		    width: 500,
-		    buttons: [{id: 'deleteuserConfirm', title: 'Удалить'}],
 		    closeButton: 'Отмена',
-		}, function(deleteuserWin) {
-			$('#deleteuserConfirm').on(tapEvent, function() {
-				var thisUserId = $(thisItem).attr('deleteuser');
-				$.post('/admin/delete_user', {id: thisUserId}, function(response) {
-					if (response) {
-						notify('Пользователь удален!');
-						setContentData('users', {field: thisField, order: thisOrder});
-					} else {
-						notify('Ошибка удаления пользователя!', 'error');
+		}, function(deleteUserWin) {
+			deleteUserWin.setData('admin/get_delete_user_form', function() {
+				
+				$('[deleteuserbtn]').on(tapEvent, function() {
+					let type = $(this).attr('deleteuserbtn');
+					if (type == 'exclude') {
+						let thisUserId = $(thisItem).attr('deleteuser');
+						$.post('/admin/exclude_user', {id: thisUserId}, function(response) {
+							if (response) {
+								notify('Участник отстранен!');
+								setContentData('users', {field: thisField, order: thisOrder});
+							} else {
+								notify('Ошибка отстранения участника!', 'error');
+							}
+							deleteUserWin.close();
+						}, 'json').fail(function(e) {
+							notify('Системная ошибка!', 'error');
+							showError(e);
+							deleteUserWin.close();
+						});
+					} else if (type == 'delete') {
+						let thisUserId = $(thisItem).attr('deleteuser');
+						$.post('/admin/delete_user', {id: thisUserId}, function(response) {
+							if (response) {
+								notify('Участник удален!');
+								setContentData('users', {field: thisField, order: thisOrder});
+							} else {
+								notify('Ошибка удаления участника!', 'error');
+							}
+							deleteUserWin.close();
+						}, 'json').fail(function(e) {
+							notify('Системная ошибка!', 'error');
+							showError(e);
+							deleteUserWin.close();
+						});
 					}
-					deleteuserWin.close();
-				}, 'json').fail(function(e) {
-					notify('Системная ошибка!', 'error');
-					showError(e);
-					deleteuserWin.close();
 				});
 			});
 		});

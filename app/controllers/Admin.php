@@ -158,7 +158,7 @@ class Admin extends MY_Controller {
 				break;
 			
 			case 'users':
-				$usersData = $this->users_model->getUsers(array_merge((array)$params, ['where' => ['us.main' => 1]]));
+				$usersData = $this->users_model->getUsers(array_replace_recursive((array)$params, ['where' => ['us.main' => 1]]));
 				$data['statics'] = $this->admin_model->getStatics();
 				$data['ranks'] = $this->admin_model->getRanks();
 				$data['roles'] = $this->admin_model->getRoles();

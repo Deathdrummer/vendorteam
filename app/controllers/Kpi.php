@@ -298,7 +298,7 @@ class Kpi extends MY_Controller {
 				$tasksList = isset($post['to_list']) ? $post['to_list'] : null;
 				
 				$tasksListData = [];
-				foreach ($tasksList as $tId => $task) $tasksListData[$task['type']][$tId] = $task;
+				if ($tasksList) foreach ($tasksList as $tId => $task) $tasksListData[$task['type']][$tId] = $task;
 				$types = [1 => 'Плановые', 2 => 'Бонусные'];
 				
 				if (!$this->kpi->saveTasks($post['period_id'], $post['user_id'], $post['personage_id'], $tasks)) exit('');
@@ -309,6 +309,7 @@ class Kpi extends MY_Controller {
 			default: break;
 		}
 	}
+	
 	
 	
 	
@@ -423,6 +424,10 @@ class Kpi extends MY_Controller {
 	
 	
 	
+	
+	
+	
+	
 	/**
 	 * Статистика выполнения задач
 	 * @param 
@@ -435,6 +440,7 @@ class Kpi extends MY_Controller {
 		switch ($action) {
 			case 'get_periods':
 				$data['periods'] = $this->kpi->getPeriods();
+				$data['single'] = isset($post['single']) ? 1 : 0;
 				echo $this->twig->render($this->viewsPath.'render/kpi/statistics/periods.tpl', $data);
 				break;
 				
@@ -505,7 +511,7 @@ class Kpi extends MY_Controller {
 							
 							if ($scoresVisitsPercent) {
 								$visitsNeed = (isset($visitsField['need']) && $visitsField['need'] > 0) ? $visitsField['need'] : false;
-								$visitsFact = $visitsNeed; //isset($visitsField['fact']) ? $visitsField['fact'] : 0;
+								$visitsFact = isset($visitsField['fact']) ? $visitsField['fact'] : 0;
 								
 								if (!$visitsNeed) {
 									$calcData[$userId]['visits'] = 0;
@@ -519,7 +525,7 @@ class Kpi extends MY_Controller {
 								
 							if ($scoresFinePercent) {
 								$fineNeed = (isset($fineField['need']) && $fineField['need'] > 0) ? $fineField['need'] : false;
-								$fineFact = 0; //isset($fineField['fact']) ? $fineField['fact'] : 0;
+								$fineFact = isset($fineField['fact']) ? $fineField['fact'] : 0;
 								
 								if (!$fineNeed) {
 									$calcData[$userId]['fine'] = 0;
@@ -622,6 +628,7 @@ class Kpi extends MY_Controller {
 				echo $this->twig->render($this->viewsPath.'render/kpi/statistics/report.tpl', $data);
 				break;
 			
+			
 			case 'get_reports_list':
 				$data['reports'] = $this->kpi->getReports();
 				echo $this->twig->render($this->viewsPath.'render/kpi/statistics/reports.tpl', $data);
@@ -654,6 +661,221 @@ class Kpi extends MY_Controller {
 			default: break;
 		}
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Статистика выполнения задач
+	 * @param 
+	 * @return 
+	*/
+	public function statisticsbonus($action = false) {
+		$post = bringTypes($this->input->post());
+		if (!$action) return false;
+		
+		switch ($action) {
+			case 'get_periods':
+				$data['periods'] = $this->kpi->getBonusReportsPeriods();
+				echo $this->twig->render($this->viewsPath.'render/kpi/statisticsbonus/periods.tpl', $data);
+				break;
+			
+			case 'get_report':
+				$data['report'] = $this->kpi->getBonusReport($post['period_id']);
+				$data['statics'] = $this->admin_model->getStatics(true);
+				$data['is_saved'] = 1;
+				echo $this->twig->render($this->viewsPath.'render/kpi/statisticsbonus/report.tpl', $data);
+				break;
+				
+			case 'save':
+				if (!$this->kpi->saveBonusReport($post['period_id'], $post['report_data'])) exit('0');
+				echo '1';
+				break;
+			
+			case 'send_users_percents':
+				if (!$this->kpi->sendUsersPercents($post['period_id'])) exit('0');
+				echo '1';
+				break;
+			
+			case 'calc_statistics':
+				if(!$periodId = $post['period']) return false;
+				$this->load->model('users_model', 'users');
+				
+				$ndaCoeff = $this->admin_model->getSettings('nda_coeff');
+				$ranks = $this->admin_model->getRanks();
+				$amountsData = $this->kpi->getAmounts();
+				
+				$calcData = []; $calcDataOver = []; // сверх проценты
+				if (!$period = $this->kpi->getPeriod($periodId)) return false;
+				
+				$scoresPersonages = isset($period['scores']['personages']) ? (float)$period['scores']['personages'] : 0;
+				$scoresVisits = isset($period['scores']['visits']) ? (float)$period['scores']['visits'] : 0;
+				$scoresFine = isset($period['scores']['fine']) ? (float)$period['scores']['fine'] : 0;
+				$scoresCustom = isset($period['scores']['customfields']) ? (float)$period['scores']['customfields'] : 0;
+				
+				$allScrores = $scoresPersonages + $scoresVisits + $scoresFine + $scoresCustom;
+				$oneScorePercent = 100 / $allScrores;
+				
+				$scoresPersonagesPercent = $scoresPersonages ? round($scoresPersonages * $oneScorePercent, 3) : false; // макс. проц. активность на персонажах
+				$scoresVisitsPercent = $scoresVisits ? round($scoresVisits * $oneScorePercent, 3) : false; // макс. проц. Посещаемость
+				$scoresFinePercent = false; //$scoresFine ? round($scoresFine * $oneScorePercent, 3) : false; // макс. проц. штрафы
+				$scoresCustomPercent = $scoresCustom ? round($scoresCustom * $oneScorePercent, 3) : false; // макс. проц. доп. поля
+				
+				
+				
+				// ----------------------------------------------------------------------------------------
+				
+				if ($scoresPersonagesPercent) {
+					if ($usersPersonagesData = $this->kpi->getPersonagesToStat($period, 1)) {
+						$allScrores = []; $doneScores = [];
+						foreach ($usersPersonagesData as $userId => $personages) foreach ($personages as $pId => $tasks) foreach ($tasks as $tId => $task) {
+							$done = isset($task['done']) ? $task['done'] : 0;
+							$repeats = $task['repeats'];
+							$score = $task['score'];
+							
+							if (!isset($allScrores[$userId])) $allScrores[$userId] = ($repeats * $score);
+							else $allScrores[$userId] += ($repeats * $score);
+							
+							if (!isset($doneScores[$userId])) $doneScores[$userId] = ($done * $score);
+							else $doneScores[$userId] += ($done * $score);
+						}
+						
+						foreach ($allScrores as $userId => $scores) {
+							$donePercentPersonages = round(($doneScores[$userId] / $scores) * $scoresPersonagesPercent, 3);
+							$calcData[$userId]['personages'] = ($donePercentPersonages - $scoresPersonagesPercent) > 0 ? ($donePercentPersonages - $scoresPersonagesPercent) : 0;
+						}
+					}
+					
+					if ($usersPersonagesBonusData = $this->kpi->getPersonagesToStat($period, 2)) {
+						$allBonusScrores = []; $doneBonusScores = [];
+						foreach ($usersPersonagesBonusData as $userId => $personages) foreach ($personages as $pId => $tasks) foreach ($tasks as $tId => $task) {
+							$done = isset($task['done']) ? $task['done'] : 0;
+							$repeats = $task['repeats'];
+							$score = $task['score'];
+							
+							if (!isset($allBonusScrores[$userId])) $allBonusScrores[$userId] = ($repeats * $score);
+							else $allBonusScrores[$userId] += ($repeats * $score);
+							
+							if (!isset($doneBonusScores[$userId])) $doneBonusScores[$userId] = ($done * $score);
+							else $doneBonusScores[$userId] += ($done * $score);
+						}
+						
+						foreach ($allBonusScrores as $userId => $scores) {
+							$donePercentPersonages = round(($doneBonusScores[$userId] / $scores) * $scoresPersonagesPercent, 3);
+							
+							if (!isset($calcData[$userId]['personages'])) $calcData[$userId]['personages'] = $donePercentPersonages;
+							else $calcData[$userId]['personages'] += $donePercentPersonages;
+						}
+					}
+					
+				}
+				
+				
+				// ----------------------------------------------------------------------------------------
+				
+				if ($usersFieldsData = $this->kpi->getFieldsToStat($period)) {
+					
+					foreach($usersFieldsData as $userId => $fields) {
+						$visitsField = arrTakeItem($fields, 'visits');
+						$fineField = arrTakeItem($fields, 'fine');
+						
+						if ($scoresVisitsPercent) {
+							$visitsNeed = (isset($visitsField['need']) && $visitsField['need'] > 0) ? $visitsField['need'] : false;
+							$visitsFact = isset($visitsField['fact']) ? $visitsField['fact'] : 0;
+							
+							if (!$visitsNeed) {
+								$calcData[$userId]['visits'] = 0;
+							} else {
+								$donePercentVisits = $visitsNeed ? round(($visitsFact / $visitsNeed) * $scoresVisitsPercent, 3) : 0;
+								
+								$calcData[$userId]['visits'] = $donePercentVisits > $scoresVisitsPercent ? $scoresVisitsPercent : $donePercentVisits;
+								$calcDataOver[$userId]['visits'] = $donePercentVisits > $scoresVisitsPercent ? $donePercentVisits - $scoresVisitsPercent : 0;
+							}	
+						}
+							
+							
+						//----------------------------------------- Кастомные поля
+						$allCustomScrores = []; $doneCustomScores = [];
+						if ($scoresCustomPercent) {
+							foreach ($fields as $field => $fData) {
+								$done = isset($fData['done']) ? $fData['done'] : 0;
+								$need = $fData['type'] == 'koeff' ? $fData['need'] : 1;
+								$score = $fData['score'];
+								
+								if (!isset($allCustomScrores[$userId])) $allCustomScrores[$userId] = ($need * $score);
+								else $allCustomScrores[$userId] += ($need * $score);
+								
+								if (!isset($doneCustomScores[$userId])) $doneCustomScores[$userId] = ($done * $score);
+								else $doneCustomScores[$userId] += ($done * $score);
+							}
+							
+							foreach ($allCustomScrores as $userId => $scores) {
+								$donePercentCustom = round(($doneCustomScores[$userId] / $scores) * $scoresCustomPercent, 3);
+								$calcData[$userId]['custom'] = $donePercentCustom > $scoresCustomPercent ? $donePercentCustom - $scoresCustomPercent : 0;
+							}
+						}
+					}
+				}
+				
+				
+				
+				// ----------------------------------------------------------------------------------------
+				
+				
+				foreach ($calcData as $userId => $row) {
+					$calcData[$userId]['total'] = array_sum($calcData[$userId]);
+				}
+				
+				
+				if ($calcData && ($usersIds = array_keys($calcData))) {
+					$params = [
+						'where' => ['us.main' => 1, 'u.deleted' => 0],
+						'where_in' => ['field' => 'u.id', 'values' => $usersIds],
+						'fields' => 'nickname avatar static rank nda payment'
+					];
+					$users = $this->users->getUsers($params);
+					
+					foreach ($calcData as $userId => $persents) {
+						$userStatic = $users[$userId]['static'];
+						$userRank = $users[$userId]['rank'];
+						
+						$finalData[$userStatic][$userId] = [
+							'nickname' 		=> $users[$userId]['nickname'],
+							'avatar' 		=> $users[$userId]['avatar'],
+							'rank'			=> $ranks[$userRank]['name'],
+							'nda'			=> $users[$userId]['nda'] ? 1 : 0,
+							'payment'		=> $users[$userId]['payment'],
+							'percents'		=> $persents
+						];
+					}
+				}
+				
+			
+				
+				$data['report'] = $finalData;
+				$data['statics'] = $this->admin_model->getStatics(true);
+				$kpiPeriod = $this->kpi->getPeriods($periodId);
+				$data['kpi_periods'] = $kpiPeriod['items'];
+				$data['kpi_period_id'] = $periodId;
+				echo $this->twig->render($this->viewsPath.'render/kpi/statisticsbonus/report.tpl', $data);
+				break;
+			
+			
+			default: break;
+		}
+	}
+	
+	
+	
 	
 	
 	

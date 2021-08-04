@@ -267,6 +267,7 @@ html
 				
 				button
 					border: none
+					position: relative
 					
 					i
 						font-size: inherit
@@ -472,7 +473,17 @@ html
 			
 			.select
 				+select()
-				
+			
+			.buttons
+				button
+					position: relative
+					
+					i.icon
+						position: absolute
+						top: 7px
+						right: 7px
+						font-size: 1em
+			
 		
 		
 		
@@ -761,7 +772,7 @@ table
 					&:active
 						background-color: #cad7e0 !important
 				
-				p, strong, span
+				p, strong, span:not(.error)
 					font-size: 14px !important
 					margin-bottom: 0 !important
 				
@@ -1708,6 +1719,10 @@ table
 			&:hover
 				background-color: darken(#e0e4e6, 5%)
 			
+			&:active
+				background-color: darken(#e0e4e6, 15%)
+				transition: background-color 0s
+							
 			+ li
 				margin-top: 10px
 				
@@ -1717,6 +1732,11 @@ table
 				padding-left: 10px
 				padding-right: 10px
 				color: $colorLightViolett
+		
+		&_vertical
+			li
+				flex-direction: column
+				
 	
 	
 	&__field

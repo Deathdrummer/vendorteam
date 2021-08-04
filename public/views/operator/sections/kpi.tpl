@@ -11,7 +11,7 @@
 			
 			<button id="kpiReportsButton" class="alt" title="Сохраненные отчеты"><i class="fa fa-list"></i></button>
 			<button id="kpiStatisticsButton" class="alt" title="Статистика выполнения задач"><i class="fa fa-bar-chart-o"></i></button>
-			<button id="kpiStatisticsSaveButton" hidden class="alt" title="Сохранить статистику"><i class="fa fa-save"></i></button>
+			<button id="kpiStatisticsSaveButton" disabled class="alt" title="Сохранить статистику"><i class="fa fa-save"></i></button>
 		</div>
 		
 		
@@ -433,7 +433,7 @@
 				function openForm(periodId, periodTitle, search) {
 					getAjaxHtml('kpi/plan/get_form', {period_id: periodId, search: search}, function(html) {
 						$('#kpiDataContainer').html(html);
-						$('#kpiStatisticsSaveButton').setAttrib('hidden');
+						$('#kpiStatisticsSaveButton').setAttrib('disabled');
 						$('#kpiDataTitle').text('KPI план: '+periodTitle);
 						ddrInitTabs('kpiDataContainer');
 						
@@ -662,13 +662,17 @@
 			if (stat) {
 				$('#kpiDataContainer').html(html);
 				ddrInitTabs('kpiDataContainer');
-				$('.kpiprocessblock').ddrUnitHeight('.kpiprocesscard');
+				$('.kpiprocessblock:visible').ddrUnitHeight('.kpiprocesscard');
+				
+				$(document).on('changetabs', function() {
+					setTimeout(function() {
+						$('.kpiprocessblock:visible').ddrUnitHeight('.kpiprocesscard');
+					}, 1000);
+				});
+				
 				$('#kpiSearchBlock').setAttrib('hidden');
 				$('#kpiProgressSearchBlock').removeAttrib('hidden');
-				$('#kpiStatisticsSaveButton').setAttrib('hidden');
-				
-				
-				
+				$('#kpiStatisticsSaveButton').setAttrib('disabled');
 				
 				$('[tasksprogresschangebutton]').on(tapEvent, function() {
 					changePersonagesProgressValue(this, 'button');
@@ -934,7 +938,7 @@
 						$('#kpiDataContainer').html(html);
 						ddrInitTabs('kpiDataContainer');
 						$('.scroll').ddrScrollTable();
-						$('#kpiStatisticsSaveButton').removeAttrib('hidden');
+						$('#kpiStatisticsSaveButton').removeAttrib('disabled');
 						$('#kpiDataContainer').find('input[name="payout"]').number(true, 2, '.', ' ');
 						calcKpiStatWin.close();
 					}, function() {
@@ -998,7 +1002,7 @@
 					kpiReportsWin.wait();
 					location.hash = 'kpi';
 					$('#kpiProgressSearchBlock').setAttrib('hidden');
-					$('#kpiStatisticsSaveButton').setAttrib('hidden');
+					$('#kpiStatisticsSaveButton').setAttrib('disabled');
 		
 					let d = $(this).attr('kpireport').split('|'),
 						reportId = d[0],

@@ -35,7 +35,7 @@
 			{% endif %}
 			<li><span>Мой резерв:</span> <strong>{{deposit|number_format(2, '.', ' ')}} руб.</strong></li>
 			
-			<li walletbalance class="pointer"><span>Мой баланс:</span> <strong>{{balance|number_format(2, '.', ' ')}} руб.</strong></li>
+			<li walletbalance class="pointer"><span>Мой баланс:</span> <strong>{{balance|number_format(2, '.', ' ')}} руб.</strong> <sup>NDA {% if nda %}<i class="fa fa-check"></i>{% else %}<i class="fa fa-ban"></i>{% endif %}</sup></li>
 			
 			{% if id in [2,21] %}
 				<li myrating class="pointer"><span>Рейтинг:</span> <strong>{{rating|default('Нет рейтинга')}}</strong></li>

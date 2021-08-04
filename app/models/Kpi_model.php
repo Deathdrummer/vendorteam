@@ -11,6 +11,8 @@ class Kpi_model extends MY_Model {
 	private $kpiProgressCustomTable = 'kpi_progress_custom';
 	private $kpiProgressPersonagesTable = 'kpi_progress_personages';
 	private $kpiReportsTable = 'kpi_reports';
+	private $kpiReportsBonusDoneTable = 'kpi_reports_bonus_done';
+	private $kpiReportsBonusDataTable = 'kpi_reports_bonus_data';
 	private $kpiReportsDataTable = 'kpi_reports_data';
 	private $kpiReportsPlanesTable = 'kpi_reports_planes';
 	
@@ -914,10 +916,10 @@ class Kpi_model extends MY_Model {
 	 * @param 
 	 * @return 
 	*/
-	public function getPersonagesToStat($period = false) {
-		$planPersonages = $this->_getPlanPersonages($period['id']);
+	public function getPersonagesToStat($period = false, $type = 1) {
+		$planPersonages = $this->_getPlanPersonages($period['id'], $type);
 		$tasksPersonages = $this->_getTasksPersonages($period['id']);
-		$progressPersonages = $this->_getProgressPersonages($period['id']);
+		$progressPersonages = $this->_getProgressPersonages($period['id'], $type);
 		
 		$planPregressData = $progressPersonages ? array_replace_recursive($planPersonages, $progressPersonages) : $planPersonages;
 		
@@ -1365,6 +1367,156 @@ class Kpi_model extends MY_Model {
 	
 	
 	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function getBonusReportsPeriods() {
+		$this->db->select('period_id');
+		$this->db->group_by('period_id');
+		if (!$periods = $this->_result($this->kpiReportsBonusDataTable)) return false;
+		$periods = array_column($periods, 'period_id');
+		
+		$this->db->select('pt.id, pt.title, COUNT(rbd.period_id) AS done');
+		$this->db->join($this->kpiReportsBonusDoneTable.' rbd', 'rbd.period_id = pt.id', 'LEFT OUTER');
+		$this->db->where_in('pt.id', $periods);
+		if (!$periodsData = $this->_result($this->kpiPeriodsTable.' pt')) return false;
+		
+		return $periodsData;
+	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function getBonusReport($periodId = false) {
+		if (!$periodId) return false;
+		$this->load->model(['admin_model' => 'admin', 'users_model' => 'users']);
+		$this->db->where_in('period_id', $periodId);
+		if (!$result = $this->_result($this->kpiReportsBonusDataTable)) return false;
+		$usersIds = array_column($result, 'user_id');
+		
+		
+		$params = [
+			'where' => ['us.main' => 1, 'u.deleted' => 0],
+			'where_in' => ['field' => 'u.id', 'values' => $usersIds],
+			'fields' => 'nickname avatar static rank nda payment'
+		];
+		$users = $this->users->getUsers($params);
+		
+		
+		$finalData = [];
+		foreach ($result as $row) {
+			$staticId = $users[$row['user_id']]['static'];
+			$finalData[$staticId][$row['user_id']] = [
+				'user_id' 		=> $row['user_id'],
+				'nickname' 		=> $users[$row['user_id']]['nickname'],
+				'avatar' 		=> $users[$row['user_id']]['avatar'],
+				'nda'			=> $users[$row['user_id']]['nda'],
+				'payment' 		=> $users[$row['user_id']]['payment'],
+				'static' 		=> $staticId,
+				'percents'		=> [
+					'visits'		=> $row['visits'],
+					'custom'		=> $row['custom'],
+					'personages'	=> $row['personages'],
+					'total'			=> $row['total']
+				]
+			];
+		}
+		
+		return $finalData;
+	}
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function saveBonusReport($periodId = false, $data = false) {
+		if (!$periodId || !$data) return false;
+		
+		$this->db->where('period_id', $periodId);
+		$this->db->delete($this->kpiReportsBonusDataTable);
+		
+		$date = time();
+		foreach ($data as $k => $row) {
+			$data[$k]['period_id'] = $periodId;
+			$data[$k]['date'] = $date;
+		}
+		
+		$this->db->insert_batch($this->kpiReportsBonusDataTable, $data);
+		return true;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function sendUsersPercents($periodId = false) {
+		if (!$periodId) return false;
+		$this->db->select('user_id, total');
+		$this->db->where('period_id', $periodId);
+		if (!$bonusesData = $this->_result($this->kpiReportsBonusDataTable)) return false;
+		$bonusesData = setArrKeyFromField($bonusesData, 'user_id', 'total');
+		
+		$usersPercents = $this->_getUsersBonusPercents();
+		
+		$insData = []; $upData = [];
+		foreach ($bonusesData as $userId => $percents) {
+			if (isset($usersPercents[$userId])) {
+				$upData[] = [
+					'user_id'	=> $userId,
+					'percent' 	=> ($usersPercents[$userId] + $percents)
+				];
+			} else {
+				$insData[] = [
+					'user_id'	=> $userId,
+					'percent' => $percents
+				];
+			}
+		}
+		
+		if ($insData) {
+			$this->db->insert_batch('users_bonus_percents', $insData);
+		}
+		
+		if ($upData) {
+			$this->db->update_batch('users_bonus_percents', $upData, 'user_id');
+		}
+		
+		$this->db->insert($this->kpiReportsBonusDoneTable, ['period_id' => $periodId]);
+		return true;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	//---------------------------------------------------------------------------------------------------------- 
@@ -1385,6 +1537,18 @@ class Kpi_model extends MY_Model {
 	// $this->kpiProgressCustomTable = 'kpi_progress_custom';
 	// $this->kpiTasksCustomTable = 'kpi_tasks_custom';
 	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	private function _getUsersBonusPercents() {
+		if (!$usersPercents = $this->_result('users_bonus_percents')) return false;
+		$usersPercents = setArrKeyFromField($usersPercents, 'user_id', 'percent');
+		return $usersPercents;
+	}
 	
 	
 	
@@ -1487,9 +1651,10 @@ class Kpi_model extends MY_Model {
 	 * @param 
 	 * @return 
 	*/
-	private function _getPlanPersonages($periodId = false) {
+	private function _getPlanPersonages($periodId = false, $type = 1) {
 		if (!$periodId) return false;
 		$this->db->where('period_id', $periodId);
+		$this->db->where('type', $type);
 		if (!$planPersonages = $this->_result($this->kpiPlanPersonagesTable)) return false;
 		$planPersonages = arrRestructure($planPersonages, 'user_id personage_id task_id', 'repeats done:0');
 		return $planPersonages;
@@ -1500,7 +1665,8 @@ class Kpi_model extends MY_Model {
 	
 	
 	/**
-	 * @param 
+	 * @param ID периода
+	 * @param тип 1 - плановые, 2 - бонусные
 	 * @return 
 	*/
 	private function _getProgressPersonages($periodId = false, $type = 1) {

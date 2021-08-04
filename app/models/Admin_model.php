@@ -291,7 +291,7 @@ class Admin_model extends My_Model {
 		foreach ($allData as $item) {
 			$temp = json_decode($item['data'], true);
 			
-			$staticId = $temp['static'];
+			$staticId = isset($temp['static']) ? $temp['static'] : 0;
 			$temp['static'] = isset($statics[$staticId]) ? $statics[$staticId]['name'] : false;
 			$temp['static_icon'] = isset($statics[$staticId]) ? 'public/filemanager/'.$statics[$staticId]['icon'] : false;
 			
@@ -1729,7 +1729,7 @@ class Admin_model extends My_Model {
 	 */
 	public function gameIdsGet($data = false) {
 		$searchByNicknameIds = false;
-		if (isset($data['field']) && $data['field'] == 'pgi.nickname' && !empty($data['search'])) {
+		if (isset($data['field']) && $data['field'] == 'u.nickname' && !empty($data['search'])) {
 			$this->db->like('nickname', $data['search']);
 			$this->db->select('id');
 			$uQuery = $this->db->get('users');
