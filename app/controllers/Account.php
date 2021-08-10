@@ -29,7 +29,7 @@ class Account extends MY_Controller {
 		// вставляем SVG спрайт
 		$this->userData['svg_sparite'] = getSprite('public/svg/sprite.svg');
 		
-		$this->load->model('wallet_model', 'wallet');
+		$this->load->model(['wallet_model' => 'wallet', 'gifts_model' => 'gifts']);
 		
 		$this->userData['set_rating_statics'] = $this->account->getRatingNotifications();
 		
@@ -53,6 +53,17 @@ class Account extends MY_Controller {
 		$this->userData['balance'] = $this->wallet->getUserBalance($this->userData['id']);
 		
 		
+		//------------------------------------------ задать куки если накопленный процент больше или равен заданному проценту
+		$userGiftsPercent = $this->gifts->getUserPercent($this->userData['id']);
+		if ($userGiftsPercent >= $this->settings['gift_min_percents_setting']) {
+			$this->gifts->generateGifts($this->userData['id']);
+		}
+		
+		if ($this->gifts->hasUserGifts($this->userData['id'])) {
+			set_cookie('gifts', 1, 0);
+		} else {
+			delete_cookie('gifts');
+		}
 		
 		
 		$this->userData['is_resignation'] = $this->account->isResignation();
@@ -245,22 +256,22 @@ class Account extends MY_Controller {
 			}
 			
 			$this->load->library('upload', [
-	        	'upload_path' 	=> 'public/images/users',
-	        	'file_name'		=> $this->userData['id'],
+				'upload_path' 	=> 'public/images/users',
+				'file_name'		=> $this->userData['id'],
 				'allowed_types'	=> 'gif|jpg|jpeg|png',
 				'max_size'  	=> 3000,
 				'max_width'   	=> 4000,
 				'max_height'   	=> 4000,
 				'overwrite'		=> true,
 				'quality'		=> '50%'
-	        ]);
-	        
-	        if (! $this->upload->do_upload('user_avatar')) {
+			]);
+			
+			if (! $this->upload->do_upload('user_avatar')) {
 				$error = array('error' => $this->upload->display_errors());
 				exit(json_encode($error));
-	        } 
-	        
-        	$this->account->setAccountData(['avatar' => $this->upload->data('file_name')]);
+			} 
+			
+			$this->account->setAccountData(['avatar' => $this->upload->data('file_name')]);
 
 			$this->load->library('image_lib', [
 				'image_library' 	=> 'gd2',
@@ -272,7 +283,7 @@ class Account extends MY_Controller {
 
 			$this->image_lib->resize();
 			$this->image_lib->clear();
-        	$this->image_lib->initialize([
+			$this->image_lib->initialize([
 				'image_library' 	=> 'gd2',
 				'source_image'		=> $this->upload->data('full_path'),
 				'maintain_ratio'	=> true,
@@ -280,9 +291,9 @@ class Account extends MY_Controller {
 				'height'      		=> 60,
 				'new_image'			=> 'public/images/users/mini/'.$this->userData['id'].$this->upload->data('file_ext')
 			]);
-        	$this->image_lib->resize();
-        	
-        	$upData['avatar'] = 'public/images/users/'.$this->upload->data('file_name');
+			$this->image_lib->resize();
+			
+			$upData['avatar'] = 'public/images/users/'.$this->upload->data('file_name');
 		}
 		
 		echo json_encode($upData);
@@ -1334,6 +1345,9 @@ class Account extends MY_Controller {
 			default: break;
 		}
 	}
+	
+	
+	
 	
 	
 	

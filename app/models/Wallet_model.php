@@ -7,7 +7,15 @@ class Wallet_model extends MY_Model {
 	private $walletAmountsTable = 'wallet_amounts';
 	private $walletReportsTable = 'wallet_reports';
 	private $walletReportsDataTable = 'wallet_reports_data';
-	private $types = [1 => 'Сдельная выплата', 2 => 'Премиальная выплата', 3 => 'Ключи', 4 => 'Премии', 5 => 'Заявки на оплату'];
+	private $types = [
+		1 => 'Сдельная выплата',
+		2 => 'Премиальная выплата',
+		3 => 'Ключи',
+		4 => 'Премии',
+		5 => 'Заявки на оплату',
+		6 => 'KPI',
+		7 => 'Подарок за перевыполнение KPI плана'
+	];
 
 	
 	public function __construct() {
@@ -17,7 +25,7 @@ class Wallet_model extends MY_Model {
 	
 	
 	/**
-	 * Внести данные в баланс кошельков
+	 * Внести данные в баланс кошельков \ выплатить из баланса кошельков
 	 * @param платежные данные [user_id => summ]
 	 * @param тип (откуда приход)
 	 * @param название отчета или заявки на оплату
@@ -29,26 +37,28 @@ class Wallet_model extends MY_Model {
 		
 		$toHistoryData = []; $toAmountsData = [];
 		$date = time();
-		foreach ((array)$items as $userId => $item) { 
+		foreach ((array)$items as $userId => $item) {
+			$summ = isset($item['amount']) ? round((float)$item['amount'], 1) : (($item === 0 || is_numeric($item)) ? (float)$item : 0);
+			$deposit = isset($item['to_deposit']) ? round((float)$item['to_deposit'], 1) : 0;
 			$toHistoryData[] = [
 				'user_id'	=> $userId,
 				'type'		=> $type,
 				'title_id'	=> $titleId,
-				'summ'		=> is_numeric($item) ? (float)$item : round((float)$item['amount'], 1),
-				'deposit'	=> is_numeric($item) ? 0 : round((float)$item['to_deposit'], 1),
+				'summ'		=> $summ,
+				'deposit'	=> $deposit,
 				'transfer'	=> $transfer,
 				'date'		=> $date,
 			];
 			
 			$toAmountsData[] = [
 				'user_id'	=> $userId,
-				'summ'		=> is_numeric($item) ? (float)$item : round((float)$item['amount'] + (float)$item['to_deposit'], 1),
+				'summ'		=> $summ,
 			];
 		}
 		
 		
 		$this->_addToHistory($toHistoryData); // Добавить записи в историю
-		$this->_addToAmounts($toAmountsData, $transfer); // Прибавить\отнять суммы у участников
+		$this->_addToAmounts($toAmountsData, $transfer); // Прибавить \ отнять суммы у участников
 		
 		return true;
 	}
@@ -321,7 +331,7 @@ class Wallet_model extends MY_Model {
 					'user_id'	=> $userId,
 					'summ'		=> $transfer == '+' ? ($tableSumm + $summ) : ($tableSumm - $summ < 0 ? 0 : round($tableSumm - $summ, 1))
 				];
-				toLog(date('Y-m-d H:i').' Добавление суммы в баланс, участник: '.$userId.' было: '.$tableSumm.($transfer == '+' ? ' прибавляется: ' : ' отнимается: ').$summ.' стало: '.($transfer == '+' ? ($tableSumm + $summ) : ($tableSumm - $summ < 0 ? 0 : round($tableSumm - $summ, 1))));
+				//toLog(date('Y-m-d H:i').' Добавление суммы в баланс, участник: '.$userId.' было: '.$tableSumm.($transfer == '+' ? ' прибавляется: ' : ' отнимается: ').$summ.' стало: '.($transfer == '+' ? ($tableSumm + $summ) : ($tableSumm - $summ < 0 ? 0 : round($tableSumm - $summ, 1))));
 			}
 		}
 		

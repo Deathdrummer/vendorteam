@@ -1151,7 +1151,7 @@ class Reports extends MY_Controller {
 				echo $this->twig->render('views/admin/render/wallet/save_blank.tpl');
 				break;
 			
-			case 'set_payout': // выплатить суммы и  сохранить отчет
+			case 'set_payout': // выплатить суммы и сохранить отчет
 				if (!isset($postData['paydata']) || !$postData['paydata']) exit('-1');
 				if (!$postData['title']) exit('-2');
 				if (($reportId = $this->wallet->saveWalletReport($postData['title'])) < 0) exit((string)$reportId);
@@ -1160,21 +1160,25 @@ class Reports extends MY_Controller {
 				foreach ($postData['paydata'] as $payUser) {
 					$amountSumm = (float)$payUser['payout'];
 					$depositSumm = (float)$payUser['to_deposit'];
+					$userId = (int)$payUser['user_id'];
 					
-					if ($amountSumm > 0) $amountsData[(int)$payUser['user_id']] = [
-						'amount'		=> $amountSumm,
-						'to_deposit'	=> $depositSumm,
-					];
+					if ($amountSumm > 0) {
+						$amountsData[$userId] = [
+							'amount'		=> $amountSumm,
+							'to_deposit'	=> $depositSumm,
+						];
+					} 
 					
-					if ($depositSumm > 0) $toDepositdata[(int)$payUser['user_id']] = $depositSumm;
+					if ($depositSumm > 0) $toDepositdata[$userId] = $depositSumm;
 					
 					$toReportData[] = [
 						'report_id'		=> $reportId,
-						'user_id'		=> (int)$payUser['user_id'],
-						'summ'			=> (float)$payUser['payout'],
-						'to_deposit'	=> (float)$payUser['to_deposit'],
+						'user_id'		=> $userId,
+						'summ'			=> $amountSumm,
+						'to_deposit'	=> $depositSumm,
 					];
 				}
+				
 				
 				// Отправить данные в сохраненный отчет
 				if ($toReportData) $this->wallet->saveWalletReportData($toReportData);
@@ -1222,6 +1226,11 @@ class Reports extends MY_Controller {
 				echo $this->twig->render('views/admin/render/wallet/saved_report.tpl', $data);
 				break;
 			
+			case 'get_user_history': // получить историю кошелька участника
+				$userId = $this->input->post('user_id');
+				$data = $this->wallet->getUserHistory($userId);
+				echo $this->twig->render('views/admin/render/wallet/history.tpl', $data);
+				break;
 			default: break;
 		}
 	}

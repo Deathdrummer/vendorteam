@@ -422,6 +422,7 @@ class Kpi_model extends MY_Model {
 		if (!$periodId || !$userId || !$param || is_null($value)) return false;
 		$this->db->where(['period_id' => $periodId, 'user_id' => $userId]);
 		$data = $this->_row($this->kpiPlanFieldsTable);
+		
 		if ($data) {
 			$this->db->where(['period_id' => $periodId, 'user_id' => $userId]);
 			return $this->db->update($this->kpiPlanFieldsTable, [$param => $value]);
@@ -1012,7 +1013,16 @@ class Kpi_model extends MY_Model {
 	
 	
 	
-	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function getReportInfo($reportId = false) {
+		if (!$reportId) return false;
+		$this->db->where('id', $reportId);
+		if (!$data = $this->_row($this->kpiReportsTable)) return false;
+		return $data;
+	}
 	
 	
 	
@@ -1103,7 +1113,7 @@ class Kpi_model extends MY_Model {
 		
 		$date = date('j', time()).' '.$this->monthes[date('n', time())].' '.date('Y', time()).' г.';
 		
-		$orders = [];
+		$orders = []; $toWalletData = [];
 		foreach ($reportData as $item) {	
 			$orders[] = [
 				'user_id' 		=> $item['user_id'],
@@ -1116,10 +1126,18 @@ class Kpi_model extends MY_Model {
 				'to_deposit'	=> 0,
 				'comment'		=> $title.' '.$date,
 				'date' 			=> time()
-			];	
-		}		
+			];
+			
+			if (!isset($toWalletData[$item['user_id']])) $toWalletData[$item['user_id']] = $item['payout'];
+			else $toWalletData[$item['user_id']] += $summToOrder;	
+		}	
+		
 		
 		if (!$this->reports->insertUsersOrders($orders)) return false;
+		
+		$this->load->model('wallet_model');
+		$this->wallet_model->setToWallet($toWalletData, 6, 'KPI', '+');
+		
 		return true;
 	}
 	
@@ -1171,6 +1189,7 @@ class Kpi_model extends MY_Model {
 		if ($scoresPersonagesPercent && ($usersPersonagesData = $this->getPersonagesToStat($period))) {
 			$allScrores = []; $doneScores = [];
 			foreach ($usersPersonagesData as $userId => $personages) foreach ($personages as $pId => $tasks) foreach ($tasks as $tId => $task) {
+				if (!isset($task['repeats'])) continue;
 				$done = isset($task['done']) ? $task['done'] : 0;
 				$repeats = $task['repeats'];
 				$score = $task['score'];
@@ -1260,7 +1279,7 @@ class Kpi_model extends MY_Model {
 			$finalData[$userId] = array_sum($calcData[$userId]);
 		}
 		
-		
+		$userStatic = '';
 		if ($finalData && ($usersIds = array_keys($finalData))) {
 			$params = [
 				'where' => ['us.main' => 1, 'u.deleted' => 0],
@@ -1268,8 +1287,6 @@ class Kpi_model extends MY_Model {
 				'fields' => 'static rank nda payment'
 			];
 			$users = $this->users->getUsers($params);
-			
-			$userStatic = '';
 			
 			if (!isset($finalData[$uId])) return false;
 			$scores = $finalData[$uId];
@@ -1350,13 +1367,77 @@ class Kpi_model extends MY_Model {
 	public function removeDeletedPersonage($personageId = false) {
 		if (!$personageId) return false;
 		$this->db->where('personage_id', $personageId);
-		$this->db->delete($this->kpiPlanPersonagesTable);
+		if (!$this->db->delete($this->kpiPlanPersonagesTable)) {
+			toLog('!!! Не удалось удалить персонажей из '.$this->kpiPlanPersonagesTable);
+		}
+		
 		
 		$this->db->where('personage_id', $personageId);
-		$this->db->delete($this->kpiProgressPersonagesTable);
+		if (!$this->db->delete($this->kpiProgressPersonagesTable)) {
+			toLog('!!! Не удалось удалить персонажей из '.$this->kpiProgressPersonagesTable);
+		}
+		
 		return true;
 	}
 	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Удалить из отчета всех удаленных персонажей
+	 * @param 
+	 * @return 
+	*/
+	public function clearDeletedPersonages() {
+		$this->db->select('id');
+		if (!$usersPersonages = $this->_result('users_personages')) return false;
+		
+		//$usersPersonages = array_column($usersPersonages, 'id');
+		
+		$usersPersonages = array_combine(array_column($usersPersonages, 'id'), array_fill(0, count($usersPersonages), null));
+		
+		
+		
+		/*echo '<pre>';
+			print_r($usersPersonages);
+		exit('</pre>');*/
+		
+		
+		
+		$this->db->select('personage_id, '.$this->groupConcatValue('id', 'id'));
+		$this->db->group_by('personage_id');
+		if (!$progressPersonages = $this->_result('kpi_progress_personages')) return false;
+		$progressPersonages = setArrKeyFromField($progressPersonages, 'personage_id', 'id'); // [personage_id => ids]
+		
+		/*echo '<pre>';
+			print_r($progressPersonages);
+		exit('</pre>');*/
+		
+		
+		
+		$this->db->select('personage_id, '.$this->groupConcatValue('id', 'id'));
+		$this->db->group_by('personage_id');
+		if (!$planPersonages = $this->_result('kpi_plan_personages')) return false;
+		$planPersonages = setArrKeyFromField($planPersonages, 'personage_id', 'id'); // [personage_id => ids]
+		
+		
+		$planDiff = array_diff_key($planPersonages, $usersPersonages);
+		//$progressDiff = array_diff_key($progressPersonages, $usersPersonages);
+		
+		
+		echo count($usersPersonages);
+		echo '<br>';
+		echo count($planPersonages);
+		echo '<br>';
+		echo count($planDiff);
+		
+		echo '<pre>';
+			print_r($planDiff);
+		exit('</pre>');
+	}
 	
 	
 	

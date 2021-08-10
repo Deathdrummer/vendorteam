@@ -18,15 +18,15 @@
 						<table class="payment_patterns_report">
 							<thead>
 								<tr>
-									<td>Никнейм</td>
-									<td class="w34">Резерв</td>
+									<td class="w150px">Никнейм</td>
+									<td class="w100px">Резерв</td>
 								</tr>
 							</thead>
 							<tbody>
 								{% for userId, userData in users %}
 									<tr>
 										<td>{{userData.nickname}}</td>
-										<td>{{userData.deposit|number_format(2, '.', ' ')}} ₽</td>
+										<td class="nowrap">{{userData.deposit|number_format(2, '.', ' ')}} ₽</td>
 									</tr>
 								{% endfor %}
 							</tbody>

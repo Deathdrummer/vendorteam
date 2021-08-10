@@ -2689,7 +2689,7 @@ $(document).ready(function() {
 							$('#walletReport').find('[walletpayout], [wallettodeposit]').number(true, 1, '.', ' ');
 							
 							
-							// изменение полы "выпатить"
+							// изменение поля "выпатить"
 							$('[walletpayout]').onChangeNumberInput(function(value, payoutInput) {
 								let thisTr = $(payoutInput).closest('tr'),
 									initDeposit = parseFloat($(thisTr).find('input[initdeposit]').val()),
@@ -2714,7 +2714,7 @@ $(document).ready(function() {
 							});
 							
 							
-							// изменение полы "в резерв"
+							// изменение поля "в резерв"
 							$('[wallettodeposit]').onChangeNumberInput(function(value, toDepositInput) {
 								let thisTr = $(toDepositInput).closest('tr'),
 									initDeposit = parseFloat($(thisTr).find('input[initdeposit]').val()),
@@ -2811,6 +2811,25 @@ $(document).ready(function() {
 							
 							
 							
+							
+							$('[walletopenhistory]').on(tapEvent, function() {
+								let userId = $(this).attr('walletopenhistory');
+								popUp({
+									title: 'История выплат',
+									width: 1000,
+									closeButton: 'Закрыть',
+								}, function(walletHistoryWin) {
+									walletHistoryWin.wait();
+									walletHistoryWin.setData('reports/wallet/get_user_history', {user_id: userId}, function() {
+										//$('#walletUserBalance').ddrScrollTableY({height: '400px', wrapBorderColor: '#d7dbde'});
+										walletHistoryWin.wait(false);
+									});
+								});
+							});
+							
+							
+							
+							
 							// Сохранить отчет и выплатить суммы
 							$('#saveWalletOrder').off(tapEvent).on(tapEvent, function() {
 								popUp({
@@ -2826,7 +2845,7 @@ $(document).ready(function() {
 										saveAndPayoutWin.wait(false);
 									});
 									
-									
+									// Сохранить и выплатить
 									$('#saveAndPayout').on(tapEvent, function() {
 										let reportTitleInp = $('#walletReportTitle');
 										

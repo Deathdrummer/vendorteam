@@ -27,7 +27,7 @@
 										<div class="avatar" style="background-image: url('{{base_url('public/images/users/mini/'~user.avatar)|no_file('public/images/user_mini.jpg')}}')"></div>
 										<div class="ml4px">
 											<strong>{{user.nickname}}</strong>
-											<p class="fz11px mt3px">{{user.rank}}</p>
+											<p class="fz11px mt3px">{{ranks[user.rank]['name']}}</p>
 										</div>	
 									</div>
 								</td>

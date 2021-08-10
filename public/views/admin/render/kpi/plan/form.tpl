@@ -42,7 +42,7 @@
 									{% if has_fields.visits %}
 										<td class="top">
 											<div class="popup__field kpiparamsfield mt4px">
-												<input type="number" kpiformparam="visits|{{userId}}" showrows step="0.1" value="{{formdata[stId][userId]['params']['visits']}}">
+												<input type="number" kpiformparam="visits|{{userId}}" step="0.1" showrows value="{{formdata[stId][userId]['params']['visits']}}">
 											</div>
 										</td>
 									{% endif %}
@@ -50,7 +50,7 @@
 									{% if has_fields.fine %}
 										<td class="top">
 											<div class="popup__field kpiparamsfield mt4px">
-												<input type="number" kpiformparam="fine|{{userId}}" showrows step="0.1" value="{{formdata[stId][userId]['params']['fine']}}">
+												<input type="number" kpiformparam="fine|{{userId}}" step="0.1" showrows value="{{formdata[stId][userId]['params']['fine']}}">
 											</div>
 										</td>
 									{% endif %}
@@ -60,7 +60,7 @@
 											{% if field.type == 'koeff' %}
 												<td class="top">
 													<div class="popup__field kpiparamsfield mt4px">
-														<input type="number" showrows step="0.1" value="{{formdata[stId][userId]['params']['custom_fields'][fName]}}" kpiformcustomparam="{{fName}}|{{userId}}">
+														<input type="number" step="0.1" showrows value="{{formdata[stId][userId]['params']['custom_fields'][fName]}}" kpiformcustomparam="{{fName}}|{{userId}}">
 													</div>
 												</td>
 											{% endif %}
@@ -78,7 +78,7 @@
 															<div class="kpitasks__item kpitasksitem" kpitasksitem>
 																<div class="kpitasksitem__top">
 																	<div class="kpitasksitem__personage">
-																		<strong class="fz12px">{{personage.game_id_name}}</strong>
+																		<strong class="fz12px" title="ID игры: {{personage.game_id}}">{{personage.game_id_name}}</strong>
 																		<span class="fz12px">{{personage.nick}}</span>
 																		<span class="fz12px">{{personage.server}}</span>
 																		<span class="fz12px">{{personage.armor}}</span>

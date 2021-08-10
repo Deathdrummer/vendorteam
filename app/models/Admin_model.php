@@ -1760,7 +1760,7 @@ class Admin_model extends My_Model {
 		
 		$data = [];
 		foreach ($result as $k => $item) {
-			$data[$item['game_id']] = $item;
+			$data[$item['id']] = $item;
 			unset($result[$k]);
 		}
 		

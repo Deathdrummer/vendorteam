@@ -138,18 +138,18 @@ $.fn.hasAttrib = function(a) {
 $.fn.onChangeNumberInput = function(callback) {
 	let inpVal, selector = this;
 	
-	$(selector).on('keyup mousedown mouseup', function(e) {
+	$(selector).on('keydown keyup mousedown mouseup', function(e) {
 		let input = this;
-		if (e.type == 'mousedown') {
-			inpVal = parseFloat($(input).val()) || null;
+		if (e.type == 'mousedown' || e.type == 'keydown') {
+			inpVal = parseFloat($(input).val()) || 0;
 		} else if (e.type == 'mouseup') {
-			let v = parseFloat($(input).val()) || null;
+			let v = parseFloat($(input).val()) || 0;
 			if (inpVal != v) {
 				if (callback && typeof callback == 'function') callback(v, input, e.type);
 			}
 		} else if (e.type == 'keyup' && [190, 13].indexOf(e.keyCode) == -1) {
 			let v = parseFloat($(input).val());
-			if (callback && typeof callback == 'function') callback(v, input, e.type);
+			if (v != inpVal && callback && typeof callback == 'function') callback(v, input, e.type);
 		}
 	});
 };

@@ -170,6 +170,46 @@ jQuery(document).ready(function($) {
     
     
     
+    // -------------------------------------------------------------------- Выделить все\снять выделение
+    // 
+    /*
+    	если к checkbutton добавить еще атрибут ddrcheckall - то можно задавать начальное состояние 
+    	К главному селектору добавляется атрибут checkbutton с названием атрибута чеков и начальное состояние через |
+    	К иконке внутри главного селектора добавляется атрибут cls с классами выделено все|не выделено ничего
+    */
+	$('body').on(tapEvent, '[checkbutton]', function() {
+		let checkSelector = this,
+			cls = $(checkSelector).find('i').attr('cls').split('|'),
+			checkCls = cls[0] || 'fa fa-check-square-o',
+			invertCls = cls[1] || 'fa fa-square-o',
+			ch = $(checkSelector).attr('checkbutton').split('|'),
+			checkName = ch[0],
+			state = ch[1] || 0,
+			checkItems = $('body').find('input[type="checkbox"]['+checkName+']');
+		
+		if ($(checkSelector).attr('ddrcheckall') == undefined) $(checkSelector).setAttrib('ddrcheckall', state);
+		checkUncheck();
+		
+		function checkUncheck() {
+			let stat = $(checkSelector).attr('ddrcheckall') == 1 ? 1 : 0;
+			if (!stat) {
+				$(checkItems).each(function() {
+					$(this).setAttrib('checked');
+				});
+				$(checkSelector).find('i').removeClass(invertCls).addClass(checkCls);
+			} else {
+				$(checkItems).each(function() {
+					$(this).removeAttrib('checked');
+				});
+				$(checkSelector).find('i').removeClass(checkCls).addClass(invertCls);
+			}
+			
+			$(checkSelector).setAttrib('ddrcheckall', stat == 1 ? 0 : 1);
+		}
+	});
+    
+    
+    
     
     
     

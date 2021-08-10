@@ -1,9 +1,3 @@
-<div class="d-flex align-items-end wallet__title">
-	<span class="wallet__label">Текущий баланс:</span>
-	<span class="wallet__balance">{{balance|number_format(1, '.', ' ')}}</span>
-	<small class="wallet__postfix">₽</small>
-</div>
-
 {% if history %}
 	<div id="walletUserBalance">
 		<table class="popup__table">

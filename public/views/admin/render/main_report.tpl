@@ -16,8 +16,7 @@
 							<thead>
 								<tr>
 									<td class="center w36px">№</td>
-									<td class="nowrap">Состав</td>
-									<td class="nowrap">Звание</td>
+									<td>Состав</td>
 									<td>Резерв</td>
 								</tr>
 							</thead>
@@ -26,8 +25,10 @@
 								{% for userId, userData in static.users %}
 									<tr>
 										<td class="center"><strong>{{index}}</strong></td>
-										<td>{{userData.nickname}}</td>
-										<td>{{userData.rank_name}}</td>
+										<td>
+											<p class="fz14px"><strong>{{userData.nickname}}</strong></p>
+											<small class="fz12px nowrap">{{userData.rank_name}}</small>
+										</td>
 										<td><span class="nowrap">{{userData.deposit|number_format(2, '.', ' ')}} ₽</span></td>
 									</tr>
 									{% set index = index + 1 %}

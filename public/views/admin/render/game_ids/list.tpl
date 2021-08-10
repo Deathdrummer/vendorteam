@@ -1,5 +1,6 @@
 {% for item in game_ids %}
 	<tr showgamepersonages="{{item.id}}">
+		<td>{{item.id}}</td>
 		<td>
 			<div class="text">
 				<input type="text" name="game_id" value="{{item.game_id}}">

@@ -52,14 +52,14 @@ $(document).ready(function() {
 	$('#account').on(tapEvent, function() {
 		popUp({
 			title: 'Войти в Личный кабинет',
-		    width: 460,
-		    wrapToClose: true,
+			width: 460,
+			wrapToClose: true,
 			winClass: 'account',
-		    buttons: [
-		    	{id: 'resetPass', title: 'Сбросить пароль', class: 'link'},
-		    	{id: 'toReg', title: 'Регистрация', class: 'link'},
-		    	{id: 'getAuth', title: 'Войти'}
-		    ],
+			buttons: [
+				{id: 'resetPass', title: 'Сбросить пароль', class: 'link'},
+				{id: 'toReg', title: 'Регистрация', class: 'link'},
+				{id: 'getAuth', title: 'Войти'}
+			],
 		}, function(accountWin) {
 			accountWin.wait();
 			
@@ -200,9 +200,9 @@ $(document).ready(function() {
 	$('[logout]').on(tapEvent, function() {
 		popUp({
 			title: 'Выход из личного кабинета',
-		    width: 400,
-		    html: 'Вы действительно хотите выйти?',
-		    buttons: [{id: 'logoutCancel', title: 'Отмена', class: 'close'}, {id: 'logoutConfirm', title: 'Выйти'}],
+			width: 400,
+			html: 'Вы действительно хотите выйти?',
+			buttons: [{id: 'logoutCancel', title: 'Отмена', class: 'close'}, {id: 'logoutConfirm', title: 'Выйти'}],
 		}, function(logoutWin) {
 			$('#logoutConfirm').on(tapEvent, function() {
 				location = '/account/logout';
@@ -233,9 +233,9 @@ $(document).ready(function() {
 		
 		popUp({
 			title: 'Заявка на увольнение',
-		    width: 600,
-		    buttons: [{id: 'setResign', title: 'Отправить заявку'}],
-		    closeButton: 'Отмена'
+			width: 600,
+			buttons: [{id: 'setResign', title: 'Отправить заявку'}],
+			closeButton: 'Отмена'
 		}, function(resignWin) {
 			resignWin.wait();
 			getAjaxHtml('account/resign/get_form', function(html) {
@@ -244,71 +244,71 @@ $(document).ready(function() {
 				var d = new Date();
 	
 				$('#chooseResignDate').datepicker({
-			        dateFormat:         'd M yy г.',
-			        //yearRange:          "2020:"+(new Date().getFullYear() + 1),
-			        numberOfMonths:     1,
-			        changeMonth:        true,
-			        changeYear:         true,
-			        monthNamesShort:    ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября', 'декабря'],
-			        monthNames:         ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь', 'декабрь'],
-			        dayNamesMin:        ['вс','пн','вт','ср','чт','пт','сб',],
-			        firstDay:           1,
-			        minDate:            d,
-			        //maxDate:          	'+1m',
-			        
-			        onSelect: function(stringDate, dateObj) {
-			        	$.post('account/resign/calc_enddate', {date: dateObj.currentDay+'-'+(dateObj.currentMonth+1)+'-'+dateObj.currentYear}, function(date) {
-			        		$('#resignCurrentDate').val(date.current_date);
-			        		$('#resignLastday').text(date.last_date_format);
-			        		$('#resignLastDate').val(date.last_date);
-			        	}, 'json').fail(function(e) {
+					dateFormat:         'd M yy г.',
+					//yearRange:          "2020:"+(new Date().getFullYear() + 1),
+					numberOfMonths:     1,
+					changeMonth:        true,
+					changeYear:         true,
+					monthNamesShort:    ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября', 'декабря'],
+					monthNames:         ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь', 'декабрь'],
+					dayNamesMin:        ['вс','пн','вт','ср','чт','пт','сб',],
+					firstDay:           1,
+					minDate:            d,
+					//maxDate:          	'+1m',
+					
+					onSelect: function(stringDate, dateObj) {
+						$.post('account/resign/calc_enddate', {date: dateObj.currentDay+'-'+(dateObj.currentMonth+1)+'-'+dateObj.currentYear}, function(date) {
+							$('#resignCurrentDate').val(date.current_date);
+							$('#resignLastday').text(date.last_date_format);
+							$('#resignLastDate').val(date.last_date);
+						}, 'json').fail(function(e) {
 							notify('Системная ошибка!', 'error');
 							showError(e);
 						});
-			        } 
-			    });
-			    
-			    
-			    $('#setResign').on(tapEvent, function() {
-			    	var resignDate = $('#resignCurrentDate'),
-			    		lastDate = $('#resignLastDate'),
-			    		reason = $('#resignReason'),
-			    		comment = $('#resignComment'),
-			    		stat = true;
-			    		
-		    		if (!reason.val()) {
-		    			$(reason).addClass('error');
-		    			stat = false;
-		    		}
-		    		
-		    		if (!comment.val()) {
-		    			$(comment).addClass('error');
-		    			stat = false;
-		    		}
+					} 
+				});
+				
+				
+				$('#setResign').on(tapEvent, function() {
+					var resignDate = $('#resignCurrentDate'),
+						lastDate = $('#resignLastDate'),
+						reason = $('#resignReason'),
+						comment = $('#resignComment'),
+						stat = true;
+						
+					if (!reason.val()) {
+						$(reason).addClass('error');
+						stat = false;
+					}
+					
+					if (!comment.val()) {
+						$(comment).addClass('error');
+						stat = false;
+					}
 
-		    		
-		    		if (stat) {
-		    			resignWin.wait();
-		    			$.post('account/resign/set_resign', {date_resign: resignDate.val(), date_last: lastDate.val(), reason: reason.val(), comment: comment.val()}, function(response) {
-			    			if (response) {
-			    				notify('Заявка успешно отправлена!');
-			    				$(resignBtn).remove();
-			    				resignWin.close();
-			    			} else {
-			    				resignWin.wait(false);
-			    				notify('Ошибка отправки заявки!', 'error');
-			    			}
-			        	}, 'json').fail(function(e) {
+					
+					if (stat) {
+						resignWin.wait();
+						$.post('account/resign/set_resign', {date_resign: resignDate.val(), date_last: lastDate.val(), reason: reason.val(), comment: comment.val()}, function(response) {
+							if (response) {
+								notify('Заявка успешно отправлена!');
+								$(resignBtn).remove();
+								resignWin.close();
+							} else {
+								resignWin.wait(false);
+								notify('Ошибка отправки заявки!', 'error');
+							}
+						}, 'json').fail(function(e) {
 							notify('Системная ошибка!', 'error');
 							showError(e);
 						});
-		    		} else {
-		    			notify('Необходимо заполнить все поля!', 'error');
-		    		}
-			    });
-			    
-			    
-			    
+					} else {
+						notify('Необходимо заполнить все поля!', 'error');
+					}
+				});
+				
+				
+				
 				
 			}, function() {
 				resignWin.wait(false);
@@ -329,9 +329,9 @@ $(document).ready(function() {
 		
 		popUp({
 			title: title,
-		    width: 500,
-		    winClass: 'account',
-		    buttons: [{id: 'setUserData', title: 'Готово'}],
+			width: 500,
+			winClass: 'account',
+			buttons: [{id: 'setUserData', title: 'Готово'}],
 		}, function(userDataWin) {
 			userDataWin.wait();
 			var isLider = $('#isLider').val() == 1 ? 1 : 0;
@@ -399,8 +399,8 @@ $(document).ready(function() {
 					}
 					
 					
-    				if (formStat) {
-    					$.ajax({
+					if (formStat) {
+						$.ajax({
 							type: 'POST',
 							url: '/account/update_account_data',
 							dataType: 'json',
@@ -430,9 +430,9 @@ $(document).ready(function() {
 								userDataWin.wait(false);
 							}
 						});
-    				} else {
-    					userDataWin.wait(false);
-    				}
+					} else {
+						userDataWin.wait(false);
+					}
 				});
 				
 			}, function() {
@@ -625,7 +625,7 @@ $(document).ready(function() {
 	$('[operators]').on(tapEvent, function() {
 		popUp({
 			title: 'Операторы',
-		    width: 1300
+			width: 1300
 		}, function(operatorsWin) {
 			operatorsWin.wait();
 			getAjaxHtml('account/get_operators', function(html) {
@@ -737,11 +737,11 @@ $(document).ready(function() {
 	function showAgreement() {
 		popUp({
 			title: 'Договор',
-		    width: 1300,
-		    html: '<div id="agreementBlock"></div>',
-		    wrapToClose: false,
-		    winClass: 'account',
-		    closeButton: 'Закрыть',
+			width: 1300,
+			html: '<div id="agreementBlock"></div>',
+			wrapToClose: false,
+			winClass: 'account',
+			closeButton: 'Закрыть',
 		}, function(agrWin) {
 			agrementWin = agrWin;
 			agrementWin.wait();
@@ -798,13 +798,13 @@ $(document).ready(function() {
 	$('[importantinfo]').on(tapEvent, function() {
 		popUp({
 			title: 'Важная информация',
-		    width: 1300,
-		    height: false,
-		    html: '<div id="infoBlock"></div>',
-		    wrapToClose: true,
-		    winClass: 'account',
-		    buttons: false,
-		    closeButton: false,
+			width: 1300,
+			height: false,
+			html: '<div id="infoBlock"></div>',
+			wrapToClose: true,
+			winClass: 'account',
+			buttons: false,
+			closeButton: false,
 		}, function(infoWin) {
 			infoWin.wait();
 			getAjaxHtml('account/get_info', function(html) {
@@ -843,8 +843,8 @@ $(document).ready(function() {
 		var newRaidStatic = $(this).attr('newraid');
 		popUp({
 			title: 'Новый рейд',
-		    width: 800,
-		    winClass: 'account'
+			width: 800,
+			winClass: 'account'
 		}, function(nrWin) {
 			newRaidWin = nrWin;
 			newRaidWin.wait();
@@ -985,9 +985,9 @@ $(document).ready(function() {
 		
 		popUp({
 			title: 'Коэффициенты команды',
-		    width: 500,
-		    winClass: 'account',
-		    buttons: false,
+			width: 500,
+			winClass: 'account',
+			buttons: false,
 		}, function(sCWin) {
 			setCompoundWin = sCWin;
 			setCompoundWin.wait();
@@ -1107,9 +1107,9 @@ $(document).ready(function() {
 		
 		popUp({
 			title: 'Ключи',
-		    width: 1000,
-		    winClass: 'account',
-		    buttons: false,
+			width: 1000,
+			winClass: 'account',
+			buttons: false,
 		}, function(keysWin) {
 			keysWin.wait();
 			
@@ -1301,10 +1301,10 @@ $(document).ready(function() {
 		
 		popUp({
 			title: 'Рейтинги участников',
-		    width: 1000,
-		    winClass: 'account',
-		    buttons: [{id: 'setDataToRatings', title: 'Сохранить'}],
-		    closeButton: 'Отмена'
+			width: 1000,
+			winClass: 'account',
+			buttons: [{id: 'setDataToRatings', title: 'Сохранить'}],
+			closeButton: 'Отмена'
 		}, function(setRatingWin) {
 			setRatingWin.wait();
 			getAjaxHtml('account/get_users_for_rating', {static_id: staticId}, function(html, stat) {
@@ -1356,8 +1356,8 @@ $(document).ready(function() {
 		
 		popUp({
 			title: 'Моя премия',
-		    width: 500,
-		    //closeButton: 'Отмена',
+			width: 500,
+			//closeButton: 'Отмена',
 		}, function(myRewardWin) {
 			myRewardWin.wait();
 			getAjaxHtml('account/rewards/get_periods', function(html) {
@@ -1432,11 +1432,11 @@ $(document).ready(function() {
 	$('[reportpatternsbutton]').on(tapEvent, function() {
 		popUp({
 			title: 'Выплаты',
-		    width: 800,
-		    html: '<div id="reportPatternsList"></div>',
-		    winClass: 'account',
-		    buttons: [{id: 'getEarlyPatterns', title: 'Показать более ранние'}],
-		    closeButton: 'Закрыть'
+			width: 800,
+			html: '<div id="reportPatternsList"></div>',
+			winClass: 'account',
+			buttons: [{id: 'getEarlyPatterns', title: 'Показать более ранние'}],
+			closeButton: 'Закрыть'
 		}, function(rptWin) {
 			reportWin = rptWin;
 			offset = 0;
@@ -1551,8 +1551,8 @@ $(document).ready(function() {
 	$('[timesheetperiodbutton]').on(tapEvent, function() {
 		popUp({
 			title: 'Периоды расписания',
-		    width: 520,
-		    winClass: 'account'
+			width: 520,
+			winClass: 'account'
 		}, function(tPWin) {
 			timesheetPeriodsWin = tPWin;
 			timesheetPeriodsWin.wait();
@@ -1648,8 +1648,8 @@ $(document).ready(function() {
 		historyWeeks = 0;
 		popUp({
 			title: 'Забронировать выходной',
-		    width: 500,
-		    winClass: 'account'
+			width: 500,
+			winClass: 'account'
 		}, function(win) {
 			offtimeWin = win;
 			offtimeWin.wait();
@@ -1767,8 +1767,8 @@ $(document).ready(function() {
 	$('[getvacation]').on(tapEvent, function() {
 		popUp({
 			title: 'Забронировать отпуск',
-		    width: 500,
-		    winClass: 'account'
+			width: 500,
+			winClass: 'account'
 		}, function(win) {
 			vacationWin = win;
 			vacationWin.wait();
@@ -2080,8 +2080,8 @@ $(document).ready(function() {
 	$('[showstatistics]').on(tapEvent, function() {
 		popUp({
 			title: 'Статистика',
-		    width: 800,
-		    closeButton: 'Закрыть',
+			width: 800,
+			closeButton: 'Закрыть',
 		}, function(statisticsWin) {
 			statisticsWin.wait();
 			getAjaxHtml('account/statistics_get', function(html) {
@@ -2108,9 +2108,9 @@ $(document).ready(function() {
 	$('[myrating]').on(tapEvent, function() {
 		popUp({
 			title: 'Мой рейтинг',
-		    width: 600,
-		    closeButton: 'Закрыть',
-		    winClass: 'ratings'
+			width: 600,
+			closeButton: 'Закрыть',
+			winClass: 'ratings'
 		}, function(myRatingWin) {
 			myRatingWin.wait();
 			getAjaxHtml('account/get_rating', function(html) {
@@ -2128,9 +2128,9 @@ $(document).ready(function() {
 	/*$('[myrating]').on(tapEvent, function() {
 		popUp({
 			title: 'Мой рейтинг',
-		    width: 800,
-		    buttons: [{id: 'chooseMentor', title: 'Выбрать наставника'}],
-		    closeButton: 'Закрыть',
+			width: 800,
+			buttons: [{id: 'chooseMentor', title: 'Выбрать наставника'}],
+			closeButton: 'Закрыть',
 		}, function(myRatingWin) {
 			
 			function myRating(replace) {
@@ -2219,11 +2219,11 @@ $(document).ready(function() {
 		
 		popUp({
 			title: 'Мои персонажи',
-		    width: 800,
-		    wrapToClose: true,
-		    winClass: false,
-		    //buttons: [{id: 'addPersonage', title: 'Добавить персонаж'}],
-		    closeButton: 'Закрыть',
+			width: 800,
+			wrapToClose: true,
+			winClass: false,
+			//buttons: [{id: 'addPersonage', title: 'Добавить персонаж'}],
+			closeButton: 'Закрыть',
 		}, function(getPersonagesWin) {
 			getPersonagesWin.wait();
 			
@@ -2247,9 +2247,9 @@ $(document).ready(function() {
 		
 		/*popUp({
 			title: 'Мои персонажи',
-		    width: 500,
-		    buttons: [{id: 'popupNewPersonage', title: 'Добавить персонаж', disabled: 1}],
-		    closeButton: 'Закрыть',
+			width: 500,
+			buttons: [{id: 'popupNewPersonage', title: 'Добавить персонаж', disabled: 1}],
+			closeButton: 'Закрыть',
 		}, function(gameIdsPersonagesWin) {
 			
 			gameIdsPersonagesWin.wait();
@@ -2346,13 +2346,13 @@ $(document).ready(function() {
 		
 		popUp({
 			title: 'Мои персонажи',
-		    width: 800,
-		    height: false,
-		    html: html,
-		    wrapToClose: true,
-		    winClass: false,
-		    buttons: [{id: 'addPersonage', title: 'Добавить персонаж'}],
-		    closeButton: 'Закрыть',
+			width: 800,
+			height: false,
+			html: html,
+			wrapToClose: true,
+			winClass: false,
+			buttons: [{id: 'addPersonage', title: 'Добавить персонаж'}],
+			closeButton: 'Закрыть',
 		}, function(getPersonagesWin) {
 			getPersonagesWin.wait();
 			$('#personesList').ddrCRUD({
@@ -2379,13 +2379,13 @@ $(document).ready(function() {
 	$('[paymentorders]').on(tapEvent, function() {
 		popUp({
 			title: 'Заявки на оплату',
-		    width: 1000,
-		    height: false,
-		    html: '<div id="paymentRequestsWin"></div>',
-		    wrapToClose: true,
-		    winClass: 'account',
-		    buttons: false,
-		    closeButton: false,
+			width: 1000,
+			height: false,
+			html: '<div id="paymentRequestsWin"></div>',
+			wrapToClose: true,
+			winClass: 'account',
+			buttons: false,
+			closeButton: false,
 		}, function(paymentRequestsWin) {
 			getAjaxHtml('account/get_payment_requests', function(html) {
 				$('#paymentRequestsWin').html(html);
@@ -2407,13 +2407,13 @@ $(document).ready(function() {
 	$('[visitsrate]').on(tapEvent, function() {
 		popUp({
 			title: 'Моя посещаемость',
-		    width: 400,
-		    height: false,
-		    html: '<div id="visitsRateWin"></div>',
-		    wrapToClose: true,
-		    winClass: 'account',
-		    buttons: false,
-		    closeButton: false,
+			width: 400,
+			height: false,
+			html: '<div id="visitsRateWin"></div>',
+			wrapToClose: true,
+			winClass: 'account',
+			buttons: false,
+			closeButton: false,
 		}, function(visitsRateWin) {
 			visitsRateWin.wait();
 			
@@ -2450,12 +2450,12 @@ $(document).ready(function() {
 	$('[mykpiplan]').on(tapEvent, function() {
 		popUp({
 			title: 'Мой KPI план',
-		    width: 400,
-		    height: false,
-		    wrapToClose: true,
-		    winClass: 'account',
-		    buttons: false,
-		    closeButton: false,
+			width: 400,
+			height: false,
+			wrapToClose: true,
+			winClass: 'account',
+			buttons: false,
+			closeButton: false,
 		}, function(kpiPlanWin) {
 			kpiPlanWin.setData('account/kpiplan/get_periods', function() {
 				$('[kpiplanperiod]').on(tapEvent, function() {
@@ -2463,7 +2463,7 @@ $(document).ready(function() {
 						kpiPeriodTitle = $(this).children('strong').text(),
 						kpiPeriodDate = $(this).children('small').text(),
 						userId = getCookie('id');
-					
+						
 					kpiPlanWin.setData('account/kpiplan/get_user_progress', {kpi_period_id: kpiPeriodId, user_id: userId, period_title: kpiPeriodTitle, period_date: kpiPeriodDate}, function(html, stat) {
 						if (!stat) kpiPlanWin.setData(html, false);
 						else {
@@ -2491,8 +2491,8 @@ $(document).ready(function() {
 	$('[walletbalance]').on(tapEvent, function() {
 		popUp({
 			title: 'Мой баланс',
-		    width: 1000,
-		    closeButton: 'Закрыть',
+			width: 1000,
+			closeButton: 'Закрыть',
 		}, function(walletBalanceWin) {
 			walletBalanceWin.wait();
 			getAjaxHtml('account/get_balance', function(html) {
@@ -2593,8 +2593,8 @@ $(document).ready(function() {
 			
 			popUp({
 				title: 'Заполните коэффициенты!',
-			    width: 500,
-			    closeButton: 'Закрыть',
+				width: 500,
+				closeButton: 'Закрыть',
 			}, function(ratingNotificationsWin) {
 				ratingNotificationsWin.wait();
 				getAjaxHtml('account/get_rating_notifications', {statics: ratingsStatics}, function(html) {
@@ -2610,6 +2610,52 @@ $(document).ready(function() {
 	
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	if (getCookie('gifts')) {
+		popUp({
+			title: '',
+			width: 600,
+			winClass: 'gift__message'
+		}, function(giftsWin) {
+			giftsWin.setData('gifts/show_message', function() {
+				$('#getGifts').on(tapEvent, function() {
+					(function getGift() {
+						giftsWin.setData('gifts/get_gift', function() {
+							$('#takeGiftBtn').on(tapEvent, function() {
+								let giftId = $(this).attr('giftid');
+								$.post('/gifts/take_gift', {gift_id: giftId}, function(response) {
+									if (response) {
+										giftsWin.setData('gifts/gift_success', function() {
+											$('#getNextGiftBtn').on(tapEvent, function() {
+												getGift();
+											});
+											
+											$('#closeGiftsWinBtn').on(tapEvent, function() {
+												giftsWin.close();
+											});
+										});
+									} else {
+										notify('Ошибка получения подарка, попробуйте еще раз', 'error');
+									}
+								});
+							});
+							
+							$('#closeGiftsWinBtn').on(tapEvent, function() {
+								giftsWin.close();
+							});
+						});
+					})();
+				});
+			});
+		});
+	}
 	
 	
 	

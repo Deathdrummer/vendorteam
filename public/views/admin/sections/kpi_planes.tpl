@@ -33,7 +33,7 @@
 		
 		<div class="item inline right" hidden id="kpiSearchBlock">
 			<div class="d-flex align-items-center">
-				<div class="field w300px mr5px">
+				<div class="field w200px mr5px">
 					<input type="text" autocomplete="off" id="kpiSearchString" placeholder="Введите никнейм...">
 				</div>
 				<div class="buttons inline notop minspace">
@@ -45,7 +45,7 @@
 		
 		<div class="item inline right" hidden id="kpiProgressSearchBlock">
 			<div class="d-flex align-items-center">
-				<div class="field w300px mr5px">
+				<div class="field w200px mr5px">
 					<input type="text" autocomplete="off" id="kpiProgressSearchString" placeholder="Введите никнейм...">
 				</div>
 				<div class="buttons inline notop minspace">
@@ -55,7 +55,7 @@
 			</div>
 		</div>
 		
-		<div class="item inline ml30px"><h3 id="kpiDataTitle"></h3></div>
+		<div class="item inline ml30px w300px"><h3 class="fz18px" id="kpiDataTitle"></h3></div>
 		
 		<div id="kpiDataContainer" class="reports mt-3"></div>
 	</fieldset>
@@ -838,10 +838,10 @@
 						personageBlock = $(this).closest('.personagetasks');
 					$.post('/kpi/progressplan/remove_personage', {personage_id: personageId}, function(response) {
 						if (response) {
-							notify('Перонаж успешно удален из KPI!');
+							notify('Персонаж успешно удален из KPI!');
 							$(personageBlock).remove();
 						} else {
-							notify('Ошибка удаления пермонажа!', 'error');
+							notify('Ошибка удаления персонажа!', 'error');
 						}
 					}).fail(function(e) {
 						showError(e);
@@ -1029,6 +1029,7 @@
 						//$('#kpiDataContainer').find('input[name="payout"]').number(true, 2, '.', ' ');
 						calcKpiBonusStatWin.close();
 						$('#kpiStatisticsBonusSaveButton').removeAttrib('disabled');
+						$('#kpiProgressSearchBlock, #kpiSearchBlock').setAttrib('hidden');
 						
 						$('#kpiDataTitle').text('Бонусные проценты по KPI плану: '+periodTitle);
 						
@@ -1234,8 +1235,7 @@
 		popUp({
 			title: 'Подарки за перевыполнение плана',
 		    width: 1000,
-		    buttons: [{id: 'addGift', title: 'Добавить подарок'}],
-		    closeByButton: true,
+		    buttons: [{id: 'addGift', title: 'Добавить'}],
 		    closeButton: 'Закрыть'
 		}, function(kpiGiftsWin) {
 			kpiGiftsWin.setData('gifts/init', function() {
