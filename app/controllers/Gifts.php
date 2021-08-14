@@ -135,7 +135,7 @@ class Gifts extends MY_Controller {
 		$this->load->model(['account_model' => 'account']);
 		$userData = $this->account->getUserData();
 		$data['gift'] = $this->gifts->getGift($userData['id']);
-		$data['actoins'] = $this->actions; 
+		$data['actions'] = $this->actions;
 		echo $this->twig->render('views/account/render/gifts/gift.tpl', $data);
 	}
 	

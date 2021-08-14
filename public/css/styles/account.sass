@@ -3834,6 +3834,9 @@ body
 .wallet
 	&__payout
 		background-color: #d0f1d3
+		
+		&_recovery
+			background-color: #f9ddd7
 	
 	&__title
 		border-bottom: 1px solid #eee
@@ -4123,86 +4126,91 @@ body
 
 
 
-.gift
-	&__message
-		background-color: #efdeea !important
-		
-		.popup__header
-			display: none
-		
+
+
+
+
+
+
+
+
+.giftwin
+	.popup__header
+		background-color: #fff
+	
+	.popup__footer
+		display: none
 	
 	&__title
 		font-size: 40px
 		text-align: center
 		text-transform: uppercase
+		
+		&_small
+			font-size: 24px
 	
-	&__button
+	&__value
+		text-align: center
+		margin-top: 20px
+		
+		small
+			font-size: 20px
+			line-height: 20px
+			+font(roboto, medium)
+			display: block
+			
+		strong
+			font-size: 40px
+			+font(roboto, bold)
+			
+		span
+			font-size: 18px
+	
+	
+	&__buttons
 		display: flex
 		height: 100px
 		align-items: center
 		justify-content: center
 		
-		button
-			font-size: 26px
-			height: 50px
-			+font(roboto, middle)
-			letter-spacing: 2px
-			text-transform: uppercase
-			background-color: #562545 !important
-			color: #fff !important
-			padding-left: 25px
-			padding-right: 25px
-			transition: background-color 0.16s
+	&__button
+		font-size: 26px
+		height: 50px
+		+font(roboto, medium)
+		letter-spacing: 2px
+		text-transform: uppercase
+		background-color: #562545
+		color: #fff !important
+		margin-left: 5px
+		margin-right: 5px
+		padding-left: 25px
+		padding-right: 25px
+		transition: background-color 0.16s
+		
+		&:hover
+			background-color: darken(#562545, 5%) !important
+			
+		&:active
+			background-color: darken(#562545, 10%) !important
+			transition: background-color 0s
+		
+		&_small
+			height: 34px
+			font-size: 16px
+		
+		&_close
+			background: none !important
+			border: 2px solid #9a457d
+			color: #9a457d !important
 			
 			&:hover
-				background-color: darken(#562545, 5%) !important
+				border-color: darken(#9a457d, 5%) !important
+				background: none !important
 				
 			&:active
-				background-color: darken(#562545, 10%) !important
-				transition: background-color 0s
-	
-	
-	
-	&__carditems
-		margin-top: -20px
-	
-	&__card
-		margin-top: 20px
-		
-		.giftcard
-			display: flex
-			flex-direction: column
-			justify-content: space-between
-			text-align: center
-			border: 1px solid #cabac5
-			background-color: #eadee7
-			padding: 10px
-			height: 170px
+				background: none !important
+				border-color: darken(#9a457d, 10%) !important
+				transition: border-color 0s
 			
-			&__title
-				flex: 1 1 auto
-				font-size: 30px
-				line-height: 30px
-				display: flex
-				align-items: center
-				justify-content: center
-				
-			&__value
-				small
-					font-size: 14px
-					line-height: 14px
-					display: block
-					
-				strong
-					font-size: 30px
-					+font(roboto, bold)
-					
-				span
-					font-size: 18px
-					
-					
-				
-				
-			
-			
-		
+	
+

@@ -1755,6 +1755,46 @@ class Reports_model extends My_Model {
 	
 	
 	/**
+	 * @param 
+	 * @return 
+	*/
+	public function paymentRequestsUpdateSumm($id = false, $summ = false) {
+		if (!$id || !$summ) return false;
+		$this->db->where('id', $id);
+		if (!$this->db->update('users_orders', ['summ' => $summ])) return false;
+		return true;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function paymentRequestsRemove($id = false) {
+		if (!$id) return false;
+		$this->load->model(['wallet_model' => 'wallet', 'users_model' => 'users']);
+		$this->db->where('id', $id);
+		if (!$requestData = $this->_row('users_orders')) return false;
+		
+		if ($requestData['to_deposit'] > 0) $this->users->setUserDeposit($requestData['user_id'], -$requestData['to_deposit']);
+		
+		$this->wallet->setToWallet([$requestData['user_id'] => $requestData['summ']], -1, $requestData['order'].' возврат', '-');
+		
+		$this->db->where('id', $id);
+		if (!$this->db->delete('users_orders')) return false;
+		return true;
+	}
+	
+	
+	
+	
+	/**
 	 * Получить список выплат
 	 * @param 
 	 * @return 

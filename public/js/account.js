@@ -19,6 +19,9 @@ $(document).ready(function() {
 		
 		$.post('/admin/add_pay_item', response).fail(function(e) {
 			console.log(e.responseText);
+		}).fail(function(e) {
+			showError(e);
+			notify('Системная ошибка!', 'error');
 		});
 	}
 
@@ -37,6 +40,9 @@ $(document).ready(function() {
 		
 		$.post('/admin/add_complaints_item', response).fail(function(e) {
 			console.log(e.responseText);
+		}).fail(function(e) {
+			showError(e);
+			notify('Системная ошибка!', 'error');
 		});
 	}
 	
@@ -2621,8 +2627,8 @@ $(document).ready(function() {
 	if (getCookie('gifts')) {
 		popUp({
 			title: '',
-			width: 600,
-			winClass: 'gift__message'
+			width: 500,
+			winClass: 'giftwin'
 		}, function(giftsWin) {
 			giftsWin.setData('gifts/show_message', function() {
 				$('#getGifts').on(tapEvent, function() {

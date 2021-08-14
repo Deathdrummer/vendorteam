@@ -599,7 +599,7 @@ class Reports extends MY_Controller {
 			$percentToDeposit = $this->admin_model->getSettings('payment_requests_deposit_percent');
 		}*/
 		
-		$orders = []; $toWalletData = [];
+		$orders = []; $toWalletData = []; $date = time();
 		//$toDepositData = [];
 		foreach ($usersData as $user) {
 			/*if (isset($data['to_deposit']) && $data['to_deposit']) {
@@ -631,7 +631,7 @@ class Reports extends MY_Controller {
 				'summ' 			=> $summToOrder,
 				'to_deposit' 	=> $summToDeposit,
 				'comment' 		=> $data['comment'],
-				'date'			=> time()
+				'date'			=> $date
 			];
 			
 			if (!isset($toWalletData[$user['id']])) $toWalletData[$user['id']] = $summToOrder;
@@ -670,6 +670,35 @@ class Reports extends MY_Controller {
 		echo json_encode('1');
 	}
 	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function paymentrequests_save_summ() {
+		$data = $this->input->post();
+		if (!$this->reports_model->paymentRequestsUpdateSumm($data['id'], $data['summ'])) exit('0');
+		echo '1';
+	}
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function paymentrequests_remove() {
+		if (!$this->input->is_ajax_request()) return false;
+		$id = $this->input->post('id');
+		if (!$this->reports_model->paymentRequestsRemove($id)) exit('0');
+		echo '1';
+	}
 	
 	
 	
@@ -1179,13 +1208,21 @@ class Reports extends MY_Controller {
 					];
 				}
 				
-				
+				toLog('--------- Списание баланса -----------');
+				toLog('Отправить данные в сохраненный отчет');
+				toLog($toReportData);
 				// Отправить данные в сохраненный отчет
 				if ($toReportData) $this->wallet->saveWalletReportData($toReportData);
 				
+				toLog('--------- Списание баланса -----------');
+				toLog('отправить выплаты в историю');
+				toLog($amountsData);
 				// отправить выплаты в историю
 				if ($amountsData) $this->wallet->setToWallet($amountsData, null, 'Выплата', '-');
 				
+				toLog('--------- Списание баланса -----------');
+				toLog('отправить в резерв');
+				toLog($toDepositdata);
 				// отправить в резерв
 				if ($toDepositdata) $this->wallet->updateUsersDeposit($toDepositdata);
 				

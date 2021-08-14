@@ -172,6 +172,7 @@
 								<td>Удержано в резерв</td>
 								<td>Комментарий</td>
 								<td>Дата</td>
+								<td class="w82px">Опции</td>
 								{#<td class="w1">Расчет</td>#}
 							</tr>
 						</thead>
@@ -200,10 +201,16 @@
 									</td>
 									<td>{{item.payment}}</td>
 									<td>{{item.order}}</td>
-									<td class="nowrap">{{item.summ|number_format(2, '.', ' ')}} <small>руб.</small></td>
-									<td class="nowrap">{{item.to_deposit|number_format(2, '.', ' ')}} <small>руб.</small></td>
+									<td class="nowrap">{{item.summ|number_format(2, '.', ' ')}} <small>₽</small></td>
+									<td class="nowrap">{{item.to_deposit|number_format(2, '.', ' ')}} <small>₽</small></td>
 									<td><small style="word-break: break-all; white-space: pre-wrap;">{{item.comment}}</small></td>
 									<td class="nowrap">{{item.date|d}} {{item.date|t}}</td>
+									<td class="center top pt8px">
+										<div class="buttons inline notop">
+											{#<button class="small w30px" title="Редактировать"><i class="fa fa-edit"></i></button>#}
+											<button class="small w30px remove" payrequestremove="{{item.id}}" title="Удалить"><i class="fa fa-trash"></i></button>
+										</div>
+									</td>
 									{#<td class="square_block center">
 										{% if item.paid %}
 											<div prpaydone="0" data="{{item.id}}|{{item.user_id}}|{{item.summ}}" class="success" title="Не рассчитан"><i class="fa fa-check-square-o"></i></div>
@@ -1286,6 +1293,75 @@ $(document).ready(function() {
 			});
 		});
 	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//---------------------------------------- Изменить \ удалить заявку на оплату
+	$('body').off(tapEvent, '[payrequestremove]').on(tapEvent, '[payrequestremove]', function() {
+		let payItemId = $(this).attr('payrequestremove'),
+			row = $(this).closest('tr');
+		popUp({
+			title: 'Удалить запись',
+		    width: 400,
+		    html: '<p class="center info fz18px mt10px">Вы действительно хотите удалить запись?</p>',
+		    buttons: [{id: 'payRequestRemoveBtn', title: 'Удалить'}],
+		    closeButton: 'Отмена',
+		}, function(payRequestRemoveWin) {
+			$('#payRequestRemoveBtn').on(tapEvent, function() {
+				payRequestRemoveWin.wait();
+				$.post('/reports/paymentrequests_remove', {id: payItemId}, function(response) {
+					if (response) {
+						$(row).remove();
+						notify('Запись успешно удалена!');
+						payRequestRemoveWin.close();
+					} else {
+						notify('Ошибка удаления записи!', 'error');
+						payRequestRemoveWin.wait(false);
+					}
+				}).fail(function(e) {
+					showError(e);
+					notify('Системная ошибка!', 'error');
+				});
+			});
+		});
+	});
+	
+	
+	
+	
+	let changePaySumTOut;
+	function paySaveSumm() {
+		$('[payrequestsumm]').onChangeNumberInput(function(value, input) {
+			let id = $(input).attr('payrequestsumm');
+			clearTimeout(changePaySumTOut);
+			changePaySumTOut = setTimeout(function() {
+				$.post('/reports/paymentrequests_save_summ', {id: id, summ: value}, function(response) {
+					if (response) {
+						$(input).addClass('done');
+						notify('Сумма успешно сохранена!');
+					} else{
+						$(input).addClass('error');
+						notify('Ошибка сохранения суммы!', 'error');
+					} 
+				}).fail(function(e) {
+					showError(e);
+					notify('Системная ошибка!', 'error');
+				});
+			}, 300);
+		});
+	};
+	paySaveSumm();
+	$(document).on('renderSection', function() {
+		paySaveSumm();
+	});
+	
 	
 	
 	
@@ -2856,7 +2932,7 @@ $(document).ready(function() {
 										} else {
 											let payData = [],
 												rows = $('#walletReport').find('[walletuserrow]');
-											
+												
 											if (rows.length) {
 												saveAndPayoutWin.wait();
 												$(rows).each(function() {
@@ -2875,6 +2951,7 @@ $(document).ready(function() {
 														to_deposit: toDeposit
 													});
 												});
+												
 												
 												if (payData) {
 													$.post('/reports/wallet/set_payout', {paydata: payData, title: reportTitleInp.val()}, function(response) {

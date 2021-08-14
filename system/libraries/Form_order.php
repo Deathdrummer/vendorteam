@@ -64,13 +64,10 @@ class CI_Form_order {
 			}
 		}
 		
-		
-		if (empty($errors)) {
-			$this->sendEmail($postData);
-			return 0;
-		}
 
-		return $errors;
+		$this->sendEmail($postData);
+		
+		return $errors ?: 0;
 	}
     
     
@@ -84,26 +81,25 @@ class CI_Form_order {
     	$dataToEmail = [];
 		foreach ($postData as $name => $data) $dataToEmail[$name] = isset($data['value']) ? $data['value'] : $data;
 		
+		//toLog($dataToEmail);
 		if (!isset($dataToEmail['from']) || !isset($dataToEmail['to'])) {
 			toLog('form_order/sendEmail - ошибка! нет нужных полей для отправки E-mail');
 			toLog($dataToEmail);
-			return false;
-		} 
-		
-		
-		$title = isset($dataToEmail['title']) ? $dataToEmail['title'] : 'Новое предложение или жалоба';
-		
-		$this->CI->load->library('email');
-		$config['mailtype'] = 'html';
-		$this->CI->email->initialize($config);
-
-		$this->CI->email->from($dataToEmail['from'], 'Your Name');
-		$this->CI->email->to($dataToEmail['to']);
-
-		$this->CI->email->subject($title);
-		$this->CI->email->message($this->CI->twig->render('views/'.$dataToEmail['template'], $dataToEmail));
-
-		$this->CI->email->send();
+		}  else {
+			$title = isset($dataToEmail['title']) ? $dataToEmail['title'] : 'Новое предложение или жалоба';
+			
+			$this->CI->load->library('email');
+			$config['mailtype'] = 'html';
+			$this->CI->email->initialize($config);
+			
+			$this->CI->email->from($dataToEmail['from'], 'Your Name');
+			$this->CI->email->to($dataToEmail['to']);
+			
+			$this->CI->email->subject($title);
+			$this->CI->email->message($this->CI->twig->render('views/'.$dataToEmail['template'], $dataToEmail));
+			
+			$this->CI->email->send();
+		}	
     }
     
     

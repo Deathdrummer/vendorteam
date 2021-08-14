@@ -450,7 +450,7 @@ class Users_model extends MY_Model {
 		}
 		
 		$this->refreshUsersOfftime($users);
-		$this->refreshUsersPayments($users);
+		//$this->refreshUsersPayments($users); обновить платежные данные участников
 		$this->db->update_batch('users', $users, 'id');
 		$this->setRanksToUsers();
 		return 1;

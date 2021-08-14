@@ -287,9 +287,12 @@ class Admin_model extends My_Model {
 		if (!$allData = $query->result_array()) return false;
 		$statics = $this->getStatics();
 		
-		$data = ['actual' => [], 'archive' => []];
+		
+		
+		$data = ['actual' => [], 'archive' => []]; $itemsToRemove = [];
 		foreach ($allData as $item) {
 			$temp = json_decode($item['data'], true);
+			if (!isset($temp['user_id']) && $temp['stat'] == 0) $itemsToRemove[] = $item['id'];
 			
 			$staticId = isset($temp['static']) ? $temp['static'] : 0;
 			$temp['static'] = isset($statics[$staticId]) ? $statics[$staticId]['name'] : false;
@@ -300,6 +303,15 @@ class Admin_model extends My_Model {
 			
 			$data[$temp['stat'] == 0 ? 'actual' : 'archive'][$item['id']] = $temp;
 		}
+		
+		if ($itemsToRemove) {
+			toLog('getUsersListPay -> найдены у удалены пустые записи!');
+			toLog($itemsToRemove);
+			$this->db->where_in('id', $itemsToRemove);
+			$this->db->delete('pay_items');
+		}
+		
+		
 		$data['archive'] = array_values(array_slice($data['archive'], 0, 50, true));
 		return $userId ? $data['actual'] : $data;
 	}

@@ -448,7 +448,7 @@ class Account_model extends My_Model {
 		
 		$this->db->select('u.id, u.avatar, u.nickname, u.color, EXISTS (SELECT 1 FROM resign r WHERE r.user_id = u.id AND r.date_last > '.time().') AS is_resign');
 		$this->db->join('users_statics us', 'us.user_id = u.id');
-		$this->db->where(['us.static_id' => $data['static_id'], 'verification' => 1, 'deleted' => 0]);
+		$this->db->where(['us.static_id' => $data['static_id'], 'verification' => 1, 'deleted' => 0, 'excluded' => 0]);
 		$queryU = $this->db->get('users u');
 		if (!$respU = $queryU->result_array()) return false;
 		$respU = setArrKeyFromField($respU, 'id');

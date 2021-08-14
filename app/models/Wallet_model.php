@@ -8,13 +8,15 @@ class Wallet_model extends MY_Model {
 	private $walletReportsTable = 'wallet_reports';
 	private $walletReportsDataTable = 'wallet_reports_data';
 	private $types = [
+		-2 => 'Корректировка',
+		-1 => 'Отмена выплаты',
 		1 => 'Сдельная выплата',
 		2 => 'Премиальная выплата',
 		3 => 'Ключи',
 		4 => 'Премии',
 		5 => 'Заявки на оплату',
 		6 => 'KPI',
-		7 => 'Подарок за перевыполнение KPI плана'
+		7 => 'Подарок'
 	];
 
 	
@@ -263,6 +265,52 @@ class Wallet_model extends MY_Model {
 		if (!$userBalanse = $this->_row($this->walletAmountsTable)) return false;
 		return $userBalanse;
 	}
+	
+	
+	
+	
+	
+	
+	
+	//--------------------------------------------------------------------------------------------------------------
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function getAllUsersHstory() {
+		$this->db->select('user_id, '.$this->groupConcat(false, 'id, summ, deposit, transfer', 'history'));
+		$this->db->group_by('user_id');
+		if (!$usersHistory = $this->_result($this->walletHistoryTable)) return false;
+		
+		$usersData = [];
+		foreach ($usersHistory as $user) {
+			if (!$history = $user['history']) continue;
+			if (!$history = json_decode($history, true)) continue;
+			if (!$history = arr_sortByField($history, 'id', 'ASC')) continue;
+			
+			$finalSumm = 0;
+			foreach ($history as $item) {
+				if ($item['transfer'] == '+') {
+					$finalSumm += ($item['summ'] + $item['deposit']);
+				} elseif($item['transfer'] == '-') {
+					$finalSumm -= ($item['summ'] + $item['deposit']);
+				}
+			}
+			
+			$usersData[$user['user_id']] = round($finalSumm, 1);
+		}
+		
+		return $usersData;
+	}
+	
+	
+	
 	
 	
 	

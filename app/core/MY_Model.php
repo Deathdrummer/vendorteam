@@ -124,7 +124,7 @@ class MY_Model extends CI_Model {
 	 * @return string
 	*/
 	protected function groupConcat($concatTest = false, $concatData = false, $fieldname = false, $distinct = false) {
-		if (!$concatTest || !$concatData || !$fieldname) return '';
+		if (!$concatData || !$fieldname) return '';
 		
 		$finalConcat = '';
 		if ($cData = preg_split("/[\s,]+/", $concatData)) {
@@ -134,7 +134,11 @@ class MY_Model extends CI_Model {
 			}
 		}
 		
-		return "IF(GROUP_CONCAT(".$concatTest."), CAST(CONCAT('[', GROUP_CONCAT(".($distinct ? 'distinct' : '')." JSON_OBJECT(".rtrim($finalConcat, ', ').")), ']') AS JSON), NULL) AS ".$fieldname;
+		if ($concatTest === false) {
+			return "CAST(CONCAT('[', GROUP_CONCAT(".($distinct ? 'distinct' : '')." JSON_OBJECT(".rtrim($finalConcat, ', ').")), ']') AS JSON) AS ".$fieldname;
+		} else {
+			return "IF(GROUP_CONCAT(".$concatTest."), CAST(CONCAT('[', GROUP_CONCAT(".($distinct ? 'distinct' : '')." JSON_OBJECT(".rtrim($finalConcat, ', ').")), ']') AS JSON), NULL) AS ".$fieldname;
+		}
 	}
 	
 	

@@ -65,7 +65,7 @@
 							{% endif %}
 								
 							
-							{% if user.custom_fields %}
+							{% if custom_fields %}
 								<div class="kpiprocesscard__fields customtasks">
 									{% for field, cFData in custom_fields %}
 										{% if cFData['type'] == 'koeff' %}

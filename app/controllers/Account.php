@@ -1055,6 +1055,7 @@ class Account extends MY_Controller {
 	public function get_payment_requests() {
 		$paymentRequestsData = [];
 		if ($getPaymentRequests = $this->account->getPaymentRequests()) {
+			
 			$statics = $this->admin->getStatics();
 			
 			$paymentRequestsList = array_map(function($item) use ($statics) {

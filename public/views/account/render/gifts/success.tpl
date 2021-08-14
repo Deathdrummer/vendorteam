@@ -1,10 +1,21 @@
 {% if count %}
-	<p>подарок успешно получен!</p>
-	<p>{{count|padej(['остался', 'осталось', 'осталось'])}} еще {{count}} {{count|padej(['подарок', 'подарка', 'подарков'])}}</p>
-	<button id="getNextGiftBtn">Получить еще</button>
-
-	<button id="closeGiftsWinBtn">Закрыть</button>
+	<h1 class="giftwin__title giftwin__title_small">Подарок успешно получен!</h1>
+	
+	<div class="giftwin__value">
+		<small>{{count|padej(['остался', 'осталось', 'осталось'])}} еще</small>
+		<strong>{{count}}</strong>
+		<span>{{count|padej(['подарок', 'подарка', 'подарков'])}}</span>
+	</div>
+	
+	<div class="giftwin__buttons">
+		<button class="giftwin__button giftwin__button_small" id="getNextGiftBtn">Получить</button>
+		<button class="giftwin__button giftwin__button_small giftwin__button_close" id="closeGiftsWinBtn">Закрыть</button>
+	</div>
+	
 {% else %}
-	<h3 class="text-center">Все подарки получены!</h3>
-	<button id="closeGiftsWinBtn">Закрыть</button>
+	<h1 class="giftwin__title giftwin__title_small">Все подарки получены!</h1>
+	
+	<div class="giftwin__buttons">
+		<button class="giftwin__button giftwin__button_small giftwin__button_close" id="closeGiftsWinBtn">Закрыть</button>
+	</div>
 {% endif %}
