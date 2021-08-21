@@ -14,12 +14,11 @@
 				
 				<div class="report">
 					<div>
-						<table class="main_report_names">
+						<table class="main_report_names w300px">
 							<thead>
 								<tr>
 									<td class="center w36px">№</td>
-									<td class="nowrap">Состав</td>
-									<td class="nowrap">Звание</td>
+									<td>Участник</td>
 									<td>Резерв</td>
 								</tr>
 							</thead>
@@ -28,9 +27,11 @@
 								{% for userId, userData in static.users %}
 									<tr>
 										<td class="center"><strong>{{index}}</strong></td>
-										<td>{{userData.nickname}}</td>
-										<td>{{userData.rank_name}}</td>
-										<td><span class="nowrap">{{userData.deposit|number_format(2, '.', ' ')}} ₽</span></td>
+										<td>
+											<p>{{userData.nickname}}</p>
+											<small class="fz11px nowrap">{{userData.rank_name}}</small>
+										</td>
+										<td><span class=" ">{{userData.deposit|number_format(2, '.', ' ')}} ₽</span></td>
 									</tr>
 									{% set index = index + 1 %}
 								{% endfor %}

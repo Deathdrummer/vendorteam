@@ -1588,15 +1588,15 @@ body
 		margin-bottom: 0
 		
 		&_1
-			+resp(font-size, (xs: 16px, sm: 18px, md: 20px, lg: 22px, xl: 24px), (line-height: 2))
+			+resp(font-size, (xs: 16px, sm: 20, md: 22px, lg: 24px, xl: 26px), (line-height: 2))
 		&_2
-			+resp(font-size, (xs: 24px, sm: 26px, md: 28px, lg: 34px, xl: 38px), (line-height: 2))
-		&_3
-			+resp(font-size, (xs: 20px, sm: 24px, md: 28px, lg: 30px, xl: 32px), (line-height: 2))
-		&_4
-			+resp(font-size, (xs: 18px, sm: 20px, md: 22px, lg: 24px, xl: 28px), (line-height: 2))
-		&_5
 			+resp(font-size, (xs: 16px, sm: 18px, md: 20px, lg: 22px, xl: 24px), (line-height: 2))
+		&_3
+			+resp(font-size, (xs: 16px, sm: 17px, md: 18px, lg: 20px, xl: 22px), (line-height: 2))
+		&_4
+			+resp(font-size, (xs: 16px, sm: 16px, md: 18px, lg: 18px, xl: 20px), (line-height: 2))
+		&_5
+			+resp(font-size, (xs: 16px, sm: 16px, md: 16px, lg: 18px, xl: 18px), (line-height: 2))
 	
 	&__close
 		//background-color: #dc5656
@@ -1743,6 +1743,7 @@ body
 			background-color: #fff
 			padding: 10px
 			box-shadow: 0 8px 30px -12px rgba(0, 0, 0, 0.66)
+			max-width: 400px
 			
 			&__message
 				+font(roboto, bold)
@@ -2681,6 +2682,21 @@ body
 	
 	&__field
 		max-width: 300px
+		
+		&_long
+			max-width: 100%
+			
+		input
+			border: 1px solid #dbdbdb
+			border-radius: 4px
+			height: 40px
+			padding-left: 4px
+			padding-right: 4px
+			font-size: 14px
+			width: 100%
+	
+	&__date
+		+date()
 		
 		&_long
 			max-width: 100%
@@ -3839,7 +3855,6 @@ body
 			background-color: #f9ddd7
 	
 	&__title
-		border-bottom: 1px solid #eee
 		margin-bottom: 10px
 		
 	&__label

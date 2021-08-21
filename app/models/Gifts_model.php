@@ -3,6 +3,8 @@
 class Gifts_model extends MY_Model {
 	
 	private $giftsTable = 'gifts';
+	private $usersGiftsTable = 'users_gifts';
+	
 	public function __construct() {
 		parent::__construct();
 		
@@ -47,6 +49,7 @@ class Gifts_model extends MY_Model {
 				if (!$data) return false;
 				$this->db->where('id', $data);
 				if (!$this->db->delete($this->giftsTable)) return false;
+				return true;
 				break;
 			
 			default: break;
@@ -54,6 +57,83 @@ class Gifts_model extends MY_Model {
 	}
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Персональные подарки
+	 * @param 
+	 * @return 
+	*/
+	public function personalgifts($action = false) {
+		$args = func_get_args();
+		$action = $args[0];
+		$data = isset($args[1]) ? $args[1] : false;
+		if (!$action) return false;
+		
+		switch ($action) {
+			case 'get_to_user':
+				$this->db->where('user_id', $data);
+				if (!$result = $this->_result($this->usersGiftsTable)) return false;
+				return $result;
+				break;
+			
+			case 'get_gifts_counts':
+				$this->db->select('user_id, count(*) AS total, SUM(case when date_taking IS NULL then 1 else 0 end) AS waiting, SUM(case when date_taking IS NOT NULL then 1 else 0 end) AS taking');
+				$this->db->group_by('user_id');
+				if (!$result = $this->_result($this->usersGiftsTable)) return false;
+				return $result;
+				break;
+			
+			case 'get':
+				$this->db->where('section', 'personal');
+				if (!$result = $this->_result($this->giftsTable)) return false;
+				return $result;
+				break;
+			
+			case 'add':
+				$this->db->where_in('id', $data['gifts']);
+				if (!$result = $this->_result($this->giftsTable)) return false;
+				
+				$date = time();
+				$giftsToAdd = [];
+				foreach ($result as $gift) {
+					$value = rand($gift['items_from'], $gift['items_to']);
+					
+					$giftsToAdd[] = [
+						'user_id'		=> $data['user_id'],
+						'section'		=> 'personal',
+						'title'			=> $gift['title'],
+						'action'		=> $gift['action'],
+						'value'			=> $value,
+						'date_generate'	=> $date
+					];
+				}
+				if ($giftsToAdd) $this->db->insert_batch($this->usersGiftsTable, $giftsToAdd);
+				return true;
+				break;
+				
+			case 'change_gift_value':
+				$this->db->where('id', $data['id']);
+				if (!$this->db->update($this->usersGiftsTable, ['value' => $data['value']])) return false;
+				return true;
+				break;
+				
+			case 'remove_gift':
+				$this->db->where('id', $data['id']);
+				if (!$this->db->delete($this->usersGiftsTable)) return false;
+				return true;
+				break;
+			
+			
+			
+			default: break;
+		}
+	}
 	
 	
 	
@@ -125,8 +205,8 @@ class Gifts_model extends MY_Model {
 	 * @param 
 	 * @return 
 	*/
-	public function generateGifts($userId = false) {
-		if (!$userId) return false;
+	public function generateGifts($userId = false, $section = false) {
+		if (!$userId || !$section) return false;
 		$percent = $this->getUserPercent($userId);
 		if (!$gifts = $this->_getGifts('kpi')) return false;
 		$gifts = setArrKeyFromField($gifts, 'id', true);
@@ -164,6 +244,7 @@ class Gifts_model extends MY_Model {
 			
 			$giftsToUser[] = [
 				'user_id'		=> $userId,
+				'section'		=> $section,
 				'title' 		=> $gift['title'],
 				'action' 		=> $gift['action'],
 				'value' 		=> $value,
@@ -216,6 +297,7 @@ class Gifts_model extends MY_Model {
 		if (!$this->_runGiftAction($userId, $giftId, $giftData['action'], $giftData['value'])) return false;
 		return true;
 	}
+	
 	
 	
 	

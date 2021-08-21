@@ -56,7 +56,7 @@ class Account extends MY_Controller {
 		//------------------------------------------ задать куки если накопленный процент больше или равен заданному проценту
 		$userGiftsPercent = $this->gifts->getUserPercent($this->userData['id']);
 		if ($userGiftsPercent >= $this->settings['gift_min_percents_setting']) {
-			$this->gifts->generateGifts($this->userData['id']);
+			$this->gifts->generateGifts($this->userData['id'], 'bonus');
 		}
 		
 		if ($this->gifts->hasUserGifts($this->userData['id'])) {
@@ -64,6 +64,11 @@ class Account extends MY_Controller {
 		} else {
 			delete_cookie('gifts');
 		}
+		
+		if ($this->account->hasBirthDay()) {
+			set_cookie('birthday', 1, 0);
+		}
+		
 		
 		
 		$this->userData['is_resignation'] = $this->account->isResignation();
@@ -804,6 +809,52 @@ class Account extends MY_Controller {
 	
 	
 	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function edit_raid_koeff() {
+		if (!$this->input->is_ajax_request()) return false;
+		$data = bringTypes($this->input->post());
+		if (!$this->account->editRaidKoeff($data, true)) exit('0');
+		echo '1';
+	}
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function edit_raid_type() {
+		if (!$this->input->is_ajax_request()) return false;
+		$data = bringTypes($this->input->post());
+		if (!$this->account->editRaidTypes($data, true)) exit('0');
+		echo '1';
+	}
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function set_compound_item() {
+		if (!$this->input->is_ajax_request()) return false;
+		$data = bringTypes($this->input->post());
+		if (!$this->account->setCompoundItem($data)) exit('0');
+		echo '1';
+	}
+	
+	
+	// $periodId = false, $staticId = false, $userId == false, $compoundData = false
+	
+	
+	
+	
+	
 	/**
 	 * Получить активный период
 	 * @param 
@@ -1342,6 +1393,69 @@ class Account extends MY_Controller {
 				echo $this->twig->render('views/account/render/kpiplan/user.tpl', $data);
 				break;
 			
+			
+			default: break;
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function birthday($action = false) {
+		if (!$action) return false;
+		$post = bringTypes($this->input->post());
+		
+		switch ($action) {
+			case 'get_form':
+				echo $this->twig->render('views/account/render/forms/birthday_form.tpl');
+				break;
+			
+			case 'set':
+				if (!$this->account->setBirthDay($post['date'])) exit('0');
+				delete_cookie('birthday');
+				echo '1';
+				break;
+			
+			default: break;
+		}
+	}
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function paymentorder($action = false) {
+		if (!$action) return false;
+		$this->load->model(['admin_model' => 'admin']);
+		$post = bringTypes($this->input->post());
+		switch ($action) {
+			case 'get_form':
+				
+				$data['fields'] = $this->admin->getSettings('fields_pay');
+				$data['title'] = $this->admin->getSettings('left_popup_title');
+				echo $this->twig->render('views/account/render/forms/payment_order.tpl', $data);
+				break;
+			
+			case 'add':
+				$userData = $this->account->getUserData($this->userData['id']);
+				$post['stat'] = 0;
+				$post['date'] = time().'000';
+				$post['user_id'] = $this->userData['id'];
+				$post['nickname'] = $userData['nickname'];
+				$post['static'] = $userData['main_static'];
+				
+				echo $this->admin->addPayItem($post);
+				break;
 			
 			default: break;
 		}

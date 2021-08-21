@@ -148,6 +148,22 @@ html
 
 
 
+.red
+	color: #fb8080
+	
+	&:hover
+		color: darken(#fb8080, 10%)
+	
+	&:active
+		color: darken(#fb8080, 20%)
+
+
+
+
+input[type="text"].changed, input[type="number"].changed
+	border: 1px solid #04c704
+	background-color: #ebffeb
+
 
 
 
@@ -493,99 +509,108 @@ html
 		
 		
 		
-		//---------------------------------------------------------------- Список
-		.list
+//---------------------------------------------------------------- Список
+.list
+	display: flex
+	flex-direction: column
+	justify-content: space-between
+	margin-bottom: 1rem
+	
+	&_item
+		padding: 7.5px 0px
+		
+		&_active
+			> div
+				box-shadow: 0 0 0 5px #67d1ff inset
+		
+		&.changed > *
+			background-color: #c5efd1
+			border-color: darken(#c5efd1, 10%)
+		
+		> *
 			display: flex
-			flex-direction: column
-			justify-content: space-between
-			margin-bottom: 1rem
+			align-items: center
+			border: 1px solid darken($bgColor, 15%)
+			padding: 10px
+			background-color: darken($bgColor, 7%)
+			transition: background-color 0.16s
+			border-radius: 2px
+			position: relative
 			
-			&_item
-				padding: 7.5px 0px
+			&:not(.block)> * + *
+				margin-left: 10px
+			
+			> .buttons
+				margin-top: 0
+			
+			&.block
+				display: block
 				
-				&_active
-					> div
-						box-shadow: 0 0 0 5px #67d1ff inset
+				> .buttons
+					margin-top: 0.8rem
+			
+			> title
+				display: inline-block
+				position: absolute 	
+				top: 0
+				height: 20px
+				font-size: 12px
+				line-height: 20px
+				color: #fff
+				padding-left: 10px
+				padding-right: 10px
+				border-radius: 0 0 0 3px
+				right: 0
+				background-color: darken($bgColor, 50%)
+				font-weight: 600
 				
-				&.changed > *
-					background-color: #c5efd1
-					border-color: darken(#c5efd1, 10%)
+				&:empty
+					display: none
+					
 				
-				> *
-					display: flex
-					align-items: center
-					border: 1px solid darken($bgColor, 15%)
-					padding: 10px
-					background-color: darken($bgColor, 7%)
+				
+			
+			> .list_item_handle
+				font-size: 30px
+				width: 30px
+				text-align: center
+				color: darken($bgColor, 30%)
+				cursor: pointer
+				margin-right: 1rem
+				transition: color 0.16s
+				
+				&:hover
+					color: darken($bgColor, 60%)
+				
+			
+			&.between
+				justify-content: space-between
+				
+			&.hovered
+				&:hover
+					background-color: darken($bgColor, 12%)
 					transition: background-color 0.16s
-					border-radius: 2px
-					position: relative
-					
-					&:not(.block)> * + *
-						margin-left: 10px
-					
-					> .buttons
-						margin-top: 0
-					
-					&.block
-						display: block
-						
-						> .buttons
-							margin-top: 0.8rem
-					
-					> title
-						display: inline-block
-						position: absolute 	
-						top: 0
-						height: 20px
-						font-size: 12px
-						line-height: 20px
-						color: #fff
-						padding-left: 10px
-						padding-right: 10px
-						border-radius: 0 0 0 3px
-						right: 0
-						background-color: darken($bgColor, 50%)
-						font-weight: 600
-						
-						&:empty
-							display: none
-							
-						
-						
-					
-					> .list_item_handle
-						font-size: 30px
-						width: 30px
-						text-align: center
-						color: darken($bgColor, 30%)
-						cursor: pointer
-						margin-right: 1rem
-						transition: color 0.16s
-						
-						&:hover
-							color: darken($bgColor, 60%)
-						
-					
-					&.between
-						justify-content: space-between
-			
-			
-			&_col
-				display: inline-flex
-				flex-direction: column
-				align-self: flex-start
 				
-				.title
-					font-size: 14px
-					line-height: 14px
-					margin-top: -2px
-					margin-bottom: 6px
-				
-				.subtitle
-					font-size: 12px
-					line-height: 12px
-					
+				&:active
+					background-color: darken($bgColor, 20%)
+					transition: background-color 0s
+	
+	
+	&_col
+		display: inline-flex
+		flex-direction: column
+		align-self: flex-start
+		
+		.title
+			font-size: 14px
+			line-height: 14px
+			margin-top: -2px
+			margin-bottom: 6px
+		
+		.subtitle
+			font-size: 12px
+			line-height: 12px
+			
 		
 		
 
@@ -612,6 +637,7 @@ html
 		
 	&_thin
 		+scrollbar(#dde3e8, #b3c0d0, 6px, 0px)
+		
 		
 
 
@@ -645,7 +671,7 @@ img.avatar
 			
 		
 //---------------------------------------------------------------- Таблица
-table
+table:not(.clear)
 	width: 100%
 	border-radius: 3px
 	
@@ -907,6 +933,10 @@ table
 						
 						&:focus
 							border-color: darken(#a7acaf, 30%)
+						
+						&.changed
+							box-shadow: 0 0 0 2px #78e878
+							background-color: #efe
 				
 				.number
 					width: 100px
@@ -929,6 +959,10 @@ table
 						
 						&:focus
 							border-color: darken(#a7acaf, 30%)
+						
+						&.changed
+							box-shadow: 0 0 0 2px #78e878
+							background-color: #efe
 				
 				.color
 					align-self: center
@@ -944,6 +978,11 @@ table
 				
 				.select
 					+select()
+					
+					select
+						&.changed
+							box-shadow: 0 0 0 2px #78e878
+							background-color: #efe
 				
 				.checkbox
 					text-align: center
@@ -956,6 +995,24 @@ table
 						
 				.date
 					+date()
+					
+					input
+						border-radius: 2px
+						border: 1px solid #a7acaf
+						background: #fff
+						height: 30px
+						padding-right: 4px
+						padding-left: 4px
+						color: #666
+						width: 100%
+						transition: border-color 0.16s
+						
+						&:focus
+							border-color: darken(#a7acaf, 30%)
+						
+						&.changed
+							box-shadow: 0 0 0 2px #78e878
+							background-color: #efe
 				
 				.avatar
 					border: 1px solid #a0a7ad
@@ -972,6 +1029,21 @@ table
 					&.mini
 						width: 40px
 						height: 40px
+					
+					&_online
+						position: relative
+						
+						&::after
+							content: ""
+							position: absolute
+							display: block
+							width: 12px
+							height: 12px
+							border-radius: 50%
+							background-color: #55aaff
+							border: 1px solid #fff
+							bottom: 0px
+							right: 0px
 				
 				.buttons
 					margin-top: 0 !important
@@ -1047,7 +1119,6 @@ table
 					&.removed
 						color: #fb8080
 						font-size: 20px
-						
 				
 				
 				
@@ -1479,17 +1550,17 @@ table
 		+font('roboto', light)
 		+resp(font-size, (xs: 20px, sm: 22px, md: 22px, lg: 24px, xl: 24px), (line-height: 0))
 		
-		//
-		//&_5
-		//	+resp(font-size, (xs: 16px, sm: 20px, md: 28px, lg: 34px, xl: 38px), (line-height: 2))
-		//&_4
-		//	+resp(font-size, (xs: 16px, sm: 20px, md: 26px, lg: 30px, xl: 34px), (line-height: 2))
-		//&_3
-		//	+resp(font-size, (xs: 16px, sm: 18px, md: 22px, lg: 24px, xl: 28px), (line-height: 2))
-		//&_2
-		//	+resp(font-size, (xs: 16px, sm: 18px, md: 20px, lg: 20px, xl: 22px), (line-height: 2))
-		//&_1
-		//	+resp(font-size, (xs: 16px, sm: 18px, md: 18px, lg: 20px, xl: 20px), (line-height: 2))
+		
+		&_1
+			+resp(font-size, (xs: 16px, sm: 20, md: 22px, lg: 24px, xl: 26px), (line-height: 2))
+		&_2
+			+resp(font-size, (xs: 16px, sm: 18px, md: 20px, lg: 22px, xl: 24px), (line-height: 2))
+		&_3
+			+resp(font-size, (xs: 16px, sm: 17px, md: 18px, lg: 20px, xl: 22px), (line-height: 2))
+		&_4
+			+resp(font-size, (xs: 16px, sm: 16px, md: 18px, lg: 18px, xl: 20px), (line-height: 2))
+		&_5
+			+resp(font-size, (xs: 16px, sm: 16px, md: 16px, lg: 18px, xl: 18px), (line-height: 2))
 	
 	&__close
 		//background-color: #dc5656
@@ -4023,13 +4094,14 @@ p
 			tr
 				height: 60px
 	
-	&__table_left
-		flex 0 0 500px
-		max-width: 500px
-	
-	&__table_right
-		flex 0 0 150px
-		max-width: 150px
+	&__table
+		&_left
+			flex 1 0 500px
+			max-width: 500px
+		
+		&_right
+			flex 1 0 150px
+			max-width: 150px
 	
 	.scroll
 		display: flex
@@ -4073,4 +4145,117 @@ p
 		font-weight: 600
 			
 			
+	
+	
+	
+	
+	
+	
+	
+.personalgiftslist
+	margin-top: -20px
+	
+	&__item
+		margin-top: 20px
+		border: 1px solid #e3e7ec
+		border-radius: 3px
+		
+		&_opened
+			.personalgiftslist__user
+				border-radius: 3px 3px 20px 0 !important
+				border-bottom: none !important
+				border-top: none !important
+				background-color: #f7f8f9
+		
+		&:not(.personalgiftslist__item_opened)
+			.personalgiftslist__user
+				&:hover
+					background-color: #f7f8f9
+					transition: background-color 0.16s
+		
+	
+	&__user
+		display: flex
+		align-items: center
+		padding: 5px
+		cursor: pointer
+		min-height: 70px
+	
+	
+	&__gifts
+		
+		table
+			width: 100%
 			
+			thead
+				background-color: #eee
+				position: relative
+				
+				tr
+					td
+						padding-left: 3px
+						padding-right: 3px
+						font-size: 12px
+						+font(roboto, bold)
+			
+			tbody
+				tr
+					border-bottom: 1px solid #efefef
+					
+					td
+						padding-left: 3px
+						padding-right: 3px
+						height: 40px
+						position: relative
+						
+						+ td::after
+							content: ""
+							position: absolute
+							display: block
+							height: calc(100% - 6px)
+							width: 1px
+							top: 3px
+							left: 0
+							background-color: #f2f3f6
+			
+			tfoot
+				background-color: #eee
+				tr
+					td
+						padding: 3px
+						
+						button
+							+btn()
+							display: inline-block
+							vertical-align: bottom
+							
+					
+					
+		
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+.waitabsblock
+	position: absolute
+	top: 0
+	left: 0
+	right: 0
+	bottom: 0
+	background-color: rgba(#fff, 0.8)
+	display: flex
+	align-items: center
+	justify-content: center
+	
+	i
+		color: #444

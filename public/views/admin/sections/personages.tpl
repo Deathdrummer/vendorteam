@@ -274,7 +274,7 @@ $(document).ready(function() {
 	
 	$('#gameIdsList').ddrCRUD({
 		addSelector: '#addGameId',
-		emptyList: '<tr><td colspan="6">Нет данных</td></tr>',
+		emptyList: '<tr><td colspan="7">Нет данных</td></tr>',
 		functions: 'admin/game_ids',
 		confirms: {
 			add: function() {

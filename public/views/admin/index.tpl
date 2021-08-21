@@ -45,13 +45,13 @@
 					<li data-block="common">Общие настройки</li>
 					<li data-block="users">Участники</li>
 					<li data-block="users_addict">Участники доп.</li>
+					<li data-block="raidliders">Рейд-лидеры</li>
 					<li data-block="statics">Статики</li>
 					<li data-block="accounts_access">Уровни доступа аккаунтов</li>
 					<li data-block="ranks">Звания</li>
 					{#<li data-block="access_levels">Ранги</li>#}
 					<li data-block="roles">Роли</li>
 					<li data-block="classes">Классы</li>
-					
 					{#<li data-block="payments_types">Средства платежа</li>#}
 				</ul>
 				<ul>
@@ -63,7 +63,7 @@
 					<li data-block="newsfeed">Лента новостей</li>
 					<li data-block="operators">Операторы</li>
 					<li data-block="guides">Образование</li>
-					
+					<li data-block="personal_gifts">Персональные подарки</li>
 					{#<li data-block=""></li>#}
 				</ul>
 				<ul>
@@ -111,8 +111,11 @@
 	<footer class="footer">
 		<p>© <a href="https://shopdevelop.ru" target="_blank" title="Перейти на сайт shopdevelop.ru">ShopDevelop</a> 2011 - {{date}} г.</p>
 	</footer>
+	
+	<script src="https://cdn.socket.io/3.1.3/socket.io.min.js" integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh" crossorigin="anonymous"></script>
 </body>
 </html>
+
 
 
 {# <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>

@@ -634,8 +634,14 @@ class Reports extends MY_Controller {
 				'date'			=> $date
 			];
 			
-			if (!isset($toWalletData[$user['id']])) $toWalletData[$user['id']] = $summToOrder;
-			else $toWalletData[$user['id']] += $summToOrder;
+			
+			if (!isset($toWalletData[$user['id']])) {
+				$toWalletData[$user['id']]['amount'] = $summToOrder;
+				$toWalletData[$user['id']]['to_deposit'] = $summToDeposit;
+			} else {
+				$toWalletData[$user['id']]['amount'] += $summToOrder;
+				$toWalletData[$user['id']]['to_deposit'] += $summToDeposit;
+			}
 		}
 		
 		$this->load->model('wallet_model');
@@ -918,8 +924,13 @@ class Reports extends MY_Controller {
 				'date'			=> time()
 			];
 			
-			if (!isset($toWalletData[$user['user']])) $toWalletData[$user['user']] = $user['summ'];
-			else $toWalletData[$user['user']] += $user['summ'];
+			if (!isset($toWalletData[$user['user']])) {
+				$toWalletData[$user['user']]['amount'] = (float)$user['summ'];
+				$toWalletData[$user['user']]['to_deposit'] = (float)$user['to_deposit'];
+			} else {
+				$toWalletData[$user['user']]['amount'] += (float)$user['summ'];
+				$toWalletData[$user['user']]['to_deposit'] += (float)$user['to_deposit'];
+			}
 		}
 		
 		$this->load->model('wallet_model');
@@ -1218,7 +1229,7 @@ class Reports extends MY_Controller {
 				toLog('отправить выплаты в историю');
 				toLog($amountsData);
 				// отправить выплаты в историю
-				if ($amountsData) $this->wallet->setToWallet($amountsData, null, 'Выплата', '-');
+				if ($amountsData) $this->wallet->setToWallet($amountsData, null, $postData['title'], '-');
 				
 				toLog('--------- Списание баланса -----------');
 				toLog('отправить в резерв');

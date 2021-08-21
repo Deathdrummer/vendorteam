@@ -171,7 +171,8 @@
 					{% endif %}
 					
 					{% if not access or access.navdown.complaints %}
-						{% include 'views/account/render/payment_order.tpl' %}
+						<li paymentorder><svg><use xlink:href="#complaints"></use></svg><span>{{button_left_title_setting}}</span></li>
+						{#{% include 'views/account/render/payment_order.tpl' %}#}
 					{% endif %}
 					
 					{% if not access or access.navdown.message %}<li onclick="window.open('{{callbackform_setting}}')"><svg><use xlink:href="#message"></use></svg><span>Обращение в Support отдел</span></li>{% endif %}

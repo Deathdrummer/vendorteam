@@ -138,7 +138,7 @@
 
 <script type="text/javascript"><!--
 
-$(document).on('renderSection', function() {
+$(document).off('renderSection').on('renderSection', function() {
 	
 
 console.log('renderSection');	

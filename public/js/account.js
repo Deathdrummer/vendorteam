@@ -5,25 +5,6 @@ $(document).ready(function() {
 		$('.scroll').ddrScrollTable();
 	});
 	
-	addPayItem = function(response) {
-		delete response['from'];
-		delete response['template'];
-		delete response['title'];
-		delete response['to'];
-		delete response['site_protocol'];
-		delete response['site_url'];
-		
-		response['stat'] = 0;
-		response['date'] = Date.now();
-		
-		
-		$.post('/admin/add_pay_item', response).fail(function(e) {
-			console.log(e.responseText);
-		}).fail(function(e) {
-			showError(e);
-			notify('Системная ошибка!', 'error');
-		});
-	}
 
 	addComplaintsItem = function(response) {
 		
@@ -1022,7 +1003,69 @@ $(document).ready(function() {
 			if (html) {
 				setCompoundWin.setWidth(1300);
 				setCompoundWin.setData(html, false);
-				if (compoundIsLider == 1) setCompoundWin.setButtons([{id: 'setCompoundButton', title: "Обновить"}]);
+				if (compoundIsLider == 1) {
+					//setCompoundWin.setButtons([{id: 'setCompoundButton', title: "Обновить"}]);
+					
+					let editRaidKoeffTOut;
+					$('#koeffsData').find('[editkoeff]').onChangeNumberInput(function(value, input) {
+						var d = $(input).attr('editkoeff').split('|');
+						clearTimeout(editRaidKoeffTOut);
+						editRaidKoeffTOut = setTimeout(function() {
+							$.post('/account/edit_raid_koeff', {id: d[0], user_id: d[1], raid_id: d[2], rate: value}, function(response) {
+								if (!response) {
+									$(input).addClass('error');
+									notify('Ошибка сохранения коэффициента!', 'error');
+								}
+							}).fail(function(e) {
+								showError(e);
+								notify('Системная ошибка!', 'error');
+							});
+						}, 200);
+					});
+					
+					
+					let editRaidTypeTOut;
+					$('#koeffsData').find('[editraidtype]').on('change', function() {
+						var input = this,
+							keyId = $(input).attr('editraidtype'),
+							thisTypeId = $(input).val();
+						
+						clearTimeout(editRaidTypeTOut);
+						editRaidTypeTOut = setTimeout(function() {
+							$.post('/account/edit_raid_type', {id: keyId, type: thisTypeId}, function(response) {
+								if (!response) {
+									$(input).addClass('error');
+									notify('Ошибка сохранения типа рейда!', 'error');
+								}
+							}).fail(function(e) {
+								showError(e);
+								notify('Системная ошибка!', 'error');
+							});
+						}, 200);
+					});
+					
+					
+					let editCompoundTOut;
+					$('#compoundForm').find('[setcompound]').onChangeNumberInput(function(value, input) {
+						var d = $(input).attr('setcompound').split('|'),
+							userId = d[0],
+							field = d[1];
+						
+						clearTimeout(editCompoundTOut);
+						editCompoundTOut = setTimeout(function() {
+							$.post('/account/set_compound_item', {period_id: compoundPeriodId, static_id: compoundStaticId, user_id: userId, field: field, value: value}, function(response) {
+								if (!response) {
+									$(input).addClass('error');
+									notify('Ошибка сохранения коэффициента!', 'error');
+								}
+							}).fail(function(e) {
+								showError(e);
+								notify('Системная ошибка!', 'error');
+							});
+						}, 200);
+					});
+					
+				}
 			} else {
 				setCompoundWin.setData('<p class="empty center">Нет данных</p>', false);
 			}
@@ -1043,7 +1086,7 @@ $(document).ready(function() {
 			compoundForm.append('period_id', compoundPeriodId);
 			compoundForm.append('static_id', compoundStaticId);
 		
-		var koeffData = [],
+		/*var koeffData = [],
 			rTypesData = [];
 			
 		$('#koeffsData').find('[editkoeff]').each(function(k, item) {
@@ -1068,7 +1111,7 @@ $(document).ready(function() {
 		});
 		
 		compoundForm.append('koeffs', JSON.stringify(koeffData));
-		compoundForm.append('r_types', JSON.stringify(rTypesData));
+		compoundForm.append('r_types', JSON.stringify(rTypesData));*/
 		
 		$.ajax({
 			type: 'POST',
@@ -2409,6 +2452,7 @@ $(document).ready(function() {
 	
 	
 	
+	
 	//--------------------------------------------------- Моя посещаемость
 	$('[visitsrate]').on(tapEvent, function() {
 		popUp({
@@ -2622,9 +2666,70 @@ $(document).ready(function() {
 	
 	
 	
+	//--------------------------------------------------- Заказ оплаты
+	$('[paymentorder]').on(tapEvent, function() {
+		popUp({
+			title: 'Заказ оплаты',
+		    width: 700,
+		    buttons: [{id: 'paymentOrderSendBtn', title: 'Отправить'}],
+		    buttonsAlign: 'right',
+		    disabledButtons: false,
+		    closePos: 'right',
+		    closeByButton: false,
+		    closeButton: 'Отмена'
+		}, function(paymentOrderWin) {
+			paymentOrderWin.setData('account/paymentorder/get_form', function() {
+				$('#paymentOrderSendBtn').on(tapEvent, function() {
+					$('#paymentOrderForm').formSubmit({
+						url: 'account/paymentorder/add',
+						beforeSend: function() {
+							paymentOrderWin.wait();
+						},
+						formError: function(err) {
+							paymentOrderWin.wait(false);
+							console.log(err);
+						},
+						success: function() {
+							paymentOrderWin.close();
+							notify('Заявка успешно отправлена!');
+						},
+						error: function() {
+							paymentOrderWin.wait(false);
+							notify('Ошибка отправки заявки', 'error');
+						}
+					});
+				});
+			});
+			
+			//fields_pay_setting
+			
+			
+			/*$.post('/admin/add_pay_item', response).fail(function(e) {
+				console.log(e.responseText);
+			}).fail(function(e) {
+				showError(e);
+				notify('Системная ошибка!', 'error');
+			});*/
+			
+		});
+	});
 	
 	
-	if (getCookie('gifts')) {
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//------------------------------------------------------------------ Очереди открытия модальных окон
+	
+	
+	if (getCookie('gifts')) { // подарки
 		popUp({
 			title: '',
 			width: 500,
@@ -2661,7 +2766,89 @@ $(document).ready(function() {
 				});
 			});
 		});
+		
+	} else if (getCookie('birthday')) { // День рождения
+		
+		popUp({
+			title: 'Дата рождения|5',
+			width: 450,
+		    buttons: [{id: 'setBirthDayDataBtn', title: 'Применить'}],
+		    buttonsAlign: 'right',
+		    disabledButtons: true,
+		    closePos: 'left',
+		    closeByButton: true,
+		    closeButton: 'Отмена',
+		    contentToCenter: true,
+		}, function(birthDayDataBtnWin) {
+			birthDayDataBtnWin.setData('account/birthday/get_form', function() {
+				
+				let dateVal;
+				$('#userBirthdayDate').datepicker({
+			        dateFormat:         'd M yy г.',
+			        yearRange:          "1900:"+(new Date().getFullYear() + 1),
+			        numberOfMonths:     1,
+			        changeMonth:        true,
+			        changeYear:         true,
+			        monthNamesShort:    ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь', 'декабрь'],
+			        dayNamesMin:        ['вс','пн','вт','ср','чт','пт','сб',],
+			        firstDay:           1,
+			        minDate:            new Date(1900, 0, 1, 0, 0, 0),
+			        maxDate:            0,
+			        onSelect: function(stringDate, dateObj) {
+			        	let monthes = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября', 'декабря'],
+			        	dateStr = dateObj.currentDay+' '+monthes[dateObj.currentMonth]+' '+dateObj.currentYear+' г.',
+			        	d = ('0'+dateObj.currentDay).substr(-2),
+			        	m = ('0'+(dateObj.currentMonth+1)).substr(-2);
+			        	
+			        	dateVal = d+'-'+m+'-'+dateObj.currentYear;
+			        	$('#userBirthdayDate').val(dateStr);
+			        	birthDayDataBtnWin.enabledButtons();
+			        }
+			    });
+			    
+			    
+			    
+			    $('#setBirthDayDataBtn').on(tapEvent, function() {
+			    	birthDayDataBtnWin.dialog('<p>Внимание! Дата задается один раз и изменить ее будет нельзя!<small>Информация будет доступна только администратору</small>', 'Задать', 'Отмена', function() {
+			    		birthDayDataBtnWin.wait();
+			    		let closeBDTOut;
+				    	clearTimeout(closeBDTOut);
+				    	$.post('account/birthday/set', {date: dateVal}, function(response) {
+				    		if (response) {
+				    			birthDayDataBtnWin.setData('<h3 class="fz20px mt10px">Дата успешно задана!</h3>', false);
+				    			birthDayDataBtnWin.setButtons([]);
+				    			birthDayDataBtnWin.dialog(false);
+				    			closeBDTOut = setTimeout(function() {
+				    				birthDayDataBtnWin.close();
+				    			}, 10000);
+				    		} else {
+				    			notify('Ошибка! Дата не задана, повторите еще раз!', 'error');
+				    		}
+				    		birthDayDataBtnWin.wait(false);
+				    	}).fail(function(e) {
+							notify('Системная ошибка!', 'error');
+							showError(e);
+						});
+			    	});	
+			    });
+			});
+		});
+		
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+		
+	
+	
+	
+	
 	
 	
 	

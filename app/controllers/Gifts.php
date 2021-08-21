@@ -5,10 +5,6 @@ class Gifts extends MY_Controller {
 	
 	private $viewsPath = 'views/admin/';
 	private $post;
-	private $actions = [
-		'stage'		=> 'Прибавка к стажу',
-		'balance'	=> 'Прибавка к балансу'
-	]; 
 	
 	public function __construct() {
 		parent::__construct();
@@ -25,7 +21,8 @@ class Gifts extends MY_Controller {
 	 * @return 
 	*/
 	public function init() {
-		echo $this->twig->render($this->viewsPath.'render/gifts/init.tpl');
+		$fields = isset($this->post['fields']) ? $this->post['fields'] : null;
+		echo $this->twig->render($this->viewsPath.'render/gifts/init.tpl', ['fields' => $fields]);
 	}
 	
 	
@@ -34,8 +31,10 @@ class Gifts extends MY_Controller {
 	 * @return 
 	*/
 	public function get() {
-		$data['actions'] = $this->actions;
+		$data['actions'] = $this->giftsActions;
+		$fields = arrTakeItem($this->post, 'fields');
 		$data['gifts'] = $this->gifts->crud('get', $this->post);
+		$data['fields'] = $fields;
 		echo $this->twig->render($this->viewsPath.'render/gifts/list.tpl', $data);
 	}
 	
@@ -47,8 +46,9 @@ class Gifts extends MY_Controller {
 	*/
 	public function add() {
 		$this->load->model('admin_model', 'admin');
-		$data['actions'] = $this->actions; 
+		$data['actions'] = $this->giftsActions; 
 		$data['default_percent'] = $this->admin->getSettings('gift_default_percent'); 
+		$data['fields'] = isset($this->post['fields']) ? $this->post['fields'] : null;
 		echo $this->twig->render($this->viewsPath.'render/gifts/new.tpl', $data);
 	}
 	
@@ -62,11 +62,11 @@ class Gifts extends MY_Controller {
 	public function save() {
 		$fields = $this->post['fields'];
 		$fields['section'] = $this->post['section'];
-		$fieldsToItem = $this->post['fields_to_item'];
-		$fieldsToItem['actions'] = $this->actions;
-		;
+		$fieldsToItem['gift'] = $this->post['fields_to_item'];
+		$fieldsToItem['actions'] = $this->giftsActions;
 		if (!$insertId = $this->gifts->crud('save', $fields)) exit('0');
 		$fieldsToItem['id'] = $insertId;
+		$fieldsToItem['fields'] = isset($this->post['fields_items']) ? $this->post['fields_items'] : null;
 		echo $this->twig->render($this->viewsPath.'render/gifts/item.tpl', $fieldsToItem);
 	}
 	
@@ -135,7 +135,7 @@ class Gifts extends MY_Controller {
 		$this->load->model(['account_model' => 'account']);
 		$userData = $this->account->getUserData();
 		$data['gift'] = $this->gifts->getGift($userData['id']);
-		$data['actions'] = $this->actions;
+		$data['actions'] = $this->giftsActions;
 		echo $this->twig->render('views/account/render/gifts/gift.tpl', $data);
 	}
 	

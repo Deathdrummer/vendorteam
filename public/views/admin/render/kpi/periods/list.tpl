@@ -7,8 +7,11 @@
 				<td class="w170px">Даты</td>
 				<td>Финансовый период</td>
 				<td>Статики</td>
-				<td class="w50px" title="Активный для заполнения KPI период">Ред.</td>
-				<td class="w50px" title="Опубликован">Публ.</td>
+				{% if type != 'simple' %}
+					<td class="w50px" title="Активный для заполнения KPI период">Ред.</td>
+					<td class="w50px" title="Опубликован">Публ.</td>
+				{% endif %}
+					
 				<td class="w50px"></td>
 			</tr>
 		</thead>
@@ -37,22 +40,27 @@
 								<p class="empty">Нет статиков</p>
 							{% endif %}
 						</td>
-						<td class="text-center">
-							<div class="checkblock">
-								<input id="kpiActivatePeriod{{period.id}}" activatekpiperiod="{{period.id}}" type="radio" name="activatekpiperiod"{% if period.active %} checked{% endif %}>
-								<label for="kpiActivatePeriod{{period.id}}"></label>
-							</div>
-						</td>
-						<td class="text-center">
-							<div class="checkblock">
-								<input id="kpiPublishPeriod{{period.id}}" publishkpiperiod="{{period.id}}" type="radio" name="publishkpiperiod"{% if period.published %} checked{% endif %}>
-								<label for="kpiPublishPeriod{{period.id}}"></label>
-							</div>
-						</td>
+						{% if type != 'simple' %}
+							<td class="text-center">
+								<div class="checkblock">
+									<input id="kpiActivatePeriod{{period.id}}" activatekpiperiod="{{period.id}}" type="radio" name="activatekpiperiod"{% if period.active %} checked{% endif %}>
+									<label for="kpiActivatePeriod{{period.id}}"></label>
+								</div>
+							</td>
+							<td class="text-center">
+								<div class="checkblock">
+									<input id="kpiPublishPeriod{{period.id}}" publishkpiperiod="{{period.id}}" type="radio" name="publishkpiperiod"{% if period.published %} checked{% endif %}>
+									<label for="kpiPublishPeriod{{period.id}}"></label>
+								</div>
+							</td>
+						{% endif %}
+							
 						<td class="center">
 							<div class="buttons inline nowrap">
-								<button class="small w30px" kpiopenform="{{period.id}}" title="Выбрать"><i class="fa fa-check"></i></button>
-								<button class="remove small w30px" kpiremoveperiod="{{period.id}}" title="Удалить период"><i class="fa fa-trash"></i></button>
+								<button class="small w30px" {{attr|default('kpiopenform')}}="{{period.id}}" title="Выбрать"><i class="fa fa-check"></i></button>
+								{% if type != 'simple' %}
+									<button class="remove small w30px" kpiremoveperiod="{{period.id}}" title="Удалить период"><i class="fa fa-trash"></i></button>
+								{% endif %}
 							</div>
 						</td>
 					</tr>

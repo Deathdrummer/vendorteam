@@ -1,10 +1,10 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?><!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
 <meta charset="utf-8">
-<title>404 Page Not Found</title>
+<title>404 Страница Не Найдена</title>
 <style type="text/css">
 
 ::selection { background-color: #E13300; color: white; }

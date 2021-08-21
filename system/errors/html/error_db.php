@@ -1,10 +1,10 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?><!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
 <meta charset="utf-8">
-<title>Database Error</title>
+<title>Ошибка базы данных</title>
 <style type="text/css">
 
 ::selection { background-color: #E13300; color: white; }

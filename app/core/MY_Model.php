@@ -117,7 +117,7 @@ class MY_Model extends CI_Model {
 	
 	/**
 	 * Добавить в запрос concat
-	 * @param поле для теста (есть ли данные)
+	 * @param поле для теста (есть ли данные) false - нет поверки данных
 	 * @param все поля "название поля1":"поле в таблице1","название поля2":"поле в таблице2". Если оба названия схожи - то просто одно название
 	 * @param название поля при выводе данных
 	 * @param уникальные значения
@@ -149,14 +149,19 @@ class MY_Model extends CI_Model {
 	
 	/**
 	 * Добавить в запрос concat value
-	 * @param поле для теста объединения
+	 * @param поле для теста объединения (есть ли данные) false - нет поверки данных
 	 * @param название поля
 	 * @param уникальные значения
 	 * @return string
 	*/
 	protected function groupConcatValue($concatField = false, $fieldname = false, $distinct = false) {
 		if (!$concatField || !$fieldname) return '';
-		return "IF(GROUP_CONCAT(".$concatField."), CAST(CONCAT('[', GROUP_CONCAT(".($distinct === true ? 'distinct' : '')." ".$concatField."), ']') AS JSON), NULL) AS ".$fieldname;
+		
+		if ($concatField === false) {
+			return "CAST(CONCAT('[', GROUP_CONCAT(".($distinct === true ? 'distinct' : '')." ".$concatField."), ']') AS JSON) AS ".$fieldname;
+		} else {
+			return "IF(GROUP_CONCAT(".$concatField."), CAST(CONCAT('[', GROUP_CONCAT(".($distinct === true ? 'distinct' : '')." ".$concatField."), ']') AS JSON), NULL) AS ".$fieldname;
+		}
 	}
 	
 	

@@ -1,15 +1,15 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 
-A PHP Error was encountered
+Обнаружена ошибка PHP
 
-Severity:    <?php echo $severity, "\n"; ?>
-Message:     <?php echo $message, "\n"; ?>
-Filename:    <?php echo $filepath, "\n"; ?>
-Line Number: <?php echo $line; ?>
+Строгость:    <?php echo $severity, "\n"; ?>
+Сообщение:     <?php echo $message, "\n"; ?>
+Имя файла:    <?php echo $filepath, "\n"; ?>
+Номер строки: <?php echo $line; ?>
 
 <?php if (defined('SHOW_DEBUG_BACKTRACE') && SHOW_DEBUG_BACKTRACE === TRUE): ?>
 
-Backtrace:
+Обратный путь:
 <?php	foreach (debug_backtrace() as $error): ?>
 <?php		if (isset($error['file']) && strpos($error['file'], realpath(BASEPATH)) !== 0): ?>
 	File: <?php echo $error['file'], "\n"; ?>

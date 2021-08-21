@@ -66,7 +66,7 @@
 					</table>
 					
 				</div>
-				<form id="compoundForm">
+				<div id="compoundForm">
 					<table class="popup__table report__table_right minheight">
 						<thead>
 							<tr>
@@ -84,21 +84,21 @@
 									</td>
 									<td class="w1 text-center">
 										{% if is_lider %}
-											<input type="number" step="0.1" value="{{user.persones_count|default(0)}}" name="compound_users[{{id}}][persones_count]">
+											<input type="number" step="0.1" value="{{user.persones_count|default(0)}}" name="compound_users[{{id}}][persones_count]" setcompound="{{id}}|persones_count">
 										{% else %}
 											{{user.persones_count|default(0)}}
 										{% endif %}
 									</td>
 									<td class="w1 text-center">
 										{% if is_lider %}
-											<input type="number" step="0.1" value="{{user.effectiveness|default(0)}}" name="compound_users[{{id}}][effectiveness]">
+											<input type="number" step="0.1" value="{{user.effectiveness|default(0)}}" name="compound_users[{{id}}][effectiveness]" setcompound="{{id}}|effectiveness">
 										{% else %}
 											{{user.effectiveness|default(0)}}
 										{% endif %}
 									</td>
 									<td class="w1 text-center">
 										{% if is_lider %}
-											<input type="number" step="0.1" value="{{user.fine|default(0)}}" name="compound_users[{{id}}][fine]">
+											<input type="number" step="0.1" value="{{user.fine|default(0)}}" name="compound_users[{{id}}][fine]" setcompound="{{id}}|fine">
 										{% else %}
 											{{user.fine|default(0)}}
 										{% endif %}
@@ -107,7 +107,7 @@
 							{% endfor %}
 						</tbody>
 					</table>
-				</form>
+				</div>
 			</div>
 		{% endif %}
 	</div>

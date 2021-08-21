@@ -482,10 +482,28 @@ class Kpi_model extends MY_Model {
 	*/
 	public function getUsersParams($periodId = false, $userId = false) {
 		if (!$periodId) return false;
+		
+		$periodData = $this->getPeriod($periodId);
+		$params = ['where' => ['us.main' => 1, 'u.deleted' => 0], 'where_in' => ['field' => 'us.static_id', 'values' => $periodData['statics']], 'fields' => 'id'];
+		if (!$users = $this->users->getUsers($params)) exit('');
+		
+		$usersData = [];
+		foreach ($users as $uid) {
+			$usersData[$uid] = [
+				'user_id'		=> $uid,
+            	'visits'		=> null,
+            	'fine'			=> null,
+            	'custom_fields'	=> null
+			];
+		}
+		
 		$this->db->select('user_id, visits, fine, custom_fields');
 		$this->db->where('period_id', $periodId);
 		if ($userId) $this->db->where('user_id', $userId);
 		if (!$tableData = $this->_result($this->kpiPlanFieldsTable)) return false;
+		$tableData = setArrKeyFromField($tableData, 'user_id', true);
+		$tableData = array_replace_recursive($usersData, $tableData);
+		
 		
 		if ($periodCustomFields = $this->getPeriod($periodId, 'custom_fields')) {
 			$periodCustomFields = json_decode($periodCustomFields, true);
@@ -496,11 +514,11 @@ class Kpi_model extends MY_Model {
 		$usersParams = [];
 		foreach ($tableData as $item) {
 			$userId = arrTakeItem($item, 'user_id');
-			$customFields = (isset($item['custom_fields']) && isJSON($item['custom_fields'])) ? json_decode($item['custom_fields'], true) : false;
-			if ($periodCustomFields && $customFields) $item['custom_fields'] = array_replace($periodCustomFields, $customFields);
+			$customFields = (isset($item['custom_fields']) && isJSON($item['custom_fields'])) ? json_decode($item['custom_fields'], true) : [];
+			if ($periodCustomFields) $item['custom_fields'] = array_replace($periodCustomFields, $customFields);
 			$usersParams[$userId] = $item;
 		}
-
+		
 		return $usersParams;
 	}
 	
@@ -972,9 +990,10 @@ class Kpi_model extends MY_Model {
 				];
 			}
 			
-			
-			if (!$item['custom_fields'] || (!$customFields = json_decode($item['custom_fields'], true))) continue;
-			foreach ($customFields as $field => $need) $customFields[$field] = ['need' => $need];
+			$customFields = [];
+			if ($item['custom_fields'] && (!$customFields = json_decode($item['custom_fields'], true))) {
+				foreach ($customFields as $field => $need) $customFields[$field] = ['need' => $need];
+			}
 			
 			$planFieldsData[$item['user_id']] = isset($planFieldsData[$item['user_id']]) ? array_merge((array)$planFieldsData[$item['user_id']], $customFields) : $customFields;
 			$planFieldsData[$item['user_id']] = array_replace_recursive($planFieldsData[$item['user_id']], $customTasks);
@@ -1046,9 +1065,10 @@ class Kpi_model extends MY_Model {
 			'where_in' => ['field' => 'u.id', 'values' => $usersIds],
 			'fields' => 'nickname avatar static rank'
 		];
-		if (!$usersData = $this->users->getUsers($params)) return false;;
+		if (!$usersData = $this->users->getUsers($params)) return false;
 		
 		foreach ($reportData as $staticId => $users) foreach ($users as $userId => $userData) {
+			if (!isset($usersData[$userId])) continue;
 			$reportData[$staticId][$userId]['nickname'] = $usersData[$userId]['nickname'];
 			$reportData[$staticId][$userId]['avatar'] = $usersData[$userId]['avatar'];
 			$reportData[$staticId][$userId]['rank'] = $usersData[$userId]['rank'];
@@ -1128,10 +1148,9 @@ class Kpi_model extends MY_Model {
 				'date' 			=> time()
 			];
 			
-			if (!isset($toWalletData[$item['user_id']])) $toWalletData[$item['user_id']] = $item['payout'];
-			else $toWalletData[$item['user_id']] += $summToOrder;	
+			if (!isset($toWalletData[$item['user_id']])) $toWalletData[$item['user_id']] = (float)$item['payout'];
+			else $toWalletData[$item['user_id']] += (float)$item['payout'];	
 		}	
-		
 		
 		if (!$this->reports->insertUsersOrders($orders)) return false;
 		
@@ -1164,6 +1183,7 @@ class Kpi_model extends MY_Model {
 				
 		$ndaCoeff = $this->admin->getSettings('nda_coeff');
 		$ranks = $this->admin->getRanks();
+		$ranksLiders = $this->admin->getRanksLiders();
 		$amountsData = $this->getAmounts();
 		
 		$calcData = [];
@@ -1284,7 +1304,7 @@ class Kpi_model extends MY_Model {
 			$params = [
 				'where' => ['us.main' => 1, 'u.deleted' => 0],
 				'where_in' => ['field' => 'u.id', 'values' => $usersIds],
-				'fields' => 'static rank nda payment'
+				'fields' => 'static rank rank_lider nda payment'
 			];
 			$users = $this->users->getUsers($params);
 			
@@ -1293,6 +1313,7 @@ class Kpi_model extends MY_Model {
 			
 			$userStatic = isset($users[$uId]['static']) ? $users[$uId]['static'] : 'Статик не задан';
 			$userRank = isset($users[$uId]['rank']) ? $users[$uId]['rank'] : 'Звание не задано';
+			$userRankLider = isset($users[$uId]['rank_lider']) && isset($ranksLiders[$users[$uId]['rank_lider']]) ? (float)$ranksLiders[$users[$uId]['rank_lider']]['coefficient'] : 1;
 			
 			$amount = isset($amountsData[$userStatic][$userRank][$period['payout_type']]) ? $amountsData[$userStatic][$userRank][$period['payout_type']] : 0;
 			$payout = 0;
@@ -1309,17 +1330,17 @@ class Kpi_model extends MY_Model {
 					'rank'			=> $ranks[$userRank]['name'],
 					'nda'			=> $users[$uId]['nda'] ? 1 : 0,
 					'payment'		=> $users[$uId]['payment'],	
-					'payout_all'	=> round($payout, 2)
+					'payout_all'	=> round($payout * $userRankLider)
 				];
 			} else {
-				$payoutData[$userStatic][$uId]['payout_all'] += $payout;
+				$payoutData[$userStatic][$uId]['payout_all'] += round($payout * $userRankLider);
 			}
 				
 			
 			$payoutData[$userStatic][$uId]['periods'][$periodId] = [
 				'summ'		=> $amount,
 				'persent'	=> round($scores, 1),
-				'payout'	=> $payout,
+				'payout'	=> round($payout * $userRankLider),
 			];
 			
 		}

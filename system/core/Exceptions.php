@@ -61,18 +61,18 @@ class CI_Exceptions {
 	 * @var	array
 	 */
 	public $levels = array(
-		E_ERROR			=>	'Error',
-		E_WARNING		=>	'Warning',
-		E_PARSE			=>	'Parsing Error',
-		E_NOTICE		=>	'Notice',
-		E_CORE_ERROR		=>	'Core Error',
-		E_CORE_WARNING		=>	'Core Warning',
-		E_COMPILE_ERROR		=>	'Compile Error',
-		E_COMPILE_WARNING	=>	'Compile Warning',
-		E_USER_ERROR		=>	'User Error',
-		E_USER_WARNING		=>	'User Warning',
-		E_USER_NOTICE		=>	'User Notice',
-		E_STRICT		=>	'Runtime Notice'
+		E_ERROR				=>	'Ошибка',
+		E_WARNING			=>	'Предупреждение',
+		E_PARSE				=>	'Ошибка парсинга',
+		E_NOTICE			=>	'Уведомление',
+		E_CORE_ERROR		=>	'Ошибка ядра',
+		E_CORE_WARNING		=>	'Предупреждение ядра',
+		E_COMPILE_ERROR		=>	'Ошибка компиляции',
+		E_COMPILE_WARNING	=>	'Предупреждение компилятора',
+		E_USER_ERROR		=>	'Ошибка Пользователя',
+		E_USER_WARNING		=>	'Предупреждение пользователя',
+		E_USER_NOTICE		=>	'Уведомление пользователя',
+		E_STRICT			=>	'Уведомление о времени выполнения'
 	);
 
 	/**

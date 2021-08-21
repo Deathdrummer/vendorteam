@@ -3,25 +3,26 @@
 		<table class="popup__table">
 			<thead>
 				<tr>
+				
 					<td class="w170px">Тип</td>
 					<td>Название</td>
-					<td>Дата</td>
-					<td class="w100px">Пополнение</td>
-					<td class="w100px">В резерв</td>
-					<td class="w100px">Сумма в кошельке</td>
+					<td class="w180px">Дата</td>
+					<td class="w90px">Сумма</td>
+					<td class="w90px">В резерв</td>
+					<td class="w90px">Сумма в кошельке</td>
 					<td class="w30px"></td>
 				</tr>
 			</thead>
 			<tbody>
 				{% for item in history|reverse %}
-					<tr{% if item.transfer == '-' %} class="wallet__payout"{% endif %}>
-						{% if item.transfer == '-' %}
-							<td colspan="2">{{item.title}}</td>
+					<tr{% if item.type is null %} class="wallet__payout"{% endif %}{% if item.type < 0 %} class="wallet__payout_recovery"{% endif %}>
+						{% if item.type < 0 %}
+							<td colspan="2">{{types[item.type]}}</td>
 						{% else %}
-							<td>{{types[item.type]}}</td>
-							<td>{{item.title}}</td>
+							<td>{{types[item.type]|default('Выплата')}}</td>
+							<td><p class="fz12px">{{item.title}}</p></td>
 						{% endif %}
-						<td>{{item.date|d}} в {{item.date|t}}</td>
+						<td><small class="fz12px">{{item.date|d}} в {{item.date|t}}</small></td>
 						<td>{{item.summ|number_format(1, '.', ' ')}} <small class="wallet__postfix">₽</small></td>
 						<td>{{item.deposit|number_format(1, '.', ' ')}} <small class="wallet__postfix">₽</small></td>
 						<td>{{item.current_balance|number_format(1, '.', ' ')}} <small class="wallet__postfix">₽</small></td>

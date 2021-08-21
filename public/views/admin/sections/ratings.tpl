@@ -130,7 +130,7 @@ onChangeTabs(function(item, tabContent) {
 });
 
 
-$(document).on('renderSection', function() {
+$(document).off('renderSection').on('renderSection', function() {
 	if ($('#tabEvents').hasClass('active')) getUsersList();
 	if ($('#tabHistory').hasClass('active')) getRatingsHistory();
 	if ($('#tabStatistics').hasClass('active')) getStatistics();

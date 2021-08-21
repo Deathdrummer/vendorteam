@@ -42,6 +42,7 @@ class Wallet_model extends MY_Model {
 		foreach ((array)$items as $userId => $item) {
 			$summ = isset($item['amount']) ? round((float)$item['amount'], 1) : (($item === 0 || is_numeric($item)) ? (float)$item : 0);
 			$deposit = isset($item['to_deposit']) ? round((float)$item['to_deposit'], 1) : 0;
+			
 			$toHistoryData[] = [
 				'user_id'	=> $userId,
 				'type'		=> $type,
@@ -52,9 +53,12 @@ class Wallet_model extends MY_Model {
 				'date'		=> $date,
 			];
 			
+			// если плата - то вычитается и сумма и резерв, если зачисление - то только сумма
+			$amount = $transfer == '-' ? $summ+$deposit : $summ;
+			
 			$toAmountsData[] = [
 				'user_id'	=> $userId,
-				'summ'		=> $summ,
+				'summ'		=> $amount,
 			];
 		}
 		

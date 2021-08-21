@@ -453,14 +453,16 @@ class Account_model extends My_Model {
 		if (!$respU = $queryU->result_array()) return false;
 		$respU = setArrKeyFromField($respU, 'id');
 		
-		$resData = array_replace_recursive($respU, array_intersect_key($respCd, $respU));
-		
+		$resData = array_replace_recursive($respU, array_intersect_key($respCd, $respU)); // тут нет исключенных
 		
 		$this->db->select('ru.id, r.id AS raid_id, r.date, ru.user_id, ru.rate, rt.name');
 		$this->db->where(['r.period_id' => $data['period_id'], 'r.static_id' => $data['static_id'], 'r.is_key' => 0]);
+		$this->db->where_in('ru.user_id', array_keys($resData)); // исключить из рейдов исключенных
 		$this->db->join('raid_users ru', 'ru.raid_id = r.id');
 		$this->db->join('raids_types rt', 'rt.id = r.type', 'left outer');
 		$queryR = $this->db->get('raids r');
+		
+		
 		
 		$rData = []; $raids = [];
 		foreach ($queryR->result_array() as $item) {
@@ -797,6 +799,27 @@ class Account_model extends My_Model {
 	
 	
 	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function setCompoundItem($data = false) {
+		if (!$data['period_id'] || !$data['static_id'] || !$data['user_id'] || !$data['field'] || $data['value'] === false) return false;	
+		$this->db->where(['period_id' => $data['period_id'], 'static_id' => $data['static_id'], 'user_id' => $data['user_id']]);
+		if ($this->db->count_all_results('compounds_data') != 0) {
+			$this->db->where(['period_id' => $data['period_id'], 'static_id' => $data['static_id'], 'user_id' => $data['user_id']]);
+			return $this->db->update('compounds_data', [$data['field'] => $data['value']]);
+		}
+		return $this->db->insert('compounds_data', [ 'period_id' => $data['period_id'], 'static_id' => $data['static_id'], 'user_id' => $data['user_id'], $data['field'] => $data['value']]);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -1072,8 +1095,14 @@ class Account_model extends My_Model {
 	 * @param 
 	 * @return 
 	*/
-	public function editRaidKoeff($koeffData = false) {
+	public function editRaidKoeff($koeffData = false, $single = false) {
 		if (!$koeffData) return false;
+		if ($single) {
+			$id = arrTakeItem($koeffData, 'id');
+			$this->db->where('id', $id);
+			return $this->db->update('raid_users', $koeffData);
+		} 
+		
 		$this->db->update_batch('raid_users', $koeffData, 'id');
 		return true;
 	}
@@ -1085,8 +1114,13 @@ class Account_model extends My_Model {
 	 * @param 
 	 * @return 
 	*/
-	public function editRaidTypes($rTypesData = false) {
+	public function editRaidTypes($rTypesData = false, $single = false) {
 		if (!$rTypesData) return false;
+		if ($single) {
+			$id = arrTakeItem($rTypesData, 'id');
+			$this->db->where('id', $id);
+			return $this->db->update('raids', $rTypesData);
+		}
 		$this->db->update_batch('raids', $rTypesData, 'id');
 		return true;
 	}
@@ -1638,8 +1672,43 @@ class Account_model extends My_Model {
 	
 	
 	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function hasBirthDay() {
+		$this->db->select('birthday');
+		$this->db->where('id', $this->userData['id']);
+		$bDay = $this->_row('users', 'birthday');
+		return is_null($bDay);
+	}
 	
 	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function setBirthDay($date = false) {
+		if (!$date) return false;
+		$date = strtotime($date);
+		$this->db->where('id', $this->userData['id']);
+		if (!$this->db->update('users', ['birthday' => $date])) return false;
+		return true;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//------------------------------------------------------------------------------------------------------------
 	
 	
 	
@@ -1785,6 +1854,48 @@ class Account_model extends My_Model {
 	
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	//--------------------------------------------------- Технические функции
+	
+	/**
+	 * Скорректировать стаж
+	 * эта функция применяется на акуальной таблице users а возвращает SQL строки для обновления таблицы, в которой слетели значения stage
+	 * для этого нужно иметь таблицу users с правильными значениями stage
+	 * @param прибавить к отрицательному стажу
+	 * @return 
+	*/
+	public function correctUsersStages($append = false) {
+		$this->db->select('id, stage');
+		//$this->db->where('stage !=', 0);
+		$query = $this->db->get('users');
+		$result = $query->result_array();
+		
+		if ($append) {
+			foreach ($result as $k => $row) {
+				if ($row['stage'] < 0) {
+					$result[$k]['stage'] = $row['stage'] - $append;
+				}
+			}
+		}
+			
+		
+		$resultParts = array_chunk($result, 100);
+		
+		$queryData = '';
+		foreach ($resultParts as $part) {
+			$this->db->update_batch('users', $part, 'id'); 
+			$queryData .= $this->db->last_query().';'."\r\n";
+		}
+		
+		return $queryData;
+	}
 	
 	
 }

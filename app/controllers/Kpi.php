@@ -30,6 +30,8 @@ class Kpi extends MY_Controller {
 				$data['statics'] = $this->admin->getStatics(true);
 				$data['reports_periods'] = $this->reports->getReportsPeriods();
 				$data['periods'] = $this->kpi->getPeriods();
+				$data['type'] = $post['type'];
+				$data['attr'] = isset($post['attr']) ? $post['attr'] : 'kpiopenform';
 				echo $this->twig->render($this->viewsPath.'render/kpi/periods/list.tpl', $data);
 				break;
 			
@@ -334,7 +336,7 @@ class Kpi extends MY_Controller {
 		switch ($action) {
 			case 'get_form':
 				$this->load->model(['admin_model' => 'admin', 'users_model' => 'users']);
-				$periodData = $this->kpi->getActivePeriod();
+				$periodData = isset($post['period_id']) ? $this->kpi->getPeriod($post['period_id']) : $this->kpi->getActivePeriod();
 				$search = isset($post['search']) ? $post['search'] : null;
 				if (!$formdata = $this->kpi->getProgressForm($periodData, $search)) exit('');
 				
@@ -357,13 +359,13 @@ class Kpi extends MY_Controller {
 				break;
 			
 			case 'check_task':
-				$periodData = $this->kpi->getActivePeriod();
+				$periodData = isset($post['period_id']) ? $this->kpi->getPeriod($post['period_id']) : $this->kpi->getActivePeriod();
 				if (!$this->kpi->checkProgressTask($periodData['id'], $post)) exit('0');
 				echo '1';
 				break;
 			
 			case 'check_custom':
-				$periodData = $this->kpi->getActivePeriod();
+				$periodData = isset($post['period_id']) ? $this->kpi->getPeriod($post['period_id']) : $this->kpi->getActivePeriod();
 				if (!$this->kpi->checkProgressCustom($periodData['id'], $post)) exit('0');
 				echo '1';
 				break;
@@ -447,6 +449,7 @@ class Kpi extends MY_Controller {
 				
 				$ndaCoeff = $this->admin_model->getSettings('nda_coeff');
 				$ranks = $this->admin_model->getRanks();
+				$ranksLiders = $this->admin_model->getRanksLiders();
 				$amountsData = $this->kpi->getAmounts();
 				
 				$calcData = []; $payoutData = [];
@@ -568,13 +571,15 @@ class Kpi extends MY_Controller {
 						$params = [
 							'where' => ['us.main' => 1, 'u.deleted' => 0],
 							'where_in' => ['field' => 'u.id', 'values' => $usersIds],
-							'fields' => 'nickname avatar static rank nda payment'
+							'fields' => 'nickname avatar static rank rank_lider nda payment'
 						];
 						$users = $this->users->getUsers($params);
 						
 						foreach ($finalData as $userId => $scores) {
+							if (!isset($users[$userId])) continue;
 							$userStatic = $users[$userId]['static'];
 							$userRank = $users[$userId]['rank'];
+							$userRankLider = isset($users[$userId]['rank_lider']) && isset($ranksLiders[$users[$userId]['rank_lider']]) ? (float)$ranksLiders[$users[$userId]['rank_lider']]['coefficient'] : 1;
 							
 							$amount = isset($amountsData[$userStatic][$userRank][$period['payout_type']]) ? $amountsData[$userStatic][$userRank][$period['payout_type']] : 0;
 							$amount = $amount ? round($amount / count($periods), 2) : 0;
@@ -594,17 +599,17 @@ class Kpi extends MY_Controller {
 									'rank'			=> $ranks[$userRank]['name'],
 									'nda'			=> $users[$userId]['nda'] ? 1 : 0,
 									'payment'		=> $users[$userId]['payment'],	
-									'payout_all'	=> round($payout)
+									'payout_all'	=> round($payout * $userRankLider)
 								];
 							} else {
-								$payoutData[$userStatic][$userId]['payout_all'] += round($payout);
+								$payoutData[$userStatic][$userId]['payout_all'] += round($payout * $userRankLider);
 							}
 								
 							
 							$payoutData[$userStatic][$userId]['periods'][$periodId] = [
 								'summ'		=> $amount,
 								'persent'	=> round($scores, 1),
-								'payout'	=> round($payout),
+								'payout'	=> round($payout * $userRankLider),
 							];
 						}
 					}
@@ -862,6 +867,7 @@ class Kpi extends MY_Controller {
 					$users = $this->users->getUsers($params);
 					
 					foreach ($calcData as $userId => $persents) {
+						if (!isset($users[$userId])) continue;
 						$userStatic = $users[$userId]['static'];
 						$userRank = $users[$userId]['rank'];
 						

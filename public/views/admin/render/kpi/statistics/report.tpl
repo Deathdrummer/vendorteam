@@ -11,33 +11,35 @@
 		{% for staticId, users in report %}
 		<div tabid="tabKpiStat{{staticId}}">
 			<div class="kpireport noselect">
-				<table class="kpireport__table_left">
-					<thead>
-						<tr>
-							<td class="w200px">Участник</td>
-							<td class="w40px">NDA</td>
-							<td class="w150px">Платежные реквизиты</td>
-						</tr>
-					</thead>
-					<tbody>
-						{% for uId, user in users %}
+				<div class="kpireport__table_left">
+					<table>
+						<thead>
 							<tr>
-								<td class="h72px">
-									<div class="d-flex align-items-center mt4px mb4px">
-										<div class="avatar" style="background-image: url('{{base_url('public/images/users/mini/'~user.avatar)|no_file('public/images/user_mini.jpg')}}')"></div>
-										<div class="ml4px">
-											<strong>{{user.nickname}}</strong>
-											<p class="fz11px mt3px">{{ranks[user.rank]['name']}}</p>
-										</div>	
-									</div>
-								</td>
-								<td class="center">{% if user.nda %}<i class="fa fa-check"></i> {% else %}<i class="fa fa-ban"></i>{% endif %}</td>
-								<td><p class="fz12px">{{user.payment}}</p></td>
+								<td class="w200px">Участник</td>
+								<td class="w40px">NDA</td>
+								<td class="w150px">Платежные реквизиты</td>
 							</tr>
-						{% endfor %}
-					</tbody>
-				</table>
-				
+						</thead>
+						<tbody>
+							{% for uId, user in users %}
+								<tr>
+									<td class="h72px">
+										<div class="d-flex align-items-center mt4px mb4px">
+											<div class="avatar" style="background-image: url('{{base_url('public/images/users/mini/'~user.avatar)|no_file('public/images/user_mini.jpg')}}')"></div>
+											<div class="ml4px">
+												<strong>{{user.nickname}}</strong>
+												<p class="fz11px mt3px">{{ranks[user.rank]['name']}}</p>
+											</div>	
+										</div>
+									</td>
+									<td class="center">{% if user.nda %}<i class="fa fa-check"></i> {% else %}<i class="fa fa-ban"></i>{% endif %}</td>
+									<td><p class="fz12px">{{user.payment}}</p></td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+								
 				<div class="scroll">
 					<table>
 						<thead>
@@ -79,33 +81,35 @@
 					</table>
 				</div>
 				
-				<table class="kpireport__table_right">
-					<thead>
-						<tr>
-							<td>Итого к выплате</td>
-						</tr>
-					</thead>
-					<tbody>
-						{% for uId, user in users %}
+				<div class="kpireport__table_right">
+					<table>
+						<thead>
 							<tr>
-								<td class="h72px">
-									{% if saved_report %}
-										<p>{{user.payout|number_format(2, '.', ' ')|default(0)}} ₽</p>
-									{% else %}
-										<div class="d-flex align-items-center">
-											<div class="field">
-												<input type="text" name="report[{{staticId}}][{{uId}}][payout]" value="{{user.payout_all|replace({'.': ','})}}" rules="empty">
-											</div>
-											<strong class="fz12px ml5px">₽</strong>
-										</div>
-										<input type="hidden" name="report[{{staticId}}][{{uId}}][payment]" value="{{user.payment}}">
-										<input type="hidden" name="report[{{staticId}}][{{uId}}][nda]" value="{{user.nda}}">
-									{% endif %}
-								</td>
+								<td>Итого к выплате</td>
 							</tr>
-						{% endfor %}
-					</tbody>
-				</table>
+						</thead>
+						<tbody>
+							{% for uId, user in users %}
+								<tr>
+									<td class="h72px">
+										{% if saved_report %}
+											<p>{{user.payout|number_format(2, '.', ' ')|default(0)}} ₽</p>
+										{% else %}
+											<div class="d-flex align-items-center">
+												<div class="field">
+													<input type="text" name="report[{{staticId}}][{{uId}}][payout]" value="{{user.payout_all|replace({'.': ','})}}" rules="empty">
+												</div>
+												<strong class="fz12px ml5px">₽</strong>
+											</div>
+											<input type="hidden" name="report[{{staticId}}][{{uId}}][payment]" value="{{user.payment}}">
+											<input type="hidden" name="report[{{staticId}}][{{uId}}][nda]" value="{{user.nda}}">
+										{% endif %}
+									</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
 			</div>
 		</div>
 		{% endfor %}

@@ -159,6 +159,9 @@ class Admin extends MY_Controller {
 			
 			case 'users':
 				$usersData = $this->users_model->getUsers(array_replace_recursive((array)$params, ['where' => ['us.main' => 1]]));
+				$newUsersData = $this->users_model->getUsers(array_replace_recursive((array)$params, ['where' => ['u.deleted' => 0, 'u.verification' => 0, 'u.excluded' => 0]]));
+				$usersData = array_merge($usersData, $newUsersData);
+				
 				$data['statics'] = $this->admin_model->getStatics();
 				$data['ranks'] = $this->admin_model->getRanks();
 				$data['roles'] = $this->admin_model->getRoles();
@@ -237,6 +240,12 @@ class Admin extends MY_Controller {
 				}
 				break;
 			
+			case 'raidliders':
+				$data['statics'] = $this->admin_model->getStatics();
+				$data['ranks'] = $this->admin_model->getRanksLiders();
+				$data['liders'] = $this->users_model->getRaidLiders();
+				break;
+			
 			case 'personages':
 				$data['game_ids'] = $this->admin_model->personagesGetGameIds(true);
 				$data['personages'] = $this->admin_model->personagesGet();
@@ -248,6 +257,7 @@ class Admin extends MY_Controller {
 				
 			case 'ranks':
 				$data['ranks'] = $this->admin_model->getRanks();
+				$data['ranks_liders'] = $this->admin_model->getRanksLiders();
 				break;
 				
 			case 'accounts_access':
@@ -379,7 +389,25 @@ class Admin extends MY_Controller {
 			
 			case 'statistics_settings':
 				$data['statics'] = $this->admin_model->getStatics();
+				break;
+			
+			case 'personal_gifts':
+				$users = $this->users_model->getUsers(array_replace_recursive((array)$params, ['where' => ['us.main' => 1, 'deleted' => 0, 'verification' => 1], 'fields' => 'id avatar nickname rank static']));
+				$this->load->model('gifts_model', 'gifts');
+				$giftsCounts = $this->gifts->personalgifts('get_gifts_counts');
 				
+				$giftsCounts = setArrKeyfromField($giftsCounts, 'user_id');
+				
+				$usersData = [];
+				foreach ($users as $user) {
+					$static = arrTakeItem($user, 'static');
+					$user['counts'] = isset($giftsCounts[$user['id']]) ? $giftsCounts[$user['id']]: 0;
+					$usersData[$static][] = $user;
+				}
+				
+				$data['users'] = $usersData;
+				$data['statics'] = $this->admin_model->getStatics();
+				$data['ranks'] = $this->admin_model->getRanks();
 				break;
 		}
 		
@@ -400,9 +428,6 @@ class Admin extends MY_Controller {
 	//--------------------------------------------------------------------------------------------------- Предложения и жалобы, заказ оплаты
 	
 	
-	public function add_pay_item() {
-		echo $this->admin_model->addPayItem($this->input->post());
-	}
 	
 	public function add_complaints_item() {
 		echo $this->admin_model->addComplaintsItem($this->input->post());
@@ -641,7 +666,17 @@ class Admin extends MY_Controller {
 	
 	
 	
-	
+	/**
+	 * Задать значение для поля рейд-лидера
+	 * @param 
+	 * @return 
+	*/
+	public function set_lider_field() {
+		if (!$this->input->is_ajax_request()) return false;
+		$data = bringTypes($this->input->post());
+		if (!$this->admin_model->setLidersField($data['user_id'], $data['field'], $data['value'])) exit('0');
+		echo '1';
+	}
 	
 	
 	
@@ -699,18 +734,32 @@ class Admin extends MY_Controller {
 	
 	
 	public function ranks_add() {
-		if (! $this->input->is_ajax_request()) return false;
-		if (!$postData = $this->input->post('ranks')) exit('');
+		if (!$this->input->is_ajax_request()) return false;
+		$formData = bringTypes($this->input->post());
 		
-		$postData = array_filter($this->input->post('ranks'), function($val) {return $val['name'] != '';});
-		
-		$data = [];
-		foreach ($postData as $id => $item) {
-			if ($item['name'] == '') continue;
-			$item['coefficient'] = json_encode($item['coefficient']);
-			$data[$id] = $item;
+		if (isset($formData['ranks']) && $formData['ranks']) {
+			$ranks = array_filter($formData['ranks'], function($val) {return $val['name'] != '';});
+			
+			$renksData = [];
+			foreach ($ranks as $id => $item) {
+				if ($item['name'] == '') continue;
+				$item['coefficient'] = json_encode($item['coefficient']);
+				$renksData[$id] = $item;
+			}
+			$this->admin_model->addRanks(bringTypes($renksData));
 		}
-		echo $this->admin_model->addRanks(bringTypes($data));
+		
+		if (isset($formData['ranks_liders']) && $formData['ranks_liders']) {
+			$ranksLiders = array_filter($formData['ranks_liders'], function($val) {return $val['name'] != '';});
+			$ranksLidersData = [];
+			foreach ($ranksLiders as $id => $item) {
+				if ($item['name'] == '') continue;
+				//$item['coefficient'] = json_encode($item['coefficient']);
+				$ranksLidersData[$id] = $item;
+			}
+			$this->admin_model->addRanksLiders(bringTypes($ranksLidersData));
+		}	
+		echo '1';
 	}
 	
 	
@@ -719,6 +768,19 @@ class Admin extends MY_Controller {
 		$id = $this->input->post('id');
 		echo $this->admin_model->removeRanks($id);
 	}
+	
+	
+	
+	public function ranks_liders_remove() {
+		if (!$this->input->is_ajax_request()) return false;
+		$id = $this->input->post('id');
+		echo $this->admin_model->removeRanksLiders($id);
+	}
+	
+	
+	
+	
+	
 	
 	
 	
@@ -1557,8 +1619,13 @@ class Admin extends MY_Controller {
 						'date'			=> time()
 					];
 					
-					if (!isset($toWalletData[$user['user_id']])) $toWalletData[$user['user_id']] = $summToOrder;
-					else $toWalletData[$user['user_id']] += $summToOrder;
+					if (!isset($toWalletData[$user['user_id']])) {
+						$toWalletData[$user['user_id']]['amount'] = $summToOrder;
+						$toWalletData[$user['user_id']]['to_deposit'] = $summToDeposit;
+					} else {
+						$toWalletData[$user['user_id']]['amount'] += $summToOrder;
+						$toWalletData[$user['user_id']]['to_deposit'] += $summToDeposit;
+					}
 				}
 				
 				$this->load->model('wallet_model');
@@ -2951,11 +3018,65 @@ class Admin extends MY_Controller {
 				echo json_encode($data);
 				break;
 			
-			default:
-				# code...
-				break;
+			default: break;
 		}
 		return $data ?: [];
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Персональные подарки участникам
+	 * @param 
+	 * @return 
+	*/
+	public function personalgifts($action = false) {
+		if (!$action) return false;
+		$post = bringTypes($this->input->post());
+		$this->load->model('gifts_model', 'gifts');
+		$data = [];
+		$data['actions'] = $this->giftsActions;
+		$data['sections'] = [
+			'bonus' 	=> 'Бонус',
+			'personal' 	=> 'Персональный'
+		];
+		
+		switch ($action) {
+			case 'get_user_list':
+				$data['gifts'] = $this->gifts->personalgifts('get_to_user', $post['user_id']);
+				$data['user_id'] = $post['user_id'];
+				echo $this->twig->render('views/admin/render/personalgifts/user_list.tpl', $data);
+				break;
+			
+			case 'get':
+				$data['gifts'] = $this->gifts->personalgifts('get');
+				echo $this->twig->render('views/admin/render/personalgifts/list.tpl', $data);
+				break;
+			
+			case 'add':
+				if (!$this->gifts->personalgifts('add', $post)) exit('0');
+				echo '1';
+				break;
+			
+			case 'change_gift_value':
+				if (!$this->gifts->personalgifts('change_gift_value', $post)) exit('0');
+				echo '1';
+				break;
+			
+			case 'remove_gift':
+				if (!$this->gifts->personalgifts('remove_gift', $post)) exit('0');
+				echo '1';
+				break;
+			
+			
+			
+			default: break;
+		}
 	}
 	
 	

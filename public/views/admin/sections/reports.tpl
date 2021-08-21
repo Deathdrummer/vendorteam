@@ -1358,7 +1358,7 @@ $(document).ready(function() {
 		});
 	};
 	paySaveSumm();
-	$(document).on('renderSection', function() {
+	$(document).off('renderSection').on('renderSection', function() {
 		paySaveSumm();
 	});
 	

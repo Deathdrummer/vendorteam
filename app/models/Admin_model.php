@@ -224,6 +224,18 @@ class Admin_model extends My_Model {
 	
 	
 	
+	/**
+	 * Сохранить
+	 * @param 
+	 * @return 
+	*/
+	public function setLidersField($userId = false, $field = false, $value = false) {
+		if (!$userId) return false;
+		$this->db->where('id', $userId);
+		if (!$this->db->update('users', [$field => $value])) return false;
+		return true;
+	}
+	
 	
 	
 	
@@ -265,7 +277,8 @@ class Admin_model extends My_Model {
 	
 	
 	
-	public function addPayItem($data) {
+	public function addPayItem($data = false) {
+		if (!$data) return false;
 		$this->db->insert('pay_items', ['data' => json_encode($data)]);
 		return 1;
 	}
@@ -774,6 +787,66 @@ class Admin_model extends My_Model {
 		return $ranksData;
 	}
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//------------------------------------------------------------------------------------------------ Звания РЛ
+	/**
+	 * Получить список званий
+	 * @param сортировать по количеству дней по возрастанию
+	 * @param в качестве ключей - ID
+	 * @return array
+	 */
+	public function getRanksLiders() {
+		//if ($sortAsPeriod) $this->db->order_by('period', 'ASC');
+		$query = $this->db->get('ranks_liders');
+		if (!$ranksData = $query->result_array()) return [];
+		
+		$data = [];
+		foreach ($ranksData as $item) {
+			$id = arrTakeItem($item, 'id');
+			//$item['coefficient'] = json_decode($item['coefficient'], true);
+			$data[$id] = $item;
+		}
+		
+		return $data;
+	}
+	
+	
+	
+	public function addRanksLiders($postData = false) {
+		$tableRanks = $this->getRanksLiders();
+		$newRanks = array_diff_key($postData, $tableRanks);
+		$updateRanks = array_intersect_key($postData, $tableRanks);
+		
+		$newRanks = array_filter($newRanks);
+		
+		if ($updateRanks) {
+			foreach ($updateRanks as $key => $item) $updateRanks[$key]['id'] = $key;
+			$this->db->update_batch('ranks_liders', array_values($updateRanks), 'id');
+		}
+		
+		if ($newRanks) {
+			$this->db->insert_batch('ranks_liders', array_values($newRanks));
+		}
+		return 1;
+	}
+	
+	
+	public function removeRanksLiders($id) {
+		$this->db->where('id', $id);
+		if ($this->db->delete('ranks_liders')) {
+			return 1;
+		}
+		return 0;
+	}
 	
 	
 	

@@ -108,6 +108,16 @@
 				});
 				
 				
+				let isCheckedCustomTasks = false;
+				$('#kpiFieldsCustomTasks').on(tapEvent, function() {
+					isCheckedCustomTasks = $(this).is(':checked');
+					if (isCheckedCustomTasks) {
+						$('#kpiCustomFieldsListContainer').removeAttrib('hidden');
+					} else {
+						$('#kpiCustomFieldsListContainer').setAttrib('hidden');
+					}
+				});
+				
 				
 				$('#saveKpiPeriodButton').on(tapEvent, function() {
 					let newKpiPeriodTitle = $('#newKpiPeriodTitle'),
@@ -563,7 +573,7 @@
 								personageId = d[2];
 							
 							popUp({
-								title: 'Задачи персонажа '+nick,
+								title: 'Задачи персонажа '+nick+'|4',
 								width: 900,
 								buttons: [{id: 'setPersonageTasks', title: 'Задать'}],
 								disabledButtons: true,
@@ -571,6 +581,8 @@
 							}, function(setPersonageTasksWin) {
 								setPersonageTasksWin.setData('kpi/personages_tasks/get_form', {period_id: periodId, personage_id: personageId}, function() {
 									setPersonageTasksWin.enabledButtons();
+									ddrInitTabs('progressPlanPersonages');
+									
 									$('[kpitaskitemrepeats]').on('focus', function(e) {
 										e.preventDefault();
 									});
@@ -639,11 +651,34 @@
 	
 	//------------------------------------------------------- Отметить достижения KPI плана
 	$('#kpiCheckPlanButton').on(tapEvent, function() {
-		location.hash = 'kpi';
-		$('#kpiProgressSearchString').val('');
 		
-		$('#kpiDataContainer').setWaitToBlock('Загрузка плана...', 'pt40px pb40px', 'transparent');
-		openProgressForm();
+		popUp({
+			title: 'Отметить достижения KPI плана',
+		    width: 800,
+		    closeButton: 'Закрыть'
+		}, function(progressPlanWin) {
+			progressPlanWin.setData('kpi/periods/get', {type: 'simple', attr: 'kpichooseperiod'}, function() {
+				$('[kpichooseperiod]').on(tapEvent, function() {
+					progressPlanWin.wait();
+					let periodId = $(this).attr('kpichooseperiod');
+					location.hash = 'kpi';
+					$('#kpiProgressSearchString').val('');
+					
+					$('#kpiDataContainer').setWaitToBlock('Загрузка плана...', 'pt40px pb40px', 'transparent');
+					openProgressForm({period_id: periodId}, function() {
+						progressPlanWin.close();
+					});
+				});
+			});
+		});
+		
+		
+			
+		
+		
+		
+		
+				
 	});
 	
 	$('#kpiProgressSearchButton').on(tapEvent, function() {
@@ -657,10 +692,11 @@
 		openProgressForm();
 	});
 
-	function openProgressForm(params) {
+	function openProgressForm(params, callback) {
 		getAjaxHtml('kpi/progressplan/get_form', (params || {}), function(html, stat) {
 			if (stat) {
 				$('#kpiDataContainer').html(html);
+				if (callback && typeof callback == 'function') callback();
 				ddrInitTabs('kpiDataContainer');
 				$('.kpiprocessblock:visible').ddrUnitHeight('.kpiprocesscard');
 				
@@ -707,7 +743,7 @@
 					
 					saveProgPersTOut = setTimeout(function() {
 						$(blockSelector).addClass('personagetasks__item_wait');
-						$.post('/kpi/progressplan/check_task', {user_id: userId, personage_id: personageId, task_id: taskId, type: taskType, value: value}, function(response) {
+						$.post('/kpi/progressplan/check_task', {period_id: params.period_id, user_id: userId, personage_id: personageId, task_id: taskId, type: taskType, value: value}, function(response) {
 							if (!response) notify('Ошибка сохранения параметра!', 'error');
 							$(blockSelector).removeClass('personagetasks__item_wait');
 						}, 'json').fail(function(e) {
@@ -751,7 +787,7 @@
 					
 					saveProgCostomTOut = setTimeout(function() {
 						$(blockSelector).addClass('customtasks__item_wait');
-						$.post('/kpi/progressplan/check_custom', {user_id: userId, field: field, value: value}, function(response) {
+						$.post('/kpi/progressplan/check_custom', {period_id: params.period_id, user_id: userId, field: field, value: value}, function(response) {
 							if (!response) notify('Ошибка сохранения параметра!', 'error');
 							$(blockSelector).removeClass('customtasks__item_wait');
 						}, 'json').fail(function(e) {
@@ -777,7 +813,7 @@
 					else $(blockSelector).removeClass('customtasks__item_done');
 					
 					$(blockSelector).addClass('customtasks__item_wait');
-					$.post('/kpi/progressplan/check_custom', {user_id: userId, field: field, value: value}, function(response) {
+					$.post('/kpi/progressplan/check_custom', {period_id: params.period_id, user_id: userId, field: field, value: value}, function(response) {
 						if (!response) {
 							notify('Ошибка сохранения параметра!', 'error');
 						}

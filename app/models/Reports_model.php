@@ -2033,8 +2033,13 @@ class Reports_model extends My_Model {
 					'date'			=> time()
 				];
 				
-				if (!isset($toWalletData[$userId])) $toWalletData[$userId] = $summToOrder;
-				else $toWalletData[$userId] += $summToOrder;
+				if (!isset($toWalletData[$userId])) {
+					$toWalletData[$userId]['amount'] = $summToOrder;
+					$toWalletData[$userId]['to_deposit'] = $summToDeposit;
+				} else {
+					$toWalletData[$userId]['amount'] += $summToOrder;
+					$toWalletData[$userId]['to_deposit'] += $summToDeposit;
+				}
 			}	
 		}
 		

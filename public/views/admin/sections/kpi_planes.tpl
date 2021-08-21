@@ -1230,7 +1230,7 @@
 	
 	
 	
-	
+	// title chance percents diapason
 	$('#kpiGiftsButton').on(tapEvent, function() {
 		popUp({
 			title: 'Подарки за перевыполнение плана',

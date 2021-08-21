@@ -45,7 +45,36 @@ class Users_model extends MY_Model {
 		if (!$usersData = $query->result_array()) return false;
 		if ($returnFields) $usersData = setArrKeyFromField($usersData, 'id', true, $returnFields);
 		
+		
 		return $usersData ?: false;
+	}
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function getRaidLiders() {
+		$this->db->select('u.id, u.avatar, u.nickname, u.rank_lider, us.lider, '.$this->groupConcatValue('us.static_id', 'statics'));
+		$this->db->join('users_statics us', 'us.user_id = u.id', 'LEFT OUTER');
+		$this->db->where('us.lider', 1);
+		$this->db->group_by('u.id');
+		
+		if (!$result = $this->_result('users u')) return false;
+		
+		$lidersData = [];
+		foreach ($result as $row) {
+			$row['statics'] = json_decode($row['statics'], true);
+			$lidersData[] = $row;
+		}
+		
+		return $lidersData;
+		
 	}
 	
 	
@@ -347,7 +376,7 @@ class Users_model extends MY_Model {
 			'role'			=> $userData['user_role'],
 			'stage'			=> $userData['user_stage'],
 			'payment'		=> $userData['user_payment'],
-			'deposit'		=> $userData['user_deposit']
+			//'deposit'		=> $userData['user_deposit']
 		]);
 		
 		if ($verification) {
@@ -439,13 +468,19 @@ class Users_model extends MY_Model {
 	 * @param 
 	 * @return 
 	 */
-	public function setUsersData($users) {
+	public function setUsersData($users = false) {
 		if (!$users) return 0;
 		foreach ($users as $k => $user) {
 			if (isset($user['reg_date']) && $user['reg_date']) {
 				$users[$k]['reg_date'] = is_numeric($user['reg_date']) ? $user['reg_date'] : strtotime($user['reg_date']);
 			} else {
 				unset($users[$k]['reg_date']);
+			}
+			
+			if (isset($user['birthday']) && $user['birthday']) {
+				$users[$k]['birthday'] = is_numeric($user['birthday']) ? $user['birthday'] : strtotime($user['birthday']);
+			} else {
+				unset($users[$k]['birthday']);
 			}
 		}
 		

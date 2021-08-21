@@ -76,17 +76,24 @@
 		<ul class="scroll_y h300px">
 			<li class="d-flex align-items-center noselect">
 				<div class="checkblock mr8px text-right">
-					<input type="checkbox" id="walletParamStateDeleted" walletparamstates value="deleted" checked>
-					<label for="walletParamStateDeleted"></label>
-				</div>
-				<label for="walletParamStateDeleted"><small>Удаленные</small></label>
-			</li>
-			<li class="d-flex align-items-center noselect">
-				<div class="checkblock mr8px text-right">
 					<input type="checkbox" id="walletParamStateVerified" walletparamstates value="verification" checked>
 					<label for="walletParamStateVerified"></label>
 				</div>
 				<label for="walletParamStateVerified"><small>Верифицированные</small></label>
+			</li>
+			<li class="d-flex align-items-center noselect">
+				<div class="checkblock mr8px text-right">
+					<input type="checkbox" id="walletParamStateExcluded" walletparamstates value="excluded">
+					<label for="walletParamStateExcluded"></label>
+				</div>
+				<label for="walletParamStateDeleted"><small>Отстраненные</small></label>
+			</li>
+			<li class="d-flex align-items-center noselect">
+				<div class="checkblock mr8px text-right">
+					<input type="checkbox" id="walletParamStateDeleted" walletparamstates value="deleted">
+					<label for="walletParamStateDeleted"></label>
+				</div>
+				<label for="walletParamStateDeleted"><small>Удаленные</small></label>
 			</li>
 		</ul>
 	</div>

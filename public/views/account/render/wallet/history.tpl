@@ -20,16 +20,12 @@
 			</thead>
 			<tbody>
 				{% for item in history|reverse %}
-					<tr{% if item.transfer == '-' %} class="wallet__payout{% if item.type < 0 %} wallet__payout_recovery{% endif %}"{% endif %}>
-						{% if item.transfer == '-' %}
-							{% if item.type < 0 %}
-								<td colspan="2">{{types[item.type]}}</td>
-							{% else %}
-								<td colspan="2">{{item.title}}</td>
-							{% endif %}
+					<tr{% if item.type is null %} class="wallet__payout"{% endif %}{% if item.type < 0 %} class="wallet__payout_recovery"{% endif %}>
+						{% if item.type < 0 %}
+							<td colspan="2">{{types[item.type]}}</td>
 						{% else %}
-							<td>{{types[item.type]}}</td>
-							<td><small class="fz12px">{{item.title}}</small></td>
+							<td>{{types[item.type]|default('Выплата')}}</td>
+							<td><p class="fz12px">{{item.title}}</p></td>
 						{% endif %}
 						<td><small class="fz12px">{{item.date|d}} в {{item.date|t}}</small></td>
 						<td>{{item.summ|number_format(1, '.', ' ')}} <small class="wallet__postfix">₽</small></td>

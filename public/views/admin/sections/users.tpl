@@ -40,6 +40,11 @@
 					<button class="small remove" disabled id="resetSearchFromUsers">Сбросить</button>
 				</div>
 			</div>
+			
+			<div class="col-auto ml30px">
+				<p>Участников онлайн: <strong id="onlineUsersCount">--</strong></p>
+			</div>
+			
 			<div class="col-auto ml-auto">
 				<span>Группировка:</span>
 			</div>
@@ -101,7 +106,7 @@
 													<td class="w156px{% if sort_field == 'u.reg_date' %} active{% endif %}">Дата регистрации <i class="fa fa-sort" userssortfield="u.reg_date" sortorder="{{sort_order}}"></i></td>
 													<td class="nowidth">Стаж дн.</td>
 													<td class="w150px">Средство платежа</td>
-													<td{% if sort_field == 'u.deposit' %} class="active"{% endif %}>Резерв <i class="fa fa-sort" userssortfield="u.deposit" sortorder="{{sort_order}}"></i></td>
+													<td{% if sort_field == 'u.birthday' %} class="active"{% endif %}>Дата рождения <i class="fa fa-sort" userssortfield="u.birthday" sortorder="{{sort_order}}"></i></td>
 													<td class="nowrap" title="Процент отчисления в депозит">Пр.от.</td>
 													<!-- <td>Ранг</td> -->
 													<td class="w100px{% if sort_field == 'u.role' %} active{% endif %}">Роль <i class="fa fa-sort" userssortfield="u.role" sortorder="{{sort_order}}"></i></td>
@@ -177,8 +182,8 @@
 															</div>
 														</td>
 														<td class="nowidth">
-															<div class="number">
-																<input type="number" showrows class="user_deposit" value="{{user.deposit|default(0)}}">
+															<div class="date w150px">
+																<input type="text" class="user_birthday" value="{% if user.birthday %}{{user.birthday|d}}{% endif %}" date="">
 															</div>
 														</td>
 														<td class="nowidth">
@@ -562,6 +567,77 @@
 
 
 <script type="text/javascript"><!--
+
+if (location.hostname != 'localhost') {
+	socket = io.connect("http://vendorteam.ru:5050");
+	countUsersOnline = 0;
+	socket.on('set_online_users', (users) => {
+		$.each(users, function(socket, userId) {
+			$('#users').find('[userid="'+userId+'"]').find('.avatar').addClass('avatar_online').attr('title', 'Онлайн');
+		});
+		countUsersOnline = Object.keys(users).length;
+		$('#onlineUsersCount').text(countUsersOnline);
+	});
+
+
+	socket.on('set_online_user', (userId) => {
+		$('#users').find('[userid="'+userId+'"]').find('.avatar').addClass('avatar_online').attr('title', 'Онлайн');
+		$('#onlineUsersCount').text(countUsersOnline++);
+	});
+
+
+	socket.on('set_offline_user', (userId) => {
+		$('#users').find('[userid="'+userId+'"]').find('.avatar').removeClass('avatar_online').removeAttrib('title');
+		$('#onlineUsersCount').text(countUsersOnline--);
+	});
+
+
+	$('#users').find('.avatar').on(tapEvent, function() {
+		let userId = $(this).closest('[userid]').attr('userid'),
+			nickname = $(this).attr('title'),
+			isOnline = $(this).hasClass('avatar_online');
+		
+		if (!isOnline) {
+			notify('невозможно отправить сообщение - участник не в сети', 'error');
+		} else {
+			popUp({
+				title: 'Сообщение участнику '+nickname+'|5',
+			    width: 500,
+			    html: '<div class="popup__textarea"><textarea id="realtimeMessageToUser" rows="5" placeholder="Ввыдите сообщение"></textarea></div>',
+			    buttons: [{id: 'realtimeSendMessageToUser', title: 'Отправить'}],
+			    buttonsAlign: 'right',
+			    disabledButtons: false,
+			    closePos: 'left',
+			    closeByButton: false,
+			    closeButton: 'Отмена',
+			    winClass: false,
+			    contentToCenter: false,
+			    buttonsOnTop: false,
+			    topClose: true
+			}, function(realtimeSendMessageToWin) {
+				$('#realtimeSendMessageToUser').on(tapEvent, function() {
+					let mess = $('#realtimeMessageToUser').val();
+					if (!mess) {
+						$('#realtimeMessageToUser').addClass('error');
+					} else {
+						realtimeSendMessageToWin.wait();
+						socket.emit('send_user_mess', {user_id: userId, message: mess});
+						realtimeSendMessageToWin.close();
+					}
+				});
+			});
+		}
+	});
+}
+
+	
+
+
+
+
+
+
+
 $(document).ready(function() {
 	
 	
@@ -704,6 +780,35 @@ $(document).ready(function() {
 	
 	if ($('.user_reg_date').length > 0) {
 		$('.user_reg_date').each(function() {
+			$(this).datepicker({
+		        dateFormat:         'd M yy г.',
+		        yearRange:          "2010:+100",
+		        numberOfMonths:     1,
+		        changeMonth:        true,
+		        changeYear:         true,
+		        monthNamesShort:    ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября', 'декабря'],
+		        monthNames:         ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь', 'декабрь'],
+		        dayNamesMin:        ['вс','пн','вт','ср','чт','пт','сб',],
+		        firstDay:           1,
+		        minDate:            new Date(2010, 0, 1, 0, 0, 0),
+		        maxDate:            0,
+		        onSelect: function(stringDate, dateObj) {
+		            var rangeDay = rangeMonth = rangeYaer = 0;
+		            var selectedDay = parseInt(dateObj.selectedDay),
+		            	selectedMonth = parseInt(dateObj.selectedMonth),
+		            	selectedYear = parseInt(dateObj.selectedYear);
+		            
+		            var formDay = '0'+selectedDay, formMonth = '0'+(selectedMonth + 1);
+		            $(this).attr('date', selectedYear+'-'+formMonth.substr(-2)+'-'+formDay.substr(-2));
+		            $(this).attr('name', 'users[][reg_date]');
+		        }
+		    });
+		});
+	}
+	
+	
+	if ($('.user_birthday').length > 0) {
+		$('.user_birthday').each(function() {
 			$(this).datepicker({
 		        dateFormat:         'd M yy г.',
 		        yearRange:          "2010:+100",
@@ -1164,7 +1269,7 @@ $(document).ready(function() {
 				thisUserRegDate = $(thisRow).find('.user_reg_date').attr('date') || false,
 				thisUserStage = $(thisRow).find('.user_stage'),
 				thisUserPayment = $(thisRow).find('.user_payment'),
-				thisUserDeposit = $(thisRow).find('.user_deposit'),
+				thisUserBirthday = $(thisRow).find('.user_birthday').attr('date') || false,
 				thisUserDepositPercent = $(thisRow).find('.user_deposit_percent'),
 				thisUserRole = $(thisRow).find('.user_role'),
 				thisUserAccess = $(thisRow).find('.user_access');
@@ -1176,7 +1281,7 @@ $(document).ready(function() {
 				reg_date: thisUserRegDate,
 				stage: thisUserStage.val(),
 				payment: $(thisUserPayment).val(),
-				deposit: $(thisUserDeposit).val(),
+				birthday: thisUserBirthday,
 				deposit_percent: $(thisUserDepositPercent).val(),
 				role: $(thisUserRole).val(),
 				access: $(thisUserAccess).val()
@@ -1223,7 +1328,7 @@ $(document).ready(function() {
 			thisUserPayment = $(thisRow).find('.user_payment'),
 			thisUserNickname = $(thisRow).find('.user_nickname'),
 			thisUserColor = $(thisRow).find('.user_color'),
-			thisUserDeposit = $(thisRow).find('.user_deposit'),
+			thisUserBirthday = $(thisRow).find('.user_birthday').attr('date') || false,
 			thisUserStatics = $(thisRow).find('.user_statics'),
 			//thisUserAccessLevel = $(thisRow).find('.user_access_level'),
 			thisUserRole = $(thisRow).find('.user_role'),
@@ -1261,7 +1366,7 @@ $(document).ready(function() {
 				//user_access_level: $(thisUserAccessLevel).val(),
 				user_role: $(thisUserRole).val(),
 				user_payment: $(thisUserPayment).val(),
-				user_deposit: $(thisUserDeposit).val(),
+				user_birthday: thisUserBirthday,
 				user_reg_date: thisUserRegDate,
 				user_stage: thisUserStage.val()
 			}, function(response) {

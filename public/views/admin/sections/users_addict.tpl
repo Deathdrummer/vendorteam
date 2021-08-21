@@ -1,6 +1,6 @@
 <div class="section" id="usersAddictSection">
-	<div class="section__title">
-		<h1>Участники (дополнительные поля)</h1>
+	<div class="section_title">
+		<h2>Участники (дополнительные поля)</h2>
 	</div>
 	
 	
@@ -138,12 +138,12 @@
 
 <script type="text/javascript"><!--
 
-$(document).on('renderSection', function() {
+$(document).off('renderSection').on('renderSection', function() {
 	ddrInitTabs('usersAddictSection');
 	
 	$('[userstable]').each(function() {
 		$(this).ddrScrollTableY({
-			height: 'calc(100vh - 368px)',
+			height: 'calc(100vh - 390px)',
 			minHeight: '80px',
 			//cls: false,
 			wrapBorderColor: '#c8ced4',
@@ -168,9 +168,8 @@ $(document).on('renderSection', function() {
 		//clearTimeout(changeFieldTOut);
 		changeFieldTOut = setTimeout(function() {
 			saveFieldValue(userId, field, value, function() {
-				$(input).closest('td').addClass('changed');
+				$(input).addClass('changed');
 			});
-			
 		}, 500);
 	});
 	
