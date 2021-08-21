@@ -7,10 +7,10 @@
 				<td class="w170px">Даты</td>
 				<td>Финансовый период</td>
 				<td>Статики</td>
-				{% if type != 'simple' %}
+				{# {% if type != 'simple' %}
 					<td class="w50px" title="Активный для заполнения KPI период">Ред.</td>
 					<td class="w50px" title="Опубликован">Публ.</td>
-				{% endif %}
+				{% endif %} #}
 					
 				<td class="w50px"></td>
 			</tr>
@@ -40,7 +40,7 @@
 								<p class="empty">Нет статиков</p>
 							{% endif %}
 						</td>
-						{% if type != 'simple' %}
+						{# {% if type != 'simple' %}
 							<td class="text-center">
 								<div class="checkblock">
 									<input id="kpiActivatePeriod{{period.id}}" activatekpiperiod="{{period.id}}" type="radio" name="activatekpiperiod"{% if period.active %} checked{% endif %}>
@@ -53,7 +53,7 @@
 									<label for="kpiPublishPeriod{{period.id}}"></label>
 								</div>
 							</td>
-						{% endif %}
+						{% endif %} #}
 							
 						<td class="center">
 							<div class="buttons inline nowrap">

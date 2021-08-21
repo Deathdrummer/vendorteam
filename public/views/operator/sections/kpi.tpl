@@ -670,15 +670,7 @@
 					});
 				});
 			});
-		});
-		
-		
-			
-		
-		
-		
-		
-				
+		});		
 	});
 	
 	$('#kpiProgressSearchButton').on(tapEvent, function() {

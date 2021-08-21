@@ -671,11 +671,25 @@
 	
 	//------------------------------------------------------- Отметить достижения KPI плана
 	$('#kpiCheckPlanButton').on(tapEvent, function() {
-		location.hash = 'kpi_planes';
-		$('#kpiProgressSearchString').val('');
-		
-		$('#kpiDataContainer').setWaitToBlock('Загрузка плана...', 'pt40px pb40px', 'transparent');
-		openProgressForm();
+		popUp({
+			title: 'Отметить достижения KPI плана',
+		    width: 800,
+		    closeButton: 'Закрыть'
+		}, function(progressPlanWin) {
+			progressPlanWin.setData('kpi/periods/get', {type: 'simple', attr: 'kpichooseperiod'}, function() {
+				$('[kpichooseperiod]').on(tapEvent, function() {
+					progressPlanWin.wait();
+					let periodId = $(this).attr('kpichooseperiod');
+					location.hash = 'kpi_planes';
+					$('#kpiProgressSearchString').val('');
+					
+					$('#kpiDataContainer').setWaitToBlock('Загрузка плана...', 'pt40px pb40px', 'transparent');
+					openProgressForm({period_id: periodId}, function() {
+						progressPlanWin.close();
+					});
+				});
+			});
+		});		
 	});
 	
 	$('#kpiProgressSearchButton').on(tapEvent, function() {
@@ -689,10 +703,11 @@
 		openProgressForm();
 	});
 
-	function openProgressForm(params) {
+	function openProgressForm(params, callback) {
 		getAjaxHtml('kpi/progressplan/get_form', (params || {}), function(html, stat) {
 			if (stat) {
 				$('#kpiDataContainer').html(html);
+				if (callback && typeof callback == 'function') callback();
 				ddrInitTabs();
 				$('.kpiprocessblock:visible').ddrUnitHeight('.kpiprocesscard');
 				

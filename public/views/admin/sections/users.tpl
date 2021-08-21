@@ -390,7 +390,7 @@
 								{% if deposit_history %}
 									{% for item in deposit_history %}
 										<tr>
-											<td class="nopadding"><div class="avatar" style="background-image: url('{{base_url('public/images/users/mini/'~item.avatar)}}')"></div></td>
+											<td class="nopadding"><div class="avatar" style="background-image: url('{{base_url('public/images/users/mini/'~item.avatar)|no_file('public/images/user_mini.jpg')}}')"></div></td>
 											<td>{{item.nickname}}</td>
 											<td>{{item.reason}}</td>
 											<td>{{item.summ|number_format(2, '.', ' ')}} ₽</td>
@@ -639,7 +639,6 @@ if (location.hostname != 'localhost') {
 
 
 $(document).ready(function() {
-	
 	
 	//------------------------------------------------------------ Выбор группы
 	var groupFromCache = lscache.get('staticsGroup');
@@ -890,6 +889,13 @@ $(document).ready(function() {
 				}	
 			});
 			
+			
+			$('#depositTables').find('[deposituserslist]').each(function() {
+				if ($(this).children('tr:not([hidden])').length) {
+					$(this).removeAttrib('hidden');
+				}
+			});
+			
 						
 			$('[userslistrows]').each(function() {
 				if ($(this).children().not('[hidden]').length == 0) {
@@ -910,8 +916,12 @@ $(document).ready(function() {
 	});
 	
 	$('#resetSearchFromUsers').on(tapEvent, function() {
-		$('[userslistrows], [deposituserslist]').find('tr').each(function() {
+		$('[userslistrows]').find('tr').each(function() {
 			$(this).removeAttrib('hidden');
+		});
+		
+		$('[deposituserslist]').find('tr').each(function() {
+			$(this).setAttrib('hidden');
 		});
 		$('.tabstitles.sub').children().removeAttrib('hidden');
 		$('#searchUsersField').val('');

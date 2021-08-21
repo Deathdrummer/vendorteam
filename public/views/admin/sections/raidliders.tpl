@@ -1,6 +1,6 @@
 <div class="section" id="usersAddictSection">
-	<div class="section__title">
-		<h1>Рейд-лидеры</h1>
+	<div class="section_title">
+		<h2>Рейд-лидеры</h2>
 	</div>
 	
 	
@@ -11,6 +11,7 @@
 				<tr>
 					<td class="w240px">Участник</td>
 					<td class="w250px">Звание</td>
+					<td class="w200px">Статики</td>
 					<td></td>
 				</tr>
 			</thead>
@@ -41,6 +42,17 @@
 								<div class="select__caret"></div>
 							</div>
 						</td>
+						<td>
+							{% if user.statics %}
+								<div class="scroll_y scroll_y_thin h50px">
+									<ul>
+										{% for stId, static in user.statics %}
+											<li class="fz11px pt1px pb1px">{{statics[static]['name']}}</li>
+										{% endfor %}
+									</ul>
+								</div>
+							{% endif %}
+						</td>
 						<td></td>
 					</tr>
 				{% endfor %}
@@ -59,6 +71,8 @@
 
 
 <script type="text/javascript"><!--
+
+
 
 $(document).off('renderSection').on('renderSection', function() {
 	
