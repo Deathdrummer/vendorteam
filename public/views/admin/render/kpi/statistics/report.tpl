@@ -91,13 +91,13 @@
 						<tbody>
 							{% for uId, user in users %}
 								<tr>
-									<td class="h72px">
+									<td class="h72px w100px">
 										{% if saved_report %}
 											<p>{{user.payout|number_format(2, '.', ' ')|default(0)}} ₽</p>
 										{% else %}
 											<div class="d-flex align-items-center">
-												<div class="field">
-													<input type="text" name="report[{{staticId}}][{{uId}}][payout]" value="{{user.payout_all|replace({'.': ','})}}" rules="empty">
+												<div class="field w125px">
+													<input class="w125px" type="text" name="report[{{staticId}}][{{uId}}][payout]" payoutinput value="{{user.payout_all|replace({'.': ','})}}" rules="empty">
 												</div>
 												<strong class="fz12px ml5px">₽</strong>
 											</div>

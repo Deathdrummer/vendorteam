@@ -984,7 +984,7 @@
 						
 						$('#kpiDataTitle').text('Статистика выполнения задач');
 						
-						$('#kpiDataContainer').find('input[name="payout"]').number(true, 2, '.', ' ');
+						$('#kpiDataContainer').find('[payoutinput]').number(true, 2, '.', ' ');
 						calcKpiStatWin.close();
 					}, function() {
 						calcKpiStatWin.wait(false);
