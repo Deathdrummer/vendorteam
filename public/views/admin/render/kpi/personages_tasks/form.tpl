@@ -1,6 +1,6 @@
 {% if tasks %}
 	<div id="progressPlanPersonages">
-		<ul class="tabstitles h30px">
+		<ul class="tabstitles">
 			<li id="tabTasksPlanned">Плановые</li>
 			<li id="tabTasksBonus">Бонусные</li>
 		</ul>

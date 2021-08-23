@@ -301,8 +301,30 @@ class Kpi extends MY_Controller {
 				$tasksListData = [];
 				if ($tasksList) foreach ($tasksList as $tId => $task) $tasksListData[$task['type']][$tId] = $task;
 				$types = [1 => 'Плановые', 2 => 'Бонусные'];
-				
 				if (!$this->kpi->saveTasks($post['period_id'], $post['user_id'], $post['personage_id'], $tasks)) exit('');
+				echo $this->twig->render($this->viewsPath.'render/kpi/personages_tasks/list.tpl', ['tasks_list' => $tasksListData, 'types' => $types]);
+				break;
+			
+			case 'save_from_template':
+				if (!$tasksFromTemplate = $this->kpi->getActiveTemplate($post['from'])) exit('');
+				
+				$tasksIds = array_column($tasksFromTemplate, 'task_id');
+				
+				$tasks = $this->kpi->getPersonagesTasks($tasksIds);
+				$tasks = setArrKeyFromField($tasks['items'], 'id', 'task');
+				
+				$tasksListData = [];
+				if ($tasksFromTemplate) {
+					foreach ($tasksFromTemplate as $tId => $task) {
+						$tasksListData[1][$tId] = $task;
+						$tasksListData[1][$tId]['task'] = $tasks[$task['task_id']];
+					} 
+				}
+				
+				$types = [1 => 'Плановые', 2 => 'Бонусные'];
+				
+				if (!$this->kpi->saveTasks($post['period_id'], $post['user_id'], $post['personage_id'], $tasksFromTemplate)) exit('0');
+				
 				echo $this->twig->render($this->viewsPath.'render/kpi/personages_tasks/list.tpl', ['tasks_list' => $tasksListData, 'types' => $types]);
 				break;
 			
@@ -897,6 +919,70 @@ class Kpi extends MY_Controller {
 			default: break;
 		}
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Статистика выполнения задач
+	 * @param 
+	 * @return 
+	*/
+	public function templates($action = false) {
+		$post = bringTypes($this->input->post());
+		if (!$action) return false;
+		
+		switch ($action) {
+			case 'list':
+				$data['templates'] = $this->kpi->getTemplates($post['from']);
+				echo $this->twig->render($this->viewsPath.'render/kpi/templates/list.tpl', $data);
+				break;
+			
+			case 'form':
+				$data['tasks'] = $this->kpi->getTasks();
+				if (isset($post['id'])) {
+					$data['title'] = $this->kpi->getTemplateTitle($post['id']);
+					$data['template_tasks'] = $this->kpi->getTemplateTasks($post['id']);
+				} 
+				echo $this->twig->render($this->viewsPath.'render/kpi/templates/form.tpl', $data);
+				break;
+				
+			
+			case 'activate':
+				//$data['tasks'] = $this->kpi->getTasks();
+				if (!$this->kpi->activateTemplate($post['id'], $post['from'])) exit(0);
+				echo '1';
+				break;
+			
+			case 'save':
+				if (!$this->kpi->saveTemplate($post['title'], $post['tasks'])) exit(0);
+				echo '1';
+				break;
+			
+			case 'update':
+				if (!$this->kpi->updateTemplate($post['id'], $post['title'], $post['tasks'])) exit(0);
+				echo '1';
+				break;
+			
+			case 'remove':
+				if (!$this->kpi->removeTemplate($post['id'])) exit(0);
+				echo '1';
+				break;
+			
+			
+			
+			
+			default: break;
+		}
+	}
+	
+	
+	
+	
 	
 	
 	

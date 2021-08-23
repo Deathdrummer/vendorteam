@@ -1635,17 +1635,20 @@ table:not(.clear)
 		padding: 10px
 		
 	&__buttons
+		z-index: 1000
 		
 		&_main, &_close
-			margin-left: 10px
-			height: 30px
+			//margin-left: 10px
+			//height: 30px
 			border-radius: 3px
-			padding-left: 15px
-			padding-right: 15px
+			padding-left: 10px
+			padding-right: 10px
 			font-size: 14px
 			line-height: 14px
 			+font('roboto', medium)
 			text-transform: uppercase
+			padding-top: 8px
+			padding-bottom: 5px
 			transition: background-color 0.16s
 		
 		&_main
@@ -1708,7 +1711,7 @@ table:not(.clear)
 	
 	
 	&__dialog
-		background-color: #303e4a75
+		background-color: #303e4ac0
 		z-index: 1011
 		
 		.popupdialog
@@ -3564,7 +3567,7 @@ p
 	&__item
 		display: inline-block
 		word-spacing: normal
-		width: 300px
+		width: 400px
 		vertical-align: top
 		//flex-grow: 0
 		//flex-shrink: 0
@@ -3674,6 +3677,17 @@ p
 				font-size: 10px
 				color: #fff
 			
+			&.template
+				background-color: #65a25b
+				
+				&:hover
+					background-color: darken(#65a25b, 7%)
+				
+				&:active
+					background-color: darken(#65a25b, 20%)
+					transition: background-color 0s
+			
+			
 			&.edit
 				background-color: #3981a1
 				
@@ -3700,6 +3714,8 @@ p
 		li
 			position: relative
 			border: none
+			padding-top: 3px
+			padding-bottom: 3px
 			
 			> :first-of-type
 				white-space: normal
@@ -3712,17 +3728,17 @@ p
 				padding-right: 5px
 			
 			+ li
-				margin-top: 5px
-				margin-bottom: 5px
+				//margin-top: 5px
+				//margin-bottom: 5px
 				
-				&::after
-					content: ''
-					position: absolute
-					display: block
-					top: -3px
-					width: 100%
-					height: 1px
-					background-color: #eee
+				//&::after
+				//	content: ''
+				//	position: absolute
+				//	display: block
+				//	top: -3px
+				//	width: 100%
+				//	height: 1px
+				//	background-color: #eee
 					
 	
 	&__empty

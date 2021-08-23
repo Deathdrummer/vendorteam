@@ -177,6 +177,72 @@ class MY_Model extends CI_Model {
 	
 	
 	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Все значения из списка. Пример: $this->db->where($this->jsonSearchAll(items, field));
+	 * @param искомые значения mixed
+	 * @param поле таблицы в котором искать
+	 * @return string
+	 */
+	public function jsonSearchAll($items = false, $field = false) {
+		if (!is_array($items) && preg_match('/\s/', $items)) $items = preg_split("/?,\s+/", $items);
+		$str = '';
+		if (is_array($items)) {
+			foreach ($items as $item) {
+				if (is_integer($item)) $str .= $item.', ';
+				else $str .= '"'.$item.'", ';
+			}
+		} else {
+			if (is_integer($items)) $str .= $items.', ';
+			else $str .= '"'.$items.'", ';
+		}
+		
+		return "JSON_CONTAINS(".$field.", '[".rtrim($str, ', ')."]')";
+	}
+	
+	
+	
+	
+	/**
+	 * Любое из значений списка. Пример: $this->db->where($this->jsonSearch(items, field));
+	 * @param искомые значения mixed
+	 * @param поле таблицы в котором искать
+	 * @return string
+	 */
+	public function jsonSearch($items = false, $field = false) {
+		if (!is_array($items) && preg_match('/\s/', $items)) $items = preg_split("/?,\s+/", $items);
+		$str = '(';
+		
+		if (is_array($items)) {
+			foreach ($items as $item) {
+				if (is_integer($item)) $str .= "JSON_CONTAINS(".$field.", '[".$item."]') OR ";
+				else $str .= "JSON_CONTAINS(".$field.", '[\"".$item."\"]') OR ";
+			} 
+		} else {
+			if (is_integer($items)) $str .= "JSON_CONTAINS(".$field.", '[".$items."]') OR ";
+			else $str .= "JSON_CONTAINS(".$field.", '[\"".$items."\"]') OR ";
+		}
+		return rtrim($str, ' OR ').')';
+	}
+	
+	
+	
+	
+	
+	
+	
+	//--------------------------------------------------------------------------------------------------
+	
+	
+	
+	
+	
+	
 	/**
 	 * Получить данные периода рейтингов
 	 * @param true - текущий (активный) период, ID периода
@@ -219,7 +285,9 @@ class MY_Model extends CI_Model {
 	
 	
 	
-	
+	protected function _isCliRequest() {
+		return (isset($_SERVER['HTTP_USER_AGENT']) && preg_match('/Wget\//', $_SERVER['HTTP_USER_AGENT']));
+	}
 	
 	
 	

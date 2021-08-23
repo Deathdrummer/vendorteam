@@ -84,6 +84,7 @@
 																		<span class="fz12px">{{personage.armor}}</span>
 																	</div>
 																	<div class="kpitasksitem__buttons">
+																		<button class="template" setpersonagetaskfromtemplates="{{userId}}|{{pId}}" title="Задать задачи из шаблона"><i class="fa fa-newspaper-o"></i></button>
 																		<button class="edit" setpersonagetasks="{{personage.nick}}|{{userId}}|{{pId}}" title="Задачи"><i class="fa fa-edit"></i></button>
 																	</div>
 																</div>

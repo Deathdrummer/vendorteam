@@ -603,7 +603,7 @@ if (location.hostname != 'localhost') {
 			popUp({
 				title: 'Сообщение участнику '+nickname+'|5',
 			    width: 500,
-			    html: '<div class="popup__textarea"><textarea id="realtimeMessageToUser" rows="5" placeholder="Ввыдите сообщение"></textarea></div>',
+			    html: '<div class="popup__textarea"><textarea id="realtimeMessageToUser" rows="5" placeholder="Введите сообщение"></textarea></div>',
 			    buttons: [{id: 'realtimeSendMessageToUser', title: 'Отправить'}],
 			    buttonsAlign: 'right',
 			    disabledButtons: false,

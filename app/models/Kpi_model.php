@@ -15,6 +15,8 @@ class Kpi_model extends MY_Model {
 	private $kpiReportsBonusDataTable = 'kpi_reports_bonus_data';
 	private $kpiReportsDataTable = 'kpi_reports_data';
 	private $kpiReportsPlanesTable = 'kpi_reports_planes';
+	private $kpiTemplatesTable = 'kpi_templates_titles';
+	private $kpiTemplatesDataTable = 'kpi_templates_data';
 	
 	public function __construct() {
 		parent::__construct();
@@ -212,7 +214,8 @@ class Kpi_model extends MY_Model {
 	 * @param 
 	 * @return 
 	*/
-	public function getPersonagesTasks() {
+	public function getPersonagesTasks($tasksIds = false) {
+		if ($tasksIds) $this->db->where_in('id', $tasksIds);
 		$this->db->order_by('_sort', 'ASC');
 		if (!$result = $this->_resultWithCount($this->kpiTasksPersonagesTable)) return false;
 		return $result;
@@ -1605,6 +1608,204 @@ class Kpi_model extends MY_Model {
 		$this->db->insert($this->kpiReportsBonusDoneTable, ['period_id' => $periodId]);
 		return true;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function getTemplates($from = false) {
+		if ($from === false) return false;
+		if (!$result = $this->_result($this->kpiTemplatesTable)) return false;
+		
+		foreach ($result as $k => $row) {
+			$activeData = json_decode($row['active'], true);
+			$result[$k]['active'] = is_array($activeData) && in_array($from, $activeData);
+		}
+		return $result;
+	}
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function getTemplateTitle($id = false) {
+		if (!$id) return false;
+		$this->db->select('title');
+		$this->db->where('id', $id);
+		if (!$templateTitle = $this->_row($this->kpiTemplatesTable, 'title')) return false;
+		return $templateTitle;
+	}
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function getTemplateTasks($id = false) {
+		if (!$id) return false;
+		$this->db->select('task_id, repeats');
+		$this->db->where('template_id', $id);
+		if (!$templateData = $this->_result($this->kpiTemplatesDataTable)) return false;
+		$templateData = setArrKeyfromField($templateData, 'task_id', 'repeats');
+		return $templateData;
+	}
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function activateTemplate($id = false, $from = false) {
+		if (!$id || $from === false) return false;
+		if (!$result = $this->_result($this->kpiTemplatesTable)) return false;
+		
+		$updateData = [];
+		foreach ($result as $row) {
+			$activeData = json_decode($row['active'], true) ?: [];
+			$findIndex = array_search($from, $activeData);
+			
+			if ($findIndex !== false && $id != $row['id']) array_splice($activeData, $findIndex, 1);
+			elseif ($findIndex === false && $id == $row['id']) array_push($activeData, $from);
+			
+			$row['active'] = $activeData ? json_encode($activeData) : null;
+			$updateData[] = $row;
+		}
+		
+		$this->db->update_batch($this->kpiTemplatesTable, $updateData, 'id');
+		return true;
+	}
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function getActiveTemplate($from = false) {
+		if ($from === false) return false;
+		$this->db->select('id');
+		$this->db->where($this->jsonSearch($from, 'active'));
+		if (!$templateId = $this->_row($this->kpiTemplatesTable, 'id')) return false;
+		
+
+		$this->db->select('id, task_id, repeats');
+		$this->db->where('template_id', $templateId);
+		if (!$templateData = $this->_result($this->kpiTemplatesDataTable)) return false;
+		
+		$tasksData = [];
+		foreach ($templateData as $item) {
+			$id = arrTakeItem($item, 'id');
+			$item['type'] = 1;
+			$tasksData[$id] = $item;
+		}
+		return $tasksData;
+	}
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function saveTemplate($title = false, $tasks = false) {
+		if (!$title || !$tasks) return false;
+		
+		$this->db->insert($this->kpiTemplatesTable, ['title' => $title]);
+		$templateId = $this->db->insert_id();
+		
+		$insTasksData = [];
+		foreach ($tasks as $task) {
+			$insTasksData[] = [
+				'template_id'	=> $templateId,
+				'task_id' 		=> $task['task_id'],
+				'repeats'		=> $task['repeats']
+			];
+		}
+		
+		$this->db->insert_batch($this->kpiTemplatesDataTable, $insTasksData);
+		return true;
+	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function updateTemplate($id = false, $title = false, $tasks = false) {
+		if (!$id || !$title || !$tasks) return false;
+		
+		$this->db->where('id', $id);
+		$this->db->update($this->kpiTemplatesTable, ['title' => $title]);
+		
+		$this->db->where('template_id', $id);
+		if (!$this->db->delete($this->kpiTemplatesDataTable)) return false;
+		
+		$insTasksData = [];
+		foreach ($tasks as $task) {
+			$insTasksData[] = [
+				'template_id'	=> $id,
+				'task_id' 		=> $task['task_id'],
+				'repeats'		=> $task['repeats']
+			];
+		}
+		
+		$this->db->insert_batch($this->kpiTemplatesDataTable, $insTasksData);
+		return true;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function removeTemplate($id = false) {
+		if (!$id) return false;
+		$this->db->where('id', $id);
+		if (!$this->db->delete($this->kpiTemplatesTable)) return false;
+		
+		$this->db->where('template_id', $id);
+		if (!$this->db->delete($this->kpiTemplatesDataTable)) return false;
+		return true;
+	}
+	
+	
+	
+	
+	
 	
 	
 	

@@ -24,9 +24,10 @@
 		
 		<div class="item inline right">
 			<div class="buttons notop">
-				<button id="kpiPersonagesTasksButton" class="fieldheight alt2 ml-5" title="Задачи для персонажей"><i class="fa fa-users"></i></button>
-				<button id="kpiCustomTasksButton" class="fieldheight alt2" title="Задачи для кастомных полей"><i class="fa fa-tasks"></i></button>
-				<button id="kpiGiftsButton" class="fieldheight alt" title="Подарки за перевыполнение"><i class="fa fa-gift"></i></button>
+				<button id="kpiPersonagesTemplatesButton" class="fieldheight alt2 ml-5" title="Шаблоны задач для персонажей"><i class="fa fa-newspaper-o"></i></button>
+				<button id="kpiPersonagesTasksButton" class="fieldheight alt2" title="Задачи для персонажей"><i class="fa fa-users"></i></button>
+				<button id="kpiCustomTasksButton" class="fieldheight alt" title="Задачи для кастомных полей"><i class="fa fa-tasks"></i></button>
+				<button id="kpiGiftsButton" class="fieldheight" title="Подарки за перевыполнение"><i class="fa fa-gift"></i></button>
 				<button id="kpiAmountsButton" class="fieldheight pay" title="Задать суммы выплат"><i class="fa fa-money"></i></button>
 			</div>
 		</div>
@@ -303,6 +304,188 @@
 			});
 		});
 	});
+	
+	
+	
+	
+	
+	
+	
+	//------------------------------------------------------- Шалоны задач для персонажей
+	$('#kpiPersonagesTemplatesButton').on(tapEvent, function() {
+		
+		popUp({
+			title: 'Шаблоны задач для персонажей|4',
+		    width: 500,
+		    buttons: [{id: 'kpiPersonagesTemplateNewBtn', title: 'Новый шаблон'}],
+		    closePos: 'left',
+		    closeByButton: false,
+		    disabledButtons: true,
+		    closeButton: 'Закрыть'
+		}, function(kpiPersonagesTemplatesWin) {
+			(function openTemplatesWin() {
+				kpiPersonagesTemplatesWin.setData('kpi/templates/list', {from: 0}, function() {
+					kpiPersonagesTemplatesWin.setWidth(500);
+					kpiPersonagesTemplatesWin.setButtons([{id: 'kpiPersonagesTemplateNewBtn', title: 'Новый шаблон'}], 'Закрыть');
+					kpiPersonagesTemplatesWin.setTitle('Шаблоны задач для персонажей|4');
+					kpiPersonagesTemplatesWin.enabledButtons();
+					
+					
+					// Активировать шаблон
+					$('[kpitemplatesactivate]').on('change', function() {
+						let id = $(this).attr('kpitemplatesactivate');
+						$.post('/kpi/templates/activate', {id: id, from: 0}, function(response) {
+							if (response) {
+								notify('Шаблон активирован!');
+							} else {
+								notify('Ошибка активации шаблона!', 'error');
+							}
+						}).fail(function(e) {
+							showError(e);
+							notify('Системная ошибка!', 'error');
+						});
+					});
+					
+					
+					
+					// Редактировать шаблон
+					$('[kpiedittemplate]').on(tapEvent, function() {
+						let id = $(this).attr('kpiedittemplate');
+						kpiPersonagesTemplatesWin.setWidth(900);
+						kpiPersonagesTemplatesWin.setTitle('Редактировать шаблон|4');
+						kpiPersonagesTemplatesWin.setData('kpi/templates/form', {id: id}, function() {
+							kpiPersonagesTemplatesWin.setButtons([{id: 'kpiPersonagesTemplateBackBtn', title: 'Назад', type: 'close'}, {id: 'kpiPersonagesTemplatesUpdateBtn', title: 'Обновить шаблон'}]);
+							$('#kpiPersonagesTemplateBackBtn').on(tapEvent, function() {openTemplatesWin();});
+							
+							$('#kpiPersonagesTemplatesUpdateBtn').on(tapEvent, function() {
+								let title = $('#kpiFormTemplateTitle').val(), 
+									templateTasksData = [];
+								$('#kpiFormTemplateTasks').find('[kpitaskitemtask]:checked').each(function() {
+									let taskId = $(this).val(),
+										repeats= $(this).closest('[kpitasksgriditem]').find('[kpitaskitemtaskrepeats]').val();
+									templateTasksData.push({
+										task_id: parseInt(taskId),
+										repeats: parseInt(repeats),
+									});
+								});
+								
+								if (title && templateTasksData.length) {
+									kpiPersonagesTemplatesWin.wait();
+									$.post('/kpi/templates/update', {id: id, title: title, tasks: templateTasksData}, function(response) {
+										if (response) {
+											notify('Шаблон успешно обновлен!');
+											kpiPersonagesTemplatesWin.close();
+										} else {
+											notify('Ошибка обновления шаблона!', 'error');
+											kpiPersonagesTemplatesWin.wait(false);
+										}
+									}).fail(function(e) {
+										showError(e);
+										notify('Системная ошибка!', 'error');
+										kpiPersonagesTemplatesWin.wait(false);
+									});
+								} else {
+									if (title == '') {
+										$('#kpiFormTemplateTitle').addClass('error');
+										notify('Ошибка заполнения формы!', 'error');
+									}
+									
+									if (templateTasksData.length == 0) {
+										notify('Ошибка заполнения формы! Необходимо выбрать хотя бы одну задачу!', 'error');
+									}
+								}
+							});
+						});
+					});
+					
+					
+					
+					// Удалить шаблон
+					$('[kpiremovetemplate]').on(tapEvent, function() {
+						let id = $(this).attr('kpiremovetemplate');
+						kpiPersonagesTemplatesWin.dialog('<p class="fz16px info">Вы действительно хотите удалить шаблон?</p>', 'Удалить', 'Отмена', function() {
+							$.post('/kpi/templates/remove', {id: id}, function(response) {
+								if (response) {
+									notify('Шаблон удален!');
+									kpiPersonagesTemplatesWin.close();
+								} else {
+									notify('Ошибка удаления шаблона!', 'error');
+									kpiPersonagesTemplatesWin.wait(false);
+								}
+							}).fail(function(e) {
+								showError(e);
+								notify('Системная ошибка!', 'error');
+								kpiPersonagesTemplatesWin.wait(false);
+							});
+						});
+					});
+					
+					
+					
+					// Открыть форму для создания нового шаблона
+					$('#kpiPersonagesTemplateNewBtn').on(tapEvent, function() {
+						kpiPersonagesTemplatesWin.setWidth(900);
+						kpiPersonagesTemplatesWin.setTitle('Создать шаблон|4');
+						kpiPersonagesTemplatesWin.setData('kpi/templates/form', function() {
+							kpiPersonagesTemplatesWin.setButtons([{id: 'kpiPersonagesTemplateBackBtn', title: 'Назад', type: 'close'}, {id: 'kpiPersonagesTemplatesAddBtn', title: 'Создать шаблон'}]);
+							$('#kpiPersonagesTemplateBackBtn').on(tapEvent, function() {openTemplatesWin();});
+							
+							
+							// Создать шаблон
+							$('#kpiPersonagesTemplatesAddBtn').on(tapEvent, function() {
+								let title = $('#kpiFormTemplateTitle').val(), 
+									templateTasksData = [];
+								$('#kpiFormTemplateTasks').find('[kpitaskitemtask]:checked').each(function() {
+									let taskId = $(this).val(),
+										repeats= $(this).closest('[kpitasksgriditem]').find('[kpitaskitemtaskrepeats]').val();
+									templateTasksData.push({
+										task_id: parseInt(taskId),
+										repeats: parseInt(repeats),
+									});
+								});
+								
+								if (title && templateTasksData.length) {
+									kpiPersonagesTemplatesWin.wait();
+									$.post('/kpi/templates/save', {title: title, tasks: templateTasksData}, function(response) {
+										if (response) {
+											notify('Шаблон успешно сохранен!');
+											kpiPersonagesTemplatesWin.close();
+										} else {
+											notify('Ошибка сохранения шаблона!', 'error');
+											kpiPersonagesTemplatesWin.wait(false);
+										}
+									}).fail(function(e) {
+										showError(e);
+										notify('Системная ошибка!', 'error');
+										kpiPersonagesTemplatesWin.wait(false);
+									});
+								} else {
+									if (title == '') {
+										$('#kpiFormTemplateTitle').addClass('error');
+										notify('Ошибка заполнения формы!', 'error');
+									}
+									
+									if (templateTasksData.length == 0) {
+										notify('Ошибка заполнения формы! Необходимо выбрать хотя бы одну задачу!', 'error');
+									}
+								}
+							});
+							
+							
+							
+						});
+					});
+				});
+			})();
+		});
+	
+			
+	});
+	
+	
+	
+	
+	
 	
 	
 	
@@ -632,7 +815,7 @@
 									
 									getAjaxHtml('kpi/personages_tasks/save_tasks', {period_id: periodId, user_id: userId, personage_id: personageId, tasks: tasksData, to_list: tasksList}, function(html, stat) {
 										if (stat) {
-											$(tasksListSelector).html(html);
+											$(tasksListSelector).replaceWith(html);
 											setPersonageTasksWin.close();
 											notify('Задачи успешно сохранены!');
 										} else {
@@ -646,6 +829,26 @@
 							});
 						});
 						
+						
+						
+						//------------------------------------------------------- Задать задачи для персонажа из шаблона
+						$('[setpersonagetaskfromtemplates]').on(tapEvent, function() {
+							let tasksListSelector = $(this).closest('[kpitasksitem]').find('[kpitaskslist]'),
+								d = $(this).attr('setpersonagetaskfromtemplates').split('|'),
+								userId = d[0],
+								personageId = d[1];
+							
+							getAjaxHtml('kpi/personages_tasks/save_from_template', {from: 0, period_id: periodId, user_id: userId, personage_id: personageId}, function(html, stat) {
+								if (stat) {
+									$(tasksListSelector).replaceWith(html);
+									notify('Шаблон успешно применен!');
+								} else {
+									notify('Ошибка применения шаблона!', 'error');
+								}
+							}, function() {
+								
+							});
+						});
 						
 					}, function() {
 						kpiFormWin.wait(false);

@@ -298,12 +298,14 @@ function DdrPopUp(settings, callback) {
 		},
 		setButtons: function(buttons, close) {
 			var buttonsHtml = '';
+			
+			if (close && o.closePos == 'left') buttonsHtml += '<button class="popup__buttons_close" ddrpopupclose>'+close+'</button>';
 			if(buttons) {
 				$.each(buttons, function(k, b) {
 					buttonsHtml += '<button'+(b.disabled ? ' disabled' : '')+(b.close ? ' ddrpopupclose' : '')+'  id="'+b.id+'"'+(b.metrikaId ? ' onclick="yaCounter'+(b.metrikaId)+'.reachGoal('+'\''+(b.metrikaTargetId)+'\''+'); return true;"' : '')+' class="popup__buttons_'+(b.type ? b.type : 'main')+(b.class ? ' '+b.class+'"' : '"')+'>'+b.title+'</button>';
 				});
 			}
-			if (close) buttonsHtml += '<button class="popup__buttons_close" ddrpopupclose>'+close+'</button>';
+			if (close && o.closePos == 'right') buttonsHtml += '<button class="popup__buttons_close" ddrpopupclose>'+close+'</button>';
 			$(ddrPopupSelector).find('[ddrpopupbuttons]').html(buttonsHtml);
 		},
 		removeButtons: function() {
@@ -331,8 +333,9 @@ function DdrPopUp(settings, callback) {
 					dhtml += 	'<div class="popupdialog">';
 					dhtml += 		'<div class="popupdialog__message">'+dialog+'</div>';
 					dhtml += 		'<div class="popupdialog__buttons">';
+					if (o.closePos == 'left') dhtml += '<button class="cancel" id="popupDialogN'+id+'">'+nBtn+'</button>';
 					dhtml += 			'<button id="popupDialogY'+id+'">'+yBtn+'</button>';
-					dhtml += 			'<button class="cancel" id="popupDialogN'+id+'">'+nBtn+'</button>';
+					if (o.closePos == 'right') dhtml += '<button class="cancel" id="popupDialogN'+id+'">'+nBtn+'</button>';
 					dhtml += 		'</div>';
 					dhtml += 	'</div>';
 					dhtml += '</div>';
