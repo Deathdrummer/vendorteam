@@ -95,6 +95,10 @@
 		
 		<div class="leftblock__logout">
 			<button logout title="Выйти из личного кабинета"><i class="fa fa-sign-out"></i>Выход</button>
+			
+			<button class="small gift infinite animated animated5s" hidden getgifts title="Получить подарки"><i class="fa fa-gift fz40px"></i></button>
+			
+			
 			{#{% if not is_resignation %}<button class="small" resign title="Создать заявку на увольнение"><i class="fa fa-user-times"></i>Уволиться</button>{% endif %}#}
 		</div>
 		

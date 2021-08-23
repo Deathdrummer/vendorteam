@@ -2724,48 +2724,76 @@ $(document).ready(function() {
 	
 	
 	
+	//------------------------------------------------------------------ Подарки
+	if (getCookie('gifts')) {
+		$('[getgifts]').removeAttrib('hidden');
+		$('[getgifts]').on('mouseenter', function() {
+			$(this).removeClass('animated');
+		}).on('mouseleave', function() {
+			$(this).addClass('animated');
+		});
+		
+		
+		$('[getgifts]').on(tapEvent, function() {
+			popUp({
+				title: '',
+				width: 500,
+				winClass: 'giftwin'
+			}, function(giftsWin) {
+				giftsWin.setData('gifts/show_message', function() {
+					$('#getGifts').on(tapEvent, function() {
+						(function getGift() {
+							giftsWin.setData('gifts/get_gift', function() {
+								
+								$('#takeGiftBtn').on(tapEvent, function() {
+									let giftId = $(this).attr('giftid');
+									$.post('/gifts/take_gift', {gift_id: giftId}, function(response) {
+										if (response) {
+											giftsWin.setData('gifts/gift_success', function() {
+												if (!getCookie('gifts')) $('[getgifts]').setAttrib('hidden');
+												
+												$('#getNextGiftBtn').on(tapEvent, function() {
+													getGift();
+												});
+												
+												$('#closeGiftsWinBtn').on(tapEvent, function() {
+													giftsWin.close();
+												});
+											});
+										} else {
+											notify('Ошибка получения подарка, попробуйте еще раз', 'error');
+										}
+									});
+								});
+								
+								$('#closeGiftsWinBtn').on(tapEvent, function() {
+									giftsWin.close();
+								});
+							});
+						})();
+					});
+				});
+			});
+		});
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	//------------------------------------------------------------------ Очереди открытия модальных окон
 	
 	
 	if (getCookie('gifts')) { // подарки
-		popUp({
-			title: '',
-			width: 500,
-			winClass: 'giftwin'
-		}, function(giftsWin) {
-			giftsWin.setData('gifts/show_message', function() {
-				$('#getGifts').on(tapEvent, function() {
-					(function getGift() {
-						giftsWin.setData('gifts/get_gift', function() {
-							$('#takeGiftBtn').on(tapEvent, function() {
-								let giftId = $(this).attr('giftid');
-								$.post('/gifts/take_gift', {gift_id: giftId}, function(response) {
-									if (response) {
-										giftsWin.setData('gifts/gift_success', function() {
-											$('#getNextGiftBtn').on(tapEvent, function() {
-												getGift();
-											});
-											
-											$('#closeGiftsWinBtn').on(tapEvent, function() {
-												giftsWin.close();
-											});
-										});
-									} else {
-										notify('Ошибка получения подарка, попробуйте еще раз', 'error');
-									}
-								});
-							});
-							
-							$('#closeGiftsWinBtn').on(tapEvent, function() {
-								giftsWin.close();
-							});
-						});
-					})();
-				});
-			});
-		});
+		
 		
 	} else if (getCookie('birthday')) { // День рождения
 		

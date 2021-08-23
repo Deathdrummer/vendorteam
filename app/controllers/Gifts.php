@@ -169,7 +169,11 @@ class Gifts extends MY_Controller {
 	public function gift_success() {
 		$this->load->model(['account_model' => 'account']);
 		$userData = $this->account->getUserData();
-		$data['count'] = $this->gifts->getCountGifts($userData['id']);
+		$count = $this->gifts->getCountGifts($userData['id']);
+		
+		if ($count == 0) delete_cookie('gifts');
+		
+		$data['count'] = $count;
 		echo $this->twig->render('views/account/render/gifts/success.tpl', $data);
 	}
 	

@@ -140,7 +140,7 @@ if (!function_exists('isJson')) {
 
 if (!function_exists('arrTakeItem')) {
     /**
-     * Взять элемент из массива. сократить сам массив
+     * Взять элемент из массива по ключу. сократить сам массив
      * @param 
      * @return 
     */
@@ -153,6 +153,27 @@ if (!function_exists('arrTakeItem')) {
     }
 }     
     
+
+
+
+
+
+if (!function_exists('arrCutByValue')) {
+    /**
+     * Убрать элемент из массива по значению
+     * @param 
+     * @return 
+    */
+    function arrCutByValue(&$arr = false, $itemValue = false, $countItems = 1, $replace = []) {
+        if (!$arr || !$itemValue) return false;
+        
+        if (($searchIndex = array_search($itemValue, $arr)) === false) return false;
+        
+        array_splice($arr, $searchIndex, $countItems, $replace);
+        return $arr ?: false;
+    }
+} 
+
 
 
 
