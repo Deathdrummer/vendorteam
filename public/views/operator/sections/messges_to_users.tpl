@@ -1,29 +1,35 @@
-<div class="section" id="{{id}}">
-	<div class="section_title">
-		<h2>Сообщения участникам</h2>
-		<div class="buttons notop">
-			<button class="large" id="usersMessagesNewBtn" title="Новое сообщение">Новое сообщение</button>
+<div class="section" id="messagestousersSection">
+	<div class="section__title">
+		<div class="d-flex align-items-center justify-content-between mb20px">
+			<h1>Уведомления</h1>
+			<div class="section__buttons mb-0" id="sectionButtons">
+				<button class="large nowidth" id="usersMessagesNewBtn" title="Новое сообщение">Новое сообщение</button>
+			</div>
 		</div>
 	</div>
 	
-	<table>
-		<thead>
-			<tr>
-				<td><strong>Сообщение</strong></td>
-				<td class="w220px">Дата</td>
-				<td class="w140px">Статус прочтения</td>
-				<td class="w80px">Операции</td>
-			</tr>
-		</thead>
-		<tbody id="usersMessagesList">
-			<tr class="empty">
-				<td colspan="4" class="center"><i class="fa fa-spinner fa-pulse fa-fw fz30px"></i></td>
-			</tr>
-		</tbody>
-	</table>
+	
+	
+	<div class="section__content" id="sectionContent">
+		<div>
+			<table>
+				<thead>
+					<tr>
+						<td><strong>Сообщение</strong></td>
+						<td class="w220px">Дата</td>
+						<td class="w140px">Статус прочтения</td>
+						<td class="w80px">Операции</td>
+					</tr>
+				</thead>
+				<tbody id="usersMessagesList">
+					<tr class="empty">
+						<td colspan="4" class="center"><i class="fa fa-spinner fa-pulse fa-fw fz30px"></i></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
 </div>
-
-
 
 
 
@@ -177,7 +183,6 @@
 	
 	
 	
-	
 	$('#usersMessagesNewBtn').on(tapEvent, function() {
 		usersManager({
 			title: 'Выбрать участников',
@@ -276,30 +281,10 @@
 						}
 					});
 					
-					
-					
-					
 				});
-				
-				
-				
 				
 			}
 		});
 	});
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-		
-	
-	
-	
 	
 //--></script>

@@ -3616,4 +3616,416 @@ table
 		font-weight: 600
 			
 			
+	
+	
+	
+	
+	
+	
+	
+	
+
+
+
+
+.usersmessages
+	&__list
+		&_done
+			background-color: #f0ffed !important
+		
+	&__users
+		margin-bottom: 30px
+	
+	&__user
+		position: relative
+		margin-bottom: 10px
+	
+	&__message
+		
+		
+	.note-editor
+		&_error
+			position: relative
+			box-shadow: 0 0 0 3px #f00
 			
+			.note-editable
+				background-color: rgba(#ff0b0b, 0.2) !important
+			//&::after
+			//	content: ''
+			//	display: block
+			//	position: absolute
+			//	top: 0
+			//	left: 0
+			//	width: 100%
+			//	height: 100%
+			//	background-color: rgba(#f00, 0.4)
+
+
+
+.usersmessagesuser
+	&__avatar
+		position: relative
+		
+		img
+			border-color: #ccc !important
+		
+		&::after
+			content: ""
+			display: block
+			position: absolute
+			top: 0
+			left: 0
+			bottom: 0
+			right: 0
+			background-color: rgba(#000, 0.6)
+		
+		&::before
+			content: "\f00d"
+			position: absolute
+			top: calc(50% - 14px)
+			left: calc(50% - 8px)
+			+font(fontawesome)
+			font-size: 20px
+			color: #fff
+			z-index: 10
+		
+		&::before, &::after
+			opacity: 0
+			pointer-events: none
+			transition: opacity 0.16s
+		
+		&:hover:not(.usersmessagesuser__avatar_disabled)
+			cursor: pointer
+			
+			&::before, &::after
+				opacity: 1
+				pointer-events: auto
+	
+	&__stat
+		position: absolute
+		display: flex
+		align-items: center
+		justify-content: center
+		
+		width: 20px
+		height: 20px
+		border-radius: 50%
+		top: 2px
+		right: 2px
+		z-index: 0
+		
+		i
+			color: #fff
+			font-size: 12px
+		
+		&_wait
+			background-color: #ff4b4b
+		
+		&_done
+			background-color: #13a713
+
+
+
+
+
+
+
+
+
+
+
+
+
+.usersmanager
+	&__title
+		height: 30px
+		font-size: 14px
+		+font(roboto, bold)
+		margin-bottom: 10px
+		border-bottom: 1px solid #e0dddd
+		display: flex
+		justify-content: space-between
+		align-items: center
+		
+		p
+			font-size: 14px
+			+font(roboto, bold)
+		
+		span
+			font-size: 13px
+		
+		&_right
+			justify-content: flex-end
+		
+		
+	
+	&__statics
+		position: relative
+		overflow-y: scroll
+		overflow-x: hidden
+		height: 500px
+		width: 250px
+		+scrollbar(#e8eaed, #728291, 7px, 3px, 3px)
+				
+		
+		
+		
+	&__users
+		position: relative
+		overflow-y: scroll
+		overflow-x: hidden
+		height: 500px
+		padding-top: 2px
+		+scrollbar(#e8eaed, #728291, 7px, 3px, 3px)
+		
+		.drow
+			overflow: visible
+			margin-right: 4px
+			margin-left: 2px
+			margin-bottom: 2px
+	
+	
+	&__input
+		height: 20px
+		width: 150px
+		font-size: 12px
+		+font(roboto, regular)
+		border: 1px solid #94c3d6
+		border-radius: 3px
+		transition: border-color 0.16s
+		
+		&:focus
+			border-color: #4790af
+		
+	
+	&__buttons
+		display: flex
+		align-items: center
+		
+		button
+			display: flex
+			align-items: center
+			justify-content: center
+			margin: 0
+			padding: 0
+			height: 20px
+			width: 26px
+			margin-left: 5px
+			//background-color: #b9c5ca
+			border: 1px solid #94c3d6
+			border-radius: 3px
+			
+			i
+				font-size: 14px
+				line-height: 14px
+				color: #4c9bb7
+			
+			&:hover
+				border-color: #5496b1
+				
+				i
+					color: #45869c
+			
+			&:active
+				border-color: #4790af
+				
+				i
+					color: #1b596f
+			
+			&:disabled
+				border-color: #dad8d8
+				cursor: default
+				
+				i
+					color: #dad8d8
+	
+	
+	
+	&__total
+		display: inline-block
+		//text-align: right
+		font-size: 1.1em
+		
+		&_short
+			//width: 34px
+	
+	&__container
+		position: relative
+	
+	
+	&__wait
+		position: absolute
+		top: 0
+		bottom: 0
+		left: 0
+		right: 0
+		display: flex
+		align-items: center
+		justify-content: center
+		background-color: rgba(#f6f6f7, 0.7)
+		pointer-events: none
+		opacity: 0
+		z-index: 10
+		transition: pointer-events 0.16s opacity 0.16s
+		
+		&_visible
+			pointer-events: auto
+			opacity: 1
+		
+		> div
+			text-align: center
+			
+			i
+				font-size: 40px
+				color: #60808e
+			
+			span
+				display: block
+				font-size: 12px
+				+font(roboto, medium)
+				color: #60808e
+	
+	
+	&__empty
+		position: absolute
+		top: 0
+		bottom: 0
+		left: 0
+		right: 0
+		display: flex
+		align-items: center
+		justify-content: center
+				
+			
+		
+
+
+.usersmanagerstatic
+	display: flex
+	position: relative
+	align-items: center
+	cursor: pointer
+	position: relative
+	padding: 3px 0
+	transition: background-color 0.16s
+	
+	+ .usersmanagerstatic
+		border-top: 1px solid #e0dddd
+		
+	
+	&:hover
+		background-color: #dde4e6
+	
+	&:active, &.choosed
+		background-color: #ace0f3
+		transition: background-color 0s
+	
+	&.haschoosed
+		.usersmanagerstatic__count
+			background-color: #66b0ce
+			color: #fff
+	
+	
+	&__icon
+		flex: 0 0 40px
+		height: 40px
+		margin-right: 5px
+		border-radius: 3px
+		background:		
+			repeat: no-repeat
+			size: cover
+			position: center center
+	
+	&__name
+		font-size: 12px !important
+		line-height: 12px !important
+		margin-bottom: 0 !important
+		margin-right: 5px
+	
+	&__count
+		font-size: 10px !important
+		line-height: 10px !important
+		+font(roboto, bold)
+		margin-left: auto
+		margin-right: 3px
+		margin-bottom: 0 !important
+		padding: 4px 3px 2px
+		border-radius: 2px
+		
+		span
+			font-size: inherit !important
+			+font(roboto, bold)
+	
+	
+	
+	
+
+.usersmanageruser
+	margin-bottom: 4px
+	padding: 2px
+	border: 3px solid #ececf1
+	border-radius: 5px
+	overflow: hidden
+	cursor: pointer
+	background-color: #fff
+	transition: border-color 0.16s
+	
+	&.choosed
+		border-color: #489abb
+		
+		.usersmanageruser__avatar
+			filter: brightness(106%)
+		
+		.usersmanageruser__nickname
+			color: #2698ca
+		
+		&_single
+			border-color: #ececf1
+			cursor: default
+			position: relative
+			
+			&::after
+				content: '\f058'
+				font-family: fontAwesome
+				font-size: 40px
+				line-height: 40px
+				color: #538394
+				position: absolute
+				top: calc(50% - 25px)
+				left: calc(50% - 18px)
+				z-index: 10
+			
+			.usersmanageruser__nickname
+				color: #84b6c7
+			
+			.usersmanageruser__avatar
+				opacity: 0.3
+			
+	
+	&:hover:not(.choosed)
+		border-color: #b7ccd4
+		
+		.usersmanageruser__avatar
+			filter: brightness(106%)
+		
+		
+	&__avatar
+		padding: 2px
+		width: 100%
+		height: 80px
+		border-radius: 5px
+		transition: filter 0.16s
+		background:		
+			repeat: no-repeat
+			size: cover
+			position: center center
+	
+	&__nickname
+		font-size: 12px !important
+		line-height: 12px !important
+		margin-bottom: 0 !important
+		text-align: center
+		padding: 4px 2px
+		text-overflow: ellipsis
+		white-space: nowrap
+		overflow: hidden				

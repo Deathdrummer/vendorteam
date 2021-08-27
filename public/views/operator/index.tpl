@@ -21,14 +21,8 @@
     <link rel="shortcut icon" href="{{ base_url('public/images/favicon.png') }}"/>
 
     <link rel="stylesheet" href="{{ base_url('public/css/plugins.min.css') }}">
-    <script src="{{ base_url('public/js/plugins.min.js') }}"></script>
-
-    <script src="{{ base_url('public/js/assets/functions.js') }}"></script>
-    <script src="{{ base_url('public/js/assets/common.js') }}"></script>
-
     <link rel="stylesheet" href="{{ base_url('public/css/operator.min.css') }}">
-    <script src="{{ base_url('public/js/operator.js') }}"></script>
-
+    
     <title>Кабинет оператора</title>
 </head>
 <body>
@@ -62,6 +56,13 @@
         <use xlink:href="#arrow"></use>
     </svg>
 </div>
+	
+	<script src="{{ base_url('public/js/plugins.min.js') }}"></script>
+    <script src="{{ base_url('public/js/assets/functions.js') }}"></script>
+    <script src="{{ base_url('public/js/assets/common.js') }}"></script>
+    <script src="https://cdn.socket.io/3.1.3/socket.io.min.js" integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh" crossorigin="anonymous"></script>
+	<script src="{{base_url('public/js/socket.js')}}"></script>
+    <script src="{{ base_url('public/js/operator.js') }}"></script>
 </body>
 </html>
 

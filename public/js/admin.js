@@ -214,10 +214,6 @@ jQuery(document).ready(function($) {
 	
 	// при одиночном выборе не иметь возможность выбирать уже выбранных участников !!!
 	
-	
-	
-	
-	
 	usersManager = function(params) {
 		let ops = $.extend({
 			title: 'Менеджер участников', // Заголовок окна

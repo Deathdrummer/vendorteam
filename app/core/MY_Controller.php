@@ -158,7 +158,7 @@ class MY_Controller extends CI_Controller {
 			],
 			18 => [
 				'id'	=> 'messgestousers',
-				'url'	=> 'messgestousers',
+				'url'	=> 'messges_to_users',
 				'title' => 'Уведомления',
 				'desc' 	=> 'Уведомления',
 				'icon'	=> 'commenting-o'

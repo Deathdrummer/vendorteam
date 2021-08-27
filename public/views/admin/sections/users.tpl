@@ -569,8 +569,6 @@
 <script type="text/javascript"><!--
 
 if (location.hostname != 'localhost') {
-	socket = io.connect("http://vendorteam.ru:5050/accounts");
-	
 	countUsersOnline = 0;
 	socket.emit('take_users_online', users => {
 		$.each(users, function(k, item) {
