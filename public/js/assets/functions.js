@@ -156,6 +156,25 @@ $.fn.onChangeNumberInput = function(callback) {
 
 
 
+
+
+copyStringToClipboard = function(str) {
+	var el = document.createElement('textarea');
+	el.value = str;
+	el.setAttribute('readonly', '');
+	el.style.position = 'absolute';
+	el.style.left = '-9999px';
+	document.body.appendChild(el);
+	el.select();
+	document.execCommand('copy');
+	document.body.removeChild(el);
+}
+
+
+
+
+
+
 // Задать куки
 setCookie = function(cname, cvalue, exdays) {
     // expire the old cookie if existed to avoid multiple cookies with the same name
@@ -698,7 +717,7 @@ sendFormData = function(formSelector, settings) {
 
 
 
-initEditors = function(selector) {
+initEditors = function(selector, callback) {
 	var fontSizes = [],
 		lineHeights = [];
 	
@@ -768,6 +787,13 @@ initEditors = function(selector) {
 				});
 				return button.render();
 			}
+		},
+		callbacks: {
+			onInit: function() {
+				setTimeout(function() {
+					if (callback && typeof callback == 'function') callback();
+				}, 500);
+			}
 		}
 	};
 		
@@ -794,6 +820,13 @@ initEditors = function(selector) {
 	});*/
 };
 
+
+
+
+
+$.fn.getSummernoteCode = function() {
+	return $(this).summernote('code');
+};
 
 
 

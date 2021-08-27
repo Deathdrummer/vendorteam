@@ -290,6 +290,14 @@ class MY_Model extends CI_Model {
 	}
 	
 	
+	// 
+	/*SELECT user_id,
+    count(*) AS total,
+    SUM(case when date_taking IS NULL then 1 else 0 end) AS count_waiting,
+    SUM(case when date_taking IS NOT NULL then 1 else 0 end) AS count_taking
+FROM users_gifts
+GROUP BY user_id*/
+	
 	
 	
 }

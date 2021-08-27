@@ -245,16 +245,14 @@
 		</div>
 	</main>
 	
-	<script src="https://cdn.socket.io/3.1.3/socket.io.min.js" integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh" crossorigin="anonymous"></script>
-	<!-- <div scrolltop><svg><use xlink:href="#arrow_left"></use></svg></div> -->
 	<script src="{{base_url('public/js/plugins.min.js')}}"></script>
 	<script src="{{base_url('public/js/assets/functions.js')}}"></script>
 	<script src="{{base_url('public/js/assets/common.js')}}"></script>
-	<script src="{{base_url('public/js/account.js')}}"></script>
+	<script src="https://cdn.socket.io/3.1.3/socket.io.min.js" integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh" crossorigin="anonymous"></script>
 	<script src="{{base_url('public/js/socket.js')}}"></script>
+	<script src="{{base_url('public/js/account.js')}}"></script>
 	
 	
-	
-	
+	<!-- <div scrolltop><svg><use xlink:href="#arrow_left"></use></svg></div> -->
 </body>
 </html>

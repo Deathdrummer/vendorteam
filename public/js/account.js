@@ -31,6 +31,10 @@ $(document).ready(function() {
 	
 	
 	
+	$(document).on('ddrpopup:close', function() {
+		location.hash = '';
+	});
+	
 	
 	
 	
@@ -2726,17 +2730,14 @@ $(document).ready(function() {
 	
 	//------------------------------------------------------------------ Подарки
 	if (getCookie('gifts')) {
-		$('[getgifts]').removeAttrib('hidden');
-		$('[getgifts]').on('mouseenter', function() {
-			$(this).removeClass('animated');
-		}).on('mouseleave', function() {
-			$(this).addClass('animated');
-		});
+		$('[giftscounter]').text(getCookie('gifts'));
+		$('[getgifts]').addClass('leftblocktopicon_active');
+		$('[getgifts]').attr('title', 'Вам подарки!');
 		
 		
 		$('[getgifts]').on(tapEvent, function() {
 			popUp({
-				title: '',
+				title: false,
 				width: 500,
 				winClass: 'giftwin'
 			}, function(giftsWin) {
@@ -2776,6 +2777,84 @@ $(document).ready(function() {
 			});
 		});
 	}
+	
+	
+	
+	
+	//------------------------------------------------------------------ Сообщения
+	$.post('messages/account/status', {user_id: getCookie('id')}, function(response) {
+		if (response.all > 0) {
+			$('[newmessages]').addClass('leftblocktopicon_stendby');
+		}
+		
+		if (response.unread > 0) {
+			$('[newmessagecounter]').text(response.unread);
+			$('[newmessages]').addClass('leftblocktopicon_active');
+			$('[newmessages]').attr('title', 'У Вас новые сообщения!');
+		}
+	}, 'json').fail(function(e) {
+		showError(e);
+		notify('Системная ошибка!', 'error');
+	});	
+	
+	
+	$('[newmessage]').on(tapEvent, function() {
+		popUp({
+			title: 'Уведомления|4',
+		    width: 600,
+		    closeButton: 'Закрыть'
+		}, function(newMessageWin) {
+			(function openMessagesList() {
+				newMessageWin.setData('messages/account/list', {user_id: getCookie('id')}, function() {
+					newMessageWin.setWidth(600);
+					newMessageWin.setButtons([], 'Отмена'); 
+					ddrInitTabs('userMessages');
+				
+					$('[usersmessagesshow]').on(tapEvent, function() {
+						let d = $(this).attr('usersmessagesshow').split('|'),
+							messId = d[0],
+							stat = d[1];
+						
+						newMessageWin.setData('messages/account/get', {id: messId, user_id: getCookie('id')}, function() {
+							newMessageWin.setWidth(1000);
+							if (stat == 0) newMessageWin.setButtons([{id: 'setReadStstBtn', title: 'Прочитал(а)'}], 'Отмена');
+							else newMessageWin.setButtons([{id: 'usersMessagesGoBack', title: 'Назад'}], 'Отмена'); 
+							
+							$('#setReadStstBtn').on(tapEvent, function() {
+								$.post('messages/account/set_read', {id: messId, user_id: getCookie('id')}, function(response) {
+									if (response) {
+										let countUnread = parseInt($('[newmessagecounter]').text(response.unread));
+										if (countUnread > 1) {
+											$('[newmessagecounter]').text(--countUnread);
+										} else {
+											$('[newmessagecounter]').text('0');
+											$('[newmessages]').removeClass('leftblocktopicon_active');
+											$('[newmessages]').attr('title', 'Сообщения от администрации');
+										}
+										socket.emit('usersmessages:read', messId);
+									} else {
+										notify('Ошибка изменения статуса прочтения!', 'error');
+									}
+								}).fail(function(e) {
+									showError(e);
+									notify('Системная ошибка!', 'error');
+								});
+								openMessagesList();
+							});
+							
+							$('#usersMessagesGoBack').on(tapEvent, function() {
+								openMessagesList();
+							});
+						});
+					});
+				});
+			})();
+				
+		});
+	});
+	
+	
+	
 	
 	
 	

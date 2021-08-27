@@ -16,22 +16,8 @@
 	<meta name="description" content="">
 	<link rel="shortcut icon" href="{{base_url()}}public/images/favicon.png" />
 	
-	
-	{# Оформление коды summernote #}
-	<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/3.20.0/codemirror.css">
-	<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/3.20.0/theme/monokai.css">
-	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/3.20.0/codemirror.js"></script>
-	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/3.20.0/mode/xml/xml.js"></script>
-	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/2.36.0/formatting.js"></script>
-	
 	<link rel="stylesheet" href="{{base_url('public/css/plugins.min.css')}}">
-	<script src="{{base_url('public/js/plugins.min.js')}}"></script>
-	
-	<script src="{{base_url('public/js/assets/functions.js')}}"></script>
-	<script src="{{base_url('public/js/assets/common.js')}}"></script>
-	
 	<link rel="stylesheet" href="{{base_url('public/css/admin.min.css')}}">
-	<script src="{{base_url('public/js/admin.js')}}"></script>
 	
 	<title>Административная панель</title> 
 </head>
@@ -75,6 +61,7 @@
 					<li data-block="statistics">Статистика (участники)</li>
 					<li data-block="statistics_settings">Статистика (настройки)</li>
 					<li data-block="kpi_planes">KPI планы</li>
+					<li data-block="messages_to_users">Сообщения учатникам</li>
 				</ul>
 			</nav>
 		</div>
@@ -112,7 +99,19 @@
 		<p>© <a href="https://shopdevelop.ru" target="_blank" title="Перейти на сайт shopdevelop.ru">ShopDevelop</a> 2011 - {{date}} г.</p>
 	</footer>
 	
+	
+	{# Оформление коды summernote #}
+	<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/3.20.0/codemirror.css">
+	<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/3.20.0/theme/monokai.css">
+	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/3.20.0/codemirror.js"></script>
+	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/3.20.0/mode/xml/xml.js"></script>
+	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/2.36.0/formatting.js"></script>
+	<script src="{{base_url('public/js/plugins.min.js')}}"></script>
+	<script src="{{base_url('public/js/assets/functions.js')}}"></script>
+	<script src="{{base_url('public/js/assets/common.js')}}"></script>
 	<script src="https://cdn.socket.io/3.1.3/socket.io.min.js" integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh" crossorigin="anonymous"></script>
+	<script src="{{base_url('public/js/socket.js')}}"></script>
+	<script src="{{base_url('public/js/admin.js')}}"></script>
 </body>
 </html>
 

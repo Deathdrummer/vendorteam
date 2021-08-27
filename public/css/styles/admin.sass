@@ -159,6 +159,9 @@ html
 
 
 
+.select
+	user-select: all
+
 
 input[type="text"].changed, input[type="number"].changed
 	border: 1px solid #04c704
@@ -4274,3 +4277,116 @@ p
 	
 	i
 		color: #444
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.usersmessages
+	&__list
+		&_done
+			background-color: #f0ffed !important
+		
+	&__users
+		margin-bottom: 30px
+	
+	&__user
+		position: relative
+		margin-bottom: 10px
+	
+	&__message
+		
+		
+	.note-editor
+		&_error
+			position: relative
+			box-shadow: 0 0 0 3px #f00
+			
+			.note-editable
+				background-color: rgba(#ff0b0b, 0.2) !important
+			//&::after
+			//	content: ''
+			//	display: block
+			//	position: absolute
+			//	top: 0
+			//	left: 0
+			//	width: 100%
+			//	height: 100%
+			//	background-color: rgba(#f00, 0.4)
+
+
+
+.usersmessagesuser
+	&__avatar
+		position: relative
+		
+		img
+			border-color: #ccc !important
+		
+		&::after
+			content: ""
+			display: block
+			position: absolute
+			top: 0
+			left: 0
+			bottom: 0
+			right: 0
+			background-color: rgba(#000, 0.6)
+		
+		&::before
+			content: "\f00d"
+			position: absolute
+			top: calc(50% - 14px)
+			left: calc(50% - 8px)
+			+font(fontawesome)
+			font-size: 20px
+			color: #fff
+			z-index: 10
+		
+		&::before, &::after
+			opacity: 0
+			pointer-events: none
+			transition: opacity 0.16s
+		
+		&:hover:not(.usersmessagesuser__avatar_disabled)
+			cursor: pointer
+			
+			&::before, &::after
+				opacity: 1
+				pointer-events: auto
+	
+	&__stat
+		position: absolute
+		display: flex
+		align-items: center
+		justify-content: center
+		
+		width: 20px
+		height: 20px
+		border-radius: 50%
+		top: 2px
+		right: 2px
+		z-index: 0
+		
+		i
+			color: #fff
+			font-size: 12px
+		
+		&_wait
+			background-color: #ff4b4b
+		
+		&_done
+			background-color: #13a713
+			
+			
+			
+		

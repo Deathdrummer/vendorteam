@@ -59,8 +59,8 @@ class Account extends MY_Controller {
 			$this->gifts->generateGifts($this->userData['id'], 'bonus');
 		}
 		
-		if ($this->gifts->hasUserGifts($this->userData['id'])) {
-			set_cookie('gifts', 1, 0);
+		if ($countGifts = $this->gifts->hasUserGifts($this->userData['id'])) {
+			set_cookie('gifts', $countGifts, 0);
 		} else {
 			delete_cookie('gifts');
 		}

@@ -176,8 +176,7 @@ class Gifts_model extends MY_Model {
 		if (!$userId) return false;
 		$this->db->where('user_id', $userId);
 		$this->db->where('date_taking IS NULL');
-		if ($this->db->count_all_results('users_gifts')) return true;
-		return false;
+		return $this->db->count_all_results('users_gifts');
 	}
 	
 	

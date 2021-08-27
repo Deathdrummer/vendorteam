@@ -220,12 +220,14 @@ jQuery(document).ready(function($) {
 	
 	usersManager = function(params) {
 		let ops = $.extend({
+			title: 'Менеджер участников', // Заголовок окна
 			choosedStatic: false, // последний выбранный статик
 			choosedUsers: false, // выбранные участники: объект [{user:..., static:..., ...}] или функция с коллбэком, в которые передаются данные: [{user:..., static:..., ...}] 
 			chooseType: 'single', // multiple Тип выборки одиночный или множественный
 			returnFields: false, // при выборе участников какие поля вывести
 			onChoose: false, // возвращает выбранных участников
-			closeToChoose: false // Закрыть после выбора участников
+			closeToChoose: false, // Закрыть после выбора участников
+			closePos: 'left'
 		}, params),
 		usersManagerWin,
 		choosedUsers = typeof ops.choosedUsers == 'object' ? ops.choosedUsers : [],
@@ -236,10 +238,11 @@ jQuery(document).ready(function($) {
 		isDisableBtn = ops.choosedUsers ? 0 : 1;
 		
 		popUp({
-			title: 'Менеджер участников',
+			title: ops.title,
 		    width: 900,
 		    winClass: 'usersmanager',
 		    buttons: ops.chooseType == 'multiple' ? [{id: 'chooseUsers', title: 'Выбрать', disabled: isDisableBtn}] : false,
+		    closePos: ops.closePos,
 		    closeButton: 'Закрыть',
 		}, function(uMWin) {
 			usersManagerWin = uMWin;
@@ -259,8 +262,6 @@ jQuery(document).ready(function($) {
 		
 		
 		// ----------------------------------------------------- Функции
-		
-		
 		
 		function init() {
 			getAjaxHtml('admin/usersmanager/init', {choose_type: ops.chooseType}, function(html) {

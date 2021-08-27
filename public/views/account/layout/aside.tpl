@@ -1,18 +1,47 @@
 <aside class="leftblock" id="accountLeftBlock">
 	<div class="leftblock__block leftblock__block_top mb-2 mb-md-3" id="accountTopBlock">
-		<div class="leftblock__avatar mb-2">
-			{% if is_resignation and resign_notify %}
-				<div class="resign"><i class="fa fa-user-times" title="Уволен"></i></div>
-			{% endif %}
+		<div class="d-flex justify-content-between">
+			<div class="leftblock__avatar mb-2">
+				{% if is_resignation and resign_notify %}
+					<div class="resign"><i class="fa fa-user-times" title="Уволен"></i></div>
+				{% endif %}
+				
+				{% if avatar %}
+					<img useravatarimg src="public/images/users/{{avatar}}?{{time()}}" alt="">
+				{% else %}
+					<img useravatarimg src="public/images/user.jpg" alt="">
+				{% endif %}
+				<button class="leftblock__changebutton" id="changeAvatar">Изменить</button>
+			</div>
 			
-			{% if avatar %}
-				<img useravatarimg src="public/images/users/{{avatar}}?{{time()}}" alt="">
-			{% else %}
-				<img useravatarimg src="public/images/user.jpg" alt="">
-			{% endif %}
-			<button class="leftblock__changebutton" id="changeAvatar">Изменить</button>
+			<div class="leftblock__icons">
+				<div class="leftblocktopicon" newmessages title="Сообщения от администрации">
+					<svg newmessage><use xlink:href="#message"></use><span class="leftblocktopicon__counter" newmessagecounter></span></svg>
+				</div>
+				
+				
+				<div class="leftblocktopicon" getgifts>
+					<i class="fa fa-gift"></i>
+					<span class="leftblocktopicon__counter" giftscounter></span>
+				</div>
+				
+				{# <div class="leftblocktopicon leftblocktopicon_active">
+					<i class="fa fa-gift"></i>
+					<span class="leftblocktopicon__counter">5</span>
+				</div> #}
+			
+			
+			
+				{# <div class="newmessage" hidden title="Есть новые письма">
+					<svg newmessage class="w30px h30px tada infinite animated animated5s pointer"><use xlink:href="#message"></use><span class="newmessage__counter" newmessagecounter></span></svg>
+				</div>
+				
+				<div class="tadainterval infinite animated animated5s h22px" getgifts title="Получить подарки">
+					
+				</div> #}
+			</div>
 		</div>
-		
+			
 		<p class="leftblock__nickname">
 			<span accountnickname>{{nickname|default('Не задано')}}</span>
 			<i class="fa fa-edit" id="changeNickname"></i>
@@ -95,10 +124,6 @@
 		
 		<div class="leftblock__logout">
 			<button logout title="Выйти из личного кабинета"><i class="fa fa-sign-out"></i>Выход</button>
-			
-			<button class="small gift infinite animated animated5s" hidden getgifts title="Получить подарки"><i class="fa fa-gift fz40px"></i></button>
-			
-			
 			{#{% if not is_resignation %}<button class="small" resign title="Создать заявку на увольнение"><i class="fa fa-user-times"></i>Уволиться</button>{% endif %}#}
 		</div>
 		

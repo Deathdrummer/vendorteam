@@ -155,6 +155,13 @@ class MY_Controller extends CI_Controller {
 				'title' => 'Список участников',
 				'desc' 	=> 'Список участников',
 				'icon'	=> 'optin-monster'
+			],
+			18 => [
+				'id'	=> 'messgestousers',
+				'url'	=> 'messgestousers',
+				'title' => 'Уведомления',
+				'desc' 	=> 'Уведомления',
+				'icon'	=> 'commenting-o'
 			]
 		];
 

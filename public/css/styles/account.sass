@@ -282,6 +282,12 @@ body
 
 
 
+img.avatar
+	object-fit: cover
+	border: 1px solid #d5dbe0
+	border-radius: 3px
+	display: block
+
 
 
 
@@ -324,7 +330,6 @@ body
 		&_top
 			background-color: rgba(#000, 0.5)
 			+resp(padding, (xs: 10px, sm: 10px, md: 15px, lg: 20px))
-			text-align: center
 		
 		
 		
@@ -370,7 +375,7 @@ body
 	
 	
 	&__avatar
-		text-align: center
+		text-align: left
 		overflow: hidden
 		display: inline-block
 		border-radius: 6px
@@ -405,7 +410,89 @@ body
 				font-size: 20px
 				color: #ff0c0c
 			
+	
+	&__icons
+		display: flex
+		flex-direction: column
+		
+		> * + *
+			margin-top: 7px	
 			
+		.leftblocktopicon
+			position: relative
+			display: inline-block
+			pointer-events: none
+			
+			i
+				color: #604b75
+				font-size: 36px
+			
+			svg
+				fill: #604b75
+				height: 30px
+				width: 30px
+			
+			&__counter
+				display: flex
+				align-items: center
+				justify-content: center
+				position: absolute
+				right: -7px
+				top: -5px
+				width: 18px
+				height: 18px
+				border-radius: 50%
+				background-color: #2f9eaf
+				font-size: 11px
+				color: #fff
+				opacity: 0
+				pointer-events: none
+
+			&_active
+				cursor: pointer
+				pointer-events: auto
+				@extend .tadainterval
+				@extend .infinite
+				@extend .animated
+				@extend .animated5s
+				
+				i
+					color: #fff
+					font-size: 36px
+					transition: color 0.16s
+				
+				svg
+					fill: #fff
+					height: 30px
+					width: 30px
+					transition: fill 0.16s
+				
+				.leftblocktopicon__counter
+					opacity: 1
+					pointer-events: auto
+					
+				&:hover
+					i
+						color: #6fecff
+					
+					svg
+						fill: #6fecff
+						height: 30px
+						width: 30px
+			
+			&_stendby
+				cursor: pointer
+				pointer-events: auto
+				
+				i
+					color: #fff
+					font-size: 36px
+				
+				svg
+					fill: #fff
+					height: 30px
+					width: 30px
+		
 	
 	&__changebutton
 		position: absolute
@@ -422,10 +509,9 @@ body
 	
 		
 	&__nickname
-		+resp(font-size, (xs: 16px, sm: 18px, md: 20px, lg: 22px), (line-height: 0))
+		+resp(font-size, (xs: 16px, sm: 16px, md: 18px, lg: 20px), (line-height: 0))
 		+font(roboto, bold)
 		color: #fff
-		text-align: center
 		position: relative
 		margin-bottom: 10px
 		
@@ -2488,8 +2574,11 @@ body
 						font-size: 12px
 					
 					
-					
-				
+		tbody
+			tr	
+				td
+					button	
+						+btn((padding-left: 0px, padding-right: 0))		
 		
 		tbody, tfoot
 			padding: 0
@@ -4228,4 +4317,3 @@ body
 				transition: border-color 0s
 			
 	
-

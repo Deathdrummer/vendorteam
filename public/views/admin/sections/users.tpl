@@ -569,67 +569,31 @@
 <script type="text/javascript"><!--
 
 if (location.hostname != 'localhost') {
-	socket = io.connect("http://vendorteam.ru:5050");
+	socket = io.connect("http://vendorteam.ru:5050/accounts");
+	
 	countUsersOnline = 0;
-	socket.on('set_online_users', (users) => {
-		$.each(users, function(socket, userId) {
-			$('#users').find('[userid="'+userId+'"]').find('.avatar').addClass('avatar_online').attr('title', 'Онлайн');
+	socket.emit('take_users_online', users => {
+		$.each(users, function(k, item) {
+			$('#users').find('[userid="'+item['user_id']+'"]').find('.avatar').addClass('avatar_online').attr('title', 'Онлайн');
 		});
 		countUsersOnline = Object.keys(users).length;
 		$('#onlineUsersCount').text(countUsersOnline);
 	});
-
+	
+	
+	
 
 	socket.on('set_online_user', (userId) => {
 		$('#users').find('[userid="'+userId+'"]').find('.avatar').addClass('avatar_online').attr('title', 'Онлайн');
-		$('#onlineUsersCount').text(countUsersOnline++);
+		$('#onlineUsersCount').text(++countUsersOnline);
 	});
 
 
 	socket.on('set_offline_user', (userId) => {
 		$('#users').find('[userid="'+userId+'"]').find('.avatar').removeClass('avatar_online').removeAttrib('title');
-		$('#onlineUsersCount').text(countUsersOnline--);
-	});
-
-
-	$('#users').find('.avatar').on(tapEvent, function() {
-		let userId = $(this).closest('[userid]').attr('userid'),
-			nickname = $(this).attr('title'),
-			isOnline = $(this).hasClass('avatar_online');
-		
-		if (!isOnline) {
-			notify('невозможно отправить сообщение - участник не в сети', 'error');
-		} else {
-			popUp({
-				title: 'Сообщение участнику '+nickname+'|5',
-			    width: 500,
-			    html: '<div class="popup__textarea"><textarea id="realtimeMessageToUser" rows="5" placeholder="Введите сообщение"></textarea></div>',
-			    buttons: [{id: 'realtimeSendMessageToUser', title: 'Отправить'}],
-			    buttonsAlign: 'right',
-			    disabledButtons: false,
-			    closePos: 'left',
-			    closeByButton: false,
-			    closeButton: 'Отмена',
-			    winClass: false,
-			    contentToCenter: false,
-			    buttonsOnTop: false,
-			    topClose: true
-			}, function(realtimeSendMessageToWin) {
-				$('#realtimeSendMessageToUser').on(tapEvent, function() {
-					let mess = $('#realtimeMessageToUser').val();
-					if (!mess) {
-						$('#realtimeMessageToUser').addClass('error');
-					} else {
-						realtimeSendMessageToWin.wait();
-						socket.emit('send_user_mess', {user_id: userId, message: mess});
-						realtimeSendMessageToWin.close();
-					}
-				});
-			});
-		}
+		$('#onlineUsersCount').text(--countUsersOnline);
 	});
 }
-
 	
 
 

@@ -334,7 +334,7 @@ function DdrPopUp(settings, callback) {
 					dhtml += 		'<div class="popupdialog__message">'+dialog+'</div>';
 					dhtml += 		'<div class="popupdialog__buttons">';
 					if (o.closePos == 'left') dhtml += '<button class="cancel" id="popupDialogN'+id+'">'+nBtn+'</button>';
-					dhtml += 			'<button id="popupDialogY'+id+'">'+yBtn+'</button>';
+					if (yBtn) dhtml += 			'<button id="popupDialogY'+id+'">'+yBtn+'</button>';
 					if (o.closePos == 'right') dhtml += '<button class="cancel" id="popupDialogN'+id+'">'+nBtn+'</button>';
 					dhtml += 		'</div>';
 					dhtml += 	'</div>';
