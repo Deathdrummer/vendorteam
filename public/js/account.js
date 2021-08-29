@@ -500,9 +500,9 @@ $(document).ready(function() {
 		let thisUsersBlock = this,
 			isLider = $(thisUsersBlock).attr('staticusers') == 1 ? true : false;
 		if (isLider) {
-			$(thisUsersBlock).css('max-height', 'calc(100vh - 289px)');
+			$(thisUsersBlock).css('max-height', 'calc(100vh - 586px)');
 		} else {
-			$(thisUsersBlock).css('max-height', 'calc(100vh - 252px)');
+			$(thisUsersBlock).css('max-height', 'calc(100vh - 549px)');
 		}
 	});
 	
@@ -2817,29 +2817,25 @@ $(document).ready(function() {
 						
 						newMessageWin.setData('messages/account/get', {id: messId, user_id: getCookie('id')}, function() {
 							newMessageWin.setWidth(1000);
-							if (stat == 0) newMessageWin.setButtons([{id: 'setReadStstBtn', title: 'Прочитал(а)'}], 'Отмена');
-							else newMessageWin.setButtons([{id: 'usersMessagesGoBack', title: 'Назад'}], 'Отмена'); 
+							newMessageWin.setButtons([{id: 'usersMessagesGoBack', title: 'Назад'}], 'Отмена'); 
 							
-							$('#setReadStstBtn').on(tapEvent, function() {
-								$.post('messages/account/set_read', {id: messId, user_id: getCookie('id')}, function(response) {
-									if (response) {
-										let countUnread = parseInt($('[newmessagecounter]').text(response.unread));
-										if (countUnread > 1) {
-											$('[newmessagecounter]').text(--countUnread);
-										} else {
-											$('[newmessagecounter]').text('0');
-											$('[newmessages]').removeClass('leftblocktopicon_active');
-											$('[newmessages]').attr('title', 'Сообщения от администрации');
-										}
-										socket.emit('usersmessages:read', messId);
+							$.post('messages/account/set_read', {id: messId, user_id: getCookie('id')}, function(response) {
+								if (response) {
+									let countUnread = parseInt($('[newmessagecounter]').text(response.unread));
+									if (countUnread > 1) {
+										$('[newmessagecounter]').text(--countUnread);
 									} else {
-										notify('Ошибка изменения статуса прочтения!', 'error');
+										$('[newmessagecounter]').text('0');
+										$('[newmessages]').removeClass('leftblocktopicon_active');
+										$('[newmessages]').attr('title', 'Сообщения от администрации');
 									}
-								}).fail(function(e) {
-									showError(e);
-									notify('Системная ошибка!', 'error');
-								});
-								openMessagesList();
+									socket.emit('usersmessages:read', messId);
+								} else {
+									notify('Ошибка изменения статуса прочтения!', 'error');
+								}
+							}).fail(function(e) {
+								showError(e);
+								notify('Системная ошибка!', 'error');
 							});
 							
 							$('#usersMessagesGoBack').on(tapEvent, function() {

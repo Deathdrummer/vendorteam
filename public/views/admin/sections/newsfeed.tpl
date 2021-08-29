@@ -6,7 +6,7 @@
 	
 	<ul class="tabstitles">
 		{% for stId, staticName in statics %}
-			<li id="static{{stId}}">{{staticName}}</li>
+			<li id="static{{stId}}" class="pl5px pr5px"><small class="fz11px">{{staticName}}</small></li>
 		{% endfor %}
 	</ul>
 	
@@ -16,15 +16,12 @@
 		{% for stId, staticName in statics %}
 			<div tabid="static{{stId}}">
 				
-				<h3>{{staticName}}</h3>
-						
-				<fieldset>
-					<legend>Панель управления</legend>
-					<div class="buttons">
+				<div class="d-flex align-items-center justify-content-between mb30px">
+					<h3 class="mb-0">{{staticName}}</h3>
+					<div class="buttons notop">
 						<button feedmessageadd="{{stId}}">Добавить новость</button>
 					</div>
-				</fieldset>
-				
+				</div>
 				
 				
 				<fieldset>
@@ -32,7 +29,8 @@
 					<div class="list" id="feedMessagesBlock{{stId}}">
 						{% if feed_messages[stId] is defined %}
 							{% for message in feed_messages[stId] %}
-								<div class="list_item">
+								<div class="list_item" feedmessagesshow>
+									<div class="waitblock"><i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i></div>
 									<div class="block">
 										<title>{{message.date|d}} {{message.date|t}}</title>
 										
@@ -48,7 +46,7 @@
 												<div>
 													<label for="" filemanager="png|jpg|jpeg">
 														<div class="image">
-															<img src="{{base_url('public/filemanager/'~message.icon)}}" alt="{{message.icon|filename}}">
+															<img src="{{base_url('public/filemanager/'~message.icon)|no_file('public/images/deleted.jpg')}}" alt="{{message.icon|filename}}">
 														</div>
 													</label>
 													<div>
@@ -58,10 +56,10 @@
 												<input type="hidden" value="{{message.icon}}" />
 											</div>
 										</div>
-										<div class="item w60">
+										<div class="item w60" feededitor hidden>
 											<div class="textarea">
 												<label><span>Содержание новости</span></label>
-												<textarea editor="feed{{message.date}}" rows="12">{{message.message}}</textarea>
+												<textarea rows="12">{{message.message}}</textarea>
 											</div>
 										</div>
 										
@@ -97,6 +95,21 @@ $(document).ready(function() {
 			initEditors($('#feedMessagesBlock'+thisStatic).find('[editor]'));
 		}, function() {
 			
+		});
+	});
+	
+	
+	
+	
+	$('body').off(tapEvent, '[feedmessagesshow]:not(.visible)').on(tapEvent, '[feedmessagesshow]:not(.visible)', function() {
+		let container = this,
+			thisBlock = $(this).find('[feededitor]');
+		
+		$(container).addClass('visible list_item_wait');
+		
+		initEditors($(thisBlock).find('textarea'), function() {
+			$(thisBlock).removeAttrib('hidden');
+			$(container).removeClass('list_item_wait');
 		});
 	});
 	

@@ -61,7 +61,7 @@
 					<li data-block="statistics">Статистика (участники)</li>
 					<li data-block="statistics_settings">Статистика (настройки)</li>
 					<li data-block="kpi_planes">KPI планы</li>
-					<li data-block="messages_to_users">Сообщения учатникам</li>
+					<li data-block="messages_to_users">Сообщения участникам</li>
 				</ul>
 			</nav>
 		</div>

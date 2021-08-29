@@ -521,6 +521,7 @@ input[type="text"].changed, input[type="number"].changed
 	
 	&_item
 		padding: 7.5px 0px
+		position: relative
 		
 		&_active
 			> div
@@ -597,7 +598,30 @@ input[type="text"].changed, input[type="number"].changed
 				&:active
 					background-color: darken($bgColor, 20%)
 					transition: background-color 0s
-	
+		
+		
+		
+		.waitblock
+			position: absolute
+			display: flex
+			align-items: center
+			justify-content: center
+			top: 0
+			left: 0
+			width: 100%
+			height: 100%
+			background-color: rgba(#fff, 0.8)
+			opacity: 0
+			pointer-events: none
+			z-index: 10
+		
+		
+		&_wait
+			.waitblock
+				opacity: 1
+				pointer-events: auto
+		
+		
 	
 	&_col
 		display: inline-flex

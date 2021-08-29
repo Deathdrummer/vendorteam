@@ -25,7 +25,7 @@
 
 
 
-$config['base_url'] = 'https://vendorteam.loc/';
+$config['base_url'] = 'http://vendorteam.loc/';
 
 
 /*

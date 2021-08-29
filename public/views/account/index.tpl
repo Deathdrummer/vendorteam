@@ -195,7 +195,62 @@
 														</div>#}
 													</div>		
 												</div>
-											</div> <!--  -->	
+											</div> <!--  -->
+											
+											
+											<div class="column">
+												<div class="column__title">
+													<p>Важные события</p>
+												</div>
+												<div class="column__content">
+													<div class="staticpanel">
+														<div class="mininews noselect">
+															<div class="mininewsitem">
+																<div class="mininewsitem__icon">
+																	<img src="{{base_url('public/images/news.jpg')}}" alt="" class="avatar">
+																</div>
+																<div class="mininewsitem__content">
+																	<p>Текст новости Текст новости Текст новости</p>
+																</div>
+															</div>
+															<div class="mininewsitem">
+																<div class="mininewsitem__icon">
+																	<img src="{{base_url('public/images/news.jpg')}}" alt="" class="avatar">
+																</div>
+																<div class="mininewsitem__content">
+																	<p>Текст новости Текст новости Текст новости</p>
+																</div>
+															</div>
+															<div class="mininewsitem">
+																<div class="mininewsitem__icon">
+																	<img src="{{base_url('public/images/news.jpg')}}" alt="" class="avatar">
+																</div>
+																<div class="mininewsitem__content">
+																	<p>Текст новости Текст новости Текст новости</p>
+																</div>
+															</div>
+															<div class="mininewsitem">
+																<div class="mininewsitem__icon">
+																	<img src="{{base_url('public/images/news.jpg')}}" alt="" class="avatar">
+																</div>
+																<div class="mininewsitem__content">
+																	<p>Текст новости Текст новости Текст новости</p>
+																</div>
+															</div>
+															<div class="mininewsitem">
+																<div class="mininewsitem__icon">
+																	<img src="{{base_url('public/images/news.jpg')}}" alt="" class="avatar">
+																</div>
+																<div class="mininewsitem__content">
+																	<p>Текст новости Текст новости Текст новости</p>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+											
+												
 										</div>
 										{% endif %}
 										
