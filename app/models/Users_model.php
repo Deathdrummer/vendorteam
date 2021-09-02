@@ -18,6 +18,7 @@ class Users_model extends MY_Model {
 	 */
 	public function getUsers($params = []) {
 		$where = isset($params['where']) ? $params['where'] : false;
+		$orWhere = isset($params['or_where']) ? $params['or_where'] : false;
 		$whereIn = isset($params['where_in']) ? $params['where_in'] : false;
 		$whereNotIn = isset($params['where_not_in']) ? $params['where_not_in'] : false;
 		$like = isset($params['like']) ? $params['like'] : false;
@@ -34,6 +35,7 @@ class Users_model extends MY_Model {
 		if ($where) $this->db->where($where);
 		if ($whereIn) $this->db->where_in($whereIn['field'], $whereIn['values']);
 		if ($whereNotIn) $this->db->where_not_in($whereNotIn['field'], $whereNotIn['values']);
+		if ($orWhere) $this->db->or_where($orWhere);
 		if ($like) $this->db->like($like['field'], $like['value'], (isset($like['placed']) ? $like['placed'] : 'both'));
 		if ($orLike) $this->db->or_like($orLike['field'], $orLike['value'], (isset($orLike['placed']) ? $orLike['placed'] : 'both'));
 		
@@ -607,7 +609,7 @@ class Users_model extends MY_Model {
 		if (!$ranksData = $this->admin_model->getRanks(true, false)) return false;
 		
 		$this->db->select('u.id, u.reg_date, u.stage, u.rank');
-		//$this->db->where(['verification' => 1, 'deleted' => 0]); // присваивать звания только верифицированным и не удаленным
+		$this->db->where(['u.verification' => 1, 'u.deleted' => 0]); // присваивать звания только верифицированным и не удаленным
 		$query = $this->db->get('users u');
 		if (!$usersList = $query->result_array()) return false;
 		
@@ -627,11 +629,11 @@ class Users_model extends MY_Model {
 			}
 		}
 		
-		if (! empty($updateUsersData)) {
+		if (!empty($updateUsersData)) {
 			$this->db->update_batch('users', array_values($updateUsersData), 'id');
 		}
 		
-		return 1;
+		return $updateUsersData;
 	}
 	
 	

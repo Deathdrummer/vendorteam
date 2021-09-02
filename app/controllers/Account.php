@@ -29,7 +29,7 @@ class Account extends MY_Controller {
 		// вставляем SVG спрайт
 		$this->userData['svg_sparite'] = getSprite('public/svg/sprite.svg');
 		
-		$this->load->model(['wallet_model' => 'wallet', 'gifts_model' => 'gifts']);
+		$this->load->model(['wallet_model' => 'wallet', 'gifts_model' => 'gifts', 'mininewsfeed_model' => 'mininewsfeed']);
 		
 		$this->userData['set_rating_statics'] = $this->account->getRatingNotifications();
 		
@@ -51,6 +51,7 @@ class Account extends MY_Controller {
 		$this->userData['agreement'] = $this->get_agreement_stat();
 		$this->userData['feed_messages'] = $this->admin->getFeedMessagesStatic(array_keys($this->userData['statics']));
 		$this->userData['balance'] = $this->wallet->getUserBalance($this->userData['id']);
+		$this->userData['mini_newsfeed'] = $this->mininewsfeed->getNewsFeedList();
 		
 		
 		//------------------------------------------ задать куки если накопленный процент больше или равен заданному проценту

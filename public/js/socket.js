@@ -1,6 +1,6 @@
 if (location.hostname != 'localhost') {
-	socket = io.connect("http://vendorteam.ru:5050/accounts", {query:'user_id='+userId});
 	const userId = parseInt(getCookie('id')) || '';
+	socket = io.connect("https://vendorteam.ru:5050/accounts", {query:'user_id='+userId});
 
 
 	socket.emit('user_online', userId);
@@ -39,5 +39,27 @@ if (location.hostname != 'localhost') {
 		$('[messtousersreadcount="'+messId+'"]').text(readCount+1);
 	});
 	
+	
+	socket.on('mininewsfeed:reload', () => {
+		getAjaxHtml('mininewsfeed/account_list', function(html) {
+			$('#miniNewsFeedAccountBlock').html(html);
+		}, function() {});
+	});
+	
+	
+	let date = new Date(),
+		hours = date.getHours(),
+		minutes = date.getMinutes();
+		
+	
+	console.log(date.getHours(), date.getMinutes());
+	
+	setInterval(() => {
+		if ((hours == '00' || hours == 0) && (minutes > 0 && minutes < 20)) {
+			getAjaxHtml('mininewsfeed/account_list', function(html) {
+				$('#miniNewsFeedAccountBlock').html(html);
+			}, function() {});
+		}
+	}, 600000);
 	
 }	

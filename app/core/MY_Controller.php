@@ -13,9 +13,16 @@ class MY_Controller extends CI_Controller {
 	protected $dataAccess;
 	protected $imgFileExt = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'ico'];
 	protected $fileTypes = ['png','jpg','jpeg','jpe','gif','ico','bmp','svg','psd','rar','zip','mp4','mov','avi','mpeg','txt','rtf','djvu','pdf','doc','docx','xls','xlsx','mp3','wma','wmv'];
+	
 	protected $giftsActions = [
 		'stage'		=> 'Прибавка к стажу',
 		'balance'	=> 'Прибавка к балансу'
+	];
+	
+	protected $miniFeedTypes = [
+		1	=> 'День рождения',
+		2 	=> 'Пошение звания',
+		3 	=> 'Оповещение от администрации'
 	]; 
 	
 	

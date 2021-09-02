@@ -37,11 +37,11 @@
 		<section class="start" style="background-image: url('{{base_url()}}public/account/images/{{page_image_setting.path}}{{page_image_setting.name}}')">
 			
 			<div class="container">
-				<div class="start__content">
+				<div class="start__content start__content_error">
 					
-					<h1>404</h1>
-					
-					<h4 style="color: #fff;">такой страницы не существует</h4>
+					<h1>Ошибка 404</h1>
+					<h4>такой страницы не существует</h4>
+					<a href="/">Перейти на главную</a>
 					
 				</div>
 			</div>

@@ -119,6 +119,33 @@ body
 		repeat: no-repeat
 		size: cover
 	+resp(background-position, (xs: left -500px center, 500px: left -400px center, sm: left -200px center, md: center center))
+	
+	&__content
+		&_error
+			display: flex
+			align-items: center
+			justify-content: center
+			flex-direction: column
+			height: 100vh
+			
+			h1
+				+resp(font-size, (xs: 30px, sm: 40px, md: 50px, lg: 60px, xl: 70px), (line-height: 0))
+				text-transform: uppercase
+				margin-bottom: 20px
+				color: #b4a7c7
+			
+			h4
+				+resp(font-size, (xs: 20px, sm: 20px, md: 22px, lg: 24px, xl: 26px), (line-height: 0))
+				+font(roboto, regular)
+				color: darken(#b4a7c7, 5%)
+				margin-bottom: 30px
+				
+			
+			a
+				font-size: 16px
+				color: #62c5ff
+				
+
 
 
 .startblock	
@@ -1130,6 +1157,7 @@ img.avatar
 	.mininewsitem
 		position: relative
 		display: flex
+		justify-content: space-between
 		
 		+ .mininewsitem
 			margin-top: 20px
@@ -1148,14 +1176,23 @@ img.avatar
 			margin-right: 5px
 			
 			img
-				height: 33px
-				width: 35px
+				height: 42px
+				width: 42px
 			
 		&__content
+			margin-right: auto
+			
 			*
 				+font(roboto, regular)
 				font-size: 12px
-				line-height: 13px
+				line-height: 14px
+		
+		&__date
+			padding-left: 5px
+			
+			small
+				white-space: nowrap
+				font-size: 11px
 		
 		
 		
@@ -1177,11 +1214,11 @@ img.avatar
 			left: 10px
 			right: 10px
 		border-right: 1px solid #e3e3e5
-		max-height: calc(100vh - 274px)
+		max-height: calc(100vh - 600px)
 		overflow-y: auto
 		padding-right: 4px
 		+scrollbar(#d4ccde, #5f4877, 6px, 3px, 3px)
-		min-height: 300px
+		min-height: 150px
 	
 	.staticuser
 		display: flex

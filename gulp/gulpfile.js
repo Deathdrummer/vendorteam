@@ -6,7 +6,7 @@ const 	domain			= 'vendorteam.loc', // прописать домен
 		babel			= require('gulp-babel'),
 		order			= require('gulp-order'),
 		gulpUtil      	= require('gulp-util'),
-		sass           	= require('gulp-sass'),
+		sass           	= require('gulp-sass')(require('sass')),
 		connectPhp     	= require('gulp-connect-php'),
 		concat         	= require('gulp-concat'),
 		uglify         	= require('gulp-uglify'),
@@ -207,7 +207,7 @@ function imagemin() {
 // SVG
 function svg() {
 	return src('../public/svg/icons/**/*.svg')
-	.pipe(svgmin({js2svg: {pretty: true}	}))
+	.pipe(svgmin({js2svg: {pretty: true}}))
 	.pipe(cheerio({
 		run: function($) {
 			$('[fill]').removeAttr('fill');	

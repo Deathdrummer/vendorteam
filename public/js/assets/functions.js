@@ -1104,7 +1104,7 @@ function ClientFileManager() {
 	
 	
 	$('body').on(tapEvent, '.filemanager_remove', function() {
-		var thisImgblock = $(this).closest('.file');
+		var thisImgblock = $(this).closest('.file, .popup__file');
 		$(thisImgblock).find('.image_name').text('нет файла');
 		$(thisImgblock).find('img').attr('src', './public/images/none.png');
 		$(thisImgblock).find('input[type="hidden"]').val('');
@@ -1130,15 +1130,15 @@ function ClientFileManager() {
 	
 	
 	$('#clientFilemanagerContentFiles').on(tapEvent, '.image', function() {
-		if ($(activeSelector).closest('.file').find('input[type="hidden"]').length == 0) return false;
-		var thisFileBlock = $(this).closest('.file'),
+		if ($(activeSelector).closest('.file, .popup__file').find('input[type="hidden"]').length == 0) return false;
+		var thisFileBlock = $(this).closest('.file, .popup__file'),
 			thisFilePath = $(thisFileBlock).attr('dirfile'),
 			thisFileName = $(thisFileBlock).attr('namefile'),
 			thisFileSrc = $(this).find('img').attr('src');
 		
-		$(activeSelector).closest('.file').find('input[type="hidden"]').val(thisFilePath);
+		$(activeSelector).closest('.file, .popup__file').find('input[type="hidden"]').val(thisFilePath);
 		$(activeSelector).find('img').attr('src', thisFileSrc);
-		$(activeSelector).closest('.file').find('.image_name').text(thisFileName);
+		$(activeSelector).closest('.file, .popup__file').find('.image_name').text(thisFileName);
 		$('#clientFileManager').removeClass('visible');
 	});
 	

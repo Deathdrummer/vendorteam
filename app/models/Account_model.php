@@ -37,8 +37,7 @@ class Account_model extends My_Model {
 	 * @return 
 	*/
 	public function getUserData($userId = null) {
-		if ($this->userData) return $this->userData;
-		if (is_null($userId)) return false;
+		if ((!is_null($userId) && $this->userData && $userId == $this->userData['id']) || (is_null($userId) && $this->userData)) return $this->userData;
 		
 		$this->db->select('u.*, aa.access');
 		$this->db->join('accounts_access aa', 'aa.id = u.access', 'left outer');

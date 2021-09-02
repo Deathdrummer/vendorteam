@@ -81,36 +81,56 @@ html
 			z-index: 1011
 			transition: opacity 0.16s
 			
-			ul
-				width: 250px
+			.main_nav_item
+				width: 240px
 				padding: 15px
-				margin-bottom: 0
-				//margin: $grid-gutter-width / 2
 				
-				li
-					display: flex
-					align-items: center
-					cursor: pointer
-					padding: 0px 6px
-					height: 40px
+				p
 					font-size: 14px
-					line-height: 16px
-					list-style: none
-					color: #606971
-					border: 1px solid transparent
-					// background-color: lighten(#c7ccd0, 2%)
-					border-bottom: 1px solid #adb6bd
+					+font(roboto, bold)
+					margin-bottom: 10px
+					color: #394e5f
+			
+			
+				ul
+					width: 100%
+					margin-bottom: 0
+					//margin: $grid-gutter-width / 2
 					
-					&:first-of-type
+					li
+						display: flex
+						align-items: center
+						cursor: pointer
+						padding: 2px 4px 0px
+						height: 42px
+						font-size: 14px
+						line-height: 16px
+						+font(roboto, regular)
+						list-style: none
+						color: #606971
+						border: 1px solid transparent
 						border-top: 1px solid #adb6bd
-					
-					&:hover
-						background-color: lighten(#c7ccd0, 4%)
-						color: #366082
+						// background-color: lighten(#c7ccd0, 2%)
+						transition: background-color 0.16s
 						
-					&.active
-						background-color: #4296bb
-						color: #fff
+						&:last-of-type
+							border-bottom: 1px solid #adb6bd
+							
+							
+						&:hover
+							background-color: lighten(#c7ccd0, 4%)
+							color: #366082
+						
+						&:active
+							background-color: lighten(#c7ccd0, 8%)
+							color: #366082
+							transition: background-color 0s
+							
+						&.active
+							background-color: lighten(#c7ccd0, 12%)
+							color: #1c3c56
+							+font(roboto, medium)
+							cursor: default
 		
 		
 		&.opened .main_nav
@@ -326,6 +346,10 @@ input[type="text"].changed, input[type="number"].changed
 			button, .button
 				display: inline-block
 				+btn()
+				
+				&.verysmall
+					height: 24px
+					font-size: 12px
 				
 				&.nowrap
 					white-space: nowrap
@@ -1001,6 +1025,15 @@ table:not(.clear)
 						border-radius: 50%
 						background-color: #f4f5f6
 						box-shadow: 0 0 5px 0 rgba(68, 68, 68, 0.45)
+					
+				.textarea
+					+textarea()
+					
+					textarea
+						min-height: 0 !important
+						
+						&.noresize
+							resize: none
 					
 				
 				.select
@@ -1855,6 +1888,19 @@ table:not(.clear)
 	
 	&__textarea
 		+textarea()
+		
+		textarea
+			&.noresize
+				resize: none
+			
+			&.noheight
+				min-height: 1px !important
+	
+	&__file
+		+file()
+		
+		&.error
+			box-shadow: 0 0 0 2px #f98989
 	
 	&__scrollblock
 		height: 200px
@@ -1953,6 +1999,7 @@ table:not(.clear)
 			flex-wrap: wrap
 			align-items: center
 			margin-bottom: 1rem
+			width: 100%
 			
 			> div
 				flex-grow: 0
@@ -1961,20 +2008,25 @@ table:not(.clear)
 				align-items: center
 				
 				
-				&:first-of-type
+				&:not(.double):first-of-type
 					+resp(flex-basis, (xs: 100%, sm: 40%), (max-width: 0))
 					padding-right: 10px
 					justify-content: flex-end
 				
-				&:last-of-type
+				&:not(.double):last-of-type
 					+resp(flex-basis, (xs: 100%, sm: 60%), (max-width: 0))
 				
+				&.double
+					flex-basis: 100%
 				
 				label
 					margin-bottom: 0
 					font-size: 14px
 					line-height: 14px
 					text-align: right
+				
+				.file
+					+file()
 				
 				.field
 					+field()
@@ -4412,5 +4464,53 @@ p
 			background-color: #13a713
 			
 			
+	
+	
+	
+	
+
+.chooseblock
+	display: contents
+	
+	label
+		cursor: pointer
+		border-radius: 3px
+		border: 1px solid #eee
+		transition: border-color 0.16s
+		padding: 2px
+		
+		p
+			color: #a5a8b1
+			+font(roboto, regular)
+		
+		&:hover
+			border-color: #b2bac3
+	
+		
+		
+	input[type="checkbox"]
+		display: none
+		
+		
+		&:checked ~ label
+			box-shadow: 0 0 0 1px #6fb4ef inset
+			border-color: #6fb4ef
 			
+			p
+				color: #485b77
+				
+		
+		
+		
+
+
+
+.errorblock
+	border-radius: 2px
+	
+	&_border
+		box-shadow: 0 0 0 2px #f98989
+	
+	&_bg
+		background-color: #ffe6e6
 		

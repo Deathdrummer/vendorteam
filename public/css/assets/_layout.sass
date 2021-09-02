@@ -362,6 +362,12 @@ ul
 
 .pointer
 	cursor: pointer
+	
+	&_colored
+		color: #9095a5
+		
+		&:hover
+			color: darken(#9095a5, 15%)
 
 .respimage
 	max-width: 100%
@@ -994,7 +1000,7 @@ $bPoints: map-remove($grid-breakpoints, xs)
 		background-color: #fff
 		box-shadow: -2px 0px 20px -10px rgba(0, 0, 0, 0.67)
 		max-height: 100%
-		z-index: 1000
+		z-index: 1300
 		transition: left 0.4s ease
 		
 		&.visible
