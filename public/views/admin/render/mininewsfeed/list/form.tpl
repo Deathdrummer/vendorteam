@@ -42,7 +42,7 @@
 	</div>
 
 
-	<div class="row">
+	<div class="row mb20px">
 		<div class="col-auto w130px">
 			<p class="fz14px">Статики:</p>
 			<div>
@@ -72,4 +72,50 @@
 			<input type="hidden" name="_countstatics" id="miniNewsFormCountStatics" rules="num:1">
 		</div>
 	</div>
+	
+	{% if edit_later %}
+		<div class="row mb20px">
+			<div class="col-auto w130px">
+				<p class="fz14px">Дата и время публикации:</p>
+				<div>
+					<small class="fz11px d-block mb5px pointer pointer_colored" id="miniNewsFormClearDate">Очистить</small>
+				</div>
+			</div>
+			<div class="col">
+				<div class="row">
+					<div class="col-6">
+						<div class="popup__field popup__field_date">
+							<input type="text" id="miniNewsFormDate" placeholder="Сейчас" autocomplete="off" value="{% if date %}{{date|d}}{% endif %}">
+							<input type="hidden" name="later_date" id="miniNewsFormDateValue" value="{% if date %}{{date('d', date)}}-{{date('m', date)}}-{{date('Y', date)}}{% endif %}">
+						</div>
+					</div>
+					<div class="col-6">
+						<div class="d-flex align-items-center justify-content-between">
+							<span class="mr3px">ч.</span>
+							<div class="popup__select w70px mr-auto">
+								<select name="later_hours">
+									{% for h in range(0,23) %}
+										<option value="{{h}}"{% if form_hours and h == form_hours %} selected{% endif %}>{{h|add_zero}}</option>
+									{% endfor %}
+								</select>
+								<div class="popup__select__caret"></div>
+							</div>
+							
+							<span class="mr3px">мин.</span>
+							<div class="popup__select w70px">
+								<select name="later_minutes">
+									{% if minutes %}
+										{% for min in minutes %}
+											<option value="{{min}}"{% if form_minutes and min == form_minutes %} selected{% endif %}>{{min|add_zero}}</option>
+										{% endfor %}
+									{% endif %}
+								</select>
+								<div class="popup__select__caret"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	{% endif %}
 </div>

@@ -19,11 +19,11 @@
 	  	{% endif %}
 		
 	</td>
-	<td>{{item.date|d}} в {{item.date|t}}</td>
+	<td><small>{{item.date|d}} в {{item.date|t}}</small></td>
 	<td class="center">
 		<div class="buttons inline">
-			<button class="small w30px" mininewsfeedupdate="{{item.id}}"><i class="fa fa-edit"></i></button>
-			<button class="small w30px remove" mininewsfeedremove="{{item.id}}"><i class="fa fa-trash"></i></button>
+			<button class="small w30px" mininewsfeedupdate="{% if later %}later{% else %}list{% endif %}|{{item.id}}"><i class="fa fa-edit"></i></button>
+			<button class="small w30px remove" mininewsfeedremove="{% if later %}later{% else %}list{% endif %}|{{item.id}}"><i class="fa fa-trash"></i></button>
 		</div>
 	</td>
 </tr>

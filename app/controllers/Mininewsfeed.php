@@ -9,7 +9,7 @@ class Mininewsfeed extends MY_Controller {
 	public function __construct() {
 		parent::__construct();
 		$this->load->model('mininewsfeed_model', 'mininewsfeed');
-		$this->post = bringTypes($this->input->post());
+		$this->post = bringTypes($this->input->post()) ?: null;
 	}
 	
 	
@@ -29,14 +29,12 @@ class Mininewsfeed extends MY_Controller {
 		
 		switch ($action) {
 			case 'init':
-				$data['list_id'] = $this->post['list_id'];
-				$data['btn_id'] = $this->post['btn_id'];
-				echo $this->twig->render($this->viewsTemplatesPath.'init.tpl', $data);
+				echo $this->twig->render($this->viewsTemplatesPath.'init.tpl', $this->post);
 				break;
 			
 			case 'get':
 				$data['types'] = $this->miniFeedTypes;
-				$data['newsfeedlist'] = $this->mininewsfeed->get($this->post['type']);
+				$data['newsfeedlist'] = $this->mininewsfeed->templates('get', $this->post['type']);
 				echo $this->twig->render($this->viewsTemplatesPath.'list.tpl', $data);
 				break;
 			
@@ -46,23 +44,21 @@ class Mininewsfeed extends MY_Controller {
 				break;
 			
 			case 'save':
-				$fields = $this->post['fields'];
-				$fields['type'] = $this->post['type'];
-				if (!$insertId = $this->mininewsfeed->save($fields)) exit('0');
+				$data = $this->post['fields'];
+				$data['type'] = $this->post['type'];
+				if (!$insertId = $this->mininewsfeed->templates('save', $data)) exit('0');
 				$fieldsToItem = $this->post['fields_to_item'];
 				$fieldsToItem['id'] = $insertId;
 				echo $this->twig->render($this->viewsTemplatesPath.'item.tpl', $fieldsToItem);
 				break;
 			
 			case 'update':
-				$id = $this->post['id'];
-				$fields = $this->post['fields'];
-				if (!$this->mininewsfeed->update($id, $fields)) exit('0');
+				if (!$this->mininewsfeed->templates('update', $this->post)) exit('0');
 				echo '1';
 				break;
 			
 			case 'remove':
-				if (!$this->mininewsfeed->remove($this->post['id'])) exit('0');
+				if (!$this->mininewsfeed->templates('remove', $this->post['id'])) exit('0');
 				echo '1';
 				break;
 			
@@ -84,21 +80,141 @@ class Mininewsfeed extends MY_Controller {
 	
 	
 	/**
-	 * Вывести список событий
+	 * Форма создания и редактирования события
 	 * @param 
 	 * @return 
 	 */
-	public function list() {
-		if (!$newsFeedList = $this->mininewsfeed->list()) exit('');
-		
-		$statics = array_column($newsFeedList, 'statics');
-		$statics = call_user_func_array('array_merge', $statics);
-		
+	public function form() {
 		$this->load->model('admin_model', 'admin');
-		$staticsData = $this->admin->getStatics(false, array_unique($statics));
+		if (isset($this->post['id'])) {
+			if ($this->post['edit_later']) $data = $this->mininewsfeed->later('item', $this->post);
+			else $data = $this->mininewsfeed->list('item', $this->post);
+			
+			$sec = ($data['date'] + date('Z')) % 86400;
+			$hours = floor($sec / (60 * 60));
+			$minutes = ($sec % ($hours * 60 * 60)) / 60;
+			$data['form_hours'] = $hours;
+			$data['form_minutes'] = $minutes;
+		}
 		
-		echo $this->twig->render($this->viewsListPath.'list.tpl', ['list' => $newsFeedList, 'statics' => $staticsData]);
+		
+		$data['allstatics'] = $this->admin->getStatics();
+		$data['minutes'] = $this->minutes;
+		$data['edit_later'] = $this->post['edit_later'];
+		echo $this->twig->render($this->viewsListPath.'form.tpl', $data);
 	}
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Отправленные события
+	 * @param 
+	 * @return 
+	*/
+	public function list($action = false) {
+		if (!$action) return false;
+		
+		switch ($action) {
+			case 'get': // Вывести список событий
+				if (!$newsFeedList = $this->mininewsfeed->list('get')) exit('');
+				
+				$statics = array_column($newsFeedList, 'statics');
+				$statics = call_user_func_array('array_merge', $statics);
+				
+				$this->load->model('admin_model', 'admin');
+				$staticsData = $this->admin->getStatics(false, array_unique($statics));
+				
+				echo $this->twig->render($this->viewsListPath.'list.tpl', ['list' => $newsFeedList, 'statics' => $staticsData]);
+				break;
+			
+			
+			case 'add':
+				if (!$this->mininewsfeed->list('add', $this->post)) exit('0');
+				echo '1';
+				break;
+			
+			
+			case 'update':
+				if (!$this->mininewsfeed->list('update', $this->post)) exit('0');
+				echo '1';
+				break;
+			
+			
+			case 'remove':
+				if (!$this->mininewsfeed->list('remove', $this->post)) exit('0');
+				echo '1';
+				break;
+			
+			
+			default: break;
+		}
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Отложенные события
+	 * @param 
+	 * @return 
+	*/
+	public function later($action = false) {
+		if (!$action) return false;
+		
+		switch ($action) {
+			case 'get': // Вывести список отложенных событий
+				if (!$newsFeedListLater = $this->mininewsfeed->later('get')) exit('');
+				
+				$statics = array_column($newsFeedListLater, 'statics');
+				$statics = call_user_func_array('array_merge', $statics);
+				
+				$this->load->model('admin_model', 'admin');
+				$staticsData = $this->admin->getStatics(false, array_unique($statics));
+				
+				echo $this->twig->render($this->viewsListPath.'list.tpl', ['list' => $newsFeedListLater, 'statics' => $staticsData, 'later' => 1]);
+				break;
+			
+			
+			case 'add':
+				if (!$this->mininewsfeed->later('add', $this->post)) exit('0');
+				echo '1';
+				break;
+			
+			
+			case 'update':
+				if (!$this->mininewsfeed->later('update', $this->post)) exit('0');
+				echo '1';
+				break;
+			
+			
+			case 'remove':
+				if (!$this->mininewsfeed->later('remove', $this->post)) exit('0');
+				echo '1';
+				break;
+			
+			
+			default: break;
+		}
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -113,58 +229,6 @@ class Mininewsfeed extends MY_Controller {
 	}
 	
 	
-	/**
-	 * Форма создания и редактирования события
-	 * @param 
-	 * @return 
-	 */
-	public function form() {
-		$this->load->model('admin_model', 'admin');
-		
-		if (isset($this->post['id'])) {
-			$data = $this->mininewsfeed->item($this->post['id']);
-		}
-		
-		$data['allstatics'] = $this->admin->getStatics();
-		echo $this->twig->render($this->viewsListPath.'form.tpl', $data);
-	}
-	
-	
-	
-	
-	
-	/**
-	 * @param 
-	 * @return 
-	 */
-	public function add() {
-		if (!$this->mininewsfeed->addToList($this->post)) exit('0');
-		echo '1';
-	}
-	
-	
-	
-	
-	/**
-	 * @param 
-	 * @return 
-	 */
-	public function update() {
-		if (!$this->mininewsfeed->updateListItem($this->post)) exit('0');
-		echo '1';
-	}
-	
-	
-	
-	
-	/**
-	 * @param 
-	 * @return 
-	 */
-	public function remove() {
-		if (!$this->mininewsfeed->removeFromList($this->post['id'])) exit('0');
-		echo '1';
-	}
 	
 	
 }

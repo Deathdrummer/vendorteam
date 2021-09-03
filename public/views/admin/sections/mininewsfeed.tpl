@@ -2,34 +2,47 @@
 	<div class="section_title align-items-start">
 		<h2>Важные события</h2>
 		<div class="buttons notop">
-			<button class="fieldheight" id="miniNewsFeedNewBtn" title="Новое событие"><i class="fa fa-commenting"></i></button>
+			<button class="fieldheight mr20px" id="miniNewsFeedNewBtn" title="Новое событие"><i class="fa fa-commenting"></i></button>
+			
 			<button class="fieldheight alt" id="miniNewsFeedBirthdaysBtn" title="Шаблоны: дни рождения"><i class="fa fa-birthday-cake"></i></button>
 			<button class="fieldheight alt" id="miniNewsFeedNewRanksBtn" title="Шаблоны: новые звания"><i class="fa fa-user-plus"></i></button>
 		</div>
 	</div>
 	
 	
-	<table id="miniNewsFeedTable">
-		<thead>
-			<tr>
-				<td class="w60px">Иконка</td>
-				<td>Оповещение</td>
-				<td class="w200px">Статики</td>
-				<td class="w200px">Дата создания</td>
-				<td class="w80px">Опции</td>
-			</tr>
-		</thead>
-		<tbody id="miniNewsFeedList"></tbody>
-		{# <tfoot>
-			<tr>
-				<td colspan="2">
-					<div class="buttons notop right">
-						<button class="verysmall">Новое оповещение</button>
-					</div>
-				</td>
-			</tr>
-		</tfoot> #}
-	</table>
+	<div class="row">
+		<div class="col-6">
+			<h4>Отправленные</h4>
+			<table id="miniNewsFeedTable">
+				<thead>
+					<tr>
+						<td class="w60px">Иконка</td>
+						<td>Оповещение</td>
+						<td class="w200px">Статики</td>
+						<td class="w180px">Дата размещения</td>
+						<td class="w80px">Опции</td>
+					</tr>
+				</thead>
+				<tbody id="miniNewsFeedList"></tbody>
+			</table>
+		</div>
+		
+		<div class="col-6">
+			<h4>Отложенные</h4>
+			<table id="miniNewsFeedLaterTable">
+				<thead>
+					<tr>
+						<td class="w60px">Иконка</td>
+						<td>Оповещение</td>
+						<td class="w200px">Статики</td>
+						<td class="w180px">Отправка</td>
+						<td class="w80px">Опции</td>
+					</tr>
+				</thead>
+				<tbody id="miniNewsFeedLater"></tbody>
+			</table>
+		</div>
+	</div>	
 </div>
 
 
@@ -39,62 +52,85 @@
 <script type="text/javascript"><!--
 $(document).ready(function() {
 	
-	ddrScrollminiNewsFeedTable = null;
+	
+	
+	let ddrScrollminiNewsFeedTable = $('#miniNewsFeedTable').ddrScrollTableY({height: 'calc(100vh - 254px)', offset: 1, wrapBorderColor: '#d7dbde'});
+	let ddrScrollminiNewsFeedLaterTable = $('#miniNewsFeedLaterTable').ddrScrollTableY({height: 'calc(100vh - 254px)', offset: 1, wrapBorderColor: '#d7dbde'});
+	
+
 	(getMininewsFeedList = function(callback) {
-		getAjaxHtml('mininewsfeed/list', function(html, stat) {
+		getAjaxHtml('mininewsfeed/list/get', function(html, stat) {
 			if (stat) $('#miniNewsFeedList').html(html);
-			else $('#miniNewsFeedList').html('<tr class="empty"><td colspan="5"><p class="empty center">Нет данных</p></td></tr>');
+			else $('#miniNewsFeedList').html('<tr class="empty h61px"><td colspan="5"><p class="empty center">Нет данных</p></td></tr>');
 		}, function() {
-			
-			if (ddrScrollminiNewsFeedTable) ddrScrollminiNewsFeedTable.reInit();
-			else ddrScrollminiNewsFeedTable = $('#miniNewsFeedTable').ddrScrollTableY({height: 'calc(100vh - 230px)', offset: 1, wrapBorderColor: '#d7dbde'});
-			
+			ddrScrollminiNewsFeedTable.reInit();
 			if (callback && typeof callback == 'function') callback();
-			
-			$('[mininewsfeedupdate]').on(tapEvent, function() {
-				let id = $(this).attr('mininewsfeedupdate');
-				openMiniNewsFeedForm(id);
-			});
-			
-			
-			$('[mininewsfeedremove]').on(tapEvent, function() {
-				let tr = $(this).closest('tr'),
-					countRows = $(this).closest('tbody').find('tr').length,
-					id = $(this).attr('mininewsfeedremove');
-				
-				popUp({
-					title: 'Удалить запись|4',
-				    width: 600,
-				    html: '<p class="fz18px info text-center">Вы действительно хотите удалить запись?</p>',
-				    buttons: [{id : 'removeMininewsfeedBtn', title: 'Удалить'}],
-				    closeButton: 'Отмена',
-				    closePos: 'left'
-				}, function(mininewsfeedremoveWin) {
-					$('#removeMininewsfeedBtn').on(tapEvent, function() {
-						mininewsfeedremoveWin.wait();
-						$.post('mininewsfeed/remove', {id: id}, function(response) {
-							if (response) {
-								notify('Запись успешно удалена!');
-								if (countRows > 1) $(tr).remove();
-								else $(tr).replaceWith('<tr class="empty"><td colspan="5"><p class="empty center">Нет данных</p></td></tr>');
-								mininewsfeedremoveWin.close();
-								socket.emit('mininewsfeed:update');
-							} else {
-								notify('Ошибка удаления записи!', 'error');
-								mininewsfeedremoveWin.wait(false);
-							}
-						}).fail(function(e) {
-							showError(e);
-							notify('Системная ошибка!', 'error');
-							mininewsfeedremoveWin.wait(false);
-						});
-					});
-				});	
-			});
-			
 		});
 	})();
+	
+	
+	(getMininewsFeedLater = function(callback) {
+		getAjaxHtml('mininewsfeed/later/get', function(html, stat) {
+			if (stat) $('#miniNewsFeedLater').html(html);
+			else $('#miniNewsFeedLater').html('<tr class="empty h61px"><td colspan="5"><p class="empty center">Нет данных</p></td></tr>');
+		}, function() {
+			ddrScrollminiNewsFeedLaterTable.reInit();
+			if (callback && typeof callback == 'function') callback();
+		});
+	})();
+	
+	
+	
+	$('#mininewsfeed').on(tapEvent, '[mininewsfeedupdate]', function() {
+		let d = $(this).attr('mininewsfeedupdate').split('|'),
+			listType = d[0],
+			id = d[1];
+		openMiniNewsFeedForm(listType, id);
+	});
+	
+	
+	$('#mininewsfeed').on(tapEvent, '[mininewsfeedremove]', function() {
+		let d = $(this).attr('mininewsfeedremove').split('|'),
+			listType = d[0],
+			id = d[1],
+			tr = $(this).closest('tr'),
+			countRows = $(this).closest('tbody').find('tr').length;
 		
+		popUp({
+			title: 'Удалить запись|4',
+		    width: 600,
+		    html: '<p class="fz18px info text-center">Вы действительно хотите удалить запись?</p>',
+		    buttons: [{id : 'removeMininewsfeedBtn', title: 'Удалить'}],
+		    closeButton: 'Отмена',
+		    closePos: 'left'
+		}, function(mininewsfeedremoveWin) {
+			$('#removeMininewsfeedBtn').on(tapEvent, function() {
+				mininewsfeedremoveWin.wait();
+				$.post('mininewsfeed/'+listType+'/remove', {id: id}, function(response) {
+					if (response) {
+						notify('Запись успешно удалена!');
+						if (countRows > 1) $(tr).remove();
+						else $(tr).replaceWith('<tr class="empty h61px"><td colspan="5"><p class="empty center">Нет данных</p></td></tr>');
+						mininewsfeedremoveWin.close();
+						if (listType == 'list') socket.emit('mininewsfeed:update');
+					} else {
+						notify('Ошибка удаления записи!', 'error');
+						mininewsfeedremoveWin.wait(false);
+					}
+				}).fail(function(e) {
+					showError(e);
+					notify('Системная ошибка!', 'error');
+					mininewsfeedremoveWin.wait(false);
+				});
+			});
+		});	
+	});
+	
+	
+	
+	
+	
+	
 	
 	
 	$('#miniNewsFeedNewBtn').on(tapEvent, function() {
@@ -106,12 +142,13 @@ $(document).ready(function() {
 	
 	
 	
-	
-	function openMiniNewsFeedForm(id) {
+	function openMiniNewsFeedForm(listType, id) {
 		let params = id != undefined ? {id : id} : {},
 			title = id != undefined ? 'Редактировать событие|4' : 'Новое событие|4',
 			isEdit = !!id;
-		
+			
+			params['edit_later'] = (isEdit && listType == 'later') || !isEdit;
+			
 		popUp({
 			title: title,
 			width: 600,
@@ -124,6 +161,32 @@ $(document).ready(function() {
 		}, function(miniNewsFeedNewWin) {
 			miniNewsFeedNewWin.setData('mininewsfeed/form', params, function() {
 				
+				let d = new Date();
+	
+				$('#miniNewsFormDate').datepicker({
+					dateFormat:         'd M yy г.',
+					numberOfMonths:     1,
+					changeMonth:        true,
+					changeYear:         true,
+					monthNamesShort:    ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября', 'декабря'],
+					monthNames:         ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь', 'декабрь'],
+					dayNamesMin:        ['вс','пн','вт','ср','чт','пт','сб',],
+					firstDay:           1,
+					minDate:            d,
+					onSelect: function(stringDate, dateObj) {
+						let date = dateObj.currentDay+'-'+(dateObj.currentMonth+1)+'-'+dateObj.currentYear;
+						$('#miniNewsFormDateValue').val(date);
+					} 
+				});
+				
+				
+				$('#miniNewsFormClearDate').on(tapEvent, function() {
+					$('#miniNewsFormDate, #miniNewsFormDateValue').val('');
+					$('select[name="later_hours"], select[name="later_minutes"]').children('option').removeAttrib('selected');
+					$('select[name="later_hours"], select[name="later_minutes"]').children('option:first').setAttrib('selected');
+				});
+				
+							
 				$('[mininewsfeedstatics]').on(tapEvent, function() {
 					let stat = $(this).attr('mininewsfeedstatics');
 					
@@ -159,10 +222,17 @@ $(document).ready(function() {
 					
 					$('#miniNewsFormCountStatics').val(choosedStatics.length);
 					
+					
+					
+					
 					let fields = isEdit ? {id: id, statics: JSON.stringify(choosedStatics)} : {statics: JSON.stringify(choosedStatics)};
+					let isLater = !!$('#miniNewsFormDateValue').val();
+					let func = listType != undefined ? listType : (isLater ? 'later' : 'list');
+					let path = isEdit ? 'mininewsfeed/'+func+'/update' : 'mininewsfeed/'+func+'/add';
+					
 					
 					$('#miniNewsFeedForm').formSubmit({
-						url: isEdit ? 'mininewsfeed/update' : 'mininewsfeed/add',
+						url: path,
 						fields: fields,
 						formError: function(errors) {
 							$.each(errors, function(k, item) {
@@ -180,11 +250,18 @@ $(document).ready(function() {
 							miniNewsFeedNewWin.wait();
 						},
 						success: function() {
-							getMininewsFeedList(function() {
-								miniNewsFeedNewWin.close();
-								notify('Запись успешно '+(isEdit ? 'обновлена!' : 'добавлена!'));
-								socket.emit('mininewsfeed:update');
-							});
+							if (func == 'later') {
+								getMininewsFeedLater(function() {
+									miniNewsFeedNewWin.close();
+									notify('Запись успешно '+(isEdit ? 'обновлена!' : 'добавлена!'));
+								});
+							} else {
+								getMininewsFeedList(function() {
+									miniNewsFeedNewWin.close();
+									notify('Запись успешно '+(isEdit ? 'обновлена!' : 'добавлена!'));
+									socket.emit('mininewsfeed:update');
+								});
+							}
 						},
 						error: function() {
 							notify('Ошибка '+(isEdit ? 'обновления' : 'добавления')+' записи!', 'error');
@@ -220,17 +297,7 @@ $(document).ready(function() {
 		popUp({
 			title: 'Шаблоны: дни рождения|4',
 			width: 900,
-			html: '',
-			buttons: false,
-			buttonsAlign: 'right',
-			disabledButtons: false,
-			closePos: 'right',
-			closeByButton: false,
-			closeButton: false,
-			winClass: false,
-			contentToCenter: false,
-			buttonsOnTop: false,
-			topClose: true
+			closePos: 'left'
 		}, function(miniNewsFeedBirthdaysWin) {
 			
 			miniNewsFeedBirthdaysWin.setData('mininewsfeed/templates/init', {list_id: 'miniNewsFeedBirthdaysList', btn_id: 'nFBirthDayAddBtn'}, function() {
@@ -291,17 +358,7 @@ $(document).ready(function() {
 		popUp({
 			title: 'Шаблоны: новые звания|4',
 			width: 900,
-			html: '',
-			buttons: false,
-			buttonsAlign: 'right',
-			disabledButtons: false,
-			closePos: 'right',
-			closeByButton: false,
-			closeButton: false,
-			winClass: false,
-			contentToCenter: false,
-			buttonsOnTop: false,
-			topClose: true
+			closePos: 'left'
 		}, function(miniNewsFeedNewRanksWin) {
 			
 			miniNewsFeedNewRanksWin.setData('mininewsfeed/templates/init', {list_id: 'miniNewsFeedNewRankList', btn_id: 'nFNewRankAddBtn'}, function() {

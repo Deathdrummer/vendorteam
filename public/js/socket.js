@@ -50,16 +50,13 @@ if (location.hostname != 'localhost') {
 	let date = new Date(),
 		hours = date.getHours(),
 		minutes = date.getMinutes();
-		
 	
-	console.log(date.getHours(), date.getMinutes());
-	
-	setInterval(() => {
-		if ((hours == '00' || hours == 0) && (minutes > 0 && minutes < 20)) {
+	setInterval(() => { 
+		if (hours == 0 && (minutes >= 1 && minutes <= 20)) {
+			console.log('mininewsfeed');
 			getAjaxHtml('mininewsfeed/account_list', function(html) {
 				$('#miniNewsFeedAccountBlock').html(html);
 			}, function() {});
 		}
 	}, 600000);
-	
 }	

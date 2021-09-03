@@ -783,7 +783,10 @@ class Kpi extends MY_Controller {
 					if ($usersPersonagesData = $this->kpi->getPersonagesToStat($period, 1)) {
 						$allScrores = []; $doneScores = [];
 						foreach ($usersPersonagesData as $userId => $personages) foreach ($personages as $pId => $tasks) foreach ($tasks as $tId => $task) {
-							if (!isset($task['repeats'])) continue;
+							if (!isset($task['done']) || !isset($task['repeats'])) {
+								toLog('KPI -> участник: '.$userId.' что-то не так с тасками персонажей');
+								continue;
+							} 
 							$done = isset($task['done']) ? $task['done'] : 0;
 							$repeats = $task['repeats'];
 							$score = $task['score'];
@@ -804,6 +807,10 @@ class Kpi extends MY_Controller {
 					if ($usersPersonagesBonusData = $this->kpi->getPersonagesToStat($period, 2)) {
 						$allBonusScrores = []; $doneBonusScores = [];
 						foreach ($usersPersonagesBonusData as $userId => $personages) foreach ($personages as $pId => $tasks) foreach ($tasks as $tId => $task) {
+							if (!isset($task['done']) || !isset($task['repeats'])) {
+								toLog('KPI -> участник: '.$userId.' что-то не так с бонусными тасками персонажей');
+								continue;
+							} 
 							$done = isset($task['done']) ? $task['done'] : 0;
 							$repeats = $task['repeats'];
 							$score = $task['score'];

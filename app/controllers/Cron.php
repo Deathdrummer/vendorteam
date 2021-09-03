@@ -180,6 +180,30 @@ class Cron extends MY_Controller {
 	
 	
 	
+	
+	
+	
+	
+	/**
+	 * отправить отложенные сообщения
+	 * @param 
+	 * @return 
+	 */
+	public function mininewsfeed_later() {
+		if (!$this->_isCliRequest()) redirect();
+		$this->load->model(['mininewsfeed_model' => 'mininewsfeed']);
+		$this->mininewsfeed->addLaterNewsFeed();
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	//-------------------------------------------------------------
 	
 	/**
