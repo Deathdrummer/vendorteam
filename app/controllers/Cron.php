@@ -24,7 +24,7 @@ class Cron extends MY_Controller {
 		
 		
 		//----------------------------------------------------------- Отправка уведомлений о присвоении нового звания
-		if (!$ranksTemplates = $this->mininewsfeed->get(2)) return false;
+		if (!$ranksTemplates = $this->mininewsfeed->templates('get', 2)) return false;
 		$newRanksUsers = setArrKeyfromField($newRanksUsers, 'id', 'rank');
 		
 		$newRanksUsersData = [];
@@ -146,7 +146,7 @@ class Cron extends MY_Controller {
 		$month = date('n');
 		$day = date('j');
 		
-		if (!$birthdayTemplates = $this->mininewsfeed->get(1)) return false;
+		if (!$birthdayTemplates = $this->mininewsfeed->templates('get', 1)) return false;
 		
 		$birthdayData = [];
 		foreach ($users as $userId => $userData) {

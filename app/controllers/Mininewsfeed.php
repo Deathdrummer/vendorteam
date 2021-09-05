@@ -161,7 +161,6 @@ class Mininewsfeed extends MY_Controller {
 	
 	
 	
-	
 	/**
 	 * Отложенные события
 	 * @param 

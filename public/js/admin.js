@@ -120,7 +120,7 @@ jQuery(document).ready(function($) {
 			$('.scroll').ddrScrollTable();
 			
 			$('#sectionWait').removeClass('visible');
-			$(document).trigger('renderSection');
+			$(document).trigger('renderSection', section);
 			if (callback) callback();
 		}, 'html').fail(function(e) {
 			notify('Системная ошибка!', 'error');

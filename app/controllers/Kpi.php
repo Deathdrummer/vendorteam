@@ -386,9 +386,28 @@ class Kpi extends MY_Controller {
 				echo '1';
 				break;
 			
+			case 'check_tasks':
+				$periodData = isset($post['period_id']) ? $this->kpi->getPeriod($post['period_id']) : $this->kpi->getActivePeriod();
+				if (!isset($post['tasks'])) return false;
+					
+				foreach ($post['tasks'] as $task) {
+					if (!$this->kpi->checkProgressTask($periodData['id'], $task)) exit('0');
+				}
+				echo '1';
+				break;
+			
 			case 'check_custom':
 				$periodData = isset($post['period_id']) ? $this->kpi->getPeriod($post['period_id']) : $this->kpi->getActivePeriod();
 				if (!$this->kpi->checkProgressCustom($periodData['id'], $post)) exit('0');
+				echo '1';
+				break;
+			
+			case 'check_customs':
+				$periodData = isset($post['period_id']) ? $this->kpi->getPeriod($post['period_id']) : $this->kpi->getActivePeriod();
+				if (!isset($post['customs'])) return false;
+				foreach ($post['customs'] as $custom) {
+					if (!$this->kpi->checkProgressCustom($periodData['id'], $custom)) exit('0');
+				}
 				echo '1';
 				break;
 			

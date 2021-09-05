@@ -60,8 +60,7 @@
 		
 		<div id="kpiDataContainer" class="reports mt-3"></div>
 	</fieldset>
-
-
+	
 </div>
 
 
@@ -74,6 +73,9 @@
 
 
 <script type="text/javascript"><!--
+$(function() {
+	
+
 	//------------------------------------------------------- Создать новый KPI период
 	$('#kpiPeriodsButton').on(tapEvent, function() {
 		popUp({
@@ -316,12 +318,12 @@
 		
 		popUp({
 			title: 'Шаблоны задач для персонажей|4',
-		    width: 500,
-		    buttons: [{id: 'kpiPersonagesTemplateNewBtn', title: 'Новый шаблон'}],
-		    closePos: 'left',
-		    closeByButton: false,
-		    disabledButtons: true,
-		    closeButton: 'Закрыть'
+			width: 500,
+			buttons: [{id: 'kpiPersonagesTemplateNewBtn', title: 'Новый шаблон'}],
+			closePos: 'left',
+			closeByButton: false,
+			disabledButtons: true,
+			closeButton: 'Закрыть'
 		}, function(kpiPersonagesTemplatesWin) {
 			(function openTemplatesWin() {
 				kpiPersonagesTemplatesWin.setData('kpi/templates/list', {from: 0}, function() {
@@ -873,21 +875,22 @@
 	
 	
 	//------------------------------------------------------- Отметить достижения KPI плана
+	let kpiProgressPlanPeriodId;
 	$('#kpiCheckPlanButton').on(tapEvent, function() {
 		popUp({
 			title: 'Отметить достижения KPI плана',
-		    width: 800,
-		    closeButton: 'Закрыть'
+			width: 800,
+			closeButton: 'Закрыть'
 		}, function(progressPlanWin) {
 			progressPlanWin.setData('kpi/periods/get', {type: 'simple', attr: 'kpichooseperiod'}, function() {
 				$('[kpichooseperiod]').on(tapEvent, function() {
 					progressPlanWin.wait();
-					let periodId = $(this).attr('kpichooseperiod');
+					kpiProgressPlanPeriodId = $(this).attr('kpichooseperiod');
 					location.hash = 'kpi_planes';
 					$('#kpiProgressSearchString').val('');
 					
 					$('#kpiDataContainer').setWaitToBlock('Загрузка плана...', 'pt40px pb40px', 'transparent');
-					openProgressForm({period_id: periodId}, function() {
+					openProgressForm({period_id: kpiProgressPlanPeriodId}, function() {
 						progressPlanWin.close();
 					});
 				});
@@ -897,14 +900,19 @@
 	
 	$('#kpiProgressSearchButton').on(tapEvent, function() {
 		let searchString = $('#kpiProgressSearchString').val();
-		if (searchString) openProgressForm({search: searchString});
+		if (searchString) openProgressForm({period_id: kpiProgressPlanPeriodId, search: searchString});
 		else $('#kpiProgressSearchString').errorLabel('Необходимо ввести как минимум 1 символ!');
 	});
 	
 	$('#kpiProgressResetSearchButton').on(tapEvent, function() {
 		$('#kpiProgressSearchString').val('');
-		openProgressForm();
+		openProgressForm({period_id: kpiProgressPlanPeriodId});
 	});
+
+
+
+
+
 
 	function openProgressForm(params, callback) {
 		getAjaxHtml('kpi/progressplan/get_form', (params || {}), function(html, stat) {
@@ -961,7 +969,7 @@
 					
 					saveProgPersTOut = setTimeout(function() {
 						$(blockSelector).addClass('personagetasks__item_wait');
-						$.post('/kpi/progressplan/check_task', {user_id: userId, personage_id: personageId, task_id: taskId, type: taskType, value: value}, function(response) {
+						$.post('/kpi/progressplan/check_task', {period_id: params.period_id, user_id: userId, personage_id: personageId, task_id: taskId, type: taskType, value: value}, function(response) {
 							if (!response) notify('Ошибка сохранения параметра!', 'error');
 							$(blockSelector).removeClass('personagetasks__item_wait');
 						}, 'json').fail(function(e) {
@@ -969,7 +977,7 @@
 							notify('Системная ошибка!', 'error');
 							$(blockSelector).removeClass('personagetasks__item_wait');
 						});
-					}, 500);
+					}, 200);
 				}
 				
 				
@@ -1010,7 +1018,7 @@
 					
 					saveProgCostomTOut = setTimeout(function() {
 						$(blockSelector).addClass('customtasks__item_wait');
-						$.post('/kpi/progressplan/check_custom', {user_id: userId, field: field, value: value}, function(response) {
+						$.post('/kpi/progressplan/check_custom', {period_id: params.period_id, user_id: userId, field: field, value: value}, function(response) {
 							if (!response) notify('Ошибка сохранения параметра!', 'error');
 							$(blockSelector).removeClass('customtasks__item_wait');
 						}, 'json').fail(function(e) {
@@ -1018,7 +1026,7 @@
 							notify('Системная ошибка!', 'error');
 							$(blockSelector).removeClass('customtasks__item_wait');
 						});
-					}, 500);
+					}, 200);
 				}
 				
 				
@@ -1036,7 +1044,7 @@
 					else $(blockSelector).removeClass('customtasks__item_done');
 					
 					$(blockSelector).addClass('customtasks__item_wait');
-					$.post('/kpi/progressplan/check_custom', {user_id: userId, field: field, value: value}, function(response) {
+					$.post('/kpi/progressplan/check_custom', {period_id: params.period_id, user_id: userId, field: field, value: value}, function(response) {
 						if (!response) {
 							notify('Ошибка сохранения параметра!', 'error');
 						}
@@ -1047,6 +1055,176 @@
 						$(blockSelector).removeClass('customtasks__item_wait');
 					});
 				});
+				
+				
+				
+				
+				
+				
+				
+				//---------------------------------------------- Поставить все активности
+				$('[progressplancheckall]').on(tapEvent, function() {
+					let card = $(this).closest('[kpiprocesscard]'),
+						customTasksField = $(card).find('[customprogressdata]'),
+						customTasksCheck = $(card).find('[customprogresschangecheck]'),
+						personagesTasks = $(card).find('[tasksprogressdata]'),
+						customTasksFieldSelectors = [],
+						customTasksCheckSelectors = [],
+						personagesTasksSelectors = [];
+					
+					$(card).addClass('kpiprocesscard_waiting');
+					
+					
+					// доп. поля
+					let customTasksData = [];
+					$.each(customTasksField, function(k, item) {
+						let d = $(item).attr('customprogressdata').split('|'),
+							userId = d[0],
+							field = d[1],
+							value = parseInt($(item).text()) || 0,
+							need = parseInt($(item).closest('[ctasksitem]').find('[customtasksneed]').attr('customtasksneed')) || null;
+						
+						if (need && value < need) {
+							customTasksData.push({
+								user_id: userId,
+								field: field,
+								value: need
+							});
+							customTasksFieldSelectors.push({
+								selector: $(item).closest('[ctasksitem]'),
+								value: need
+							});
+						}
+					});
+					
+					$.each(customTasksCheck, function(k, item) {
+						let d = $(item).attr('customprogresschangecheck').split('|'),
+							userId = d[0],
+							field = d[1],
+							value = $(item).is(':checked') ? 1 : 0;
+						
+						if (value == 0) {
+							customTasksData.push({
+								user_id: userId,
+								field: field,
+								value: 1
+							});
+							customTasksCheckSelectors.push(item);
+						}
+					});
+					
+					
+					// персонажи
+					let personagesTasksData = [];
+					$.each(personagesTasks, function(k, item) {
+						let d = $(item).attr('tasksprogressdata').split('|'),
+							userId = d[0],
+							personageId = d[1],
+							taskId = d[2],
+							taskType = d[3],
+							value = parseInt($(item).text()) || 0,
+							need = parseInt($(item).closest('[ptasksitem]').find('[personagetasksneed]').attr('personagetasksneed')) || null;
+						
+						
+						if (need && value < need && parseInt(taskType) == 1) {
+							personagesTasksData.push({
+								user_id: parseInt(userId),
+								personage_id: parseInt(personageId),
+								task_id: parseInt(taskId),
+								type: parseInt(taskType),
+								value: need
+							});
+							personagesTasksSelectors.push({
+								selector: $(item).closest('[ptasksitem]'),
+								value: need
+							});
+						}
+					});
+					
+					
+					// персонажи
+					let postCustom = new Promise((resolve, reject) => {
+						if (customTasksData.length) {
+							$.post('/kpi/progressplan/check_customs', {period_id: params.period_id, customs: customTasksData}, function(response) {
+								if (!response) {
+									reject();
+									notify('Ошибка сохранения параметра!', 'error');
+								} else {
+									resolve(response);
+								}
+							}, 'json').fail(function(e) {
+								reject(e.errorText);
+								showError(e);
+								notify('Системная ошибка!', 'error');
+							});
+						} else resolve(1);
+					});
+					
+					
+					// доп. поля
+					let postTasks = new Promise((resolve, reject) => {	
+						if (personagesTasksData.length) {
+							$.post('/kpi/progressplan/check_tasks', {period_id: params.period_id, tasks: personagesTasksData}, function(response) {
+								if (!response) {
+									reject();
+									notify('Ошибка сохранения параметра!', 'error');
+								}  else {
+									resolve(response);
+								}
+							}, 'json').fail(function(e) {
+								reject(e.errorText);
+								showError(e);
+								notify('Системная ошибка!', 'error');
+							});
+						} else resolve(1);
+					});
+					
+					
+					Promise.all([postTasks, postCustom]).then(resp => {
+						if (resp[0] != 1) {
+							notify('Ошибка сохранения задач для персонажей!', 'error');
+						}
+						
+						if (resp[1] != 1) {
+							notify('Ошибка сохранения кастомных задач!', 'error');
+						}
+						
+						if (resp[0] == 1 && resp[1] == 1) {
+							if (customTasksCheckSelectors.length) {
+								$.each(customTasksCheckSelectors, function(k, item) {
+									$(item).setAttrib('checked');
+									$(item).closest('[ctasksitem]').addClass('customtasks__item_done');
+								});
+							}
+								
+							if (customTasksFieldSelectors.length) {
+								$.each(customTasksFieldSelectors, function(k, item) {
+									$(item.selector).addClass('customtasks__item_done');
+									$(item.selector).find('[customprogressdata]').text(item.value);
+								});
+							}
+								
+							if (personagesTasksSelectors.length) {
+								$.each(personagesTasksSelectors, function(k, item) {
+									$(item.selector).addClass('personagetasks__item_done');
+									$(item.selector).find('[tasksprogressdata]').text(item.value);
+								});
+							}
+							notify('Данные успешно сохранены!');
+						}
+
+						$(card).removeClass('kpiprocesscard_waiting');
+					}, reason => {
+						notify('ошибка сохранения данных!', 'error');
+						$(card).removeClass('kpiprocesscard_waiting');
+						console.log(reason);
+					});				
+						
+				});
+				
+				
+				
+				
 				
 				
 				
@@ -1452,9 +1630,9 @@
 	$('#kpiGiftsButton').on(tapEvent, function() {
 		popUp({
 			title: 'Подарки за перевыполнение плана',
-		    width: 1000,
-		    buttons: [{id: 'addGift', title: 'Добавить'}],
-		    closeButton: 'Закрыть'
+			width: 1000,
+			buttons: [{id: 'addGift', title: 'Добавить'}],
+			closeButton: 'Закрыть'
 		}, function(kpiGiftsWin) {
 			kpiGiftsWin.setData('gifts/init', function() {
 				$('#giftsList').ddrCRUD({
@@ -1481,6 +1659,5 @@
 	
 	
 	
-	
-	
+});
 //--></script>

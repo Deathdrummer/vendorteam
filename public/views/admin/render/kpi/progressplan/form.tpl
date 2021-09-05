@@ -10,12 +10,17 @@
 			<div class="kpiprocessblock drow dgutter-15">
 				{% for userId, user in formdata[staticId] %}
 					<div class="dcol-1 dcol-sm-2 dcol-md-3 dcol-lg-4 dcol-xl-5">
-						<div class="kpiprocesscard">
+						<div class="kpiprocesscard" kpiprocesscard>
 							<div class="kpiprocesscard__user">
 								<img class="avatar w70px h70px mr15px" src="{{base_url('public/images/users/mini/'~user.avatar)|no_file('public/images/deleted_mini.jpg')}}" alt="{{user.nickname}}">
 								<div>
 									<strong>{{user.nickname}}</strong>
 									<p class="fz11px mt3px">{{ranks[user.rank]['name']}}</p>
+								</div>
+								<div class="align-self-start ml-auto">
+									<div class="buttons notop">
+										<button class="verysmall pay p-0 w30px" title="Выставить все активности" progressplancheckall><i class="fa fa-check"></i></button>
+									</div>
 								</div>
 							</div>
 							
@@ -66,7 +71,7 @@
 								
 							
 							{% if custom_fields %}
-								<div class="kpiprocesscard__fields customtasks">
+								<div class="kpiprocesscard__fields customtasks" customtasks>
 									{% for field, cFData in custom_fields %}
 										{% if cFData['type'] == 'koeff' %}
 											<div class="customtasks__item{% if user['custom_fields'][field]['fact'] == user['custom_fields'][field]['need'] %} customtasks__item_done{% elseif user['custom_fields'][field]['fact'] > user['custom_fields'][field]['need'] %} customtasks__item_verydone{% endif %}" ctasksitem>

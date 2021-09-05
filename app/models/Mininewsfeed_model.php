@@ -224,6 +224,7 @@ class Mininewsfeed_model extends MY_Model {
 	
 	/**
 	 * CRON функция
+	 * Добавить сообщения в ленту из отложенных
 	 * @param 
 	 * @return 
 	 */
@@ -253,14 +254,9 @@ class Mininewsfeed_model extends MY_Model {
 	
 	
 	
-	
-	
-	//------------------------------------------------------------------
-	
-	
-	
 	/**
-	 * Добавить сообщения в ленту (CRON)
+	 * CRON функция
+	 * Добавить сообщения в ленту
 	 * @param icon text statics
 	 * @return 
 	*/

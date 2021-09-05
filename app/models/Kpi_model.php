@@ -761,11 +761,11 @@ class Kpi_model extends MY_Model {
 	 * @param ID активного периода
 	 * @return 
 	*/
-	public function checkProgressTask($activePeriodId = false, $data = false) {
-		if (!$data || !$activePeriodId) return false;
+	public function checkProgressTask($periodId = false, $data = false) {
+		if (!$data || !$periodId) return false;
 		
 		$this->db->where([
-			'period_id' 	=> $activePeriodId,
+			'period_id' 	=> $periodId,
 			'user_id' 		=> $data['user_id'],
 			'personage_id' 	=> $data['personage_id'],
 			'task_id' 		=> $data['task_id'],
@@ -775,7 +775,7 @@ class Kpi_model extends MY_Model {
 		
 		if ($tableData) {
 			$this->db->where([
-				'period_id' 	=> $activePeriodId,
+				'period_id' 	=> $periodId,
 				'user_id' 		=> $data['user_id'],
 				'personage_id' 	=> $data['personage_id'],
 				'task_id' 		=> $data['task_id'],
@@ -785,7 +785,7 @@ class Kpi_model extends MY_Model {
 		} 
 		
 		return $this->db->insert($this->kpiProgressPersonagesTable, [
-			'period_id'		=> $activePeriodId,
+			'period_id'		=> $periodId,
 			'user_id'		=> $data['user_id'],
 			'personage_id'	=> $data['personage_id'],
 			'task_id'		=> $data['task_id'],

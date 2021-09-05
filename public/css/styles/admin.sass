@@ -3858,11 +3858,36 @@ p
 	margin-top: -15px
 	
 .kpiprocesscard
+	position: relative
 	border: 1px solid #d0d5dc
 	background-color: #f8fafb
 	border-radius: 3px
 	margin-top: 15px
 	padding: 10px
+	
+	&_waiting
+		&::after
+			content: ""
+			display: block
+			position: absolute
+			top: 0
+			left: 0
+			width: 100%
+			height: 100%
+			background-color: rgba(#fff, 0.9)
+			z-index: 1000
+		
+		&::before
+			content: "Сохранение..."
+			font-size: 20px
+			+font(roboto, bold)
+			color: #728291
+			position: absolute
+			top: calc(50% - 10px)
+			width: 100%
+			text-align: center
+			z-index: 1001
+	
 	
 	&__user
 		display: flex
@@ -3878,6 +3903,8 @@ p
 		line-height: 14px
 		margin-bottom: 10px
 		+font(roboto, bold)
+	
+	
 		
 		
 		

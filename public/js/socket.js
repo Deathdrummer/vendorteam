@@ -52,11 +52,10 @@ if (location.hostname != 'localhost') {
 		minutes = date.getMinutes();
 	
 	setInterval(() => { 
-		if (hours == 0 && (minutes >= 1 && minutes <= 20)) {
-			console.log('mininewsfeed');
+		//if (hours == 0 && (minutes >= 1 && minutes <= 20)) {
 			getAjaxHtml('mininewsfeed/account_list', function(html) {
 				$('#miniNewsFeedAccountBlock').html(html);
 			}, function() {});
-		}
-	}, 600000);
+		//}
+	}, (180 * 1000));
 }	
