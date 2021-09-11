@@ -280,7 +280,7 @@ class Account_model extends My_Model {
 		$queryU = $this->db->get('users u');
 		$respUser = $queryU->row_array();
 		
-		$regCountDays = floor((time() - $respUser['reg_date']) / (60 * 60 * 24)) + $respUser['stage'];
+		$stageDaysCount = ($countDays = floor((time() - $respUser['reg_date']) / (60 * 60 * 24)) + $respUser['stage']) > 0 ? $countDays : 1;
 		
 		$this->db->order_by('r.period', 'ASC');
 		$this->db->select('r.name, r.period');
@@ -289,8 +289,8 @@ class Account_model extends My_Model {
 		$data = [];
 		if ($ranks = $query->result_array()) {
 			foreach ($ranks as $rank) {
-				if ($regCountDays < $rank['period']) {
-					$data['count_days'] = $rank['period'] - $regCountDays;
+				if ($stageDaysCount < $rank['period']) {
+					$data['count_days'] = $rank['period'] - $stageDaysCount;
 					$data['next_rank'] = $rank['name'];
 					break;
 				}
