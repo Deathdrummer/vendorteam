@@ -193,7 +193,7 @@ $(document).ready(function() {
 			title: 'Выход из личного кабинета',
 			width: 400,
 			html: 'Вы действительно хотите выйти?',
-			buttons: [{id: 'logoutCancel', title: 'Отмена', class: 'close'}, {id: 'logoutConfirm', title: 'Выйти'}],
+			buttons: [{id: 'logoutCancel', title: 'Отмена', class: 'popup__buttons_close'}, {id: 'logoutConfirm', title: 'Выйти'}],
 		}, function(logoutWin) {
 			$('#logoutConfirm').on(tapEvent, function() {
 				location = '/account/logout';
@@ -435,10 +435,6 @@ $(document).ready(function() {
 	
 	
 	
-	//-------------------- Если не заполнены данные аккаунта
-	if (location.pathname.replace('/', '') == 'account') {
-		if ($('#isUserData').val() == 0) setUserData();
-	}
 	
 	//-------------------- Изменить данные аккаунта, кликнув на аватар или никнейм
 	$('#changeAvatar, #changeNickname').on(tapEvent, function() {
@@ -2867,9 +2863,8 @@ $(document).ready(function() {
 	//------------------------------------------------------------------ Очереди открытия модальных окон
 	
 	
-	if (getCookie('gifts')) { // подарки
-		
-		
+	if (location.pathname.replace('/', '') == 'account' && $('#isUserData').val() == 0) { // Если не заполнены данные аккаунта
+		setUserData();
 	} else if (getCookie('birthday')) { // День рождения
 		
 		popUp({
@@ -2937,7 +2932,10 @@ $(document).ready(function() {
 			});
 		});
 		
-	}
+	} else if (getCookie('gifts')) { // подарки
+		
+		
+	} 
 	
 	
 	

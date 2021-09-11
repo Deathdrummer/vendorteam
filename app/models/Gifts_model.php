@@ -386,7 +386,7 @@ class Gifts_model extends MY_Model {
 		switch ($action) {
 			case 'stage':
 				$this->db->where('id', $userId);
-				if (!$userStage = $this->_row('users', 'stage')) return false;
+				if (($userStage = $this->_row('users', 'stage')) === false) return false;
 				$this->db->where('id', $userId);
 				if (!$this->db->update('users', ['stage' => (int)$userStage+(int)$value])) return false;
 				break;

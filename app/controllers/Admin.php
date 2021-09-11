@@ -145,7 +145,7 @@ class Admin extends MY_Controller {
 				$data['resigns'] = $this->admin_model->getResigns();
 				$data['stop_list'] = $this->admin_model->getStopList();
 				
-				//$data['statics'] = $this->admin_model->getStatics();
+				$data['statics'] = $this->admin_model->getStatics();
 				if ($data['stop_list']['addictpay']) {
 					$users = $this->users_model->getUsers([
 						'where' 	=> ['us.main' => 1],
@@ -1291,6 +1291,12 @@ class Admin extends MY_Controller {
 			
 			case 'save':
 				if ($this->admin_model->personagesSave($postData['personages'])) {
+					echo '1';
+				} else echo '0';
+				break;
+			
+			case 'update':
+				if ($this->admin_model->personagesUpdate($postData)) {
 					echo '1';
 				} else echo '0';
 				break;

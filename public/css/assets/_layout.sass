@@ -456,6 +456,7 @@ $bPoints: map-remove($grid-breakpoints, xs)
 @for $i from 1 through 100
 	.w#{$i}
 		width: percentage((1 / 100) * $i) !important
+		max-width: percentage((1 / 100) * $i) !important
 		
 $bPoints: map-remove($grid-breakpoints, xs)
 @each $breakpoint, $minWidth in $bPoints
@@ -463,9 +464,11 @@ $bPoints: map-remove($grid-breakpoints, xs)
 		@for $i from 1 through 100
 			.w-#{$breakpoint}-#{$i}
 				width: percentage((1 / 100) * $i) !important
+				max-width: percentage((1 / 100) * $i) !important
 			
 			.h-#{$breakpoint}-#{$i}
 				height: percentage((1 / 100) * $i) !important
+				max-height: percentage((1 / 100) * $i) !important
 
 
 
@@ -474,9 +477,11 @@ $bPoints: map-remove($grid-breakpoints, xs)
 @for $i from 1 through 500
 	.w#{$i}px
 		width: #{$i}px !important
+		max-width: #{$i}px !important
 	
 	.h#{$i}px
 		height: #{$i}px !important
+		max-height: #{$i}px !important
 		
 $bPoints: map-remove($grid-breakpoints, xs)
 @each $breakpoint, $minWidth in $bPoints
@@ -484,9 +489,11 @@ $bPoints: map-remove($grid-breakpoints, xs)
 		@for $i from 1 through 500
 			.w-#{$breakpoint}-#{$i}px
 				width: #{$i}px !important
+				max-width: #{$i}px !important
 			
 			.h-#{$breakpoint}-#{$i}px
 				height: #{$i}px !important
+				max-height: #{$i}px !important
 
 
 
@@ -494,9 +501,11 @@ $bPoints: map-remove($grid-breakpoints, xs)
 @for $i from 1 through 200
 	.w-#{$i}rem
 		width: #{$i}rem !important
+		max-width: #{$i}rem !important
 
 	.h-#{$i}rem
 		height: #{$i}rem !important
+		max-height: #{$i}rem !important
 
 $bPoints: map-remove($grid-breakpoints, xs)
 @each $breakpoint, $minWidth in $bPoints
@@ -504,9 +513,11 @@ $bPoints: map-remove($grid-breakpoints, xs)
 		@for $i from 1 through 200
 			.w-#{$breakpoint}-#{$i}rem
 				width: #{$i}rem !important
+				max-width: #{$i}rem !important
 
 			.h-#{$breakpoint}-#{$i}rem
 				height: #{$i}rem !important
+				max-height: #{$i}rem !important
 
 
 

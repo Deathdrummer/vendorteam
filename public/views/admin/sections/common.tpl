@@ -22,6 +22,7 @@
 		<li id="skype">Скайп</li>
 		<li id="links">Ссылки</li>
 		<li id="stopList">Стоп-лист</li>
+		<li id="tabSctions">Разделы</li>
 	</ul>
 	
 	
@@ -830,6 +831,35 @@
 				</div>
 			</div>
 			
+		</div>
+		
+		
+		
+		<div tabid="tabSctions">
+			<ul class="tabstitles sub">
+				<li id="compoundUsers">Коэффициенты</li>
+			</ul> 
+			
+			<div class="tabscontent">
+				<div tabid="compoundUsers">
+					<fieldset>
+						<legend>Отображение полей</legend>
+						
+						<div class="drow dgutter-10">
+							{% if statics %}
+								{% for stId, static in statics %}
+									<div class="dcol-6">
+										<div class="simpleblock simpleblock_bordered simpleblock_white p-2 mb10px">
+											<strong>{{static['name']}}</strong>
+											{% include form~'checkbox.tpl' with {'label': '', 'name': 'compound_users|'~stId~'|showfields', 'data': {'Персонажи': 'persones_count', 'Эффективность': 'effectiveness'}} %}
+										</div>
+									</div>
+								{% endfor %}
+							{% endif %}
+						</div>
+					</fieldset>
+				</div>
+			</div>
 		</div>
 		
 		

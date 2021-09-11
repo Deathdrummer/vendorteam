@@ -537,14 +537,25 @@ $(document).ready(function() {
 										if (insetId) {
 											var html = '';
 												html += '<tr>';
-												html += 	'<td>'+$(nickname).val()+'</td>';
-												html += 	'<td>'+$(armor).val()+'</td>';
-												html += 	'<td>'+$(server).val()+'</td>';
-												html += 	'<td><span>Администратор</span></td>';
+												html += 	'<td><div class="field"><input type="text" p_nick value="'+$(nickname).val()+'"></div></td>';
 												html += 	'<td>';
-												html += 		'<div class="buttons nowrap">';
-												html +=				'<button class="remove" untiegameidpersonage="'+insetId+'" title="Отвязать персонажа"><i class="fa fa-user"></i></button>\n';
-												html +=				'<button class="remove" removegameidpersonage="'+insetId+'" title="Удалить персонажа"><i class="fa fa-trash"></i></button>';
+												html += 		'<div class="select">';
+												html +=				'<select p_armor>';
+												html += 				'<option'+($(armor).val() == 'Латы' ? ' selected' : '')+' value="Латы">Латы</option>';
+												html += 				'<option'+($(armor).val() == 'Кольчуга' ? ' selected' : '')+' value="Кольчуга">Кольчуга</option>';
+												html += 				'<option'+($(armor).val() == 'Кожа' ? ' selected' : '')+' value="Кожа">Кожа</option>';
+												html += 				'<option'+($(armor).val() == 'Ткань' ? ' selected' : '')+' value="Ткань">Ткань</option>';
+												html += 			'</select>';
+												html += 			'<div class="select__caret"></div>';
+												html += 		'</div>';
+												html += 	'</td>';
+												html += 	'<td><div class="field"><input type="text" p_server value="'+$(server).val()+'"></div></td>';
+												html += 	'<td><span>Администратор</span></td>';
+												html += 	'<td class="center">';
+												html += 		'<div class="buttons inline nowrap">';
+												html += 			'<button class="small w30px" updategameidpersonage="'+insetId+'" title="Изменить данные персонажа" disabled><i class="fa fa-save"></i></button>\n';
+												html +=				'<button class="small w30px remove" untiegameidpersonage="'+insetId+'" title="Отвязать персонажа"><i class="fa fa-user"></i></button>\n';
+												html +=				'<button class="small w30px remove" removegameidpersonage="'+insetId+'" title="Удалить персонажа"><i class="fa fa-trash"></i></button>';
 												html +=			'</div>';
 												html += 	'</td>';
 												html += '</tr>';
@@ -616,9 +627,19 @@ $(document).ready(function() {
 										var html = '';
 										$.each(parsonagesData, function(k, item) {
 											html += '<tr>';
-											html += 	'<td>'+item.nick+'</td>';
-											html += 	'<td>'+item.armor+'</td>';
-											html += 	'<td>'+item.server+'</td>';
+											html += 	'<td><div class="field"><input type="text" p_nick value="'+item.nick+'"></div></td>';
+											html += 	'<td>';
+											html += 		'<div class="select">';
+											html +=				'<select p_armor>';
+											html += 				'<option'+(item.armor == 'Латы' ? ' selected' : '')+' value="Латы">Латы</option>';
+											html += 				'<option'+(item.armor == 'Кольчуга' ? ' selected' : '')+' value="Кольчуга">Кольчуга</option>';
+											html += 				'<option'+(item.armor == 'Кожа' ? ' selected' : '')+' value="Кожа">Кожа</option>';
+											html += 				'<option'+(item.armor == 'Ткань' ? ' selected' : '')+' value="Ткань">Ткань</option>';
+											html += 			'</select>';
+											html += 			'<div class="select__caret"></div>';
+											html += 		'</div>';
+											html += 	'</td>';
+											html += 	'<td><div class="field"><input type="text" p_server value="'+item.server+'"></div></td>';
 											html += 	'<td>';
 											if (item.user_nickname == false) {
 												html += '<span>Администратор</span>';
@@ -631,11 +652,12 @@ $(document).ready(function() {
 												html += '</div>';
 											}
 											html += 	'</td>';
-											html += 	'<td>';
-											html += 		'<div class="buttons nowrap">';
-											html += 			'<button class="remove" untiegameidpersonage="'+item.id+'" title="Отвязать персонажа"><i class="fa fa-user"></i></button>';
-											html += 			'<button class="remove" removegameidpersonage="'+item.id+'" title="Удалить персонажа"><i class="fa fa-trash"></i></button>';
-											html += 		'</div>';
+											html += 	'<td class="center">';
+											html += 		'<div class="buttons inline nowrap">';
+											html += 			'<button class="small w30px" updategameidpersonage="'+item.id+'" title="Изменить данные персонажа" disabled><i class="fa fa-save"></i></button>\n';
+											html +=				'<button class="small w30px remove" untiegameidpersonage="'+item.id+'" title="Отвязать персонажа"><i class="fa fa-user"></i></button>\n';
+											html +=				'<button class="small w30px remove" removegameidpersonage="'+item.id+'" title="Удалить персонажа"><i class="fa fa-trash"></i></button>';
+											html +=			'</div>';
 											html += 	'</td>';
 											html += '</tr>';
 										});
@@ -659,6 +681,35 @@ $(document).ready(function() {
 						}, function() {
 							
 						});
+					});
+				});
+				
+				
+				
+				$('#'+thisBlockId).changeInputs(function(selector) {
+					$(selector).closest('tr').find('[updategameidpersonage]').removeAttrib('disabled');
+				});
+				
+				
+				// изменить данные перонажа
+				$('#'+thisBlockId).on(tapEvent, '[updategameidpersonage]', function() {
+					let tr = $(this).closest('tr'),
+						id = $(this).attr('updategameidpersonage'),
+						nick = $(tr).find('[p_nick]').val(),
+						armor = $(tr).find('[p_armor]').val(),
+						server = $(tr).find('[p_server]').val();
+					
+					$.post('/admin/personages/update', {id: id, nick: nick, armor: armor, server: server}, function(response) {
+						if (response) {
+							notify('Данные персонажа успешно обновлены!');
+						} else {
+							notify('Ошибка! Данные персонажа не обновились!');
+						}
+						$(tr).removeClass('changed');
+						$(tr).find('[updategameidpersonage]').setAttrib('disabled');
+					}).fail(function(e) {
+						showError(e);
+						notify('Системная ошибка!', 'error');
 					});
 				});
 				

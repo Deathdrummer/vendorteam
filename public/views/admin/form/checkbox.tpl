@@ -23,7 +23,7 @@
 					<span>{{thislabel}}</span>
 					<div class="checkbox_items_item_block noselect">
 						<label for="{{id~thisvalue}}0">
-							<input type="radio" {% if value[thisvalue] == '0' %}checked{% endif %} id="{{id~thisvalue}}0" name="{{inpName}}[{{thisvalue}}]" value="0">
+							<input type="radio" {% if value[thisvalue] is not defined or value[thisvalue] == '0' %}checked{% endif %} id="{{id~thisvalue}}0" name="{{inpName}}[{{thisvalue}}]" value="0">
 							<span>нет</span>
 						</label>
 						<label for="{{id~thisvalue}}1">
@@ -31,7 +31,6 @@
 							<span>да</span>
 						</label>
 					</div>
-						
 				</div>
 			{% endfor %}
 		</div>

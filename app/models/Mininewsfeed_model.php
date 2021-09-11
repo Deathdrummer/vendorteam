@@ -285,10 +285,13 @@ class Mininewsfeed_model extends MY_Model {
 		$this->load->model('account_model', 'account');
 		
 		if (!$userData = $this->account->getUserData()) return false;
-		if (!isset($userData['statics'])) return false;
+		if (!isset($userData['statics']) || empty($userData['statics'])) return false;
 		$statics = array_keys($userData['statics']);
+		if (!$where = $this->jsonSearch($statics, 'statics')) return false;
 		$this->db->order_by('id', 'DESC');
-		$this->db->where($this->jsonSearch($statics, 'statics'));
+		$this->db->where($where);
+		$newsFeedList = $this->_result($this->newsFeedTable);
+		
 		if (!$newsFeedList = $this->_result($this->newsFeedTable)) return false;
 		return $newsFeedList;
 	}

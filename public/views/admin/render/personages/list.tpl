@@ -5,7 +5,7 @@
 			<td>Тип брони</td>
 			<td>Сервер</td>
 			<td class="w200px">Заявщик</td>
-			<td class="nowidth">Опции</td>
+			<td class="w112px">Опции</td>
 		</tr>
 	</thead>
 	<tbody id="userPersonagesList">
@@ -13,13 +13,25 @@
 			{% for item in personages %}
 				<tr>
 					<td>
-						<p>{{item.nick}}</p>
+						<div class="field">
+							<input type="text" p_nick value="{{item.nick}}">
+						</div>
 					</td>
 					<td>
-						<p>{{item.armor}}</p>
+						<div class="select">
+							<select p_armor>
+								<option{% if item.armor == 'Латы' %} selected{% endif %} value="Латы">Латы</option>
+								<option{% if item.armor == 'Кольчуга' %} selected{% endif %} value="Кольчуга">Кольчуга</option>
+								<option{% if item.armor == 'Кожа' %} selected{% endif %} value="Кожа">Кожа</option>
+								<option{% if item.armor == 'Ткань' %} selected{% endif %} value="Ткань">Ткань</option>
+							</select>
+							<div class="select__caret"></div>
+						</div>
 					</td>
 					<td>
-						<p>{{item.server}}</p>
+						<div class="field">
+							<input type="text" p_server value="{{item.server}}">
+						</div>
 					</td>
 					<td>
 						{% if item.user_nickname %}
@@ -37,10 +49,11 @@
 							<span>Администратор</span>
 						{% endif %}
 					</td>
-					<td>
-						<div class="buttons nowrap">
-							<button class="remove" untiegameidpersonage="{{item.id}}" title="Отвязать персонажа"><i class="fa fa-user"></i></button>
-							<button class="remove" removegameidpersonage="{{item.id}}" title="Удалить персонажа"><i class="fa fa-trash"></i></button>
+					<td class="center">
+						<div class="buttons inline nowrap">
+							<button class="small w30px" updategameidpersonage="{{item.id}}" title="Изменить данные персонажа" disabled><i class="fa fa-save"></i></button>
+							<button class="small w30px remove" untiegameidpersonage="{{item.id}}" title="Отвязать персонажа"><i class="fa fa-user"></i></button>
+							<button class="small w30px remove" removegameidpersonage="{{item.id}}" title="Удалить персонажа"><i class="fa fa-trash"></i></button>
 						</div>
 					</td>
 				</tr>

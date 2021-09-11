@@ -227,7 +227,11 @@ class MY_Model extends CI_Model {
 			if (is_integer($items)) $str .= "JSON_CONTAINS(".$field.", '[".$items."]') OR ";
 			else $str .= "JSON_CONTAINS(".$field.", '[\"".$items."\"]') OR ";
 		}
-		return rtrim($str, ' OR ').')';
+		
+		$str = rtrim($str, ' OR ').')';
+		
+		
+		return $str != '()' ? $str : '';
 	}
 	
 	

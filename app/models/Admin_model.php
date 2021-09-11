@@ -1754,6 +1754,21 @@ class Admin_model extends My_Model {
 	 * @param 
 	 * @return 
 	 */
+	public function personagesUpdate($data = false) {
+		if (!$data) return false;
+		$personageId = arrTakeItem($data, 'id');
+		$this->db->where('id', $personageId);
+		if (!$this->db->update('users_personages', $data)) return false;
+		return true;
+	}
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	 */
 	public function personagesRemove($id = false) {
 		if (!$id) return false;
 		$this->load->model('kpi_model', 'kpi');

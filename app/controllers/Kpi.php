@@ -710,9 +710,14 @@ class Kpi extends MY_Controller {
 				foreach ($kpiPeriods as $period) $periodsStr .= ';'.$period['title'];
 				$dataToExport .= iconv('UTF-8', 'windows-1251', 'Участник;Статик;NDA;Платежные реквизиты'.$periodsStr.';Итого к выплате'."\r\n");
 				
+				
 				foreach ($data['report'] as $staticId => $users) foreach ($users as $userId => $userData) {
 					$periodsRow = '';
-					foreach ($data['kpi_periods_ids'] as $periodId) $periodsRow .= ';'.$userData['periods'][$periodId]['payout'];
+					
+					foreach ($data['kpi_periods_ids'] as $periodId) {
+						$payOut = isset($userData['periods'][$periodId]) ? $userData['periods'][$periodId]['payout'] : '-';
+						$periodsRow .= ';'.$payOut;
+					}
 					
 					$dataToExport .= iconv('UTF-8', 'windows-1251', $userData['nickname'].';'.$data['statics'][$staticId].';'.$userData['nda'].';'.$userData['payment'].$periodsRow.';'.str_replace('.', ',', $userData['payout_all']))."\r\n";
 				}

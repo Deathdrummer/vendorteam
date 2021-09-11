@@ -67,12 +67,12 @@
 					
 				</div>
 				<div id="compoundForm">
-					<table class="popup__table report__table_right minheight">
+					<table class="popup__table report__table_right minheight w340px">
 						<thead>
 							<tr>
 								<td><strong>Сумм. коэфф.</strong></td>
-								<td><strong>Персонажей</strong></td>
-								<td><strong>Эффективн.</strong></td>
+								{% if settings.showfields.persones_count %}<td><strong>Персонажей</strong></td>{% endif %}
+								{% if settings.showfields.effectiveness %}<td><strong>Эффективн.</strong></td>{% endif %}
 								<td><strong>Штрафы</strong></td>
 							</tr>
 						</thead>
@@ -82,20 +82,27 @@
 									<td class="w1 text-center">
 										{{user.rate_summ|default(0)}}
 									</td>
-									<td class="w1 text-center">
-										{% if is_lider %}
-											<input type="number" step="0.1" value="{{user.persones_count|default(0)}}" name="compound_users[{{id}}][persones_count]" setcompound="{{id}}|persones_count">
-										{% else %}
-											{{user.persones_count|default(0)}}
-										{% endif %}
-									</td>
-									<td class="w1 text-center">
-										{% if is_lider %}
-											<input type="number" step="0.1" value="{{user.effectiveness|default(0)}}" name="compound_users[{{id}}][effectiveness]" setcompound="{{id}}|effectiveness">
-										{% else %}
-											{{user.effectiveness|default(0)}}
-										{% endif %}
-									</td>
+									
+									{% if settings.showfields.persones_count %}
+										<td class="w1 text-center">
+											{% if is_lider %}
+												<input type="number" step="0.1" value="{{user.persones_count|default(0)}}" name="compound_users[{{id}}][persones_count]" setcompound="{{id}}|persones_count">
+											{% else %}
+												{{user.persones_count|default(0)}}
+											{% endif %}
+										</td>
+									{% endif %}
+									
+									{% if settings.showfields.effectiveness %}
+										<td class="w1 text-center">
+											{% if is_lider %}
+												<input type="number" step="0.1" value="{{user.effectiveness|default(0)}}" name="compound_users[{{id}}][effectiveness]" setcompound="{{id}}|effectiveness">
+											{% else %}
+												{{user.effectiveness|default(0)}}
+											{% endif %}
+										</td>
+									{% endif %}
+									
 									<td class="w1 text-center">
 										{% if is_lider %}
 											<input type="number" step="0.1" value="{{user.fine|default(0)}}" name="compound_users[{{id}}][fine]" setcompound="{{id}}|fine">

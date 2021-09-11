@@ -699,7 +699,9 @@ class Account extends MY_Controller {
 		$postData = $this->input->post();
 		$data = $this->account->getUsersToCompound($postData);
 		$raidsTypes = $this->admin->getRaidsTypes();
-		echo $this->twig->render('views/account/render/compound_users', ['compounds_data' => $data['compounds_data'], 'raids' => $data['raids'], 'is_lider' => $postData['is_lider'], 'raids_types' => $raidsTypes]);
+		
+		$settings = isset($this->settings['compound_users_setting'][$postData['static_id']]) ? $this->settings['compound_users_setting'][$postData['static_id']] : null;
+		echo $this->twig->render('views/account/render/compound_users', ['compounds_data' => $data['compounds_data'], 'raids' => $data['raids'], 'is_lider' => $postData['is_lider'], 'raids_types' => $raidsTypes, 'settings' => $settings]);
 	}
 	
 	
