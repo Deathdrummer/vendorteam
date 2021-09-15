@@ -155,10 +155,10 @@ class MY_Model extends CI_Model {
 	 * @return string
 	*/
 	protected function groupConcatValue($concatField = false, $fieldname = false, $distinct = false) {
-		if (!$concatField || !$fieldname) return '';
+		if (!$fieldname) return '';
 		
 		if ($concatField === false) {
-			return "CAST(CONCAT('[', GROUP_CONCAT(".($distinct === true ? 'distinct' : '')." ".$concatField."), ']') AS JSON) AS ".$fieldname;
+			return "CAST(CONCAT('[', GROUP_CONCAT(".($distinct === true ? 'distinct' : '')." ".$fieldname."), ']') AS JSON) AS ".$fieldname;
 		} else {
 			return "IF(GROUP_CONCAT(".$concatField."), CAST(CONCAT('[', GROUP_CONCAT(".($distinct === true ? 'distinct' : '')." ".$concatField."), ']') AS JSON), NULL) AS ".$fieldname;
 		}

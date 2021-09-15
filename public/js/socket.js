@@ -40,22 +40,42 @@ if (location.hostname != 'localhost') {
 	});
 	
 	
+	
+	
+	
+	
 	socket.on('mininewsfeed:reload', () => {
-		getAjaxHtml('mininewsfeed/account_list', function(html) {
-			$('#miniNewsFeedAccountBlock').html(html);
-		}, function() {});
+		let staticId = $('[staticscontent].staticscontent_visible').attr('staticscontent');
+		getStaticMiniNews(staticId);
 	});
 	
 	
-	let date = new Date(),
-		hours = date.getHours(),
-		minutes = date.getMinutes();
 	
-	setInterval(() => { 
-		//if (hours == 0 && (minutes >= 1 && minutes <= 20)) {
-			getAjaxHtml('mininewsfeed/account_list', function(html) {
-				$('#miniNewsFeedAccountBlock').html(html);
+
+	let staticId = $('[staticscontent].staticscontent_visible').attr('staticscontent');
+	getStaticMiniNews(staticId);
+
+	$('[accountstatic]').on(tapEvent, function() {
+		staticId = $(this).attr('accountstatic');
+		getStaticMiniNews(staticId);
+	});
+
+
+
+	function getStaticMiniNews(staticId) {
+		if ($('[staticscontent="'+staticId+'"]').length) {
+			getAjaxHtml('mininewsfeed/account_list', {static_id: staticId}, function(html) {
+				$('[staticscontent="'+staticId+'"]').find('[mininewsfeedaccountblock]').html(html);			
 			}, function() {});
-		//}
+		}
+	}
+	
+	
+		
+	setInterval(() => { 
+		let staticId = $('[staticscontent].staticscontent_visible').attr('staticscontent');
+		getStaticMiniNews(staticId);
 	}, (180 * 1000));
+	
+	
 }	

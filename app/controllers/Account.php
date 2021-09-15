@@ -51,7 +51,6 @@ class Account extends MY_Controller {
 		$this->userData['agreement'] = $this->get_agreement_stat();
 		$this->userData['feed_messages'] = $this->admin->getFeedMessagesStatic(array_keys($this->userData['statics']));
 		$this->userData['balance'] = $this->wallet->getUserBalance($this->userData['id']);
-		$this->userData['mini_newsfeed'] = $this->mininewsfeed->getNewsFeedList();
 		
 		
 		//------------------------------------------ задать куки если накопленный процент больше или равен заданному проценту

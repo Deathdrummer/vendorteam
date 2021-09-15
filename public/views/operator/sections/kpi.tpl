@@ -1025,6 +1025,187 @@
 				});
 				
 				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				//---------------------------------------------- Поставить все активности
+				$('[progressplancheckall]').on(tapEvent, function() {
+					let card = $(this).closest('[kpiprocesscard]'),
+						customTasksField = $(card).find('[customprogressdata]'),
+						customTasksCheck = $(card).find('[customprogresschangecheck]'),
+						personagesTasks = $(card).find('[tasksprogressdata]'),
+						customTasksFieldSelectors = [],
+						customTasksCheckSelectors = [],
+						personagesTasksSelectors = [];
+					
+					$(card).addClass('kpiprocesscard_waiting');
+					
+					
+					// доп. поля
+					let customTasksData = [];
+					$.each(customTasksField, function(k, item) {
+						let d = $(item).attr('customprogressdata').split('|'),
+							userId = d[0],
+							field = d[1],
+							value = parseInt($(item).text()) || 0,
+							need = parseInt($(item).closest('[ctasksitem]').find('[customtasksneed]').attr('customtasksneed')) || null;
+						
+						if (need && value < need) {
+							customTasksData.push({
+								user_id: userId,
+								field: field,
+								value: need
+							});
+							customTasksFieldSelectors.push({
+								selector: $(item).closest('[ctasksitem]'),
+								value: need
+							});
+						}
+					});
+					
+					$.each(customTasksCheck, function(k, item) {
+						let d = $(item).attr('customprogresschangecheck').split('|'),
+							userId = d[0],
+							field = d[1],
+							value = $(item).is(':checked') ? 1 : 0;
+						
+						if (value == 0) {
+							customTasksData.push({
+								user_id: userId,
+								field: field,
+								value: 1
+							});
+							customTasksCheckSelectors.push(item);
+						}
+					});
+					
+					
+					// персонажи
+					let personagesTasksData = [];
+					$.each(personagesTasks, function(k, item) {
+						let d = $(item).attr('tasksprogressdata').split('|'),
+							userId = d[0],
+							personageId = d[1],
+							taskId = d[2],
+							taskType = d[3],
+							value = parseInt($(item).text()) || 0,
+							need = parseInt($(item).closest('[ptasksitem]').find('[personagetasksneed]').attr('personagetasksneed')) || null;
+						
+						
+						if (need && value < need && parseInt(taskType) == 1) {
+							personagesTasksData.push({
+								user_id: parseInt(userId),
+								personage_id: parseInt(personageId),
+								task_id: parseInt(taskId),
+								type: parseInt(taskType),
+								value: need
+							});
+							personagesTasksSelectors.push({
+								selector: $(item).closest('[ptasksitem]'),
+								value: need
+							});
+						}
+					});
+					
+					
+					
+					console.log(customTasksData);
+					
+					
+					// персонажи
+					let postCustom = new Promise((resolve, reject) => {
+						if (customTasksData.length) {
+							$.post('/kpi/progressplan/check_customs', {period_id: params.period_id, customs: customTasksData}, function(response) {
+								if (!response) {
+									reject();
+									notify('Ошибка сохранения параметра!', 'error');
+								} else {
+									resolve(response);
+								}
+							}, 'json').fail(function(e) {
+								reject(e.errorText);
+								showError(e);
+								notify('Системная ошибка!', 'error');
+							});
+						} else resolve(1);
+					});
+					
+					
+					// доп. поля
+					let postTasks = new Promise((resolve, reject) => {	
+						if (personagesTasksData.length) {
+							$.post('/kpi/progressplan/check_tasks', {period_id: params.period_id, tasks: personagesTasksData}, function(response) {
+								if (!response) {
+									reject();
+									notify('Ошибка сохранения параметра!', 'error');
+								}  else {
+									resolve(response);
+								}
+							}, 'json').fail(function(e) {
+								reject(e.errorText);
+								showError(e);
+								notify('Системная ошибка!', 'error');
+							});
+						} else resolve(1);
+					});
+					
+					
+					Promise.all([postTasks, postCustom]).then(resp => {
+						if (resp[0] != 1) {
+							notify('Ошибка сохранения задач для персонажей!', 'error');
+						}
+						
+						if (resp[1] != 1) {
+							notify('Ошибка сохранения кастомных задач!', 'error');
+						}
+						
+						if (resp[0] == 1 && resp[1] == 1) {
+							if (customTasksCheckSelectors.length) {
+								$.each(customTasksCheckSelectors, function(k, item) {
+									$(item).setAttrib('checked');
+									$(item).closest('[ctasksitem]').addClass('customtasks__item_done');
+								});
+							}
+								
+							if (customTasksFieldSelectors.length) {
+								$.each(customTasksFieldSelectors, function(k, item) {
+									$(item.selector).addClass('customtasks__item_done');
+									$(item.selector).find('[customprogressdata]').text(item.value);
+								});
+							}
+								
+							if (personagesTasksSelectors.length) {
+								$.each(personagesTasksSelectors, function(k, item) {
+									$(item.selector).addClass('personagetasks__item_done');
+									$(item.selector).find('[tasksprogressdata]').text(item.value);
+								});
+							}
+							notify('Данные успешно сохранены!');
+						}
+
+						$(card).removeClass('kpiprocesscard_waiting');
+					}, reason => {
+						notify('ошибка сохранения данных!', 'error');
+						$(card).removeClass('kpiprocesscard_waiting');
+						console.log(reason);
+					});				
+						
+				});
+				
+				
+				
+				
+				
+				
+				
+				
+				
 				//---------------------------------------------- временная копка для удаления несуществующего персонажа
 				$('[kpiremovedeletedpersonage]').on(tapEvent, function() {
 					let personageId = $(this).attr('kpiremovedeletedpersonage'),

@@ -223,7 +223,9 @@ class Mininewsfeed extends MY_Controller {
 	 * @return 
 	 */
 	public function account_list() {
-		$data['mini_newsfeed'] = $this->mininewsfeed->getNewsFeedList();
+		$staticId = $this->input->post('static_id') ?: false;
+		$newsFeedList = $this->mininewsfeed->getNewsFeedList($staticId);
+		$data['mini_newsfeed'] = $newsFeedList;
 		echo $this->twig->render('views/account/render/mininewsfeed/list.tpl', $data);
 	}
 	

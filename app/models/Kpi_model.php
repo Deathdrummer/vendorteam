@@ -17,6 +17,7 @@ class Kpi_model extends MY_Model {
 	private $kpiReportsPlanesTable = 'kpi_reports_planes';
 	private $kpiTemplatesTable = 'kpi_templates_titles';
 	private $kpiTemplatesDataTable = 'kpi_templates_data';
+	private $kpiUsersStaticsTable = 'kpi_users_statics';
 	
 	public function __construct() {
 		parent::__construct();
@@ -126,7 +127,12 @@ class Kpi_model extends MY_Model {
 		if (isset($data['scores'])) $data['scores'] = json_encode($data['scores']);
 		if (isset($data['fields'])) $data['fields'] = json_encode(array_filter($data['fields']));
 		if (isset($data['custom_fields'])) $data['custom_fields'] = json_encode(array_filter($data['custom_fields']));
+		
 		if (!$this->db->insert($this->kpiPeriodsTable, $data)) return false;
+		$periodId = $this->db->insert_id();
+		
+		if (!$this->addUsersStatics($periodId, $data['statics'])) return false;
+		
 		return true;
 	}
 	
@@ -192,6 +198,66 @@ class Kpi_model extends MY_Model {
 		$this->db->delete($this->kpiPeriodsTable);
 		
 		return true;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//---------------------------------------------------------------------------------------------------------- perconages tasks
+	
+	/**
+	 * @param 
+	 * @return 
+	 */
+	public function addUsersStatics($periodId = false, $staticsIds = false) {
+		if (!$periodId || !$staticsIds) return false;
+		$staticsIds = json_decode($staticsIds, true);
+		
+		$this->db->select('static_id, '.$this->groupConcatValue(false, 'user_id', true));
+		$this->db->where_in('static_id', $staticsIds);
+		$this->db->group_by('static_id');
+		if (!$result = $this->_result('users_statics')) return false;
+		
+		$dataToTable = [];
+		foreach ($result as $row) {
+			$dataToTable[] = [
+				'period_id' => $periodId,
+				'static_id' => $row['static_id'],
+				'users' 	=> $row['user_id'],
+			];
+		}
+		
+		if (!$dataToTable) return false;
+		$this->db->insert_batch($this->kpiUsersStaticsTable, $dataToTable);
+		return true;
+	}
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return [user => static]
+	 */
+	public function getUsersStatics($periodId = false) {
+		if (!$periodId) return false;
+		$this->db->where('period_id', $periodId);
+		if (!$result = $this->_result($this->kpiUsersStaticsTable)) return false;
+		
+		$data = [];
+		foreach ($result as $row) {
+			$users = json_decode($row['users'], true);
+			$arr = array_combine($users, array_fill(0, count($users), $row['static_id']));
+			$data = array_replace($data, $arr);
+		}
+		return $data;
 	}
 	
 	
@@ -685,6 +751,13 @@ class Kpi_model extends MY_Model {
 					$formData[$staticId][$userId]['custom_fields'][$field] = [
 						'need' => $needValue,
 						'fact' => isset($customFieldsData[$userId][$field]) ? $customFieldsData[$userId][$field] : null
+					];
+				}
+			} elseif ($customFieldsData) {
+				foreach ($customFieldsData as $userId => $customFields) foreach ($customFields as $field => $value) {
+					$formData[$staticId][$userId]['custom_fields'][$field] = [
+						'need' => 1,
+						'fact' => $value
 					];
 				}
 			}
