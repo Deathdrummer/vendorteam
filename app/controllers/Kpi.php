@@ -507,7 +507,7 @@ class Kpi extends MY_Controller {
 					$scoresFine = isset($period['scores']['fine']) ? (float)$period['scores']['fine'] : 0;
 					$scoresCustom = isset($period['scores']['customfields']) ? (float)$period['scores']['customfields'] : 0;
 					
-					$allScrores = $scoresPersonages + $scoresVisits + $scoresFine + $scoresCustom;
+					$allScrores = $scoresPersonages + $scoresFine + $scoresCustom;
 					$oneScorePercent = 100 / $allScrores;
 					
 					$scoresPersonagesPercent = $scoresPersonages ? round($scoresPersonages * $oneScorePercent, 3) : false; // макс. проц. активность на персонажах
@@ -531,13 +531,15 @@ class Kpi extends MY_Controller {
 								$visitsFact = isset($visitsField['fact']) ? $visitsField['fact'] : 0;
 								
 								$usersVisitsPercents[$userId] = ($visitsFact == 0 || $visitsNeed == 0) ? 0 : round($visitsFact / $visitsNeed, 3);
+								//$visitsCoeff = isset($usersVisitsPercents[$userId]) ? $usersVisitsPercents[$userId] : 0;
 								
-								if (!$visitsNeed) {
+								
+								/*if (!$visitsNeed) {
 									$calcData[$userId]['visits'] = 0;
 								} else {
 									$donePercentVisits = $visitsNeed ? round(($visitsFact / $visitsNeed) * $scoresVisitsPercent, 3) : 0;
 									$calcData[$userId]['visits'] = $donePercentVisits > $scoresVisitsPercent ? $scoresVisitsPercent : $donePercentVisits;
-								}
+								}*/
 							}
 								
 							if ($scoresFinePercent) {
@@ -562,7 +564,7 @@ class Kpi extends MY_Controller {
 									$done = isset($fData['done']) ? $fData['done'] : 0;
 									$need = $fData['type'] == 'koeff' ? $fData['need'] : 1;
 									$score = $fData['score'];
-									$visitsCoeff = isset($usersVisitsPercents[$userId]) ? $usersVisitsPercents[$userId] : 0;
+									//$visitsCoeff = isset($usersVisitsPercents[$userId]) ? $usersVisitsPercents[$userId] : 0;
 									
 									if (!isset($allCustomScrores[$userId])) $allCustomScrores[$userId] = ($need * $score);
 									else $allCustomScrores[$userId] += ($need * $score);
@@ -572,7 +574,7 @@ class Kpi extends MY_Controller {
 								}
 								
 								foreach ($allCustomScrores as $userId => $scores) {
-									$donePercentCustom = round(($doneCustomScores[$userId] / $scores) * $scoresCustomPercent * $visitsCoeff, 3);
+									$donePercentCustom = round(($doneCustomScores[$userId] / $scores) * $scoresCustomPercent/* * $visitsCoeff*/, 3);
 									$calcData[$userId]['custom'] = $donePercentCustom > $scoresCustomPercent ? $scoresCustomPercent : $donePercentCustom;
 								}
 							}
@@ -592,7 +594,7 @@ class Kpi extends MY_Controller {
 							$done = isset($task['done']) ? $task['done'] : 0;
 							$repeats = $task['repeats'];
 							$score = $task['score'];
-							$visitsCoeff = isset($usersVisitsPercents[$userId]) ? $usersVisitsPercents[$userId] : 0;
+							//$visitsCoeff = isset($usersVisitsPercents[$userId]) ? $usersVisitsPercents[$userId] : 0;
 							
 							if (!isset($allScrores[$userId])) $allScrores[$userId] = ($repeats * $score);
 							else $allScrores[$userId] += ($repeats * $score);
@@ -602,7 +604,7 @@ class Kpi extends MY_Controller {
 						}
 						
 						foreach ($allScrores as $userId => $scores) {
-							$donePercentPersonages = round(($doneScores[$userId] / $scores) * $scoresPersonagesPercent * $visitsCoeff, 3);
+							$donePercentPersonages = round(($doneScores[$userId] / $scores) * $scoresPersonagesPercent/* * $visitsCoeff*/, 3);
 							$calcData[$userId]['personages'] = $donePercentPersonages > $scoresPersonagesPercent ? $scoresPersonagesPercent : $donePercentPersonages;
 						}
 						
@@ -660,11 +662,12 @@ class Kpi extends MY_Controller {
 								$payoutData[$userStatic][$userId]['payout_all'] += round($payout * $userRankLider);
 							}
 								
+							$visitsCoeff = isset($usersVisitsPercents[$userId]) ? $usersVisitsPercents[$userId] : 0;
 							
 							$payoutData[$userStatic][$userId]['periods'][$periodId] = [
 								'summ'		=> $amount,
-								'persent'	=> round($scores, 1),
-								'payout'	=> round($payout * $userRankLider),
+								'persent'	=> round($scores * $visitsCoeff, 1),
+								'payout'	=> round($payout * $userRankLider * $visitsCoeff),
 							];
 						}
 					}

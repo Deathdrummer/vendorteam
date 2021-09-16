@@ -569,28 +569,32 @@
 <script type="text/javascript"><!--
 
 if (location.hostname != 'localhost') {
-	countUsersOnline = 0;
+	
+	
 	socket.emit('take_users_online', users => {
 		$.each(users, function(k, item) {
 			$('#users').find('[userid="'+item['user_id']+'"]').find('.avatar').addClass('avatar_online').attr('title', 'Онлайн');
 		});
-		countUsersOnline = Object.keys(users).length;
+		let countUsersOnline = Object.keys(users).length;
 		$('#onlineUsersCount').text(countUsersOnline);
 	});
 	
 	
 	
 
-	socket.on('set_online_user', (userId) => {
+	socket.on('set_online_user', (userId, users) => {
+		let countUsersOnline = Object.keys(users).length;
 		$('#users').find('[userid="'+userId+'"]').find('.avatar').addClass('avatar_online').attr('title', 'Онлайн');
-		$('#onlineUsersCount').text(++countUsersOnline);
+		$('#onlineUsersCount').text(countUsersOnline);
 	});
 
 
-	socket.on('set_offline_user', (userId) => {
+	socket.on('set_offline_user', (userId, users) => {
 		$('#users').find('[userid="'+userId+'"]').find('.avatar').removeClass('avatar_online').removeAttrib('title');
-		$('#onlineUsersCount').text(--countUsersOnline);
+		let countUsersOnline = Object.keys(users).length;
+		$('#onlineUsersCount').text(countUsersOnline);
 	});
+
 }
 	
 
