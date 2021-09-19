@@ -359,6 +359,61 @@ class Users_model extends MY_Model {
 	
 	
 	
+	
+	/**
+	 * Задать данные участников
+	 * @param 
+	 * @return 
+	 */
+	public function setUsersData($users = false) {
+		if (!$users) return 0;
+		foreach ($users as $k => $user) {
+			if (isset($user['reg_date']) && $user['reg_date']) {
+				$users[$k]['reg_date'] = is_numeric($user['reg_date']) ? $user['reg_date'] : strtotime($user['reg_date']);
+			} else {
+				unset($users[$k]['reg_date']);
+			}
+			
+			if (isset($user['birthday']) && $user['birthday']) {
+				$users[$k]['birthday'] = is_numeric($user['birthday']) ? $user['birthday'] : strtotime($user['birthday']);
+			} else {
+				unset($users[$k]['birthday']);
+			}
+		}
+		
+		$this->refreshUsersOfftime($users);
+		//$this->refreshUsersPayments($users); обновить платежные данные участников
+		
+		$this->db->select('payment');
+		$this->db->where_in('id', array_column($users, 'id'));
+		$usersPayments = $this->_result('users');
+		$diffPayments = array_diff(array_column($users, 'payment'), array_column($usersPayments, 'payment'));
+		
+		$toAdminAction = [];
+		foreach ($users as $user) {
+			if (in_array($user['payment'], $diffPayments)) {
+				$toAdminAction[] = [
+					'user_id'	=> $user['id'],
+					'payment'	=> $user['payment']
+				];
+			} 
+		}
+		
+		if ($toAdminAction) $this->setAdminAction(4, $toAdminAction);
+		
+		
+		$this->db->update_batch('users', $users, 'id');
+		$this->setRanksToUsers();
+		return 1;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 	/**
 	 * Задать данные одного участника
 	 * @param данные пользователя
@@ -396,6 +451,10 @@ class Users_model extends MY_Model {
 		$this->db->where('id', $userData['user_id']);
 		if ($this->db->update('users')) {
 			$this->setRankToUser($userData['user_id']);
+			if ($verification && $tableData['deleted'] == 1) $this->setAdminAction(3, ['user_id' => $userData['user_id'], 'stat' => 1]);
+			
+			if ($tableData['payment'] != $userData['user_payment']) $this->setAdminAction(4, [['user_id' => $userData['user_id'], 'payment' => $userData['user_payment']]]);	
+			
 			return 1;
 		}
 		return 0;
@@ -459,39 +518,6 @@ class Users_model extends MY_Model {
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	/**
-	 * Задать данные участников
-	 * @param 
-	 * @return 
-	 */
-	public function setUsersData($users = false) {
-		if (!$users) return 0;
-		foreach ($users as $k => $user) {
-			if (isset($user['reg_date']) && $user['reg_date']) {
-				$users[$k]['reg_date'] = is_numeric($user['reg_date']) ? $user['reg_date'] : strtotime($user['reg_date']);
-			} else {
-				unset($users[$k]['reg_date']);
-			}
-			
-			if (isset($user['birthday']) && $user['birthday']) {
-				$users[$k]['birthday'] = is_numeric($user['birthday']) ? $user['birthday'] : strtotime($user['birthday']);
-			} else {
-				unset($users[$k]['birthday']);
-			}
-		}
-		
-		$this->refreshUsersOfftime($users);
-		//$this->refreshUsersPayments($users); обновить платежные данные участников
-		$this->db->update_batch('users', $users, 'id');
-		$this->setRanksToUsers();
-		return 1;
-	}
 	
 	
 	
@@ -673,7 +699,9 @@ class Users_model extends MY_Model {
 				];	
 			}
 			
-			if ($this->db->insert_batch('users_statics', $insertData)) return 1;
+			if (!$this->db->insert_batch('users_statics', $insertData)) return 0;
+			$this->setAdminAction(1, $insertData);
+			return 1;
 		}
 		return 0;
 	}
@@ -760,12 +788,8 @@ class Users_model extends MY_Model {
 			}
 			
 			$this->db->where('id', $id);
-			$this->db->update('users', [
-				'avatar' 		=> null,
-				'verification' 	=> 0,
-				'deleted' 		=> 1,
-				'agreement' 	=> 0
-			]);
+			if (!$this->db->update('users', ['avatar' => null, 'verification' => 0, 'deleted' => 1, 'agreement' => 0])) return 0;
+			$this->setAdminAction(3, ['user_id' => $id, 'stat' => 0]);
 			return 1;
 		}
 		return 0;
@@ -784,6 +808,7 @@ class Users_model extends MY_Model {
 		if (!$id) return false;
 		$this->db->where('id', $id);
 		if (!$this->db->update('users', ['excluded' => 1])) return 0;
+		$this->setAdminAction(2, ['user_id' => $id, 'stat' => 0]);
 		return 1;
 	}
 	
@@ -799,6 +824,7 @@ class Users_model extends MY_Model {
 		if (!$id) return false;
 		$this->db->where('id', $id);
 		if (!$this->db->update('users', ['excluded' => 0])) return 0;
+		$this->setAdminAction(2, ['user_id' => $id, 'stat' => 1]);
 		return 1;
 	}
 	

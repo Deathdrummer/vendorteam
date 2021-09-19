@@ -6,6 +6,9 @@ class Admin_model extends My_Model {
 	private $imgDir = 'public/images/';
 	private $secretKey = 'Novbragoz77';
 	
+	private $adminsTable = 'admins';	
+	private $actionsTable = 'actions';	
+	
 	
 	public function __construct() {
 		parent::__construct();
@@ -204,6 +207,55 @@ class Admin_model extends My_Model {
 		
 		return 1;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function admins($action = false) {
+		$args = func_get_args();
+		$action = isset($args[0]) ? $args[0] : false;
+		$data = isset($args[1]) ? $args[1] : false;
+		if (!$action) return false;
+		
+		switch ($action) {
+			case 'get':
+				if (!$result = $this->_result($this->adminsTable)) return false;
+				return $result;
+				break;
+			
+			case 'save':
+				if (!$data) return false;
+				if (!$this->db->insert($this->adminsTable, $data)) return false;
+				return $this->db->insert_id();
+				break;
+			
+			case 'update':
+				if (!$data) return false;
+				$this->db->where('id', $data['id']);
+				if (!$this->db->update($this->adminsTable, $data['fields'])) return false;
+				return true;
+				break;
+			
+			case 'remove':
+				if (!$data) return false;
+				$this->db->where('id', $data['id']);
+				if (!$this->db->delete($this->adminsTable)) return false;
+				return true;
+				break;
+			
+			default: break;
+		}
+	}
+	
+	
 	
 	
 	

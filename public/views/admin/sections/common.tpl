@@ -9,24 +9,25 @@
 	
 	
 	<ul class="tabstitles">
-		<li id="common">Главное</li>
- 		<li id="fieldsPay">Поля для формы оплаты</li>
-		<li id="fieldsComplaints">Поля для предложений и жалоб</li>
-		<li id="usersListPay">Список "Заказ Оплаты"</li>
-		<li id="usersListComplaints">Список "Предложения и Жалобы"</li>
-		<li id="resignsList">Заявки на увольнение</li>
-		<li id="constants">Константы и шаблоны</li>
-		<li id="agreement">Договор</li>
-		<li id="importantInfo">Важная информация</li>
-		<li id="commonMessage">Cообщение для НЕверифицированных</li>
-		<li id="skype">Скайп</li>
-		<li id="links">Ссылки</li>
-		<li id="stopList">Стоп-лист</li>
-		<li id="tabSctions">Разделы</li>
+		{% if permissions is not defined or id~'.common' in permissions %}<li id="common">Главное</li>{% endif %}
+ 		{% if permissions is not defined or id~'.fieldsPay' in permissions %}<li id="fieldsPay">Поля для формы оплаты</li>{% endif %}
+		{% if permissions is not defined or id~'.fieldsComplaints' in permissions %}<li id="fieldsComplaints">Поля для предложений и жалоб</li>{% endif %}
+		{% if permissions is not defined or id~'.usersListPay' in permissions %}<li id="usersListPay">Список "Заказ Оплаты"</li>{% endif %}
+		{% if permissions is not defined or id~'.usersListComplaints' in permissions %}<li id="usersListComplaints">Список "Предложения и Жалобы"</li>{% endif %}
+		{% if permissions is not defined or id~'.resignsList' in permissions %}<li id="resignsList">Заявки на увольнение</li>{% endif %}
+		{% if permissions is not defined or id~'.constants' in permissions %}<li id="constants">Константы и шаблоны</li>{% endif %}
+		{% if permissions is not defined or id~'.agreement' in permissions %}<li id="agreement">Договор</li>{% endif %}
+		{% if permissions is not defined or id~'.importantInfo' in permissions %}<li id="importantInfo">Важная информация</li>{% endif %}
+		{% if permissions is not defined or id~'.commonMessage' in permissions %}<li id="commonMessage">Cообщение для НЕверифицированных</li>{% endif %}
+		{% if permissions is not defined or id~'.skype' in permissions %}<li id="skype">Скайп</li>{% endif %}
+		{% if permissions is not defined or id~'.links' in permissions %}<li id="links">Ссылки</li>{% endif %}
+		{% if permissions is not defined or id~'.stopList' in permissions %}<li id="stopList">Стоп-лист</li>{% endif %}
+		{% if permissions is not defined or id~'.tabSctions' in permissions %}<li id="tabSctions">Разделы</li>{% endif %}
 	</ul>
 	
 	
 	<div class="tabscontent">
+		{% if permissions is not defined or id~'.common' in permissions %}
 		<div tabid="common">
 			<h3>Главное</h3>
 			
@@ -109,20 +110,22 @@
 			</fieldset>
 			
 			
-
-			<fieldset>
-				<legend>Авторизация в админ. панели</legend>
+			{% if main_admin %}
+				<fieldset>
+					<legend>Авторизация в админ. панели</legend>
+					
+					{% include form~'field.tpl' with {'label': 'Новый логин', 'name': 'auth_login', 'placeholder': 'Назначьте логин', 'default': '', 'class': 'w20'} %}
+					{% include form~'field.tpl' with {'label': 'Новый пароль', 'name': 'auth_pass', 'type': 'password', 'placeholder': 'Назначьте пароль', 'default': '', 'class': 'w20'} %}
+					{% include form~'field.tpl' with {'label': 'Секретный ключ', 'name': 'secret_key', 'type': 'password', 'placeholder': 'Секретный ключ', 'default': '', 'class': 'w20'} %}
+					
+				</fieldset>
+			{% endif %}
 				
-				{% include form~'field.tpl' with {'label': 'Новый логин', 'name': 'auth_login', 'placeholder': 'Назначьте логин', 'default': '', 'class': 'w20'} %}
-				{% include form~'field.tpl' with {'label': 'Новый пароль', 'name': 'auth_pass', 'type': 'password', 'placeholder': 'Назначьте пароль', 'default': '', 'class': 'w20'} %}
-				{% include form~'field.tpl' with {'label': 'Секретный ключ', 'name': 'secret_key', 'type': 'password', 'placeholder': 'Секретный ключ', 'default': '', 'class': 'w20'} %}
-				
-			</fieldset>
 		</div>
+		{% endif %}
 		
 		
-		
-		
+		{% if permissions is not defined or id~'.fieldsPay' in permissions %}
 		<div tabid="fieldsPay">
 			<h3>Поля для формы оплаты</h3>
 			
@@ -159,8 +162,10 @@
 				
 			</fieldset>
 		</div>
+		{% endif %}
 		
 		
+		{% if permissions is not defined or id~'.fieldsComplaints' in permissions %}
 		<div tabid="fieldsComplaints">
 			<h3>Поля для предложений и жалоб</h3>
 			
@@ -197,10 +202,10 @@
 				
 			</fieldset>
 		</div>
+		{% endif %}
 		
 		
-		
-		
+		{% if permissions is not defined or id~'.usersListPay' in permissions %}
 		<div tabid="usersListPay">
 			<h3>Список пользователей "{{button_left_title_setting}}"</h3>
 			
@@ -272,10 +277,10 @@
 				
 			</fieldset>
 		</div>
+		{% endif %}
 		
 		
-		
-		
+		{% if permissions is not defined or id~'.usersListComplaints' in permissions %}
 		<div tabid="usersListComplaints">
 			<h3>Список пользователей "{{button_right_title_setting}}"</h3>
 			
@@ -343,10 +348,10 @@
 				
 			</fieldset>
 		</div>
+		{% endif %}
 		
 		
-		
-		
+		{% if permissions is not defined or id~'.resignsList' in permissions %}
 		<div tabid="resignsList">
 			<h3>Заявки на увольнение</h3>
 			
@@ -499,10 +504,12 @@
 				</div>
 			</div>
 		</div>
+		{% endif %}
 		
 		
 		
 		
+		{% if permissions is not defined or id~'.constants' in permissions %}
 		<div tabid="constants">
 			<h3>Константы</h3>
 			
@@ -651,16 +658,13 @@
 					</fieldset>
 				</div>
 				
-				
-				
-				
 			</div>
 		</div>
+		{% endif %}
 		
 		
 		
-		
-		
+		{% if permissions is not defined or id~'.agreement' in permissions %}
 		<div tabid="agreement">
 			<h3>Договор</h3>
 			
@@ -691,10 +695,10 @@
 				</div>	
 			</div>
 		</div>
+		{% endif %}
 		
 		
-		
-		
+		{% if permissions is not defined or id~'.importantInfo' in permissions %}
 		<div tabid="importantInfo">
 			<h3>Важная информация</h3>
 			
@@ -725,12 +729,12 @@
 				
 			</div>		
 		</div>
+		{% endif %}
 		
 		
 		
 		
-		
-		
+		{% if permissions is not defined or id~'.commonMessage' in permissions %}
 		<div tabid="commonMessage">
 			<h3>Cообщение для НЕверифицированных</h3>
 			
@@ -742,9 +746,10 @@
 			</fieldset>
 			
 		</div>
+		{% endif %}
 		
 		
-		
+		{% if permissions is not defined or id~'.skype' in permissions %}
 		<div tabid="skype">
 			<fieldset>
 				<legend>Ссылка скайп</legend>
@@ -755,8 +760,10 @@
 				
 			</fieldset>
 		</div>
+		{% endif %}
 		
 		
+		{% if permissions is not defined or id~'.links' in permissions %}
 		<div tabid="links">
 			<fieldset>
 				<legend>Ссылки</legend>
@@ -769,7 +776,10 @@
 				
 			</fieldset>
 		</div>
+		{% endif %}
 		
+		
+		{% if permissions is not defined or id~'.stopList' in permissions %}
 		<div tabid="stopList">
 			
 			
@@ -830,11 +840,13 @@
 					</table>
 				</div>
 			</div>
-			
 		</div>
+		{% endif %}
 		
 		
 		
+		
+		{% if permissions is not defined or id~'.tabSctions' in permissions %}
 		<div tabid="tabSctions">
 			<ul class="tabstitles sub">
 				<li id="compoundUsers">Коэффициенты</li>
@@ -861,9 +873,7 @@
 				</div>
 			</div>
 		</div>
-		
-		
-		
+		{% endif %}
 	</div>
 </form>
 

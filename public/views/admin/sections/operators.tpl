@@ -33,7 +33,7 @@
 									</div>
 									
 									{% if data.avatar %}
-										<img src="{{base_url()}}public/images/operators/mini/{{data.avatar}}?{{time()}}" class="ml-5" alt="{{data.nickname}}" title="{{data.nickname}}">
+										<img src="{{base_url('public/images/operators/mini/'~data.avatar~'?'~time())|no_file('public/images/user_mini.jpg')}}" class="ml-5" alt="{{data.nickname}}" title="{{data.nickname}}">
 									{% endif %}
 									{% if data.nickname %}
 										<span>{{data.nickname}}</span>

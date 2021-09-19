@@ -3,6 +3,7 @@
 class MY_Model extends CI_Model {
 	
 	protected $monthes = [1 => 'января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+	private $adminsActionsTable = 'admins_actions';
 	
 	
 	public function __construct() {
@@ -289,9 +290,77 @@ class MY_Model extends CI_Model {
 	
 	
 	
+	
+	
+	
+	/**
+	 * Записать действие администратора
+	 * @param Тип действия integer
+	 * @param данные в произвольном виде mixed
+	 * @return 
+	 */
+	public function setAdminAction($actionType = false, $info = false) {
+		if (!$actionType || !$info) return false;
+		if (isJson($info)) $info = json_decode($info, true);
+		$info = bringTypes($info);
+		
+		
+		$data = [];
+		switch ($actionType) {
+			case 1: // Изменение статиков участника
+				foreach ($info as $item) {
+					$data['user_id'] = arrTakeItem($item, 'user_id');
+					$data['statics'][] = $item;
+				}
+				break;
+			
+			case 2: // Исключить/вернуть исключенного участника
+				$data = $info;
+				break;
+			case 3: // Удалить/вернуть удаленного участника
+				$data = $info;
+				break;
+			
+			case 4: // Изменить платежные данные участника
+				$data = $info;
+				break;
+			
+			
+			default: break;
+		}
+		
+		//toLog($data);
+		
+		
+		
+		$insData = [
+			'admin_id' 	=> $this->getAdminId(),
+			'type' 		=> $actionType,
+			'info'		=> !isJson($data) ? json_encode($data) : $data,
+			'date' 		=> time()
+		];
+		
+		if (!$this->db->insert($this->adminsActionsTable, $insData)) return false;
+		return true;
+	}
+	
+	
+	
+	
+	
+	
+	
+	protected function getAdminId() {
+		if ($token = get_cookie('token')) return decrypt($token);
+		return 0;
+	}
+	
+	
 	protected function _isCliRequest() {
 		return (isset($_SERVER['HTTP_USER_AGENT']) && preg_match('/Wget\//', $_SERVER['HTTP_USER_AGENT']));
 	}
+	
+	
 	
 	
 	// 
@@ -299,8 +368,8 @@ class MY_Model extends CI_Model {
     count(*) AS total,
     SUM(case when date_taking IS NULL then 1 else 0 end) AS count_waiting,
     SUM(case when date_taking IS NOT NULL then 1 else 0 end) AS count_taking
-FROM users_gifts
-GROUP BY user_id*/
+	FROM users_gifts
+	GROUP BY user_id*/
 	
 	
 	

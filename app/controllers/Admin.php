@@ -3,22 +3,46 @@
 class Admin extends MY_Controller {
 	
 	public $viewsPath = 'views/admin/';
+	private $adminId = false;
+	private $adminPermissions = false;
 	
 	public function __construct() {
 		parent::__construct();
 		$this->load->model(['admin_model', 'reports_model', 'users_model']);
 		
-		$token = $this->admin_model->getSettings('token');
-		$sesToken = get_cookie('token'); //$this->session->userdata('token');
-		if ($token != $sesToken && get_cookie('token')/*$this->session->userdata('token')*/) $this->logout();
+		if (get_cookie('slaveadmin')) {
+			$this->adminId = decrypt(get_cookie('token'));
+			$admins = $this->admin_model->admins('get');
+			$adminsIds = array_column($admins, 'id');
+			
+			if ($this->adminId && ($index = getIndexFromFieldValue($admins, 'id', $this->adminId) === false)) $this->logout();
+			$this->adminPermissions = explode(',', $admins[$index]['permissions']);
+			
+			if (!in_array($this->adminId, $adminsIds)) $this->logout();
+		} else {
+			$token = $this->admin_model->getSettings('token');
+			$sesToken = get_cookie('token');
+			if ($token != $sesToken && get_cookie('token')) $this->logout();
+		}
 	}
 	
 	
 	
 	public function index() {
-		if (get_cookie('token')/*$this->session->userdata('token')*/ == false) {
+		if (get_cookie('token') == false) {
 			$this->auth();
 		} else {
+			if ($this->adminId) {
+				
+				$sectionsData  = [];
+				foreach ($this->adminSections as $sectionTitle => $sectionsList) foreach ($sectionsList as $url => $title) {
+					if (in_array($url, $this->adminPermissions)) $sectionsData[$sectionTitle][$url] = $title;
+				}
+				$data['sections'] = $sectionsData;
+			} else {
+				$data['sections'] = $this->adminSections;
+			}
+			
 			$data['date'] = date('Y');
 			$this->twig->display($this->viewsPath.'index', $data);
 		}
@@ -33,13 +57,25 @@ class Admin extends MY_Controller {
 	 * @return 
 	 */
 	private function auth() {
-		if ($this->input->server('REQUEST_METHOD') == 'POST' && !empty($this->input->post('login')) && !empty($this->input->post('password'))) {
-			$token = $this->admin_model->getSettings('token');
-			if ($token == md5($this->input->post('login').$this->input->post('password'))) {
-				set_cookie('token', $token, 31536000); //$this->session->set_userdata('token', $token);
+		$method = $this->input->server('REQUEST_METHOD');
+		$login = $this->input->post('login');
+		$password = $this->input->post('password');
+		$admins = $this->admin_model->admins('get');
+		
+		if ($method == 'POST' && !empty($login) && !empty($password)) {
+			if (in_array($login, array_column($admins, 'nickname'))) {
+				$index = getIndexFromFieldValue($admins, 'nickname', $login);
+				set_cookie('token', encrypt($admins[$index]['id']), 31536000);
+				set_cookie('slaveadmin', 1, 31536000);
 				redirect('admin');
 			} else {
-				$this->twig->display($this->viewsPath.'auth', ['error' => true]);
+				$token = $this->admin_model->getSettings('token');
+				if ($token == md5($login.$password)) {
+					set_cookie('token', $token, 31536000);
+					redirect('admin');
+				} else {
+					$this->twig->display($this->viewsPath.'auth', ['error' => true]);
+				}
 			}
 		} else {
 			$this->twig->display($this->viewsPath.'auth');
@@ -55,8 +91,64 @@ class Admin extends MY_Controller {
 	 * @return 
 	 */
 	public function logout() {
-		delete_cookie('token'); //$this->session->unset_userdata('token');
+		delete_cookie('token');
+		delete_cookie('slaveadmin');
 		redirect('admin');
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Администраторы
+	 * @param 
+	 * @return 
+	*/
+	public function admins($action = false) {
+		if (!$action) return false;
+		$post = $this->input->post();
+		
+		switch ($action) {
+			case 'get':
+				$data['list'] = $this->admin_model->admins('get');
+				echo $this->twig->render($this->viewsPath.'render/admins/list', $data);
+				break;
+			
+			case 'add':
+				echo $this->twig->render($this->viewsPath.'render/admins/item');
+				break;
+			
+			case 'save':
+				$fieldsToItem = $post['fields'];
+				if (!$insertId = $this->admin_model->admins('save', $post['fields'])) exit('0');
+				$fieldsToItem['id'] = $insertId;
+				echo $this->twig->render($this->viewsPath.'render/admins/item.tpl', $fieldsToItem);
+				break;
+			
+			case 'update':
+				if (!$this->admin_model->admins('update', $post)) exit('0');
+				echo '1';
+				break;
+			
+			case 'remove':
+				if (!$this->admin_model->admins('remove', $post)) exit('0');
+				echo '1';
+				break;
+			
+			case 'permissions':
+				$data['sections'] = $this->adminSections;
+				$data['permissions'] = $post['permissions'];
+				echo $this->twig->render($this->viewsPath.'render/admins/permissions', $data);
+				break;
+			
+			default: break;
+		}
+		
 	}
 	
 	
@@ -109,6 +201,7 @@ class Admin extends MY_Controller {
 	
 	
 	
+	
 	/**
 	 * Сформировать HTML код с данными для секции админки
 	 * @return html
@@ -117,9 +210,29 @@ class Admin extends MY_Controller {
 		if (! $this->input->is_ajax_request()) return false;
 		$section = $this->input->post('section');
 		$params = $this->input->post('params');
+		
+		if (!$section) {
+			if ($this->adminPermissions) {
+				$sectionsData  = [];
+				foreach ($this->adminSections as $sectionTitle => $sectionsList) foreach ($sectionsList as $url => $title) {
+					if (in_array($url, $this->adminPermissions)) $sectionsData[$sectionTitle][$url] = $title;
+				}
+				$data['sections'] = $sectionsData;
+			} else {
+				$data['sections'] = $this->adminSections;
+			}
+				
+			exit($this->twig->render($this->viewsPath.'empty.tpl', $data));
+		} 
+		
+		if ($this->adminPermissions && !in_array($section, $this->adminPermissions)) exit($this->twig->render($this->viewsPath.'access_denied.tpl'));
+		
 		if (!$section || (!$data = $this->getDataToSection($section, $params))) exit('');
 		$data['form'] = 'views/admin/form/';
 		$data['date'] = date('Y');
+		$data['main_admin'] = !$this->adminId;
+		if ($this->adminId) $data['permissions'] = $this->adminPermissions;
+		
 		if (!file_exists('public/'.$this->viewsPath.'sections/'.$section.'.tpl')) exit('');
 		echo $this->twig->render($this->viewsPath.'sections/'.$section.'.tpl', (array)$data);
 	}

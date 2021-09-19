@@ -62,18 +62,20 @@
 		</div>
 		
 		<ul class="tabstitles">
-			<li id="verifyUsers">Верифицированные</li>
-			<li id="newUsers">Новые</li>
-			<li id="excludedUsers">Отстраненные</li>
-			<li id="deletedUsers">Удаленные</li>
-			<li id="depositUsers">Резерв</li>
-			<li id="balance">Баланс</li>
-			<li id="colorsUsers">Цвета рейдеров</li>
+			{% if permissions is not defined or id~'.verifyUsers' in permissions %}<li id="verifyUsers">Верифицированные</li>{% endif %}
+			{% if permissions is not defined or id~'.newUsers' in permissions %}<li id="newUsers">Новые</li>{% endif %}
+			{% if permissions is not defined or id~'.excludedUsers' in permissions %}<li id="excludedUsers">Отстраненные</li>{% endif %}
+			{% if permissions is not defined or id~'.deletedUsers' in permissions %}<li id="deletedUsers">Удаленные</li>{% endif %}
+			{% if permissions is not defined or id~'.depositUsers' in permissions %}<li id="depositUsers">Резерв</li>{% endif %}
+			{% if permissions is not defined or id~'.balance' in permissions %}<li id="balance">Баланс</li>{% endif %}
+			{% if permissions is not defined or id~'.colorsUsers' in permissions %}<li id="colorsUsers">Цвета рейдеров</li>{% endif %}
 		</ul>
 		
 		
 		<div class="tabscontent">
 			{% for tabid, udata in {'verifyUsers': users.verify, 'newUsers': users.new, 'excludedUsers': users.excluded, 'deletedUsers': users.deleted} %}
+				
+				{% if permissions is not defined or id~'.'~tabid in permissions %}
 				<div tabid="{{tabid}}">
 					{% if udata|length > 0 %}
 						<ul class="tabstitles sub">
@@ -301,9 +303,11 @@
 						<p class="empty">Нет данных</p>
 					{% endif %}
 				</div>
+				{% endif %}
 			{% endfor %}
 			
 			
+			{% if permissions is not defined or id~'.depositUsers' in permissions %}
 			<div tabid="depositUsers">
 
 				<h4 class="mb-2">Общий Резерв: <strong>{{deposit['global']|number_format(2, '.', ' ')}}</strong> руб.</h4>
@@ -432,10 +436,10 @@
 				
 					
 			</div>
+			{% endif %}
 			
 			
-			
-			
+			{% if permissions is not defined or id~'.balance' in permissions %}
 			<div tabid="balance">
 				
 				<div class="row">
@@ -519,10 +523,10 @@
 					</div>
 				</div>	
 			</div>
+			{% endif %}
 			
 			
-			
-			
+			{% if permissions is not defined or id~'.colorsUsers' in permissions %}
 			<div tabid="colorsUsers">
 				<form id="raidersColorsForm">
 					<fieldset>
@@ -553,6 +557,7 @@
 					</fieldset>
 				</form>
 			</div>
+			{% endif %}
 		</div>
 		
 		

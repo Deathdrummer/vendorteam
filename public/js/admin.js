@@ -41,6 +41,7 @@ jQuery(document).ready(function($) {
 	
 	
 	
+	
 	// -------------------------------------------------------------------- Загрузка блоков
 	// - параметры 
 	// - callback 
@@ -63,6 +64,18 @@ jQuery(document).ready(function($) {
 		
 		$.post('/admin/get_sections_data', {section: section, params: params}, function(html) {
 			$('#section').html(html);
+			
+			
+			$('#startPageNav').find('li').on(tapEvent, function() {
+				var thisSection = $(this).data('block');
+				location.hash = '#'+thisSection;
+				$(window).one('hashchange', function() {
+					renderSection();
+					$('nav.main_nav').find('li').removeClass('active');
+					$('nav.main_nav').find('li[data-block="'+thisSection+'"]').addClass('active');
+				});
+			});
+			
 			
 			//------------------------- Активировать табы, если нет ни одного активного пункта
 			if (hashData[1] != undefined) {
@@ -133,7 +146,7 @@ jQuery(document).ready(function($) {
 	
 	// -------------------------------------------------------------------- Автозагрузка section при загрузке страницы и установка tabs 
 	if ($('.auth_form').length == 0) {
-		if (location.hash == '') {
+		/*if (location.hash == '') {
 			location.hash = '#common';
 			$(window).one('hashchange', function() {
 				renderSection();
@@ -144,7 +157,12 @@ jQuery(document).ready(function($) {
 				section = hashData[0];
 			$('li[data-block="'+section+'"]').addClass('active');
 			renderSection();
-		}
+		}*/
+		
+		var hashData = location.hash.substr(1, location.hash.length).split('.'),
+			section = hashData[0];
+		$('li[data-block="'+section+'"]').addClass('active');
+		renderSection();
 	}
 		
 	

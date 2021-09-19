@@ -127,6 +127,24 @@ $.fn.hasAttrib = function(a) {
 
 
 
+
+/*
+	Срабатывает при изменении хэш-строки в браузере
+	- отдает хэш БЕЗ #
+*/
+hashChange = function(callback) {
+	$(window).on('hashchange', () => {
+		let hash = location.hash.replace('#', '');
+		if (callback && typeof callback == 'function') callback(hash);
+	});
+};
+
+
+
+
+
+
+
 /*
 	Изменение цифрового поля стрелками и цифрами
 		- вернет
@@ -197,7 +215,7 @@ getCookie = function(cname) {
         while (c.charAt(0) == ' ')
             c = c.substring(1);
         if (c.indexOf(name) == 0) {
-            return c.substring(name.length, c.length);
+            return decodeURIComponent(c.substring(name.length, c.length));
         }
     }
     return '';
@@ -1048,6 +1066,9 @@ $.fn.errorLabel = function(html) {
 		$(this).closest(selectors).addClass('error');
 	}
 };
+
+
+
 
 
 

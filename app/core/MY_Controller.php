@@ -11,8 +11,10 @@ class MY_Controller extends CI_Controller {
 	protected $minutes;
 	protected $constants;
 	protected $dataAccess;
+	protected $adminSections;
 	protected $imgFileExt = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'ico'];
 	protected $fileTypes = ['png','jpg','jpeg','jpe','gif','ico','bmp','svg','psd','rar','zip','mp4','mov','avi','mpeg','txt','rtf','djvu','pdf','doc','docx','xls','xlsx','mp3','wma','wmv'];
+	private $adminsActionsTable = 'admins_actions';
 	
 	protected $giftsActions = [
 		'stage'		=> 'Прибавка к стажу',
@@ -41,6 +43,108 @@ class MY_Controller extends CI_Controller {
 		}
 		
 		$this->minutes = range(0, 55, 5);
+		
+		
+		
+		
+		//----------------------------------------------------------------  Разделы админ. панели
+		$this->adminSections = [
+			'Общее' => [
+				'common' 				=> [
+					'title'	=> 'Общие настройки',
+					'items'	=> [
+						'common' 				=> 'Главное',
+						'fieldsPay' 			=> 'Поля для формы оплаты',
+						'fieldsComplaints' 		=> 'Поля для предложений и жалоб',
+						'usersListPay' 			=> 'Список "Заказ Оплаты"',
+						'usersListComplaints' 	=> 'Список "Предложения и Жалобы"',
+						'resignsList' 			=> 'Заявки на увольнение',
+						'constants' 			=> 'Константы и шаблоны',
+						'agreement' 			=> 'Договор',
+						'importantInfo' 		=> 'Важная информация',
+						'commonMessage' 		=> 'Cообщение для НЕверифицированных',
+						'skype' 				=> 'Скайп',
+						'links' 				=> 'Ссылки',
+						'stopList' 				=> 'Стоп-лист',
+						'tabSctions' 			=> 'Разделы'
+					],
+				],
+				'guides' 				=> 'Образование',
+				'mentors' 				=> 'Наставничество',
+				'personal_gifts' 		=> 'Персональные подарки',
+				'newsfeed' 				=> 'Лента новостей',
+				'messages_to_users' 	=> 'Сообщения участникам',
+				'mininewsfeed' 			=> 'Важные события',
+				'filemanager' 			=> 'Файлменеджер'
+			],
+			'Списки' => [
+				'users' 				=> [
+					'title'	=> 'Участники',
+					'items'	=> [
+						'verifyUsers'	=> 'Верифицированные',
+						'newUsers'		=> 'Новые',
+						'excludedUsers'	=> 'Отстраненные',
+						'deletedUsers'	=> 'Удаленные',
+						'depositUsers'	=> 'Резерв',
+						'balance'		=> 'Баланс',
+						'colorsUsers'	=> 'Цвета рейдеров',
+					],],
+				'users_addict' 			=> 'Участники доп.',
+				'raidliders' 			=> 'Рейд-лидеры',
+				'personages' 			=> 'Персонажи',
+				'operators' 			=> 'Операторы',
+				'admins' 				=> 'Администраторы',
+				'statics' 				=> 'Статики',
+				'ranks' 				=> 'Звания',
+				'roles' 				=> 'Роли',
+				'classes' 				=> 'Классы',
+				'raids_types' 			=> 'Типы рейдов и ключей',
+				'accounts_access' 		=> 'Уровни доступа аккаунтов'
+			],
+			'Расписания' => [
+				'ratings' 				=> 'Рейтинги',
+				'timesheet'				=> 'Расписание',
+				'offtime'				=> 'Выходные',
+				'vacation'				=> 'Отпуска'
+			],
+			'Статистика и отчеты' => [
+				'reports'				=> [
+					'title'	=> 'Отчеты',
+					'items'	=> [
+						'main'				=> 'Выплаты участникам',
+						'rewards'			=> 'Премии',
+						'second'			=> 'Список заказов',
+						'paymentsPatterns'	=> 'Payment Brago',
+						'paymentRequests'	=> 'Заявки на оплату',
+						'keys'				=> 'Ключи',
+						'wallet'			=> 'Выплата баланса',
+						
+					],
+				],
+				'kpi_planes'			=> 'KPI планы',
+				'statistics_amounts'	=> 'Статистика (доходы)',
+				'statistics'			=> 'Статистика (участники)',
+				'statistics_settings'	=> 'Статистика (настройки)'
+			],
+		];
+		
+		
+		
+		
+		
+		
+		//----------------------------------------------------------------  Разделы админ. панели
+		$this->adminActions = [
+			1 => 'Изменение статиков участника',
+			2 => 'Исключить/вернуть исключенного участника',
+			3 => 'Удалить/вернуть удаленного участника',
+			4 => 'Изменить платежные данные участника',
+		];
+		
+		
+		
+		
+		
 		
 		//----------------------------------------------------------------  Кабинет оператора
 		$this->dataAccess = [
@@ -349,10 +453,40 @@ class MY_Controller extends CI_Controller {
 	
 	
 	
-	protected function _isCliRequest() {
-		return (isset($_SERVER['HTTP_USER_AGENT']) && preg_match('/Wget\//', $_SERVER['HTTP_USER_AGENT']));
+	/**
+	 * Записать действие администратора
+	 * @param Тип действия integer
+	 * @param данные в произвольном виде mixed
+	 * @return 
+	 */
+	public function setAdminAction($actionType = false, $info = false) {
+		if (!$actionType || !$info) return false;
+		
+		if (!isJson($info)) $info = json_encode($info);
+		
+		$insData = [
+			'admin_id' 	=> $this->getAdminId(),
+			'type' 		=> $actionType,
+			'info'		=> $info,
+			'date' 		=> time()
+		];
+		
+		if (!$this->db->insert($this->adminsActionsTable, $insData)) return false;
+		return true;
 	}
 	
 	
+	
+	
+	
+	protected function getAdminId() {
+		if ($token = get_cookie('token')) return decrypt($token);
+		return 0;
+	}
+	
+	
+	protected function _isCliRequest() {
+		return (isset($_SERVER['HTTP_USER_AGENT']) && preg_match('/Wget\//', $_SERVER['HTTP_USER_AGENT']));
+	}
 	
 }

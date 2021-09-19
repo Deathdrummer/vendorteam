@@ -89,6 +89,6 @@ if (location.hostname != 'localhost' && location.pathname == '/account') {
 	
 	}
 	
-} else {
+} else if (location.hostname != 'localhost') {
 	socket = io.connect("https://vendorteam.ru:5050/accounts");
 }

@@ -4,18 +4,19 @@
 	</div>
 	
 	<ul class="tabstitles">
-		<li id="main" class="active">Выплаты участникам</li>
-		<li id="rewards">Премии</li>
-		<li id="second">Список заказов</li>
-		<li id="paymentsPatterns">Payment Brago</li>
-		<li id="paymentRequests">Заявки на оплату</li>
-		<li id="keys">Ключи</li>
-		<li id="wallet">Выплата баланса</li>
+		{% if permissions is not defined or id~'.main' in permissions %}<li id="main" class="active">Выплаты участникам</li>{% endif %}
+		{% if permissions is not defined or id~'.rewards' in permissions %}<li id="rewards">Премии</li>{% endif %}
+		{% if permissions is not defined or id~'.second' in permissions %}<li id="second">Список заказов</li>{% endif %}
+		{% if permissions is not defined or id~'.paymentsPatterns' in permissions %}<li id="paymentsPatterns">Payment Brago</li>{% endif %}
+		{% if permissions is not defined or id~'.paymentRequests' in permissions %}<li id="paymentRequests">Заявки на оплату</li>{% endif %}
+		{% if permissions is not defined or id~'.keys' in permissions %}<li id="keys">Ключи</li>{% endif %}
+		{% if permissions is not defined or id~'.wallet' in permissions %}<li id="wallet">Выплата баланса</li>{% endif %}
 	</ul>
 	
 	
 	
 	<div class="tabscontent">
+		{% if permissions is not defined or id~'.main' in permissions %}
 		<div tabid="main" class="visible">
 			<fieldset>
 				<legend>Выплаты участникам</legend>
@@ -41,11 +42,11 @@
 				<div id="mainReport" class="reports mt-3"></div>
 			</fieldset>
 		</div>
+		{% endif %}
 		
 		
 		
-		
-		
+		{% if permissions is not defined or id~'.rewards' in permissions %}
 		<div tabid="rewards">
 			<fieldset>
 				<legend>Премии</legend>
@@ -61,11 +62,11 @@
 				<div id="rewardsReport" class="reports mt-3"></div>
 			</fieldset>
 		</div>
+		{% endif %}
 		
 		
 		
-		
-		
+		{% if permissions is not defined or id~'.second' in permissions %}
 		<div tabid="second">
 			<fieldset>
 				<legend>Список заказов</legend>
@@ -85,12 +86,12 @@
 				<div id="ordersReport" class="reports mt-3"></div>
 			</fieldset>
 		</div>
+		{% endif %}
 		
 		
 		
 		
-		
-		
+		{% if permissions is not defined or id~'.paymentsPatterns' in permissions %}
 		<div tabid="paymentsPatterns">
 			<fieldset>
 				<legend>Выплаты по диапазонам</legend>
@@ -107,11 +108,11 @@
 				
 			</fieldset>
 		</div>
+		{% endif %}
 		
 		
 		
-		
-		
+		{% if permissions is not defined or id~'.paymentRequests' in permissions %}
 		<div tabid="paymentRequests">
 			<fieldset>
 				<legend>Заявки на оплату</legend>
@@ -225,7 +226,11 @@
 				</fieldset>
 			{% endif %}
 		</div>
+		{% endif %}
 		
+		
+		
+		{% if permissions is not defined or id~'.keys' in permissions %}
 		<div tabid="keys">
 			<fieldset>
 				<legend>Ключи</legend>
@@ -249,7 +254,11 @@
 				<div id="keysReport" class="reports mt-3"></div>
 			</fieldset>
 		</div>
+		{% endif %}
 		
+		
+		
+		{% if permissions is not defined or id~'.wallet' in permissions %}
 		<div tabid="wallet">
 			<fieldset>
 				<legend>Выплата баланса</legend>
@@ -272,7 +281,7 @@
 				<div id="walletReport" class="reports mt-3"></div>
 			</fieldset>
 		</div>
-		
+		{% endif %}
 	</div>	
 </div>
 

@@ -27,54 +27,16 @@
 		<div class="header__item mr-4">
 			<button id="openNav" touch="opened"><i class="navigation fa fa-bars"></i></button>
 			<nav class="main_nav noselect">
-				<div class="main_nav_item">
-					<p>Общее</p>
-					<ul>
-						<li data-block="common">Общие настройки</li>
-						<li data-block="guides">Образование</li>
-						<li data-block="mentors">Наставничество</li>
-						<li data-block="personal_gifts">Персональные подарки</li>
-						<li data-block="newsfeed">Лента новостей</li>
-						<li data-block="messages_to_users">Сообщения участникам</li>
-						<li data-block="mininewsfeed">Важные события</li>
-						<li data-block="filemanager">Файлменеджер</li>
-					</ul>
-				</div>
-				<div class="main_nav_item">
-					<p>Списки</p>
-					<ul>
-						<li data-block="users">Участники</li>
-						<li data-block="users_addict">Участники доп.</li>
-						<li data-block="raidliders">Рейд-лидеры</li>
-						<li data-block="personages">Персонажи</li>
-						<li data-block="operators">Операторы</li>
-						<li data-block="statics">Статики</li>
-						<li data-block="ranks">Звания</li>
-						<li data-block="roles">Роли</li>
-						<li data-block="classes">Классы</li>
-						<li data-block="raids_types">Типы рейдов и ключей</li>
-						<li data-block="accounts_access">Уровни доступа аккаунтов</li>
-					</ul>
-				</div>
-				<div class="main_nav_item">
-					<p>Расписания</p>
-					<ul>
-						<li data-block="ratings">Рейтинги</li>
-						<li data-block="timesheet">Расписание</li>
-						<li data-block="offtime">Выходные</li>
-						<li data-block="vacation">Отпуска</li>
-					</ul>
-				</div>
-				<div class="main_nav_item">
-					<p>Статистикаи отчеты</p>
-					<ul>
-						<li data-block="reports">Отчеты</li>
-						<li data-block="kpi_planes">KPI планы</li>
-						<li data-block="statistics_amounts">Статистика (доходы)</li>
-						<li data-block="statistics">Статистика (участники)</li>
-						<li data-block="statistics_settings">Статистика (настройки)</li>
-					</ul>
-				</div>
+				{% for sectionTitle, sectionsList in sections %}
+					<div class="main_nav_item">
+						<p>{{sectionTitle}}</p>
+						<ul>
+							{% for url, title in sectionsList %}
+								<li data-block="{{url}}">{% if title is iterable %}{{title.title}}{% else %}{{title}}{% endif %}</li>
+							{% endfor %}
+						</ul>
+					</div>
+				{% endfor %}
 			</nav>
 		</div>
 		<div class="header__item mr-auto">

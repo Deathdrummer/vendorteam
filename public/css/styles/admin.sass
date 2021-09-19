@@ -178,6 +178,17 @@ html
 		color: darken(#fb8080, 20%)
 
 
+.green
+	color: #65a25b
+	
+	&.hovered:hover
+		color: darken(#65a25b, 10%)
+	
+	&.hovered:active
+		color: darken(#65a25b, 20%)
+
+
+
 
 .select
 	user-select: all
@@ -194,6 +205,44 @@ i.icon
 	top: 7px
 	right: 7px
 	font-size: 1em
+
+
+
+
+
+
+
+
+
+.startpage
+	padding: 30px 15px
+
+	&__block
+		+resp(width, (xs: 100%, md: 200px, lg: 250px, xl: 300px))
+	
+	&__title
+		font-size: 20px
+		text-transform: uppercase
+	
+	&__item
+		cursor: pointer
+		margin-bottom: 6px
+		border-radius: 2px
+		padding: 2px 4px
+		transition: background-color 0.16s
+		
+		&:hover
+			background-color: #e4eaef
+		
+		&:active
+			background-color: darken(#e4eaef, 10%)
+			transition: background-color 0s
+		
+
+
+
+
+
 
 
 
@@ -991,10 +1040,52 @@ table:not(.clear):not(.ui-datepicker-calendar)
 					white-space: pre-wrap
 				
 				.text, .field
+					display: inline-block
+					position: relative
+					vertical-align: top
+					width: 100%
+					border: 1px solid #d0d6da
+					border-radius: 2px
+					//overflow: hidden
+					border-radius: 3px
+					transition: border-color 0.16s, box-shadow 0.16s
+					
+					&:focus
+						border-color: darken(#a7acaf, 30%)
+					
+					&.changed
+						box-shadow: 0 0 0 2px #78e878
+						background-color: #efe
+					
+					&.error
+						border-color: #ff1e1e
+						background-color: #fff0f0
+						
+						span.error:not(:empty)
+							opacity: 1
+							z-index: 1210
+							
+					span.error
+						position: absolute
+						overflow: hidden
+						text-overflow: ellipsis
+						top: 100%
+						left: 0
+						font-size: 11px !important
+						line-height: 11px
+						+font('roboto', medium)
+						opacity: 0
+						background-color: #f88
+						box-shadow: 0 1px 0 0 #ff1e1e, 1px 0 0 0 #ff1e1e, -1px 0 0 0 #ff1e1e
+						padding: 2px 4px
+						width: 100%
+						color: #fff
+						pointer-events: none
+						transition: opacity 0.16s
+					
 					input
-						border-radius: 2px
-						border: 1px solid #a7acaf
 						background: #fff
+						border: none
 						height: 30px
 						padding-right: 4px
 						padding-left: 4px
@@ -1002,12 +1093,6 @@ table:not(.clear):not(.ui-datepicker-calendar)
 						width: 100%
 						transition: border-color 0.16s
 						
-						&:focus
-							border-color: darken(#a7acaf, 30%)
-						
-						&.changed
-							box-shadow: 0 0 0 2px #78e878
-							background-color: #efe
 				
 				.number
 					width: 100px
@@ -4573,3 +4658,33 @@ p
 	
 	&_white
 		background-color: #fff
+	
+
+
+
+.adminpermissions
+	&__item
+		border-top: 1px solid #ccd0d4
+	
+	&__subitems
+		display: none
+		background-color: #eee
+		
+		table
+			tr
+				+ tr
+					border-top: 1px solid #ccd0d4
+				td
+					padding-left: 3px
+					padding-right: 5px
+				
+		&_opened
+			display: table-row	
+	
+	&__checkboxsmall
+		
+		label::after
+			font-size: 20px !important
+
+
+			
