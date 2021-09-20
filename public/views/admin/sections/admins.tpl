@@ -78,6 +78,7 @@
 				$('[permission]').on('change', function() {
 					let url = $(this).attr('permission'),
 						subitems = $(this).closest('tr').siblings('tr[subitems="'+url+'"]'),
+						isSub = !!subitems,
 						isChecked = !$(this).is(':checked');
 					if (subitems.length) {
 						$(subitems).find('[permission]').each(function() {
@@ -85,6 +86,8 @@
 							else $(this).setAttrib('checked');
 						});
 					}
+					
+					if (isSub) $(this).closest('[subitems]').prev('.adminpermissions__item').find('[permission]:not([permissionsub])').setAttrib('checked');
 					
 					permissions = [];
 					$('#adminPermissionsForm').find('[permission]:checked').each(function() {

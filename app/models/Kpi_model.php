@@ -1271,7 +1271,7 @@ class Kpi_model extends MY_Model {
 		$scoresFine = isset($period['scores']['fine']) ? (float)$period['scores']['fine'] : 0;
 		$scoresCustom = isset($period['scores']['customfields']) ? (float)$period['scores']['customfields'] : 0;
 		
-		$allScrores = $scoresPersonages + $scoresVisits + $scoresFine + $scoresCustom;
+		$allScrores = $scoresPersonages + $scoresFine + $scoresCustom;
 		$oneScorePercent = 100 / $allScrores;
 		
 		$scoresPersonagesPercent = $scoresPersonages ? round($scoresPersonages * $oneScorePercent, 3) : false; // макс. проц. активность на персонажах
@@ -1280,37 +1280,10 @@ class Kpi_model extends MY_Model {
 		$scoresCustomPercent = $scoresCustom ? round($scoresCustom * $oneScorePercent, 3) : false; // макс. проц. доп. поля
 		
 		
-		// ----------------------------------------------------------------------------------------
-		
-		if ($scoresPersonagesPercent && ($usersPersonagesData = $this->getPersonagesToStat($period))) {
-			$allScrores = []; $doneScores = [];
-			foreach ($usersPersonagesData as $userId => $personages) foreach ($personages as $pId => $tasks) foreach ($tasks as $tId => $task) {
-				if (!isset($task['repeats'])) continue;
-				$done = isset($task['done']) ? $task['done'] : 0;
-				$repeats = $task['repeats'];
-				$score = $task['score'];
-				
-				if (!isset($allScrores[$userId])) $allScrores[$userId] = ($repeats * $score);
-				else $allScrores[$userId] += ($repeats * $score);
-				
-				if (!isset($doneScores[$userId])) $doneScores[$userId] = ($done * $score);
-				else $doneScores[$userId] += ($done * $score);
-			}
-			
-			foreach ($allScrores as $userId => $scores) {
-				$donePercentPersonages = round(($doneScores[$userId] / $scores) * $scoresPersonagesPercent, 3);
-				$calcData[$userId]['personages'] = $donePercentPersonages > $scoresPersonagesPercent ? $scoresPersonagesPercent : $donePercentPersonages;
-			}
-			
-			//суммируется общее кодичество баллов умноженное на кол-во повторний
-			//и откуда какая задача выполнена те баллы и высчитываются
-		}
-		
-		
 		
 		
 		// ----------------------------------------------------------------------------------------
-		
+		$usersVisitsPercents = [];
 		if ($usersFieldsData = $this->getFieldsToStat($period)) {
 			
 			foreach($usersFieldsData as $userId => $fields) {
@@ -1321,12 +1294,15 @@ class Kpi_model extends MY_Model {
 					$visitsNeed = (isset($visitsField['need']) && $visitsField['need'] > 0) ? $visitsField['need'] : false;
 					$visitsFact = isset($visitsField['fact']) ? $visitsField['fact'] : 0;
 					
-					if (!$visitsNeed) {
+					$usersVisitsPercents[$userId] = ($visitsFact == 0 || $visitsNeed == 0) ? 0 : round($visitsFact / $visitsNeed, 3);
+					
+					
+					/*if (!$visitsNeed) {
 						$calcData[$userId]['visits'] = 0;
 					} else {
 						$donePercentVisits = $visitsNeed ? round(($visitsFact / $visitsNeed) * $scoresVisitsPercent, 3) : 0;
 						$calcData[$userId]['visits'] = $donePercentVisits > $scoresVisitsPercent ? $scoresVisitsPercent : $donePercentVisits;
-					}
+					}*/
 				}
 					
 				if ($scoresFinePercent) {
@@ -1366,6 +1342,38 @@ class Kpi_model extends MY_Model {
 				}
 			}
 		}
+		
+		
+		
+		
+		// ----------------------------------------------------------------------------------------
+		
+		if ($scoresPersonagesPercent && ($usersPersonagesData = $this->getPersonagesToStat($period))) {
+			$allScrores = []; $doneScores = [];
+			foreach ($usersPersonagesData as $userId => $personages) foreach ($personages as $pId => $tasks) foreach ($tasks as $tId => $task) {
+				if (!isset($task['repeats'])) continue;
+				$done = isset($task['done']) ? $task['done'] : 0;
+				$repeats = $task['repeats'];
+				$score = $task['score'];
+				
+				if (!isset($allScrores[$userId])) $allScrores[$userId] = ($repeats * $score);
+				else $allScrores[$userId] += ($repeats * $score);
+				
+				if (!isset($doneScores[$userId])) $doneScores[$userId] = ($done * $score);
+				else $doneScores[$userId] += ($done * $score);
+			}
+			
+			foreach ($allScrores as $userId => $scores) {
+				$donePercentPersonages = round(($doneScores[$userId] / $scores) * $scoresPersonagesPercent, 3);
+				$calcData[$userId]['personages'] = $donePercentPersonages > $scoresPersonagesPercent ? $scoresPersonagesPercent : $donePercentPersonages;
+			}
+			
+			//суммируется общее кодичество баллов умноженное на кол-во повторний
+			//и откуда какая задача выполнена те баллы и высчитываются
+		}
+		
+		
+		
 		
 		
 		// ----------------------------------------------------------------------------------------
@@ -1412,11 +1420,12 @@ class Kpi_model extends MY_Model {
 				$payoutData[$userStatic][$uId]['payout_all'] += round($payout * $userRankLider);
 			}
 				
+			$visitsCoeff = isset($usersVisitsPercents[$uId]) ? $usersVisitsPercents[$uId] : 0;
 			
 			$payoutData[$userStatic][$uId]['periods'][$periodId] = [
 				'summ'		=> $amount,
-				'persent'	=> round($scores, 1),
-				'payout'	=> round($payout * $userRankLider),
+				'persent'	=> round($scores * $visitsCoeff, 1),
+				'payout'	=> round($payout * $userRankLider * $visitsCoeff),
 			];
 			
 		}

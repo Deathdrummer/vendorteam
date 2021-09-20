@@ -35,7 +35,7 @@
 												<td><span class="fz12px d-block">{{subtitle}}</span></td>
 												<td class="text-right w30px pt6px">
 													<div class="checkblock adminpermissions__checkboxsmall">
-														<input id="check{{url~suburl}}" type="checkbox" permission="{{url~'.'~suburl}}"{% if url~'.'~suburl in permissions %} checked{% endif %}>
+														<input id="check{{url~suburl}}" type="checkbox" permissionsub permission="{{url~'.'~suburl}}"{% if url~'.'~suburl in permissions %} checked{% endif %}>
 														<label for="check{{url~suburl}}" title="Выбрать"></label>
 													</div>
 												</td>
