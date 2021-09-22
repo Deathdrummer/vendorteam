@@ -12,11 +12,15 @@ class Admin extends MY_Controller {
 		
 		if (get_cookie('slaveadmin')) {
 			$this->adminId = decrypt(get_cookie('token'));
-			$admins = $this->admin_model->admins('get');
-			$adminsIds = array_column($admins, 'id');
 			
-			if ($this->adminId && ($index = getIndexFromFieldValue($admins, 'id', $this->adminId) === false)) $this->logout();
-			$this->adminPermissions = explode(',', $admins[$index]['permissions']);
+			if ($admins = $this->admin_model->admins('get')) {
+				$adminsIds = array_column($admins, 'id');
+				$admins = setArrKeyfromField($admins, 'id');
+			}
+			
+			if ($this->adminId && !isset($admins[$this->adminId])) $this->logout();
+			
+			$this->adminPermissions = isset($admins[$this->adminId]) ? explode(',', $admins[$this->adminId]['permissions']) : [];
 			
 			if (!in_array($this->adminId, $adminsIds)) $this->logout();
 		} else {
@@ -150,6 +154,66 @@ class Admin extends MY_Controller {
 		}
 		
 	}
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Операции дминистраторов
+	 * @param 
+	 * @return 
+	*/
+	public function adminsactions($action = false) {
+		if (!$action) return false;
+		$post = $this->input->post();
+		
+		switch ($action) {
+			case 'all':
+				$data['list'] = $this->admin_model->adminsactions('all');
+				$data['admins'] = setArrKeyFromField($this->admin_model->admins('get'), 'id');
+				$data['admins'][0]['nickname'] = 'Главный администратор';
+				$data['types'] = $this->adminActions;
+				
+				echo $this->twig->render($this->viewsPath.'render/adminsactions/list', $data);
+				break;
+			
+			case 'info':
+				$data = $this->admin_model->adminsactions('get', $post);
+				$info = $data['info'];
+				
+				
+				switch ($data['type']) {
+					case '1':
+						
+						$userData = $this->account_model->getUserData($info['user_id']);
+						toLog($userData);
+						break;
+					
+					default: break;
+				}
+				
+				
+				toLog($info);
+				
+				
+				
+				echo $this->twig->render($this->viewsPath.'render/adminsactions/info', ['type' => $this->adminActions[$data['type']]]);
+				break;
+			
+			
+			default: break;
+		}
+		
+	}
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -736,23 +800,21 @@ class Admin extends MY_Controller {
 	 */
 	public function deposit_update() {
 		if (! $this->input->is_ajax_request()) return false;
-		if (!$depositData = $this->input->post('deposit')) exit('0');
+		if (!$depositData = $this->input->post()) exit('0');
+		$field = arrTakeItem($depositData, 'field');
 		
-		if ($this->users_model->depositUpdate($depositData)) {
-			$globalHistoryData = [];
-			foreach ($depositData as $item) {
-				$globalHistoryData[] = [
-					'user_id'	=> $item['id'],
-					'summ'		=> ($item['deposit_origin'] - $item['deposit']),
-					'date'		=> time(),
-					'reason'	=> 1
-				];
-			}
-			
-			$this->admin_model->globalDepositHistoryAdd($globalHistoryData, true);
-			echo 1;
-		}
-		echo 0;
+		if (!$this->users_model->depositUpdate($depositData)) exit('0');
+		
+		$globalHistoryData[] = [
+			'user_id'	=> $depositData['id'],
+			'summ'		=> ($depositData['deposit_origin'] - $depositData['deposit']),
+			'date'		=> time(),
+			'reason'	=> 1
+		];
+		
+		$this->admin_model->globalDepositHistoryAdd($globalHistoryData, true);
+		$this->adminaction->setAdminAction(6, ['user_id' => $depositData['id'], 'field' => $field, 'data' => ['payment' => $depositData['payment'], 'deposit' => $depositData['deposit']]]);
+		echo 1;
 	}
 	
 	
@@ -1688,6 +1750,8 @@ class Admin extends MY_Controller {
 			
 			case 'set_checkout':
 				$data = bringTypes($postData['data']);
+				$tempTitle = arrTakeItem($postData, 'title');
+				
 				//$toDeposit = $postData['to_deposit'];
 				$usersIds = array_column($data, 'user_id') ?: [];
 				$this->load->model('users_model');
@@ -1751,6 +1815,7 @@ class Admin extends MY_Controller {
 				$this->wallet_model->setToWallet($toWalletData, 5, $user['order'], '+');
 
 				if (!$this->reports_model->insertUsersOrders($orders)) exit('0');
+				$this->adminaction->setAdminAction(5, ['type' => 'template', 'title' => $tempTitle]);
 				//if ($toDeposit) $this->users_model->setUsersDeposit($toDepositData);
 				echo json_encode('1');
 				break;
