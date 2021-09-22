@@ -840,6 +840,7 @@ class Kpi extends MY_Controller {
 						}
 						
 						foreach ($allScrores as $userId => $scores) {
+							if (!$scores) continue;
 							$donePercentPersonages = round(($doneScores[$userId] / $scores) * $scoresPersonagesPercent, 3);
 							$calcData[$userId]['personages'] = ($donePercentPersonages - $scoresPersonagesPercent) > 0 ? ($donePercentPersonages - $scoresPersonagesPercent) : 0;
 						}
@@ -864,6 +865,7 @@ class Kpi extends MY_Controller {
 						}
 						
 						foreach ($allBonusScrores as $userId => $scores) {
+							if (!$scores) continue;
 							$donePercentPersonages = round(($doneBonusScores[$userId] / $scores) * $scoresPersonagesPercent, 3);
 							
 							if (!isset($calcData[$userId]['personages'])) $calcData[$userId]['personages'] = $donePercentPersonages;

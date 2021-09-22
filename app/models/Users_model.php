@@ -391,7 +391,7 @@ class Users_model extends MY_Model {
 		
 		$toAdminAction = [];
 		foreach ($users as $user) {
-			if (in_array($user['payment'], $diffPayments)) {
+			if (isset($user['payment']) && in_array($user['payment'], $diffPayments)) {
 				$toAdminAction[] = [
 					'user_id'	=> $user['id'],
 					'payment'	=> $user['payment']
@@ -399,8 +399,7 @@ class Users_model extends MY_Model {
 			} 
 		}
 		
-		if ($toAdminAction) $this->setAdminAction(4, $toAdminAction);
-		
+		if ($toAdminAction) $this->adminaction->setAdminAction(4, $toAdminAction);
 		
 		$this->db->update_batch('users', $users, 'id');
 		$this->setRanksToUsers();
@@ -451,9 +450,9 @@ class Users_model extends MY_Model {
 		$this->db->where('id', $userData['user_id']);
 		if ($this->db->update('users')) {
 			$this->setRankToUser($userData['user_id']);
-			if ($verification && $tableData['deleted'] == 1) $this->setAdminAction(3, ['user_id' => $userData['user_id'], 'stat' => 1]);
+			if ($verification && $tableData['deleted'] == 1) $this->adminaction->setAdminAction(3, ['user_id' => $userData['user_id'], 'stat' => 1]);
 			
-			if ($tableData['payment'] != $userData['user_payment']) $this->setAdminAction(4, [['user_id' => $userData['user_id'], 'payment' => $userData['user_payment']]]);	
+			if ($tableData['payment'] != $userData['user_payment']) $this->adminaction->setAdminAction(4, [['user_id' => $userData['user_id'], 'payment' => $userData['user_payment']]]);	
 			
 			return 1;
 		}
@@ -613,6 +612,14 @@ class Users_model extends MY_Model {
 	 */
 	public function depositUpdate($data = false) {
 		if (!$data) return false;
+		
+		if (isset($data['id'])) {
+			if (isset($data['deposit_origin'])) unset($data['deposit_origin']);
+			$this->db->where('id', $data['id']);
+			if (!$this->db->update('users', $data)) return false;
+			return true;
+		}
+		
 		foreach ($data as $k => $item) {
 			if (isset($item['deposit_origin'])) unset($data[$k]['deposit_origin']);
 		}
@@ -700,7 +707,7 @@ class Users_model extends MY_Model {
 			}
 			
 			if (!$this->db->insert_batch('users_statics', $insertData)) return 0;
-			$this->setAdminAction(1, $insertData);
+			$this->adminaction->setAdminAction(1, $insertData);
 			return 1;
 		}
 		return 0;
@@ -789,7 +796,7 @@ class Users_model extends MY_Model {
 			
 			$this->db->where('id', $id);
 			if (!$this->db->update('users', ['avatar' => null, 'verification' => 0, 'deleted' => 1, 'agreement' => 0])) return 0;
-			$this->setAdminAction(3, ['user_id' => $id, 'stat' => 0]);
+			$this->adminaction->setAdminAction(3, ['user_id' => $id, 'stat' => 0]);
 			return 1;
 		}
 		return 0;
@@ -808,7 +815,7 @@ class Users_model extends MY_Model {
 		if (!$id) return false;
 		$this->db->where('id', $id);
 		if (!$this->db->update('users', ['excluded' => 1])) return 0;
-		$this->setAdminAction(2, ['user_id' => $id, 'stat' => 0]);
+		$this->adminaction->setAdminAction(2, ['user_id' => $id, 'stat' => 0]);
 		return 1;
 	}
 	
@@ -824,7 +831,7 @@ class Users_model extends MY_Model {
 		if (!$id) return false;
 		$this->db->where('id', $id);
 		if (!$this->db->update('users', ['excluded' => 0])) return 0;
-		$this->setAdminAction(2, ['user_id' => $id, 'stat' => 1]);
+		$this->adminaction->setAdminAction(2, ['user_id' => $id, 'stat' => 1]);
 		return 1;
 	}
 	
