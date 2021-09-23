@@ -183,24 +183,123 @@ class Admin extends MY_Controller {
 			case 'info':
 				$data = $this->admin_model->adminsactions('get', $post);
 				$info = $data['info'];
+				$type = $data['type'];
 				
-				
-				switch ($data['type']) {
-					case '1':
+				$dataToinfo = [];
+				switch ($type) {
+					case '1': // Изменение статиков участника
+						$ranks = $this->admin_model->getRanks();
+						$userData = $this->users_model->getUsers(['where' => ['u.id' => $info['user_id'], 'us.main' => 1], 'fields' => 'avatar nickname static_name static_icon rank']);
+						$userData = reset($userData) ?: false;
+						$userData['rank'] = is_array($userData) && isset($ranks[$userData['rank']]['name']) ? $ranks[$userData['rank']]['name'] : false;
+						$dataToinfo['user'] = isset($userData) ? $userData : false;
 						
-						$userData = $this->account_model->getUserData($info['user_id']);
-						toLog($userData);
+						
+						$allStatics = []; $staticsIds = [];
+						foreach ($info['statics'] as $period => $statics) foreach ($statics as $static) {
+							$allStatics[$period][$static['static_id']] = [
+								'main'	=> $static['main'],
+								'lider' => $static['lider']
+							];
+							$staticsIds[] = $static['static_id'];
+						}
+						
+						$dataToinfo['periods'] = ['before' => 'До', 'after' => 'После'];
+						$dataToinfo['statics_data'] = $this->admin_model->getStatics(false, array_unique($staticsIds));
+						$dataToinfo['statics'] = $allStatics;
 						break;
 					
+					case '2': // Исключение/возврат исключенного участника
+						$ranks = $this->admin_model->getRanks();
+						$userData = $this->users_model->getUsers(['where' => ['u.id' => $info['user_id'], 'us.main' => 1], 'fields' => 'avatar nickname static_name static_icon rank']);
+						$userData = reset($userData) ?: false;
+						$userData['rank'] = is_array($userData) && isset($ranks[$userData['rank']]['name']) ? $ranks[$userData['rank']]['name'] : false;
+						
+						$dataToinfo['user'] = $userData;
+						$dataToinfo['stat'] = $info['stat'];
+						break;
+					
+					case '3': // Удаление/возврат удаленного участника
+						$ranks = $this->admin_model->getRanks();
+						$userData = $this->users_model->getUsers(['where' => ['u.id' => $info['user_id'], 'us.main' => 1], 'fields' => 'avatar nickname static_name static_icon rank']);
+						$userData = reset($userData) ?: false;
+						$userData['rank'] = is_array($userData) && isset($ranks[$userData['rank']]['name']) ? $ranks[$userData['rank']]['name'] : false;
+						
+						$dataToinfo['user'] = $userData;
+						$dataToinfo['stat'] = $info['stat'];
+						break;
+					
+					case '4': // Изменение платежных данных участника
+						$usersIds = array_column($info, 'user_id');
+						$usersData = $this->users_model->getUsers(['where' => ['us.main' => 1], 'where_in' => ['field' => 'u.id', 'values' => $usersIds], 'fields' => 'avatar nickname static_name static_icon rank']);
+						
+						$dataToinfo['ranks'] = $this->admin_model->getRanks();
+						$dataToinfo['users_data'] = $usersData;
+						$dataToinfo['users'] = setArrKeyfromField($info, 'user_id');
+						break;
+					
+					case '5': // Создание/удаление заявок на оплату
+						
+						$payRequestTypes = [
+							'simple' 			=> 'Новая заявка на оплату', // [type, order]
+							'template' 			=> 'Новая заявка из шаблона ', // [type, title]
+							'salary_orders' 	=> 'Расчет окладов', // [type, order]
+							'addictpay_orders' 	=> 'Дополнительные выплаты', // [type, order]
+							'remove' 			=> 'Удаление заявки на оплату' // [type, order, user_id]
+						];
+						
+						
+						if (in_array($info['type'], ['simple', 'salary_orders', 'addictpay_orders'])) {
+							$dataToinfo['info'] = 'Номер заказа: <strong>'.$info['order'].'</strong>';
+						
+						} elseif ($info['type'] == 'template') {
+							$dataToinfo['info'] = 'Шаблон: '.$info['title'];
+						
+						} elseif ($info['type'] == 'remove') {
+							$ranks = $this->admin_model->getRanks();
+							$userData = $this->users_model->getUsers(['where' => ['u.id' => $info['user_id'], 'us.main' => 1], 'fields' => 'avatar nickname static_name static_icon rank']);
+							$userData = reset($userData) ?: false;
+							$userData['rank'] = is_array($userData) && isset($ranks[$userData['rank']]['name']) ? $ranks[$userData['rank']]['name'] : false;
+							
+							$dataToinfo['info'] = 'Номер заказа: <strong>'.$info['order'].'</strong>';
+							$dataToinfo['user'] = $userData;
+						}
+						
+						
+						$dataToinfo['pr_type'] = $info['type'];
+						$dataToinfo['pr_types_names'] = $payRequestTypes;
+						break;
+					
+					case '6': // Начисление/списание резерва, изменение плат. данных
+						$userId = arrTakeItem($info, 'user_id');
+						$dataToinfo = $info;
+						$ranks = $this->admin_model->getRanks();
+						$userData = $this->users_model->getUsers(['where' => ['u.id' => $userId, 'us.main' => 1], 'fields' => 'avatar nickname static_name static_icon rank']);
+						$userData = reset($userData) ?: false;
+						$userData['rank'] = is_array($userData) && isset($ranks[$userData['rank']]['name']) ? $ranks[$userData['rank']]['name'] : false;
+							
+						$dataToinfo['user'] = $userData;
+						break;
+					
+					case '7': // Списание баланса
+						$usersIds = array_column($info['users'], 'user_id');
+						$usersData = $this->users_model->getUsers(['where' => ['us.main' => 1], 'where_in' => ['field' => 'u.id', 'values' => $usersIds], 'fields' => 'avatar nickname static_name static_icon rank payment']);
+						
+						$dataToinfo['ranks'] = $this->admin_model->getRanks();
+						$dataToinfo['users'] = $info['users'];
+						$dataToinfo['users_data'] = $usersData;
+						$dataToinfo['total_summ'] = $info['total_summ'];
+						
+						break;
+						
 					default: break;
 				}
 				
+				$dataToinfo['type'] = $type;
+				$dataToinfo['action_from'] = $post['from'];
+				$dataToinfo['action_date'] = $post['date'];
 				
-				toLog($info);
-				
-				
-				
-				echo $this->twig->render($this->viewsPath.'render/adminsactions/info', ['type' => $this->adminActions[$data['type']]]);
+				echo $this->twig->render($this->viewsPath.'render/adminsactions/info', $dataToinfo);
 				break;
 			
 			
@@ -801,7 +900,6 @@ class Admin extends MY_Controller {
 	public function deposit_update() {
 		if (! $this->input->is_ajax_request()) return false;
 		if (!$depositData = $this->input->post()) exit('0');
-		$field = arrTakeItem($depositData, 'field');
 		
 		if (!$this->users_model->depositUpdate($depositData)) exit('0');
 		
@@ -813,7 +911,16 @@ class Admin extends MY_Controller {
 		];
 		
 		$this->admin_model->globalDepositHistoryAdd($globalHistoryData, true);
-		$this->adminaction->setAdminAction(6, ['user_id' => $depositData['id'], 'field' => $field, 'data' => ['payment' => $depositData['payment'], 'deposit' => $depositData['deposit']]]);
+		
+		$dataToAdmin = [
+			'user_id' 		=> $depositData['id'],
+			'payment_old' 	=> $depositData['payment_origin'],
+			'payment_new' 	=> $depositData['payment'],
+			'deposit_old' 	=> $depositData['deposit_origin'],
+			'deposit_new' 	=> $depositData['deposit']
+		];
+		
+		$this->adminaction->setAdminAction(6, $dataToAdmin);
 		echo 1;
 	}
 	

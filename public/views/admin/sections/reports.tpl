@@ -1561,6 +1561,7 @@ $(document).ready(function() {
 											if (response) {
 												salaryWin.close();
 												notify('Заявки успешно оформлены!');
+												renderSection({field: getSortField(), order: getSortOrder()});
 											} else {
 												salaryWin.wait(false);
 												notify('Ошибка формирования заявки!', 'error');
@@ -1691,6 +1692,7 @@ $(document).ready(function() {
 										if (response) {
 											addictPayWin.close();
 											notify('Заявки успешно сформированны!');
+											renderSection({field: getSortField(), order: getSortOrder()});
 										} else {
 											notify('Ошибка формирования заявок!', 'error');
 											addictPayWin.wait(false);
@@ -1788,6 +1790,7 @@ $(document).ready(function() {
 			(function paymentRequestsGetList() {
 				getAjaxHtml('admin/paymentrequests/main', {}, function(html) {
 					pRTWin.setData(html, false);
+					pRTWin.setTitle('Шаблоны');
 					
 					$('#paymentRequestsTemplatesList').ddrCRUD({
 						addSelector: '#paymentRequestsTemplatesAdd',
@@ -1924,9 +1927,10 @@ $(document).ready(function() {
 											if (thisButtonId == 'paymentRequestsSetFromTemp') {
 												if ($('#paymentRequestTempChoosen').children().length > 0) {
 													var toDeposit = $('#paymentRequestToDeposit').is(':checked');
-													$.post('/admin/paymentrequests/set_checkout', {to_deposit: toDeposit, data: tempDataToCheckout}, function(response) {
+													$.post('/admin/paymentrequests/set_checkout', {title: thisTempTitle, to_deposit: toDeposit, data: tempDataToCheckout}, function(response) {
 														if (response) {
 															notify('Заявки на оплату оформлены успешно!');
+															renderSection({field: getSortField(), order: getSortOrder()});
 														} else {
 															notify('Ошибка оформления заявок', 'error');
 														}

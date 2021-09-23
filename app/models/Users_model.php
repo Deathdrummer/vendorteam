@@ -367,6 +367,8 @@ class Users_model extends MY_Model {
 	 */
 	public function setUsersData($users = false) {
 		if (!$users) return 0;
+		
+		$toAdminAction = [];
 		foreach ($users as $k => $user) {
 			if (isset($user['reg_date']) && $user['reg_date']) {
 				$users[$k]['reg_date'] = is_numeric($user['reg_date']) ? $user['reg_date'] : strtotime($user['reg_date']);
@@ -379,25 +381,21 @@ class Users_model extends MY_Model {
 			} else {
 				unset($users[$k]['birthday']);
 			}
+			
+			if ($user['payment_origin'] != $user['payment']) {
+				$toAdminAction[] = [
+					'user_id'		=> $user['id'],
+					'payment_old'	=> $user['payment_origin'],
+					'payment_new'	=> $user['payment']
+				];
+			}
+			
+			unset($users[$k]['payment_origin']);
 		}
 		
 		$this->refreshUsersOfftime($users);
 		//$this->refreshUsersPayments($users); обновить платежные данные участников
 		
-		$this->db->select('payment');
-		$this->db->where_in('id', array_column($users, 'id'));
-		$usersPayments = $this->_result('users');
-		$diffPayments = array_diff(array_column($users, 'payment'), array_column($usersPayments, 'payment'));
-		
-		$toAdminAction = [];
-		foreach ($users as $user) {
-			if (isset($user['payment']) && in_array($user['payment'], $diffPayments)) {
-				$toAdminAction[] = [
-					'user_id'	=> $user['id'],
-					'payment'	=> $user['payment']
-				];
-			} 
-		}
 		
 		if ($toAdminAction) $this->adminaction->setAdminAction(4, $toAdminAction);
 		
@@ -452,8 +450,9 @@ class Users_model extends MY_Model {
 			$this->setRankToUser($userData['user_id']);
 			if ($verification && $tableData['deleted'] == 1) $this->adminaction->setAdminAction(3, ['user_id' => $userData['user_id'], 'stat' => 1]);
 			
-			if ($tableData['payment'] != $userData['user_payment']) $this->adminaction->setAdminAction(4, [['user_id' => $userData['user_id'], 'payment' => $userData['user_payment']]]);	
-			
+			if ($tableData['payment'] != $userData['user_payment']) {
+				$this->adminaction->setAdminAction(4, [['user_id' => $userData['user_id'], 'payment_old' => $tableData['payment'], 'payment_new' => $userData['user_payment']]]);
+			}
 			return 1;
 		}
 		return 0;
@@ -615,6 +614,7 @@ class Users_model extends MY_Model {
 		
 		if (isset($data['id'])) {
 			if (isset($data['deposit_origin'])) unset($data['deposit_origin']);
+			if (isset($data['payment_origin'])) unset($data['payment_origin']);
 			$this->db->where('id', $data['id']);
 			if (!$this->db->update('users', $data)) return false;
 			return true;
@@ -622,6 +622,7 @@ class Users_model extends MY_Model {
 		
 		foreach ($data as $k => $item) {
 			if (isset($item['deposit_origin'])) unset($data[$k]['deposit_origin']);
+			if (isset($item['payment_origin'])) unset($item['payment_origin']);
 		}
 		if ($this->db->update_batch('users', $data, 'id')) return true;
 		return false;
@@ -684,6 +685,8 @@ class Users_model extends MY_Model {
 	public function setUserStatics($userId, $userStatics) {
 		if ($userStatics) {
 			$this->db->where('user_id', $userId);
+			$tableStatics = $this->_result('users_statics');
+			$this->db->where('user_id', $userId);
 			$this->db->delete('users_statics');
 		}
 		
@@ -707,7 +710,7 @@ class Users_model extends MY_Model {
 			}
 			
 			if (!$this->db->insert_batch('users_statics', $insertData)) return 0;
-			$this->adminaction->setAdminAction(1, $insertData);
+			$this->adminaction->setAdminAction(1, ['before' => $tableStatics, 'after' => $insertData]);
 			return 1;
 		}
 		return 0;

@@ -179,6 +179,7 @@
 															<span class="ml-1"></span>
 														</td>
 														<td class="nowidth">
+															<input type="hidden" class="user_payment_origin" value="{{user.payment}}">
 															<div class="text">
 																<input type="text" class="user_payment" value="{{user.payment}}">
 															</div>
@@ -316,9 +317,9 @@
 					<div class="col-6">
 						<div class="d-flex align-items-center justify-content-between">
 							<h4>Резерв по статикам:</h4>
-							<div class="buttons mb10px">
+							{#<div class="buttons mb10px">
 								<button id="depositUsersList" disabled>Сохранить</button>
-							</div>
+							</div>#}
 						</div>
 						
 						
@@ -356,6 +357,7 @@
 												</td>
 												<td class="noheight">{{user.nickname|default('Не задан')}}</td>
 												<td>
+													<input type="hidden" class="deposit_user_payment_origin" value="{{user.payment}}">
 													<div class="text">
 														<input type="text" class="deposit_user_payment" value="{{user.payment}}">
 													</div>
@@ -375,7 +377,7 @@
 						</div>
 					</div>
 					<div class="col-6">
-						<div class="d-flex align-items-center justify-content-end h57px">
+						<div class="d-flex align-items-center justify-content-end">
 							<h4>Выплаты из общего резерва:</h4>
 						</div>
 						
@@ -468,13 +470,13 @@
 										<tr>
 											<td class="nowidth nopadding">
 												<div class="d-flex align-items-center">
-													<div class="avatar mr-2" style="background-image: url('{{base_url('public/images/users/mini/'~item.avatar)}}')" title="{{item.nickname}}"></div>
+													<div class="avatar mr-2" style="background-image: url('{{base_url('public/images/users/mini/'~item.avatar)|no_file('public/images/user_mini.jpg')}}')" title="{{item.nickname}}"></div>
 													<p>{{item.nickname}}</p>
 												</div>
 											</td>
 											<td class="nowidth nopadding">
 												<div class="d-flex align-items-center">
-													<div class="avatar mr-2" style="background-image: url('{{base_url('public/filemanager/'~item.static.icon)}}')" title="{{item.static.name}}"></div>
+													<div class="avatar mr-2" style="background-image: url('{{base_url('public/filemanager/'~item.static.icon)|no_file('public/images/deleted_mini.jpg')}}')" title="{{item.static.name}}"></div>
 													<p>{{item.static.name}}</p>
 												</div>
 											</td>
@@ -1250,6 +1252,7 @@ $(document).ready(function() {
 				thisUserRegDate = $(thisRow).find('.user_reg_date').attr('date') || false,
 				thisUserStage = $(thisRow).find('.user_stage'),
 				thisUserPayment = $(thisRow).find('.user_payment'),
+				thisUserPaymentOrigin = $(thisRow).find('.user_payment_origin'),
 				thisUserBirthday = $(thisRow).find('.user_birthday').attr('date') || false,
 				thisUserDepositPercent = $(thisRow).find('.user_deposit_percent'),
 				thisUserRole = $(thisRow).find('.user_role'),
@@ -1262,6 +1265,7 @@ $(document).ready(function() {
 				reg_date: thisUserRegDate,
 				stage: thisUserStage.val(),
 				payment: $(thisUserPayment).val(),
+				payment_origin: $(thisUserPaymentOrigin).val(),
 				birthday: thisUserBirthday,
 				deposit_percent: $(thisUserDepositPercent).val(),
 				role: $(thisUserRole).val(),
@@ -1462,13 +1466,38 @@ $(document).ready(function() {
 	});
 	
 	
+	let depositUsersTOut;
 	$('[deposituserslist]').changeRowInputs(function(row, item) {
-		$(row).addClass('changed');
-		$('#depositUsersList').removeAttrib('disabled');
+		clearTimeout(depositUsersTOut);
+		depositUsersTOut = setTimeout(function() {
+			let userId = parseFloat($(row).find('.deposit_user_id').val()),
+				payment = $(row).find('.deposit_user_payment').val(),
+				paymentOrigin = $(row).find('.deposit_user_payment_origin').val(),
+				deposit = parseFloat($(row).find('.deposit_user_deposit').val()),
+				depositOrigin = parseFloat($(row).find('[originval]').attr('originval'));
+			
+			$.post('/admin/deposit_update', {
+				id: userId,
+				payment: payment,
+				payment_origin: paymentOrigin,
+				deposit: deposit,
+				deposit_origin: depositOrigin
+			}, function(response) {
+				if (response) {
+					$(row).addClass('changed');
+					//notify('Резервы успешно сохранены!');
+					//$('[deposituserslist]').find('tr.changed').removeClass('changed');
+					//renderSection();
+				}
+			}).fail(function(e) {
+				notify('Системная ошибка!', 'error');
+				showError(e);
+			});
+		}, 300);
 	});
 	
 	
-	$('#depositUsersList').on(tapEvent, function() {
+	/*$('#depositUsersList').on(tapEvent, function() {
 		var depositUpdateData = [];
 		if ($('[deposituserslist]').find('tr.changed').length > 0) {
 			$('[deposituserslist]').find('tr.changed').each(function() {
@@ -1497,7 +1526,7 @@ $(document).ready(function() {
 		} else {
 			notify('Нет данных для сохранения', 'info');
 		}
-	});
+	});*/
 	
 	
 	

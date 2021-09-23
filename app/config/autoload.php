@@ -60,7 +60,7 @@ $autoload['packages'] = [];
 if (is_cli()) {
 	$autoload['libraries'] = ['database'];
 } else {
-	$autoload['libraries'] = ['twig', 'session', 'database'];
+	$autoload['libraries'] = ['twig', 'session', 'database', 'adminaction'];
 }
 
 /*

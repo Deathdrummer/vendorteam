@@ -1788,6 +1788,7 @@ class Reports_model extends My_Model {
 		
 		$this->db->where('id', $id);
 		if (!$this->db->delete('users_orders')) return false;
+		$this->adminaction->setAdminAction(5, ['type' =>'remove', 'user_id' => $requestData['user_id'], 'order' => $requestData['order']]);
 		return true;
 	}
 	

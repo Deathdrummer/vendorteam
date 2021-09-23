@@ -7,7 +7,7 @@ class Admin_model extends My_Model {
 	private $secretKey = 'Novbragoz77';
 	
 	private $adminsTable = 'admins';	
-	private $actionsTable = 'actions';	
+	private $adminsActionsTable = 'admins_actions';	
 	
 	
 	public function __construct() {
@@ -254,6 +254,46 @@ class Admin_model extends My_Model {
 			default: break;
 		}
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function adminsactions($action = false) {
+		$args = func_get_args();
+		$action = isset($args[0]) ? $args[0] : false;
+		$data = isset($args[1]) ? $args[1] : false;
+		if (!$action) return false;
+		
+		switch ($action) {
+			case 'all':
+				$this->db->select('id, admin_id, type, date');
+				$this->db->order_by('id', 'DESC');
+				if (!$result = $this->_result($this->adminsActionsTable)) return false;
+				return $result;
+				break;
+			
+			case 'get':
+				$this->db->select('type, info');
+				$this->db->where('id', $data['id']);
+				if (!$row = $this->_row($this->adminsActionsTable)) return false;
+				$row['info'] = json_decode($row['info'], true);
+				return $row;
+				break;
+			
+			default: break;
+		}
+	}
+	
+	
+	
 	
 	
 	
@@ -2414,19 +2454,17 @@ class Admin_model extends My_Model {
 	 * @return 
 	*/
 	public function resetBalance() {
-		$this->db->select('SUM(summ)');
+		$this->db->select('user_id, summ');
 		$this->db->where('reset', 0);
-		if (!$totalSumm = $this->_row('balance')) return 0;
+		if (!$result = $this->_result('balance')) return 0;
 		
-		$insData = [
-			'summ' => $totalSumm,
-			'date' => time(),
-		];
+		$totalSumm = array_sum(array_column($result, 'summ'));
 		
-		if (!$this->db->insert('balance_history', $insData)) return -1;
+		if (!$this->db->insert('balance_history', ['summ' => $totalSumm, 'date' => time()])) return -1;
 		
 		$this->db->where('reset', 0);
 		if (!$this->db->update('balance', ['reset' => 1])) return -2;
+		$this->adminaction->setAdminAction(7, ['total_summ' => $totalSumm, 'users' => $result]);
 		return 1;
 	}
 	

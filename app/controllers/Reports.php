@@ -648,6 +648,7 @@ class Reports extends MY_Controller {
 		$this->wallet_model->setToWallet($toWalletData, 5, $data['order'], '+');
 		
 		if (!$this->reports_model->insertUsersOrders($orders)) exit('0');
+		$this->adminaction->setAdminAction(5, ['type' => 'simple', 'order' => $data['order']]);
 		//if (isset($data['to_deposit']) && $data['to_deposit']) $this->users_model->setUsersDeposit($toDepositData);
 		echo json_encode('1');
 	}
@@ -809,6 +810,7 @@ class Reports extends MY_Controller {
 		$data = bringTypes($this->input->post());
 		if (!$orders = $this->reports_model->getSalaryOrders($data, true)) exit('0');
 		if (!$this->reports_model->insertUsersOrders($orders)) exit('0');
+		$this->adminaction->setAdminAction(5, ['type' => 'salary_orders', 'order' => $data['order']]);
 		echo '1';
 	}
 	
@@ -937,6 +939,7 @@ class Reports extends MY_Controller {
 		$this->wallet_model->setToWallet($toWalletData, 5, $data['order'], '+');
 		
 		if (!$this->reports_model->insertUsersOrders($orders)) exit('0');
+		$this->adminaction->setAdminAction(5, ['type' => 'addictpay_orders', 'order' => $data['order']]);
 		//if ($data['to_deposit']) $this->users_model->setUsersDeposit($toDepositData);
 		echo '1';
 	}

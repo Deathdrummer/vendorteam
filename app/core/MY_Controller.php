@@ -14,7 +14,6 @@ class MY_Controller extends CI_Controller {
 	protected $adminSections;
 	protected $imgFileExt = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'ico'];
 	protected $fileTypes = ['png','jpg','jpeg','jpe','gif','ico','bmp','svg','psd','rar','zip','mp4','mov','avi','mpeg','txt','rtf','djvu','pdf','doc','docx','xls','xlsx','mp3','wma','wmv'];
-	private $adminsActionsTable = 'admins_actions';
 	
 	protected $giftsActions = [
 		'stage'		=> 'Прибавка к стажу',
@@ -117,14 +116,14 @@ class MY_Controller extends CI_Controller {
 						'paymentsPatterns'	=> 'Payment Brago',
 						'paymentRequests'	=> 'Заявки на оплату',
 						'keys'				=> 'Ключи',
-						'wallet'			=> 'Выплата баланса',
-						
+						'wallet'			=> 'Выплата баланса'
 					],
 				],
 				'kpi_planes'			=> 'KPI планы',
 				'statistics_amounts'	=> 'Статистика (доходы)',
 				'statistics'			=> 'Статистика (участники)',
-				'statistics_settings'	=> 'Статистика (настройки)'
+				'statistics_settings'	=> 'Статистика (настройки)',
+				'admins_actions'		=> 'История действий администраторов'
 			],
 		];
 		
@@ -133,12 +132,15 @@ class MY_Controller extends CI_Controller {
 		
 		
 		
-		//----------------------------------------------------------------  Разделы админ. панели
+		//----------------------------------------------------------------  Действия администраторов
 		$this->adminActions = [
 			1 => 'Изменение статиков участника',
-			2 => 'Исключить/вернуть исключенного участника',
-			3 => 'Удалить/вернуть удаленного участника',
-			4 => 'Изменить платежные данные участника',
+			2 => 'Исключение/возврат исключенного участника',
+			3 => 'Удаление/возврат удаленного участника',
+			4 => 'Изменение платежных данных участника(ов)',
+			5 => 'Создание/удаление заявок на оплату',
+			6 => 'Начисление/списание резерва, изменение плат. данных',
+			7 => 'Списание баланса'
 		];
 		
 		
@@ -449,31 +451,6 @@ class MY_Controller extends CI_Controller {
 		return $users;
 	}
 	
-	
-	
-	
-	
-	/**
-	 * Записать действие администратора
-	 * @param Тип действия integer
-	 * @param данные в произвольном виде mixed
-	 * @return 
-	 */
-	public function setAdminAction($actionType = false, $info = false) {
-		if (!$actionType || !$info) return false;
-		
-		if (!isJson($info)) $info = json_encode($info);
-		
-		$insData = [
-			'admin_id' 	=> $this->getAdminId(),
-			'type' 		=> $actionType,
-			'info'		=> $info,
-			'date' 		=> time()
-		];
-		
-		if (!$this->db->insert($this->adminsActionsTable, $insData)) return false;
-		return true;
-	}
 	
 	
 	
