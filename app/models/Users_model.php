@@ -382,13 +382,16 @@ class Users_model extends MY_Model {
 				unset($users[$k]['birthday']);
 			}
 			
-			if ($user['payment_origin'] != $user['payment']) {
-				$toAdminAction[] = [
-					'user_id'		=> $user['id'],
-					'payment_old'	=> $user['payment_origin'],
-					'payment_new'	=> $user['payment']
-				];
+			if (isset($user['payment_origin']) && isset($user['payment'])) {
+				if ($user['payment_origin'] != $user['payment']) {
+					$toAdminAction[] = [
+						'user_id'		=> $user['id'],
+						'payment_old'	=> $user['payment_origin'],
+						'payment_new'	=> $user['payment']
+					];
+				}
 			}
+				
 			
 			unset($users[$k]['payment_origin']);
 		}

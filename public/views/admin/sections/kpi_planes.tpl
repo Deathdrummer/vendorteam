@@ -664,7 +664,7 @@ $(function() {
 							let cellsWidth = 0;
 							$('[userspersonagesform]:first').find('[kpifieldcell]').each(function() {
 								let w = $(this).outerWidth();
-								cellsWidth += w;
+								cellsWidth += (w + 10);
 							});
 							$('[userspersonagesform]').find('.kpitasksblock').width('calc(100vw - '+(cellsWidth+92)+'px)');
 						});

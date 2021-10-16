@@ -648,6 +648,8 @@ class Kpi extends MY_Controller {
 								$payout = $payout > $amount ? $amount : $payout;
 							}
 							
+							$visitsCoeff = isset($usersVisitsPercents[$userId]) ? $usersVisitsPercents[$userId] : 0;
+							
 							
 							if (!isset($payoutData[$userStatic][$userId])) {
 								$payoutData[$userStatic][$userId] = [
@@ -656,13 +658,12 @@ class Kpi extends MY_Controller {
 									'rank'			=> $ranks[$userRank]['name'],
 									'nda'			=> $users[$userId]['nda'] ? 1 : 0,
 									'payment'		=> $users[$userId]['payment'],	
-									'payout_all'	=> round($payout * $userRankLider)
+									'payout_all'	=> round($payout * $userRankLider * $visitsCoeff)
 								];
 							} else {
-								$payoutData[$userStatic][$userId]['payout_all'] += round($payout * $userRankLider);
+								$payoutData[$userStatic][$userId]['payout_all'] += round($payout * $userRankLider * $visitsCoeff);
 							}
-								
-							$visitsCoeff = isset($usersVisitsPercents[$userId]) ? $usersVisitsPercents[$userId] : 0;
+							
 							
 							$payoutData[$userStatic][$userId]['periods'][$periodId] = [
 								'summ'		=> $amount,

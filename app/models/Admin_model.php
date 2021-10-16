@@ -274,10 +274,15 @@ class Admin_model extends My_Model {
 		
 		switch ($action) {
 			case 'all':
-				$this->db->select('id, admin_id, type, date');
+				//$this->db->select('id, admin_id, type, date');
 				$this->db->order_by('id', 'DESC');
 				if (!$result = $this->_result($this->adminsActionsTable)) return false;
-				return $result;
+				$data = [];
+				foreach ($result as $item) {
+					$item['info'] = json_decode($item['info'], true);
+					$data[] = $item;
+				}
+				return $data;
 				break;
 			
 			case 'get':

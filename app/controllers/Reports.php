@@ -1199,6 +1199,12 @@ class Reports extends MY_Controller {
 				if (!$postData['title']) exit('-2');
 				if (($reportId = $this->wallet->saveWalletReport($postData['title'])) < 0) exit((string)$reportId);
 				
+				$usersIds = array_column($postData['paydata'], 'user_id');
+				if ($usersIds) {
+					$this->load->model('users_model', 'users');
+					$usersStatics = $this->users->getUsers(['where_in' => ['field' => 'u.id', 'values' => $usersIds], 'where' => ['us.main' => 1], 'fields' => 'static']);
+				}
+				
 				$amountsData = []; $toDepositdata = []; $toReportData = [];
 				foreach ($postData['paydata'] as $payUser) {
 					$amountSumm = (float)$payUser['payout'];
@@ -1217,10 +1223,12 @@ class Reports extends MY_Controller {
 					$toReportData[] = [
 						'report_id'		=> $reportId,
 						'user_id'		=> $userId,
+						'static_id'		=> isset($usersStatics[$userId]) ? $usersStatics[$userId] : 0,
 						'summ'			=> $amountSumm,
 						'to_deposit'	=> $depositSumm,
 					];
 				}
+				
 				
 				toLog('--------- Списание баланса -----------');
 				toLog('Отправить данные в сохраненный отчет');

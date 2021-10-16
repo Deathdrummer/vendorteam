@@ -172,10 +172,135 @@ class Admin extends MY_Controller {
 		
 		switch ($action) {
 			case 'all':
-				$data['list'] = $this->admin_model->adminsactions('all');
+				$list = $this->admin_model->adminsactions('all');
 				$data['admins'] = setArrKeyFromField($this->admin_model->admins('get'), 'id');
 				$data['admins'][0]['nickname'] = 'Главный администратор';
 				$data['types'] = $this->adminActions;
+				
+				
+				
+				foreach ($list as $k => $item) {
+					$type = $item['type'];
+					$info = arrTakeItem($item, 'info');
+					
+					switch ($type) {
+						case '1': // Изменение статиков участника
+							$ranks = $this->admin_model->getRanks();
+							$userData = $this->users_model->getUsers(['where' => ['u.id' => $info['user_id'], 'us.main' => 1], 'fields' => 'avatar nickname static_name static_icon rank']);
+							$userData = reset($userData) ?: false;
+							$userData['rank'] = is_array($userData) && isset($ranks[$userData['rank']]['name']) ? $ranks[$userData['rank']]['name'] : false;
+							$list[$k]['user'] = isset($userData) ? $userData : false;
+							
+							$allStatics = []; $staticsIds = [];
+							foreach ($info['statics'] as $period => $statics) {
+								if ($statics) {
+									foreach ($statics as $static) {
+										$allStatics[$period][$static['static_id']] = [
+											'main'	=> $static['main'],
+											'lider' => $static['lider']
+										];
+										$staticsIds[] = $static['static_id'];
+									}
+								} else {
+									$allStatics[$period] = null;
+								}
+							}
+							
+							$list[$k]['periods'] = ['before' => 'До', 'after' => 'После'];
+							$list[$k]['statics_data'] = $this->admin_model->getStatics(false, array_unique($staticsIds));
+							$list[$k]['statics'] = $allStatics;
+							break;
+						
+						case '2': // Исключение/возврат исключенного участника
+							$ranks = $this->admin_model->getRanks();
+							$userData = $this->users_model->getUsers(['where' => ['u.id' => $info['user_id'], 'us.main' => 1], 'fields' => 'avatar nickname static_name static_icon rank']);
+							$userData = reset($userData) ?: false;
+							$userData['rank'] = is_array($userData) && isset($ranks[$userData['rank']]['name']) ? $ranks[$userData['rank']]['name'] : false;
+							
+							$list[$k]['user'] = $userData;
+							$list[$k]['stat'] = $info['stat'];
+							break;
+						
+						case '3': // Удаление/возврат удаленного участника
+							$ranks = $this->admin_model->getRanks();
+							$userData = $this->users_model->getUsers(['where' => ['u.id' => $info['user_id'], 'us.main' => 1], 'fields' => 'avatar nickname static_name static_icon rank']);
+							$userData = reset($userData) ?: false;
+							$userData['rank'] = is_array($userData) && isset($ranks[$userData['rank']]['name']) ? $ranks[$userData['rank']]['name'] : false;
+							
+							$list[$k]['user'] = $userData;
+							$list[$k]['stat'] = $info['stat'];
+							break;
+						
+						case '4': // Изменение платежных данных участника
+							$usersIds = array_column($info, 'user_id');
+							$usersData = $this->users_model->getUsers(['where' => ['us.main' => 1], 'where_in' => ['field' => 'u.id', 'values' => $usersIds], 'fields' => 'avatar nickname static_name static_icon rank']);
+							
+							$list[$k]['ranks'] = $this->admin_model->getRanks();
+							$list[$k]['users_data'] = $usersData;
+							$list[$k]['users'] = setArrKeyfromField($info, 'user_id');
+							break;
+						
+						case '5': // Создание/удаление заявок на оплату
+							
+							$payRequestTypes = [
+								'simple' 			=> 'Новая заявка на оплату', // [type, order]
+								'template' 			=> 'Новая заявка из шаблона ', // [type, title]
+								'salary_orders' 	=> 'Расчет окладов', // [type, order]
+								'addictpay_orders' 	=> 'Дополнительные выплаты', // [type, order]
+								'remove' 			=> 'Удаление заявки на оплату' // [type, order, user_id]
+							];
+							
+							
+							if (in_array($info['type'], ['simple', 'salary_orders', 'addictpay_orders'])) {
+								$list[$k]['info'] = 'Номер заказа: <strong>'.$info['order'].'</strong>';
+							
+							} elseif ($info['type'] == 'template') {
+								$list[$k]['info'] = 'Шаблон: '.$info['title'];
+							
+							} elseif ($info['type'] == 'remove') {
+								$ranks = $this->admin_model->getRanks();
+								$userData = $this->users_model->getUsers(['where' => ['u.id' => $info['user_id'], 'us.main' => 1], 'fields' => 'avatar nickname static_name static_icon rank']);
+								$userData = reset($userData) ?: false;
+								$userData['rank'] = is_array($userData) && isset($ranks[$userData['rank']]['name']) ? $ranks[$userData['rank']]['name'] : false;
+								
+								$list[$k]['info'] = 'Номер заказа: <strong>'.$info['order'].'</strong>';
+								$list[$k]['user'] = $userData;
+							}
+							
+							
+							$list[$k]['pr_type'] = $info['type'];
+							$list[$k]['pr_types_names'] = $payRequestTypes;
+							break;
+						
+						case '6': // Начисление/списание резерва, изменение плат. данных
+							$userId = arrTakeItem($info, 'user_id');
+							$list[$k] = array_merge($list[$k], $info);
+							
+							$ranks = $this->admin_model->getRanks();
+							$userData = $this->users_model->getUsers(['where' => ['u.id' => $userId, 'us.main' => 1], 'fields' => 'avatar nickname static_name static_icon rank']);
+							$userData = reset($userData) ?: false;
+							$userData['rank'] = is_array($userData) && isset($ranks[$userData['rank']]['name']) ? $ranks[$userData['rank']]['name'] : false;
+								
+							$list[$k]['user'] = $userData;
+							break;
+						
+						case '7': // Списание баланса
+							$usersIds = array_column($info['users'], 'user_id');
+							$usersData = $this->users_model->getUsers(['where' => ['us.main' => 1], 'where_in' => ['field' => 'u.id', 'values' => $usersIds], 'fields' => 'avatar nickname static_name static_icon rank payment']);
+							
+							$list[$k]['ranks'] = $this->admin_model->getRanks();
+							$list[$k]['users'] = $info['users'];
+							$list[$k]['users_data'] = $usersData;
+							$list[$k]['total_summ'] = $info['total_summ'];
+							
+							break;
+							
+						default: break;
+					}
+					
+				}
+				
+				$data['list'] = $list;
 				
 				echo $this->twig->render($this->viewsPath.'render/adminsactions/list', $data);
 				break;
@@ -903,9 +1028,13 @@ class Admin extends MY_Controller {
 		
 		if (!$this->users_model->depositUpdate($depositData)) exit('0');
 		
+		
+		$deposit = is_numeric($depositData['deposit']) ? (float)$depositData['deposit'] : 0;
+		$depositOrigin = is_numeric($depositData['deposit_origin']) ? (float)$depositData['deposit_origin'] : 0;
+		
 		$globalHistoryData[] = [
 			'user_id'	=> $depositData['id'],
-			'summ'		=> ($depositData['deposit_origin'] - $depositData['deposit']),
+			'summ'		=> ($depositOrigin - $deposit),
 			'date'		=> time(),
 			'reason'	=> 1
 		];
@@ -916,8 +1045,8 @@ class Admin extends MY_Controller {
 			'user_id' 		=> $depositData['id'],
 			'payment_old' 	=> $depositData['payment_origin'],
 			'payment_new' 	=> $depositData['payment'],
-			'deposit_old' 	=> $depositData['deposit_origin'],
-			'deposit_new' 	=> $depositData['deposit']
+			'deposit_old' 	=> $depositOrigin,
+			'deposit_new' 	=> $deposit
 		];
 		
 		$this->adminaction->setAdminAction(6, $dataToAdmin);

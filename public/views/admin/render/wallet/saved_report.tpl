@@ -18,7 +18,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						{% for userId, user in report[stId] %}
+						{% for userId, user in report[stId]|sortusers %}
 							<tr walletuserrow="{{stId}}|{{userId}}">
 								<td>
 									<div class="d-flex align-items-center">

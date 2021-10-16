@@ -1409,18 +1409,20 @@ class Kpi_model extends MY_Model {
 			}
 			
 			
+			$visitsCoeff = isset($usersVisitsPercents[$uId]) ? $usersVisitsPercents[$uId] : 0;
+			
 			if (!isset($payoutData[$userStatic][$uId])) {
 				$payoutData[$userStatic][$uId] = [
 					'rank'			=> $ranks[$userRank]['name'],
 					'nda'			=> $users[$uId]['nda'] ? 1 : 0,
 					'payment'		=> $users[$uId]['payment'],	
-					'payout_all'	=> round($payout * $userRankLider)
+					'payout_all'	=> round($payout * $userRankLider * $visitsCoeff)
 				];
 			} else {
-				$payoutData[$userStatic][$uId]['payout_all'] += round($payout * $userRankLider);
+				$payoutData[$userStatic][$uId]['payout_all'] += round($payout * $userRankLider * $visitsCoeff);
 			}
 				
-			$visitsCoeff = isset($usersVisitsPercents[$uId]) ? $usersVisitsPercents[$uId] : 0;
+			
 			
 			$payoutData[$userStatic][$uId]['periods'][$periodId] = [
 				'summ'		=> $amount,

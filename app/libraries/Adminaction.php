@@ -21,20 +21,29 @@ class Adminaction {
 	public function setAdminAction($actionType = false, $info = false) {
 		if (!$actionType || !$info) return false;
 		if (isJson($info)) $info = json_decode($info, true);
-		$info = bringTypes($info);
+		$info = bringTypes($info) ?: false;
 		
 		$data = [];
 		switch ($actionType) {
 			case 1: // Изменение статиков участника
-				foreach ($info as $stat => $items) foreach ($items as $item) {
-					$data['user_id'] = arrTakeItem($item, 'user_id');
-					$data['statics'][$stat][] = $item;
+				if ($info) {
+					foreach ($info as $period => $statics) { // период (до после) => статики
+						if ($statics) {
+							foreach ($statics as $static) {
+								$data['user_id'] = arrTakeItem($static, 'user_id');
+								$data['statics'][$period][] = $static;
+							}
+						} else {
+							$data['statics'][$period] = null;
+						}	
+					} 
 				}
 				break;
 			
 			case 2: // Исключить/вернуть исключенного участника
 				$data = $info;
 				break;
+				
 			case 3: // Удалить/вернуть удаленного участника
 				$data = $info;
 				break;

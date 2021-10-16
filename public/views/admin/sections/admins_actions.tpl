@@ -7,15 +7,16 @@
 	<table id="adminsHistoryTable">
 		<thead>
 			<tr class="h40px">
-				<td class="w250px"><strong>Администратор</strong></td>
-				<td><strong>Операция</strong></td>
-				<td class="w250px"><strong>Дата</strong></td>
-				<td class="w60px"></td>
+				<td class="w150px"><strong>Администратор</strong></td>
+				<td class="w300px"><strong>Операция</strong></td>
+				<td>Подробно</td>
+				<td class="w200px"><strong>Дата</strong></td>
+				{# <td class="w60px"></td> #}
 			</tr>
 		</thead>
 		<tbody id="adminsHistoryList">
 			<tr>
-				<td colspan="3">
+				<td colspan="5">
 					<p class="empty center"><i class="fa fa-spinner fa-pulse fa-fw"></i> Загрузка...</p>
 				</td>
 			</tr>
@@ -28,12 +29,13 @@
 
 
 <script type="text/javascript"><!--
+
 	getAjaxHtml('admin/adminsactions/all', function(html, stat) {
 		if (stat) {
 			$('#adminsHistoryList').html(html);
 			$('#adminsHistoryTable').ddrScrollTableY({height: 'calc(100vh - 200px)', offset: 1});
 		} else {
-			$('#adminsHistoryList').html('<tr><td colspan="4"><p class="empty center">Нет данных</p></td></tr>');
+			$('#adminsHistoryList').html('<tr><td colspan="5"><p class="empty center">Нет данных</p></td></tr>');
 		}
 		
 		
@@ -51,11 +53,6 @@
 				adminsActionsWin.setData('admin/adminsactions/info', {id: id, from: from, date: date});
 			});
 		});
-		
-		
-		
-		
-		
 	}, function() {
 		
 	});

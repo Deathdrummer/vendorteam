@@ -190,6 +190,7 @@ class Wallet_model extends MY_Model {
 	 * @return 
 	*/
 	public function getReports() {
+		$this->db->order_by('id', 'DESC');
 		if (!$reports = $this->_result($this->walletReportsTable)) return false;
 		return $reports;
 	}
@@ -205,7 +206,7 @@ class Wallet_model extends MY_Model {
 	*/
 	public function getReportData($reportId = false) {
 		if (!$reportId) return false;
-		$this->db->select('user_id, summ, to_deposit');
+		$this->db->select('user_id, static_id, summ, to_deposit');
 		$this->db->where('report_id', $reportId);
 		if (!$data = $this->_result($this->walletReportsDataTable)) return false;
 		$data = setArrKeyFromField($data, 'user_id');
@@ -216,10 +217,16 @@ class Wallet_model extends MY_Model {
 		
 		if (!$fullData = array_replace_recursive($usersData, $data)) return false;
 		
+		
 		$dataToReport = [];
 		foreach ($fullData as $userId => $item) {
-			$staticName = arrTakeItem($item, 'static');
-			$dataToReport[$staticName][$userId] = $item;
+			
+			$reportStatic = arrTakeItem($item, 'static_id');
+			$userStatic = arrTakeItem($item, 'static');
+			
+			$static = $reportStatic ?: $userStatic;
+			
+			$dataToReport[$static][$userId] = $item;
 		}
 		return $dataToReport;
 	}
