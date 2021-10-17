@@ -75,7 +75,7 @@ datePicker = function(startSelector, endSelector, range, destroy) {
                 dayNamesMin:        ['вс','пн','вт','ср','чт','пт','сб',],
                 firstDay:           1,
                 minDate:            new Date(selectedYear, selectedMonth, selectedDay + 1, 0, 0, 0),
-                //maxDate:            maxDate,
+                maxDate:            range != undefined ? maxDate : null,
                 
                 onSelect: function(stringDate, dateObj) {
                     var selectedDay = parseInt(dateObj.selectedDay),

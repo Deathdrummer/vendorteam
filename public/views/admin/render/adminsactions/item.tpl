@@ -1,6 +1,7 @@
 <tr>
 	<td class="top pt5px" adminsactionsfrom>{{admins[admin_id]['nickname']}}</td>
 	<td class="top pt5px" adminsactionstype>{{types[type]}}</td>
+	<td class="top pt5px" adminsactionsdate><strong>{{date|t}}</strong></td>
 	<td class="pt5px pb5px pr5px pl5px">
 		{% if type == 1 %}
 			
@@ -134,20 +135,52 @@
 			
 		{% elseif type == 5 %}	
 					
-			<h4 class="mb10px">{{pr_types_names[pr_type]}}</h4>
-			<p class="mb10px">{{info|raw}}</p>
-			
-			{% if user %}
-				<strong>Участник:</strong>
-				<div class="d-flex">
-					<img class="avatar w60px h60px" src="{{base_url('public/images/users/mini/'~user.avatar)|no_file('public/images/user_mini.jpg')}}" alt="{{user.nickname}}">
-					<div class="ml5px">
-						<p class="fz14px mb5px"><strong>{{user.nickname}}</strong></p>
-						<span class="fz12px">{{user.rank}}</span>
-					</div>
+			<div class="row gutters-5">
+				<div class="col-2">
+					<h4 class="mb10px">{{pr_types_names[pr_type]}}</h4>
+					<p class="mb10px">{{info|raw}}</p>
 				</div>
-			{% endif %}
-
+				<div class="col">
+					{% if users %}
+						<table>
+							<thead>
+								<tr>
+									<td>Участник</td>
+									<td class="w100px">Сумма</td>
+								</tr>
+							</thead>
+							<tbody>
+								{% for user in users %}
+									<tr>
+										<td>
+											<div class="d-flex">
+												<img class="avatar w40px h40px" src="{{base_url('public/images/users/mini/'~users_data[user.user_id]['avatar'])|no_file('public/images/user_mini.jpg')}}" alt="{{users_data[user.user_id]['nickname']}}">
+												<div class="ml5px">
+													<p class="fz14px mb5px"><strong>{{users_data[user.user_id]['nickname']}}</strong></p>
+													<span class="fz12px">{{ranks[users_data[user.user_id]['rank']]['name']}}</span>
+												</div>
+											</div>
+										</td>
+										<td><strong>{{user.summ|number_format(2, '.', ' ')}}</strong> ₽</td>
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					{% endif %}
+					
+					{% if user %}
+						<strong>Участник:</strong>
+						<div class="d-flex">
+							<img class="avatar w60px h60px" src="{{base_url('public/images/users/mini/'~user.avatar)|no_file('public/images/user_mini.jpg')}}" alt="{{user.nickname}}">
+							<div class="ml5px">
+								<p class="fz14px mb5px"><strong>{{user.nickname}}</strong></p>
+								<span class="fz12px">{{user.rank}}</span>
+							</div>
+						</div>
+					{% endif %}
+				</div>
+			</div>			
+			
 
 		{% elseif type == 6 %}
 			
@@ -232,7 +265,6 @@
 			
 		{% endif %}
 	</td>
-	<td class="top pt5px" adminsactionsdate>{{date|d}} в {{date|t}}</td>
 	{# <td class="center">
 		<div class="buttons inline notop">
 			<button adminsactionsmore="{{id}}" title="Подробнее"><i class="fa fa-bars"></i></button>

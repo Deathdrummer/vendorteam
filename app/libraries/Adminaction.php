@@ -59,6 +59,17 @@ class Adminaction {
 				// addictpay_orders - Дополнительные выплаты [type, order]
 				// remove - удалить заявку на оплату
 				
+				if (isset($info['users'])) {
+					$usersData = [];
+					foreach ($info['users'] as $item) {
+						$usersData[] = [
+							'user_id'	=> $item['user_id'],
+							'summ' 		=> $item['summ']
+						];
+					}
+					$info['users'] = $usersData;
+				}
+				
 				$data = $info;
 				break;
 			

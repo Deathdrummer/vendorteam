@@ -285,15 +285,18 @@ class MY_Controller extends CI_Controller {
 		
 		//--------------------------------------------------------------------------- Twig фильтры
 		$this->twig->addFilter('d', function($date, $isShort = false) {
+			if (!is_numeric($date)) $date = strtotime($date);
 			if ($isShort) return date('j', $date).' '.$this->monthesShort[date('n', $date)].' '.date('y', $date).' г.';
 			return date('j', $date).' '.$this->monthes[date('n', $date)].' '.date('Y', $date).' г.';
 		});
 		
 		$this->twig->addFilter('t', function($time) {
+			if (!is_numeric($time)) $time = strtotime($time);
 			return date('H:i', $time);
 		});
 		
 		$this->twig->addFilter('week', function($date) {
+			if (!is_numeric($date)) $date = strtotime($date);
 			$weekDay = date('N', $date);
 			return $this->week[$weekDay];
 		});

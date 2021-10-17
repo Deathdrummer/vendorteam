@@ -275,6 +275,33 @@ class Admin_model extends My_Model {
 		switch ($action) {
 			case 'all':
 				//$this->db->select('id, admin_id, type, date');
+			
+				if (($data['date_start'] && !$data['date_end']) && date('Y-m-d', strtotime($data['date_start'])) == date('Y-m-d')) {
+					$this->db->where('date >=', strtotime(date('Y-m-d', strtotime($data['date_start'])))); // записи за 7 дней от последней записи
+				} elseif ($data['date_start'] && $data['date_end']) {
+					$this->db->where('date >=', strtotime(date('Y-m-d', strtotime($data['date_start']))));
+					$this->db->where('date <=', strtotime(date('Y-m-d', strtotime($data['date_end']))) + 86399);
+				} else {
+					$this->db->select('MAX(date) AS last_date');
+					if (!$lastDate = $this->_row($this->adminsActionsTable)) return false;
+					$this->db->where('date >=', $lastDate - (30 * 86400)); // записи за 7 дней от последней записи
+				}
+				
+				
+				if ($data['admin']) $this->db->where('admin_id', $data['admin']);
+				if ($data['actiontype']) $this->db->where('type', $data['actiontype']);
+				
+				
+				
+				if ($data['user']) {
+					$this->db->where("JSON_CONTAINS(info, '{\"user_id\": {$data['user']}}')");
+					if ($data['user']) $this->db->or_where("JSON_CONTAINS(info, '{\"users\": {\"user_id\": {$data['user']}}}')");
+				} 
+				
+				
+				
+				
+				
 				$this->db->order_by('id', 'DESC');
 				if (!$result = $this->_result($this->adminsActionsTable)) return false;
 				$data = [];
@@ -285,13 +312,25 @@ class Admin_model extends My_Model {
 				return $data;
 				break;
 			
-			case 'get':
+			/*case 'get':
 				$this->db->select('type, info');
 				$this->db->where('id', $data['id']);
 				if (!$row = $this->_row($this->adminsActionsTable)) return false;
 				$row['info'] = json_decode($row['info'], true);
 				return $row;
+				break;*/
+			
+			case 'dates':
+				$this->db->order_by('id', 'DESC');
+				$this->db->select('date');
+				if (!$dates = $this->_result($this->adminsActionsTable)) return false;
+				$datesData = [];
+				foreach ($dates as $row) {
+					$datesData[] = strtotime(date('Y-m-d', $row['date']));
+				}
+				return array_unique($datesData);
 				break;
+			
 			
 			default: break;
 		}

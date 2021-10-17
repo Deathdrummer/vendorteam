@@ -207,7 +207,24 @@ function imagemin() {
 // SVG
 function svg() {
 	return src('../public/svg/icons/**/*.svg')
-	.pipe(svgmin({js2svg: {pretty: true}}))
+	.pipe(svgmin({
+		multipass: true,
+		js2svg: {
+			pretty: true,
+			indent: 2,
+		},
+		plugins: [{
+			name: 'preset-default',
+			params: {
+				overrides: {
+					convertShapeToPath: {
+						convertArcs: true
+					},
+					convertPathData: false
+				}
+			}
+		}],
+	}))
 	.pipe(cheerio({
 		run: function($) {
 			$('[fill]').removeAttr('fill');	
