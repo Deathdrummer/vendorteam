@@ -22,6 +22,7 @@
 	<title>Административная панель</title> 
 </head>
 <body>
+	{% if svg_sparite %}{{svg_sparite|raw}}{% endif %}
 	<header class="header">
 		<div class="header__item mr-4">
 			<button id="openNav" touch="opened"><i class="navigation fa fa-bars"></i></button>

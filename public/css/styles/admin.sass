@@ -204,6 +204,16 @@ html
 
 
 
+.border
+	&_bottom
+		border-bottom: 1px solid #d7dbde
+	
+	&_top
+		border-bottom: 1px solid #d7dbde
+
+
+
+
 .select
 	user-select: all
 	+select()
@@ -633,11 +643,18 @@ i.icon
 				button
 					position: relative
 					
-					i.icon
+					i.icon, svg.icon
 						position: absolute
 						top: 7px
 						right: 7px
+						z-index: 100
+						
+					i.icon
 						font-size: 1em
+					
+					svg.icon
+						fill: #fff
+						
 			
 		
 		
@@ -4703,6 +4720,12 @@ p
 	&_white
 		background-color: #fff
 	
+	
+	
+
+.simplelist
+	> * + *
+		border-top: 1px solid #b2bbc3
 
 
 

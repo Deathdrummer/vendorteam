@@ -123,9 +123,10 @@
 							<button id="paymentRequestsNew" class="fieldheight" title="Новая заявка на оплату"><i class="fa fa-plus"></i></button>
 							<button id="paymentRequestsTemplates" class="fieldheight ml-0" title="Новая заявка из шаблона"><i class="fa fa-newspaper-o"></i></button>
 							<a class="button fieldheight" target="_self" href="{{base_url()}}reports/paymentrequest_export" download="Заявки_на_оплату_{{date('Y-m-d_H_i')}}.csv" title="Экспортировать отчет"><i class="fa fa-download"></i></a>
-							<button id="paymentRequestsSetStatToAll" class="fieldheight ml-0" title="Рассчитать все заявки"><i class="fa fa-list-ol"></i></button>
-							<button id="setSalaryBtn" class="fieldheight ml-0" title="Рассчитать оклады"><i class="fa fa-money"></i></button>
-							<button id="addictPayBtn" class="fieldheight ml-0 pay" title="Дополнительные выплаты"><i class="fa fa-money"></i></button>
+							<button id="paymentRequestsSetStatToAll" class="fieldheight ml-0" title="Рассчитать все заявки"><i class="fa fa-calculator"></i><i class="fa fa-bullhorn fz12px icon"></i></button>
+							<button id="setSalaryBtn" class="fieldheight ml-0" title="Рассчитать оклады"><i class="fa fa-calculator"></i><i class="fa fa-rub fz12px icon"></i></button>
+							<button id="addictPayBtn" class="fieldheight ml-0" title="Дополнительные выплаты"><i class="fa fa-rub"></i><i class="fa fa-plus fz12px icon"></i></button>
+							<button id="raidLidersPaysBtn" class="fieldheight ml-0" title="Выплаты рейд-лидерам"><i class="fa fa-rub"></i><svg class="icon w14px h12px"><use xlink:href="#crown"></use></svg></button>
 						</div>
 					</div>
 					
@@ -151,6 +152,12 @@
 					<div class="item inline ml-1">
 						<div class="buttons notop">
 							<button id="paymentRequestsFindUsersButton">Поиск</button>
+						</div>
+					</div>
+					
+					<div class="item inline ml-auto">
+						<div class="buttons notop">
+							<button class="fieldheight pay" id="setSummmToPayRaidLidersBtn" title="Таблица с суммами выплат РЛ"><i class="fa fa-money"></i></button>
 						</div>
 					</div>
 				</div>
@@ -1721,6 +1728,154 @@ $(document).ready(function() {
 			});
 		});
 	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	// --------------------------------------- Выплат РЛ
+	$('body').off(tapEvent, '#raidLidersPaysBtn').on(tapEvent, '#raidLidersPaysBtn', function() {
+		popUp({
+			title: 'Выплаты рейд-лидерам',
+			width: 800,
+			buttons: [{id: 'raidLidersPayoutBtn', title: 'Выплатить'}],
+			closePos: 'left',
+			closeButton: 'Отмена'
+		}, function(raidLidersPaysWin) {
+			raidLidersPaysWin.setData('reports/raidliderspay/pay_form', function() {
+				$('#raidlidersPaysForm').ddrScrollTableY({height: '60vh', wrapBorderColor: '#d7dbde'});
+				
+				
+				$('#raidLidersPayoutBtn').on(tapEvent, function() {
+					
+					let order = $('#raidlidersPayOrder'),
+					 	comment = $('#raidlidersPayComment'),
+						lidersSumms = [],
+						stat = true;
+					$('#raidlidersPaysForm').find('[raidliderspayslider]').each(function() {
+						let isChecked = $(this).is(':checked'),
+							row = $(this).closest('tr'),
+							liderId = $(this).attr('raidliderspayslider'),
+							summ = $(row).find('[raidliderspayssumm]').val(); 
+						
+						if (isChecked) {
+							lidersSumms.push({
+								user_id: parseInt(liderId),
+								summ: parseFloat(summ)
+							});
+						}
+					});
+					
+					
+					if (lidersSumms.length == 0) {
+						notify('Ошибка! Необходимо выбрать хотя бы одного рейд-лидера!', 'error');
+						stat = false;
+					}
+					
+					if ($(order).val() == '') {
+						$(order).addClass('error');
+						stat = false;
+					}
+					
+					if ($(comment).val() == '') {
+						$(comment).addClass('error');
+						stat = false;
+					}
+					
+					if (stat) {
+						raidLidersPaysWin.wait();
+						$.post('reports/raidliderspay/payout', {order: $(order).val(), comment: $(comment).val(), liders: lidersSumms}, function(response) {
+							if (response) {
+								notify('Заявка на выплату успешно создана!');
+								raidLidersPaysWin.close();
+							} else {
+								notify('Ошибка формирования заявок!', 'error');
+								raidLidersPaysWin.wait(false);
+							}
+						}).fail(function(e) {
+							showError(e);
+							notify('Системная ошибка!', 'error');
+							raidLidersPaysWin.wait(false);
+						});
+					}
+						
+				});
+				
+			});
+		});
+	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	// --------------------------------------- Заполнить таблицу с суммами выплат РЛ
+	$('body').off(tapEvent, '#setSummmToPayRaidLidersBtn').on(tapEvent, '#setSummmToPayRaidLidersBtn', function() {
+		popUp({
+			title: 'Выплаты рейд-лидерам по званиям',
+			width: 1200,
+			close: 'Закрыть'
+		}, function(setSummmToPayRaidLidersWin) {
+			setSummmToPayRaidLidersWin.setData('reports/raidliderspay/form', function() {
+				$('#raidLidersable').ddrScrollTableY({height: '80vh', wrapBorderColor: '#d7dbde'});
+				
+				let raidliderspayTOut;
+				
+				$('#raidLidersable').changeInputs(function(input) {
+					clearTimeout(raidliderspayTOut);
+					raidliderspayTOut = setTimeout(function() {
+						let d = $(input).attr('rlsinput').split('|'),
+							staticId = d[0],
+							rankLiderId = d[1],
+							rankId = d[2],
+							summ = $(input).val();
+						
+						$.post('reports/raidliderspay/save', {static_id: staticId, rank_lider_id: rankLiderId, rank_id: rankId, summ: summ}, function(response) {
+							if (response) {
+								$(input).parent().addClass('changed');
+							} else {
+								$(input).parent().addClass('error');
+								notify('Ошибка сохранения суммы', 'error');
+							}
+						}).fail(function(e) {
+							showError(e);
+							notify('Системная ошибка!', 'error');
+						});
+					}, 100);
+				});
+			});
+		});
+	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

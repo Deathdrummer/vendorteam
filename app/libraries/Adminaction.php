@@ -53,11 +53,12 @@ class Adminaction {
 				break;
 			
 			case 5: // Создание/удаление/изменение заявок на оплату
-				// simple - новая заявка на оплату [type, order]
-				// template - новая заявка из шаблона [type, title]
-				// salary_orders - Рассчитать оклады [type, order]
-				// addictpay_orders - Дополнительные выплаты [type, order]
+				// simple - новая заявка на оплату [type, order, users]
+				// template - новая заявка из шаблона [type, title, users]
+				// salary_orders - Рассчитать оклады [type, order, users]
+				// addictpay_orders - Дополнительные выплаты [type, order, users]
 				// remove - удалить заявку на оплату
+				// raidliders_orders - Выплаты рейд-лидерам [type, order, users]
 				
 				if (isset($info['users'])) {
 					$usersData = [];

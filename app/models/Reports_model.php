@@ -2060,4 +2060,45 @@ class Reports_model extends My_Model {
 	
 	
 	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	 */
+	public function saveRaidLiderPaySumm($data = false) {
+		if (!$data) return false;
+		$this->db->where(['static_id' => $data['static_id'], 'rank_id' => $data['rank_id'], 'rank_lider_id' => $data['rank_lider_id']]);
+		if ($this->db->count_all_results('raids_liders_summs') == 0) {
+			$insData = [
+				'static_id' 	=> $data['static_id'],
+				'rank_id' 		=> $data['rank_id'],
+				'rank_lider_id' => $data['rank_lider_id'],
+				'summ' 			=> $data['summ']
+			];
+			
+			if (!$this->db->insert('raids_liders_summs', $insData)) return false;
+			return true;
+		} else {
+			$this->db->where(['static_id' => $data['static_id'], 'rank_id' => $data['rank_id'], 'rank_lider_id' => $data['rank_lider_id']]);
+			if (!$this->db->update('raids_liders_summs', ['summ' => $data['summ']])) return false;
+			return true;
+		}
+	}
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	 */
+	public function getRraidLiderPaySumms() {
+		if (!$data = $this->_result('raids_liders_summs')) return false;
+		return arrRestructure($data, 'static_id rank_lider_id rank_id', 'summ', true);
+	}
+	
+	
+	
+	
 }

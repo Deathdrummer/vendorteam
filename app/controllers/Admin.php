@@ -48,6 +48,8 @@ class Admin extends MY_Controller {
 			}
 			
 			$data['date'] = date('Y');
+			
+			$data['svg_sparite'] = getSprite('public/svg/sprite.svg'); // вставляем SVG спрайт
 			$this->twig->display($this->viewsPath.'index', $data);
 		}
 	}
@@ -246,7 +248,8 @@ class Admin extends MY_Controller {
 									'template' 			=> 'Новая заявка из шаблона ', // [type, title, users]
 									'salary_orders' 	=> 'Расчет окладов', // [type, order, users]
 									'addictpay_orders' 	=> 'Дополнительные выплаты', // [type, order, users]
-									'remove' 			=> 'Удаление заявки на оплату' // [type, order, user_id]
+									'remove' 			=> 'Удаление заявки на оплату', // [type, order, user_id]
+									'raidliders_orders' => 'Выплаты рейд-лидерам' // [type, order, users]
 								];
 								
 								
@@ -260,7 +263,7 @@ class Admin extends MY_Controller {
 								}
 								
 								
-								if (in_array($info['type'], ['simple', 'salary_orders', 'addictpay_orders'])) {
+								if (in_array($info['type'], ['simple', 'salary_orders', 'addictpay_orders', 'raidliders_orders'])) {
 									$list[$k]['info'] = 'Номер заказа: <strong>'.$info['order'].'</strong>';
 								
 								} elseif ($info['type'] == 'template') {

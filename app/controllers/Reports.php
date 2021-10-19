@@ -939,7 +939,7 @@ class Reports extends MY_Controller {
 		$this->wallet_model->setToWallet($toWalletData, 5, $data['order'], '+');
 		
 		if (!$this->reports_model->insertUsersOrders($orders)) exit('0');
-		$this->adminaction->setAdminAction(5, ['type' => 'addictpay_orders', 'order' => $data['order']]);
+		$this->adminaction->setAdminAction(5, ['type' => 'addictpay_orders', 'order' => $data['order'], 'users' => $orders]);
 		//if ($data['to_deposit']) $this->users_model->setUsersDeposit($toDepositData);
 		echo '1';
 	}
@@ -1297,6 +1297,116 @@ class Reports extends MY_Controller {
 	
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//------------------------------------------------------------------------------------------ Заполнить таблицу с суммами выплат РЛ
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function raidliderspay($action = false) {
+		if (!$this->input->is_ajax_request()) return false;
+		if (!$action) return false;
+		$postData = bringTypes($this->input->post());
+		
+		switch ($action) {
+			case 'form':
+				$this->load->model('admin_model', 'admin');
+				$data['statics'] = $this->admin->getStatics();
+				$data['ranks'] = $this->admin->getRanks();
+				$data['ranks_liders'] = $this->admin->getRanksLiders();
+				$data['summs'] = $this->reports_model->getRraidLiderPaySumms();
+				echo $this->twig->render('views/admin/render/raid_liders_pays', $data);
+				break;
+			
+			case 'save':
+				if (!$this->reports_model->saveRaidLiderPaySumm($postData)) exit('0');
+				echo '1';
+				break;
+			
+			case 'pay_form':
+				$this->load->model(['users_model' => 'users', 'admin_model' => 'admin']);
+				
+				$lidersIds = $this->users->getRaidLiders(true);
+				$usersData = $this->users->getUsers(['where_in' => ['field' => 'u.id', 'values' => $lidersIds], 'where' => ['u.deleted' => 0, 'u.verification' => 1, 'us.main' => 1], 'fields' => 'id nickname avatar rank rank_lider static']);
+				
+				$lidersData = [];
+				if ($usersData) {
+					foreach ($usersData as $user) {
+						$static = arrTakeItem($user, 'static');
+						$liderId = arrTakeItem($user, 'id');
+						$lidersData[$static][$liderId] = $user;
+					}
+				}
+				
+				$data['raidliders'] = $lidersData;
+				$data['ranks'] = $this->admin->getRanks();
+				$data['ranks_liders'] = $this->admin->getRanksLiders();
+				$data['statics'] = $this->admin->getStatics();
+				$data['summs'] = $this->reports_model->getRraidLiderPaySumms();
+				echo $this->twig->render('views/admin/render/raid_liders_form', $data);
+				break;
+			
+			case 'payout':
+				if (!$postData['liders']) exit('0');
+				$lidersIds = array_column($postData['liders'], 'user_id');
+				$this->load->model('users_model', 'users');
+				$usersData = $this->users->getUsers(['where_in' => ['field' => 'u.id', 'values' => $lidersIds]]);
+				$usersData = setArrKeyFromField($usersData, 'id');
+				
+				
+				$orders = []; $toWalletData = [];
+				foreach ($postData['liders'] as $user) {
+					$orders[] = [
+						'user_id'		=> $user['user_id'],
+						'nickname' 		=> $usersData[$user['user_id']]['nickname'],
+						'avatar' 		=> $usersData[$user['user_id']]['avatar'],
+						'payment' 		=> $usersData[$user['user_id']]['payment'],
+						'static' 		=> $usersData[$user['user_id']]['static'],
+						'order' 		=> $postData['order'],
+						'summ' 			=> $user['summ'],
+						'to_deposit' 	=> 0,
+						'comment' 		=> $postData['comment'],
+						'date'			=> time()
+					];
+					
+					if (!isset($toWalletData[$user['user_id']])) {
+						$toWalletData[$user['user_id']]['amount'] = (float)$user['summ'];
+						$toWalletData[$user['user_id']]['to_deposit'] = 0;
+					} else {
+						$toWalletData[$user['user']]['amount'] += (float)$user['summ'];
+						$toWalletData[$user['user']]['to_deposit'] += 0;
+					}
+				}
+				
+				$this->load->model('wallet_model');
+				$this->wallet_model->setToWallet($toWalletData, 5, $postData['order'], '+');
+				
+				if (!$this->reports_model->insertUsersOrders($orders)) exit('0');
+				$this->adminaction->setAdminAction(5, ['type' => 'raidliders_orders', 'order' => $postData['order'], 'users' => $orders]);
+				echo '1';
+				break;
+				
+			
+			
+			default: break;
+		}
+	}
+	
+	
+	
+		
 	
 	
 	
