@@ -419,6 +419,8 @@ $(function() {
 							pollingQuestionsWin.setWidth(600);
 							pollingQuestionsWin.setTitle(questionId ? 'Редактирование вопроса|4' : 'Новый вопрос|4');
 							
+							let initAnswersType = $('#questionVariantsType').val();
+							
 							let addEditBtn = questionId ? {id: 'pollingsaUpdateQuestionBtn', title: 'Обновить'} : {id: 'pollingsAddQuestionBtn', title: 'Создать вопрос'};
 							pollingQuestionsWin.setButtons([{id: 'pollingsGoBackBtn', title: 'Назад', class: 'popup__buttons_close'}, addEditBtn], 'Закрыть');
 							
@@ -559,11 +561,15 @@ $(function() {
 									if (stat) saveQuestion();
 									
 								} else if ($(answersType).val() == 3 && stat) {
-									pollingQuestionsWin.dialog('<h3 class="red center fz24px mb10px">Внимание!</h3><p class="red center fz16px">При выборе типа ответа "Кастомный" все варианты ответов безвозвратно удалятся и в ответах участников не будут отображаться эти удаленныйе варианты</p>', 'Удалить', 'Отмена', function() {
-										saveQuestion(function() {
-											pollingQuestionsWin.dialog(false);
+									if (questionId && initAnswersType != $(answersType).val()) {
+										pollingQuestionsWin.dialog('<h3 class="red center fz24px mb10px">Внимание!</h3><p class="red center fz16px">При выборе типа ответа "Кастомный" все заданные ранее варианты ответов безвозвратно удалятся и в ответах участников не будут отображаться эти удаленныйе варианты</p>', 'Удалить', 'Отмена', function() {
+											saveQuestion(function() {
+												pollingQuestionsWin.dialog(false);
+											});
 										});
-									});
+									} else {
+										saveQuestion();
+									}
 								} 
 								
 								

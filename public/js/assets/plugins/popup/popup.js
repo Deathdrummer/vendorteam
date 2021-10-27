@@ -33,6 +33,7 @@ function DdrPopUp(settings, callback) {
 		closePos: 'right', // расположение кнопки "close" left - слева, right - справа
 		closeByButton: false, // Закрывать окно только по кнопкам [ddrpopupclose]
 		closeButton: false, // заголовок кнопки "закрыть"
+		onClose: false, // событие при закрытии окна
 		winClass: false, // добавить класс к модальному окну
 		contentToCenter: false, // весь контент по центру вертикально и горизонтально
 		buttonsOnTop: false, // Кнопки сверху
@@ -205,6 +206,7 @@ function DdrPopUp(settings, callback) {
 		popupCloseTOut = setTimeout(function() {
 			$(ddrPopupSelector).remove();
 			enableScroll();
+			if (o.onClose && typeof o.onClose == 'function') o.onClose(ddrPopupSelector);
 		}, (animationTime * 1000));
 	};
 

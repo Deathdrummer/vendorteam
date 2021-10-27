@@ -4,7 +4,7 @@
 			<tr>
 				<td class="w280x">Название</td>
 				<td>Описание</td>
-				<td class="w80px">Вопр/Отв</td>
+				<td class="w80px">Отв/Вопр</td>
 				<td class="w80px"></td>
 			</tr>
 		</thead>
@@ -13,7 +13,7 @@
 				<tr class="h50px">
 					<td><strong class="fz12px" questiontitle>{{polling.title}}</strong></td>
 					<td><p class="fz12px">{{polling.description}}</p></td>
-					<td class="center"><strong>{{polling.count_questions}}/{{polling.count_answers}}</strong></td>
+					<td class="center"><strong>{{polling.count_answers}}/{{polling.count_questions}}</strong></td>
 					<td class="center">
 						
 						<div class="buttons notop inline">
