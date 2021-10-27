@@ -48,11 +48,11 @@
 			
 		<p class="leftblock__nickname">
 			<span accountnickname>{{nickname|default('Не задано')}}</span>
-			<i class="fa fa-edit" id="changeNickname"></i>
+			<i class="fa fa-edit" id="changeNickname" title="Редактировать мои данные"></i>
 		</p>
 		
 		<ul class="leftblock__infolist">
-			<li class="nowrap"><span>Способ оплаты:</span> <strong title="{{payment|default('Не задан')}}">{{payment|default('Не задан')}}</strong></li>
+			<li class="nowrap"><span>Способ оплаты:</span> <strong userpaymentdata>{{payment|default('Не задан')}}</strong></li>
 			<li><span>Роль:</span> <strong>{{role|default('Не задана')}}</strong></li>
 			<li><span>Звание:</span> 
 				<strong>

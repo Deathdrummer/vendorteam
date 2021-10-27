@@ -210,6 +210,33 @@ $(document).ready(function() {
 	
 	
 	
+	//---------------- Показать способ оплаты
+	let userPaymentData = $('[userpaymentdata]:visible').text(),
+		payDataTooltip = new jBox('Tooltip', {
+			attach: '[userpaymentdata]',
+			trigger: 'mouseenter',
+			closeOnMouseleave: true,
+			closeOnClick: 'body',
+			outside: 'y',
+			ignoreDelay: true,
+			zIndex: 1200,
+			//pointer: 'left',
+			//pointTo: 'left',
+			position: {
+			  x: 'center',
+			  y: 'bottom'
+			},
+			content: '<div class="d-flex align-items-center p10px"><p class="fz20px">'+userPaymentData+'</p> <i class="fa fa-clone fz16px pointer ml15px" copypaydatatoclipboard title="Скопировать"></i></div>'
+		});
+		
+		$('body').on(tapEvent, '[copypaydatatoclipboard]:visible', function() {
+			copyStringToClipboard(userPaymentData);
+			notify('Скопировано!');
+			payDataTooltip.close();
+		});
+	
+	
+				
 	
 	
 	

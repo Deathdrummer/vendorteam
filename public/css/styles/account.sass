@@ -548,9 +548,10 @@ img.avatar
 		
 		i
 			position: absolute
-			right: -4px
-			top: -5px
-			font-size: 0.6em
+			margin-left: 4px
+			top: -3px
+			font-size: 0.7em
+			color: #54e9ff
 			cursor: pointer
 			opacity: 0
 			pointer-events: none
@@ -577,20 +578,9 @@ img.avatar
 					display: inline-block
 					text-overflow: ellipsis
 					overflow: hidden
-					
-					&:hover
-						text-overflow: unset
-						z-index: 999
-						position: absolute
-						background-color: #917baf
-						border-radius: 3px
-						padding: 6px
-						+resp(width, (xs: calc(100% - 20px), sm: calc(100% - 20px), md: calc(100% - 30px), lg: calc(100% - 40px)))
-						width: auto	
-						white-space: normal
-						box-shadow: 0 0 10px 0 rgba(124, 60, 195, 0.46)
+					cursor: pointer
 				
-			
+				
 			+ li
 				margin-top: 10px
 			

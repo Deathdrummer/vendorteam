@@ -176,8 +176,13 @@ $.fn.onChangeNumberInput = function(callback) {
 
 
 
+
+/*
+	Скопировать в буфер обмена 
+		- строка для копирования
+*/
 copyStringToClipboard = function(str) {
-	var el = document.createElement('textarea');
+	let el = document.createElement('textarea');
 	el.value = str;
 	el.setAttribute('readonly', '');
 	el.style.position = 'absolute';
