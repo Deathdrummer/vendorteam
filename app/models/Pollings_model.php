@@ -511,11 +511,11 @@ class Pollings_model extends MY_Model {
 				$this->db->having('COUNT(pq.id) >', 0);
 				$this->db->group_by('p.id');
 				if (!$pollings = $this->_result($this->pollingsTable.' p')) return false;
-				
 				$answers = $this->_getAnswersCount($data['user_id']);
+				
 				$pollingsCount = 0;
 				foreach ($pollings as $k => $row) {
-					if (!isset($answers[$row['id']]) || $answers[$row['id']] > $row['count_questions']) $pollingsCount += 1;
+					if (!isset($answers[$row['id']]) || $answers[$row['id']] < $row['count_questions']) $pollingsCount += 1;
 				}
 				
 				return $pollingsCount;
