@@ -226,7 +226,7 @@ $(document).ready(function() {
 			  x: 'center',
 			  y: 'bottom'
 			},
-			content: '<div class="d-flex align-items-center p10px"><p class="fz20px">'+userPaymentData+'</p> <i class="fa fa-clone fz16px pointer ml15px" copypaydatatoclipboard title="Скопировать"></i></div>'
+			content: '<div class="d-flex align-items-center p10px"><p class="fz16px">'+userPaymentData+'</p> <i class="fa fa-clone fz16px pointer ml15px" copypaydatatoclipboard title="Скопировать"></i></div>'
 		});
 		
 		$('body').on(tapEvent, '[copypaydatatoclipboard]:visible', function() {

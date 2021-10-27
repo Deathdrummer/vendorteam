@@ -1296,9 +1296,7 @@ class Account extends MY_Controller {
 		$this->load->model('rewards_model', 'rewards');
 		switch ($action) {
 			case 'get_periods':
-				
 				$rewardsPeriods = $this->rewards->getRewardsPeriods();
-				//toLog($rewardsPeriods);
 				echo $this->twig->render('views/account/render/rewards/periods_list.tpl', ['periods' => $rewardsPeriods]);
 				break;
 			
@@ -1308,7 +1306,6 @@ class Account extends MY_Controller {
 				
 				$periodData = $this->rewards->getPeriod($rewardPeriodId);
 				$summData = $this->rewards->getTotalStaticSumm($rewardPeriodId, $staticId);
-				
 				
 				$data['cash'][$staticId] = $summData;
 				$data['period_id'] = $periodData['reports_periods'];

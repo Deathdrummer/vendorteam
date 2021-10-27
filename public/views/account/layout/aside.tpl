@@ -52,7 +52,7 @@
 		</p>
 		
 		<ul class="leftblock__infolist">
-			<li class="nowrap"><span>Способ оплаты:</span> <strong userpaymentdata>{{payment|default('Не задан')}}</strong></li>
+			<li class="nowrap"><span title="Способ оплаты">Сп. опл.:</span> <strong class="fz14px" userpaymentdata>{{payment|default('Не задан')}}</strong></li>
 			<li><span>Роль:</span> <strong>{{role|default('Не задана')}}</strong></li>
 			<li><span>Звание:</span> 
 				<strong>
