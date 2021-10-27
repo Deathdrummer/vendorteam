@@ -180,6 +180,28 @@ class Account_model extends My_Model {
 	
 	
 	
+	/**
+	 * Получить список статиков пользователя
+	 * @return 
+	*/
+	public function getStatics() {
+		if (!isset($this->userData['statics'])) return false;
+		return $this->userData['statics'];
+	}
+	
+	
+	
+	
+	/**
+	 * Получить список ID статиков пользователя
+	 * @return 
+	*/
+	public function getStaticsIds() {
+		if (!isset($this->userData['statics'])) return false;
+		return array_keys($this->userData['statics']);
+	}
+	
+	
 	
 	
 	
@@ -191,6 +213,11 @@ class Account_model extends My_Model {
 	public function getMainStatic() {
 		return isset($this->userData['main_static']) ? $this->userData['main_static'] : 0;
 	}
+	
+	
+	
+	
+	
 	
 	
 	

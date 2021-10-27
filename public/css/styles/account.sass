@@ -457,8 +457,6 @@ img.avatar
 			
 			svg
 				fill: #604b75
-				height: 30px
-				width: 30px
 			
 			&__counter
 				display: flex
@@ -1796,12 +1794,17 @@ img.avatar
 	&__content
 		padding: 10px
 		
-		p.dialog
+		.dialog
 			+font(roboto, bold)
 			text-align: center
 			
 			&_remove
 				color: #e05353
+			
+			&_success
+				color: #58ab24
+		
+		
 				
 		
 	&__footer
@@ -2892,12 +2895,17 @@ img.avatar
 		&_long
 			max-width: 100%
 			
+		&_noresize
+			textarea
+				resize: none !important
+			
 		textarea
 			border: 1px solid #dbdbdb
 			border-radius: 4px
 			font-size: 14px
 			width: 100%
 			resize: vertical
+			
 	
 	
 	&__file
@@ -4403,3 +4411,74 @@ img.avatar
 				transition: border-color 0s
 			
 	
+
+
+
+
+
+
+
+
+
+
+
+
+
+.pollingswin
+	&__question
+		font-size: 18px
+		line-height: 20px
+		white-space: pre-wrap
+		text-align: center
+		+font(regular, medium)
+	
+	&__border
+		margin-top: 20px
+		margin-bottom: 20px
+		
+	&__variants
+		li
+			+ li
+				margin-top: 15px
+	
+	input[type="checkbox"]:checked ~ .pollingswin__variant, input[type="radio"]:checked ~ .pollingswin__variant
+		//border-color: #e9e2ff
+		background-color: #ded5f9
+		
+		&::after
+			content: '\f00c'
+			position: absolute
+			right: 8px
+			top: calc(50% - 9px)
+			+font(fontawesome)
+			font-size: 22px
+			color: #8376a9
+		
+		
+	input[type="checkbox"], input[type="radio"]
+		display: none
+	
+	&__variant
+		position: relative
+		font-size: 14px
+		line-height: 16px
+		white-space: pre-wrap
+		padding: 12px 40px 12px 10px
+		border: 1px solid #f4f3f7
+		border-radius: 5px
+		background-color: #f4f3f7
+		display: block
+		width: 100%
+		cursor: pointer
+		
+		&:hover
+			//border: 1px solid #f4f3f7
+			background-color: #eae7f1
+			transition: background-color 0.16s
+		
+		&:active
+			//border: 1px solid #f4f3f7
+			background-color: #ded5f9
+		
+		
+		

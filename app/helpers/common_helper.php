@@ -5,6 +5,57 @@
 
 
 
+if (!function_exists('compareArrays')) {
+    /**
+     * Сравнить массивы c новыми и исходными данными
+     * @param [массив с новыми данными, ключ, по которому будет вестись сравнение]
+     * @param [массив с исходными данными (в таблице), ключ, по которому будет вестись сравнение]
+     * @return три массива: [new - новые данные, которых нет в исходном массииве, update - обновленные данные, delete - данные которые нужно удалить из исходного массива]
+    */
+    function compareArrays($mainArrayData = false, $compareArrayData = false) {
+        if (!$mainArrayData ||!$compareArrayData) return false;
+        $mainArray = is_array($mainArrayData[0]) ? $mainArrayData[0] : [];
+        $compareArray = is_array($compareArrayData[0]) ? $compareArrayData[0] : [];
+        
+        if (!$mainFieldToKey = isset($mainArrayData[1]) ? $mainArrayData[1] : false) return false;
+        if (!$compareFieldToKey = isset($compareArrayData[1]) ? $compareArrayData[1] : false) return false;
+        
+        $mainArray = $mainArray ? setArrKeyfromField($mainArray, $mainFieldToKey, true) : [];
+        $compareArray = $compareArray ? setArrKeyfromField($compareArray, $compareFieldToKey, true) : [];
+        
+        $newRows = array_diff_key($mainArray, $compareArray);
+        $updatedRows = array_intersect_key($mainArray, $compareArray);
+        $deletedRows = array_diff_key($compareArray, $mainArray);
+        
+        $newRows = array_map(function($row) use ($mainFieldToKey) {
+            unset($row[$mainFieldToKey]);
+            return $row;
+        }, $newRows);
+        
+        $updatedRows = array_map(function($row) use ($mainFieldToKey, $compareFieldToKey) {
+            $row = array_reverse($row, true);
+            $row[$compareFieldToKey] = $row[$mainFieldToKey];
+            $row = array_reverse($row, true);
+            unset($row[$mainFieldToKey]);
+            return $row;
+        }, $updatedRows);
+        
+        return [
+            'new'       => array_values($newRows),
+            'update'    => array_values($updatedRows),
+            'delete'    => array_values($deletedRows)
+        ];
+        
+    }
+}
+
+
+
+
+
+
+
+
 if (!function_exists('arrRestructure')) {
     /**
      * Перебор многомерного массива с коллбэк функцией для каждого элемента
@@ -146,7 +197,7 @@ if (!function_exists('arrTakeItem')) {
     */
     function arrTakeItem(&$arr = false, $itemKey = false) {
         if (!$arr || !$itemKey) return false;
-        if (!isset($arr[$itemKey])) return false;
+        if (!array_key_exists($itemKey, $arr)) return false;
         $takeItem = $arr[$itemKey];
         unset($arr[$itemKey]);
         return $takeItem;

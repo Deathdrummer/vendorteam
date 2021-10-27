@@ -29,7 +29,7 @@ class Account extends MY_Controller {
 		// вставляем SVG спрайт
 		$this->userData['svg_sparite'] = getSprite('public/svg/sprite.svg');
 		
-		$this->load->model(['wallet_model' => 'wallet', 'gifts_model' => 'gifts', 'mininewsfeed_model' => 'mininewsfeed']);
+		$this->load->model(['wallet_model' => 'wallet', 'gifts_model' => 'gifts', 'pollings_model' => 'pollings', 'mininewsfeed_model' => 'mininewsfeed']);
 		
 		$this->userData['set_rating_statics'] = $this->account->getRatingNotifications();
 		
@@ -64,6 +64,17 @@ class Account extends MY_Controller {
 		} else {
 			delete_cookie('gifts');
 		}
+		
+		
+		//------------------------------------------ Опросы
+		if ($countPollings = $this->pollings->account('count', ['user_id' => $this->userData['id'], 'statics' => array_keys($this->userData['statics'])])) {
+			set_cookie('pollings', $countPollings, 0);
+		} else {
+			delete_cookie('pollings');
+		}
+		
+		
+		
 		
 		if ($this->account->hasBirthDay()) {
 			set_cookie('birthday', 1, 0);

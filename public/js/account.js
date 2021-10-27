@@ -42,7 +42,7 @@ $(document).ready(function() {
 	//---------------------------------------- регистрация и авторизация в ЛК
 	$('#account').on(tapEvent, function() {
 		popUp({
-			title: 'Войти в Личный кабинет',
+			title: 'Войти в Личный кабинет|4',
 			width: 460,
 			wrapToClose: true,
 			winClass: 'account',
@@ -96,7 +96,7 @@ $(document).ready(function() {
 				$('#toReg').on(tapEvent, function() {
 					accountWin.wait();
 					getAjaxHtml('main/reg', {template: 1}, function(html) {
-						accountWin.setTitle('Регистрация');
+						accountWin.setTitle('Регистрация|4');
 						accountWin.setData(html, false);
 						accountWin.setButtons([{id: 'getReg', title: 'Зарегистрироваться'}]);
 						
@@ -190,7 +190,7 @@ $(document).ready(function() {
 	//----------------------------------------------------------------------------------- Выход из личного кабинета
 	$('[logout]').on(tapEvent, function() {
 		popUp({
-			title: 'Выход из личного кабинета',
+			title: 'Выход из личного кабинета|4',
 			width: 400,
 			html: 'Вы действительно хотите выйти?',
 			buttons: [{id: 'logoutCancel', title: 'Отмена', class: 'popup__buttons_close'}, {id: 'logoutConfirm', title: 'Выйти'}],
@@ -223,7 +223,7 @@ $(document).ready(function() {
 		let resignBtn = this;
 		
 		popUp({
-			title: 'Заявка на увольнение',
+			title: 'Заявка на увольнение|4',
 			width: 600,
 			buttons: [{id: 'setResign', title: 'Отправить заявку'}],
 			closeButton: 'Отмена'
@@ -319,7 +319,6 @@ $(document).ready(function() {
 		var title = t || 'Заполнить данные';
 		
 		popUp({
-			title: title,
 			width: 500,
 			winClass: 'account',
 			buttons: [{id: 'setUserData', title: 'Готово'}],
@@ -611,7 +610,7 @@ $(document).ready(function() {
 	//---------------------------------------- Операторы
 	$('[operators]').on(tapEvent, function() {
 		popUp({
-			title: 'Операторы',
+			title: 'Операторы|4',
 			width: 1300
 		}, function(operatorsWin) {
 			operatorsWin.wait();
@@ -644,7 +643,7 @@ $(document).ready(function() {
 					}, function(html) {
 						operatorsWin.setData(html, false);
 						operatorsWin.setWidth(500);
-						operatorsWin.setTitle(title);
+						operatorsWin.setTitle(title+'|4');
 						operatorsWin.setButtons([{id: 'sendMessToOperator', title: button}]);
 												
 						$('#sendMessToOperator').on(tapEvent, function() {
@@ -723,7 +722,7 @@ $(document).ready(function() {
 	var agrementWin;
 	function showAgreement() {
 		popUp({
-			title: 'Договор',
+			title: 'Договор|4',
 			width: 1300,
 			html: '<div id="agreementBlock"></div>',
 			wrapToClose: false,
@@ -784,7 +783,7 @@ $(document).ready(function() {
 	//---------------------------------------- Важная (полезня) информация
 	$('[importantinfo]').on(tapEvent, function() {
 		popUp({
-			title: 'Важная информация',
+			title: 'Важная информация|4',
 			width: 1300,
 			height: false,
 			html: '<div id="infoBlock"></div>',
@@ -829,7 +828,7 @@ $(document).ready(function() {
 	$('[newraid]').on(tapEvent, function() {
 		var newRaidStatic = $(this).attr('newraid');
 		popUp({
-			title: 'Новый рейд',
+			title: 'Новый рейд|4',
 			width: 800,
 			winClass: 'account'
 		}, function(nrWin) {
@@ -971,7 +970,7 @@ $(document).ready(function() {
 		compoundIsLider = c[1];
 		
 		popUp({
-			title: 'Коэффициенты команды',
+			title: 'Коэффициенты команды|4',
 			width: 500,
 			winClass: 'account',
 			buttons: false,
@@ -1155,7 +1154,7 @@ $(document).ready(function() {
 			activePeriod;
 		
 		popUp({
-			title: 'Ключи',
+			title: 'Ключи|4',
 			width: 1000,
 			winClass: 'account',
 			buttons: false,
@@ -1169,7 +1168,7 @@ $(document).ready(function() {
 					keysWin.setData('<p class="empty center">Нет активных периодов!</p>', false);
 					keysWin.wait(false);
 				} else {
-					keysWin.setTitle('Ключи - '+activePeriod.name);
+					keysWin.setTitle('Ключи - '+activePeriod.name+'|4');
 					
 					funct = function() {
 						getAjaxHtml('account/get_users_to_keys', {period_id: activePeriod.id, static_id: staticId, is_lider: isLider}, function(html, stat) {
@@ -1349,7 +1348,7 @@ $(document).ready(function() {
 			isLider = parseInt(c[1]);
 		
 		popUp({
-			title: 'Рейтинги участников',
+			title: 'Рейтинги участников|4',
 			width: 1000,
 			winClass: 'account',
 			buttons: [{id: 'setDataToRatings', title: 'Сохранить'}],
@@ -1404,7 +1403,7 @@ $(document).ready(function() {
 		let staticId = $(this).attr('myreward');
 		
 		popUp({
-			title: 'Моя премия',
+			title: 'Моя премия|4',
 			width: 500,
 			//closeButton: 'Отмена',
 		}, function(myRewardWin) {
@@ -1480,7 +1479,7 @@ $(document).ready(function() {
 	var reportWin, limit = 10, offset;
 	$('[reportpatternsbutton]').on(tapEvent, function() {
 		popUp({
-			title: 'Выплаты',
+			title: 'Выплаты|4',
 			width: 800,
 			html: '<div id="reportPatternsList"></div>',
 			winClass: 'account',
@@ -1524,7 +1523,7 @@ $(document).ready(function() {
 			thisPatternName = $(this).attr('patternname');
 		
 		getAjaxHtml('reports/get_main_report', {from_pattern: 1, to_user: 1, pattern_id: thisPatternId}, function(html, stat) {
-			reportWin.setTitle('Отчет по выплатам - '+thisPatternName);
+			reportWin.setTitle('Отчет по выплатам - '+thisPatternName+'|4');
 			
 			if (stat) {
 				reportWin.setWidth(1330);
@@ -1549,7 +1548,7 @@ $(document).ready(function() {
 			thisPatternName = $(this).attr('patternname');
 		
 		getAjaxHtml('reports/get_keys_report', {from_pattern: 1, to_user: 1, pattern_id: thisPatternId}, function(html, stat) {
-			reportWin.setTitle('Отчет по выплатам - '+thisPatternName);
+			reportWin.setTitle('Отчет по выплатам - '+thisPatternName+'|4');
 			if (stat) {
 				reportWin.setWidth(1058);
 				reportWin.setData(html, false);
@@ -1599,7 +1598,7 @@ $(document).ready(function() {
 	var timesheetPeriodsWin, periodId, periodName, staticName;
 	$('[timesheetperiodbutton]').on(tapEvent, function() {
 		popUp({
-			title: 'Периоды расписания',
+			title: 'Периоды расписания|4',
 			width: 520,
 			winClass: 'account'
 		}, function(tPWin) {
@@ -1658,9 +1657,9 @@ $(document).ready(function() {
 			if (stat) {
 				timesheetPeriodsWin.setWidth(1330);
 				timesheetPeriodsWin.setData(html, false);
-				timesheetPeriodsWin.setTitle(periodName);
+				timesheetPeriodsWin.setTitle(periodName+'|4');
 			} else {
-				timesheetPeriodsWin.setTitle(periodName);
+				timesheetPeriodsWin.setTitle(periodName+'|4');
 				timesheetPeriodsWin.setData('<p class="empty dark center">Нет данных</p>', false);
 			}
 		}, function() {
@@ -1696,7 +1695,7 @@ $(document).ready(function() {
 	$('[getofftime]').on(tapEvent, function() {
 		historyWeeks = 0;
 		popUp({
-			title: 'Забронировать выходной',
+			title: 'Забронировать выходной|4',
 			width: 500,
 			winClass: 'account'
 		}, function(win) {
@@ -1815,7 +1814,7 @@ $(document).ready(function() {
 		
 	$('[getvacation]').on(tapEvent, function() {
 		popUp({
-			title: 'Забронировать отпуск',
+			title: 'Забронировать отпуск|4',
 			width: 500,
 			winClass: 'account'
 		}, function(win) {
@@ -2128,7 +2127,7 @@ $(document).ready(function() {
 	
 	$('[showstatistics]').on(tapEvent, function() {
 		popUp({
-			title: 'Статистика',
+			title: 'Статистика|4',
 			width: 800,
 			closeButton: 'Закрыть',
 		}, function(statisticsWin) {
@@ -2156,7 +2155,7 @@ $(document).ready(function() {
 	//---------------------------------------------------------------- Личные рейтинг и выбор наставника
 	$('[myrating]').on(tapEvent, function() {
 		popUp({
-			title: 'Мой рейтинг',
+			title: 'Мой рейтинг|4',
 			width: 600,
 			closeButton: 'Закрыть',
 			winClass: 'ratings'
@@ -2176,7 +2175,7 @@ $(document).ready(function() {
 	
 	/*$('[myrating]').on(tapEvent, function() {
 		popUp({
-			title: 'Мой рейтинг',
+			title: 'Мой рейтинг|4',
 			width: 800,
 			buttons: [{id: 'chooseMentor', title: 'Выбрать наставника'}],
 			closeButton: 'Закрыть',
@@ -2184,7 +2183,7 @@ $(document).ready(function() {
 			
 			function myRating(replace) {
 				if (replace) {
-					myRatingWin.setTitle('Мой рейтинг');
+					myRatingWin.setTitle('Мой рейтинг'|4);
 					myRatingWin.setButtons([{id: 'chooseMentor', title: 'Выбрать наставника'}], 'Закрыть');
 				}
 				
@@ -2197,7 +2196,7 @@ $(document).ready(function() {
 				$('#chooseMentor').on(tapEvent, function() {
 					myRatingWin.wait();
 					getAjaxHtml('account/mentors/get', function(html) {
-						myRatingWin.setTitle('Выбрать наставника');
+						myRatingWin.setTitle('Выбрать наставника|4');
 						myRatingWin.setData(html, false);
 						myRatingWin.setButtons([{id: 'setMyRating', title: 'Мой рейтинг'}], 'Закрыть');
 						myRatingWin.wait(false);
@@ -2216,7 +2215,7 @@ $(document).ready(function() {
 							getAjaxHtml('account/mentors/show_classes', {classes: classes}, function(html) {
 								myRatingWin.setData(html, false);
 								myRatingWin.setWidth(400);
-								myRatingWin.setTitle('Запросить обучение');
+								myRatingWin.setTitle('Запросить обучение|4');
 							}, function() {
 								$('[choosementorsclass]').on(tapEvent, function() {
 									let data = $(this).attr('choosementorsclass').split('|'),
@@ -2267,7 +2266,7 @@ $(document).ready(function() {
 	$('[getpersonages]').on(tapEvent, function() {
 		
 		popUp({
-			title: 'Мои персонажи',
+			title: 'Мои персонажи|4',
 			width: 800,
 			wrapToClose: true,
 			winClass: false,
@@ -2295,7 +2294,7 @@ $(document).ready(function() {
 		
 		
 		/*popUp({
-			title: 'Мои персонажи',
+			title: 'Мои персонажи|4',
 			width: 500,
 			buttons: [{id: 'popupNewPersonage', title: 'Добавить персонаж', disabled: 1}],
 			closeButton: 'Закрыть',
@@ -2394,7 +2393,7 @@ $(document).ready(function() {
 			html += '</table>';
 		
 		popUp({
-			title: 'Мои персонажи',
+			title: 'Мои персонажи|4',
 			width: 800,
 			height: false,
 			html: html,
@@ -2427,7 +2426,7 @@ $(document).ready(function() {
 	//--------------------------------------------------- Мои заявки
 	$('[paymentorders]').on(tapEvent, function() {
 		popUp({
-			title: 'Заявки на оплату',
+			title: 'Заявки на оплату|4',
 			width: 1000,
 			height: false,
 			html: '<div id="paymentRequestsWin"></div>',
@@ -2456,7 +2455,7 @@ $(document).ready(function() {
 	//--------------------------------------------------- Моя посещаемость
 	$('[visitsrate]').on(tapEvent, function() {
 		popUp({
-			title: 'Моя посещаемость',
+			title: 'Моя посещаемость|4',
 			width: 400,
 			height: false,
 			html: '<div id="visitsRateWin"></div>',
@@ -2499,7 +2498,7 @@ $(document).ready(function() {
 	//--------------------------------------------------- Мой KPI план
 	$('[mykpiplan]').on(tapEvent, function() {
 		popUp({
-			title: 'Мой KPI план',
+			title: 'Мой KPI план|4',
 			width: 400,
 			height: false,
 			wrapToClose: true,
@@ -2540,7 +2539,7 @@ $(document).ready(function() {
 	
 	$('[walletbalance]').on(tapEvent, function() {
 		popUp({
-			title: 'Мой баланс',
+			title: 'Мой баланс|4',
 			width: 1000,
 			closeButton: 'Закрыть',
 		}, function(walletBalanceWin) {
@@ -2642,7 +2641,7 @@ $(document).ready(function() {
 			});
 			
 			popUp({
-				title: 'Заполните коэффициенты!',
+				title: 'Заполните коэффициенты!|4',
 				width: 500,
 				closeButton: 'Закрыть',
 			}, function(ratingNotificationsWin) {
@@ -2669,14 +2668,14 @@ $(document).ready(function() {
 	//--------------------------------------------------- Заказ оплаты
 	$('[paymentorder]').on(tapEvent, function() {
 		popUp({
-			title: 'Заказ оплаты',
-		    width: 700,
-		    buttons: [{id: 'paymentOrderSendBtn', title: 'Отправить'}],
-		    buttonsAlign: 'right',
-		    disabledButtons: false,
-		    closePos: 'right',
-		    closeByButton: false,
-		    closeButton: 'Отмена'
+			title: 'Заказ оплаты|4',
+			width: 700,
+			buttons: [{id: 'paymentOrderSendBtn', title: 'Отправить'}],
+			buttonsAlign: 'right',
+			disabledButtons: false,
+			closePos: 'right',
+			closeByButton: false,
+			closeButton: 'Отмена'
 		}, function(paymentOrderWin) {
 			paymentOrderWin.setData('account/paymentorder/get_form', function() {
 				$('#paymentOrderSendBtn').on(tapEvent, function() {
@@ -2725,11 +2724,11 @@ $(document).ready(function() {
 	
 	
 	//------------------------------------------------------------------ Подарки
-	if (getCookie('gifts')) {
-		$('[giftscounter]').text(getCookie('gifts'));
+	let countGifts = getCookie('gifts');
+	if (countGifts) {
+		$('[giftscounter]').text(countGifts);
 		$('[getgifts]').addClass('leftblocktopicon_active');
 		$('[getgifts]').attr('title', 'Вам подарки!');
-		
 		
 		$('[getgifts]').on(tapEvent, function() {
 			popUp({
@@ -2747,7 +2746,10 @@ $(document).ready(function() {
 									$.post('/gifts/take_gift', {gift_id: giftId}, function(response) {
 										if (response) {
 											giftsWin.setData('gifts/gift_success', function() {
-												if (!getCookie('gifts')) $('[getgifts]').setAttrib('hidden');
+												if (!getCookie('gifts')) {
+													$('[getgifts]').removeClass('leftblocktopicon_active');
+													$('[getgifts]').removeAttrib('title');
+												} 
 												
 												$('#getNextGiftBtn').on(tapEvent, function() {
 													getGift();
@@ -2777,6 +2779,205 @@ $(document).ready(function() {
 	
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//------------------------------------------------------------------ Опросы
+	let countPollings = getCookie('pollings');
+	if (countPollings) {
+		$('[pollingcounter]').text(countPollings);
+		$('[getpollings]').addClass('leftblocktopicon_active');
+		$('[getpollings]').attr('title', 'Есть новые опросы!');
+		
+		
+		$('[getpollings]').on(tapEvent, function() {
+			let userId = getCookie('id');
+				
+			popUp({
+				closeByButton: true,
+				closePos: 'left'
+			}, function(pollingsWin) {
+				(function getPollingsList() {
+					pollingsWin.setData('pollings/account/all', {user_id: userId}, function() {
+						pollingsWin.setTitle('Мои опросы|4');
+						pollingsWin.setWidth(900);
+						pollingsWin.setButtons([], 'Закрыть');
+						pollingsWin.setClass('pollingswin');
+						
+						
+						$('[pollingopen]').on(tapEvent, function() {
+							pollingsWin.wait();
+							
+							let pollingId = $(this).attr('pollingopen'),
+								questionTitle = $(this).closest('tr').find('[questiontitle]').text(),
+								qIndex = 0;
+							
+							getAjaxJson('pollings/account/questions', {polling_id: pollingId, user_id: userId}, function(questions) {
+								if (!questions) {
+									pollingsWin.wait(false);
+									notify('Не удалось загрузить вопросы!', 'error');
+									return false;
+								}
+								
+								pollingsWin.setTitle(questionTitle+'|4');
+								
+								$.each(questions, function(k, item) {
+									if (item.answered) {
+										if (questions[qIndex+1] == undefined) qIndex = 0;
+										else qIndex = (k + 1);
+									}
+									else return false;
+								});
+								
+								
+								
+								(function getQuestionForm() { // start between end
+									pollingsWin.setData('pollings/account/question', questions[qIndex], function() {
+										let isAnswered = questions[qIndex]['answered'] ? 1 : 0;
+										
+										if (qIndex == 0 && questions.length > 1) {
+											pollingsWin.setButtons([{id: 'pollingNextBtn', title: 'Следующий вопрос', disabled: !isAnswered}]);
+										} else if (qIndex == 0 && questions.length == 1) {
+											pollingsWin.setButtons([{id: 'pollingCompleteBtn', title: 'Завершить'}]);
+										} else if (qIndex > 0 && (qIndex + 1) < questions.length) {
+											pollingsWin.setButtons([{id: 'pollingPrevBtn', title: 'Предыдущий вопрос'}, {id: 'pollingNextBtn', title: 'Следующий вопрос', disabled: !isAnswered}]);
+										} else if (qIndex + 1 == questions.length) {
+											pollingsWin.setButtons([{id: 'pollingPrevBtn', title: 'Предыдущий вопрос'}, {id: 'pollingCompleteBtn', title: 'Завершить', disabled: 1}]);
+										}
+										
+										
+										$('.pollingswin').find('[questionvariant]').on('change', function() {
+											let countChecked = $('.pollingswin').find('[questionvariant]:checked').length;
+											if (countChecked) {
+												$('#pollingNextBtn[disabled]').removeAttrib('disabled');
+												$('#pollingCompleteBtn[disabled]').removeAttrib('disabled');
+											} else {
+												$('#pollingNextBtn:not([disabled])').setAttrib('disabled');
+												$('#pollingCompleteBtn:not([disabled])').setAttrib('disabled');
+											}
+										});
+										
+										
+										$('.pollingswin').find('[questioncustom]').on('keyup', function() {
+											let customText = $(this).val();
+											if (customText.length) {
+												$('#pollingNextBtn[disabled]').removeAttrib('disabled');
+												$('#pollingCompleteBtn[disabled]').removeAttrib('disabled');
+											} else {
+												$('#pollingNextBtn:not([disabled])').setAttrib('disabled');
+												$('#pollingCompleteBtn:not([disabled])').setAttrib('disabled');
+											}
+										});
+										
+										
+										
+										
+										$('#pollingPrevBtn').on(tapEvent, function() {
+											qIndex -= 1;
+											getQuestionForm();
+										});
+										
+										$('#pollingNextBtn').on(tapEvent, function() {
+											saveAnswers(false);
+										});
+										
+										$('#pollingCompleteBtn').on(tapEvent, function() {
+											saveAnswers(true, function() {
+												pollingsWin.setData('<h3 class="text-center dialog dialog_success fz22px">Опрос успешно пройден!</h3><h4 class="text-center dialog dialog_success">Спасибо за ответы!</h4>', false);
+												pollingsWin.setWidth(400);
+												pollingsWin.setButtons([{id: 'goToPollinsListBtn', title: 'К списку опросов'}], 'Закрыть');
+												
+												let pollingCounter = parseInt($('[pollingcounter]:visible').text());
+												
+												$('[pollingcounter]:visible').text(pollingCounter - 1);
+												if (pollingCounter == 1) $('[pollingcounter]').closest('.leftblocktopicon.leftblocktopicon_active').removeClass('leftblocktopicon_active');
+												
+												$('#goToPollinsListBtn').on(tapEvent, function() {
+													getPollingsList();
+												});
+											});
+										});
+										
+										
+										
+										function saveAnswers(end, callback) {
+											let dataToSave = {
+													polling_id: pollingId,
+													user_id: userId,
+													question_id: questions[qIndex]['question_id'],
+												},
+												isVariants = !!$('.pollingswin').find('[questionvariant]').length,
+												isCustom = !!$('.pollingswin').find('[questioncustom]').length,
+												answerData;
+											
+											if (isVariants && !isCustom) {
+												dataToSave['variants'] = [];
+												$('.pollingswin').find('[questionvariant]:checked').each(function() {
+													dataToSave['variants'].push(parseInt($(this).attr('questionvariant')));
+												});
+											} else if (!isVariants && isCustom) {
+												dataToSave['custom'] = $('.pollingswin').find('[questioncustom]').val();
+											}
+											
+											$.post('pollings/account/save', dataToSave, function(response) {
+												if (response) {
+													questions[qIndex]['answered'] = dataToSave['variants'] || dataToSave['custom'];
+													if (end == false && questions[qIndex + 1] != undefined) {
+														qIndex += 1;
+														getQuestionForm();
+													}
+													if (callback && typeof callback == 'function') callback();
+												} else {
+													notify('Ошибка! Ответ не сохранился!', 'error');
+													pollingsWin.wait(false);
+												}
+											}).fail(function(e) {
+												showError(e);
+												notify('Системная ошибка!', 'error');
+												pollingsWin.wait(false);
+											});
+										}
+										
+									});
+								})();
+								
+								
+								
+								
+							});
+						});
+					});
+				})();
+				
+				
+					
+			});
+		});
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	//------------------------------------------------------------------ Сообщения
 	$.post('messages/account/status', {user_id: getCookie('id')}, function(response) {
 		if (response.all > 0) {
@@ -2797,8 +2998,8 @@ $(document).ready(function() {
 	$('[newmessage]').on(tapEvent, function() {
 		popUp({
 			title: 'Уведомления|4',
-		    width: 600,
-		    closeButton: 'Закрыть'
+			width: 600,
+			closeButton: 'Закрыть'
 		}, function(newMessageWin) {
 			(function openMessagesList() {
 				newMessageWin.setData('messages/account/list', {user_id: getCookie('id')}, function() {
@@ -2868,67 +3069,67 @@ $(document).ready(function() {
 	} else if (getCookie('birthday')) { // День рождения
 		
 		popUp({
-			title: 'Дата рождения|5',
+			title: 'Дата рождения|4',
 			width: 450,
-		    buttons: [{id: 'setBirthDayDataBtn', title: 'Применить'}],
-		    buttonsAlign: 'right',
-		    disabledButtons: true,
-		    closePos: 'left',
-		    closeByButton: true,
-		    closeButton: 'Отмена',
-		    contentToCenter: true,
+			buttons: [{id: 'setBirthDayDataBtn', title: 'Применить'}],
+			buttonsAlign: 'right',
+			disabledButtons: true,
+			closePos: 'left',
+			closeByButton: true,
+			closeButton: 'Отмена',
+			contentToCenter: true,
 		}, function(birthDayDataBtnWin) {
 			birthDayDataBtnWin.setData('account/birthday/get_form', function() {
 				
 				let dateVal;
 				$('#userBirthdayDate').datepicker({
-			        dateFormat:         'd M yy г.',
-			        yearRange:          "1900:"+(new Date().getFullYear() + 1),
-			        numberOfMonths:     1,
-			        changeMonth:        true,
-			        changeYear:         true,
-			        monthNamesShort:    ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь', 'декабрь'],
-			        dayNamesMin:        ['вс','пн','вт','ср','чт','пт','сб',],
-			        firstDay:           1,
-			        minDate:            new Date(1900, 0, 1, 0, 0, 0),
-			        maxDate:            0,
-			        onSelect: function(stringDate, dateObj) {
-			        	let monthes = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября', 'декабря'],
-			        	dateStr = dateObj.currentDay+' '+monthes[dateObj.currentMonth]+' '+dateObj.currentYear+' г.',
-			        	d = ('0'+dateObj.currentDay).substr(-2),
-			        	m = ('0'+(dateObj.currentMonth+1)).substr(-2);
-			        	
-			        	dateVal = d+'-'+m+'-'+dateObj.currentYear;
-			        	$('#userBirthdayDate').val(dateStr);
-			        	birthDayDataBtnWin.enabledButtons();
-			        }
-			    });
-			    
-			    
-			    
-			    $('#setBirthDayDataBtn').on(tapEvent, function() {
-			    	birthDayDataBtnWin.dialog('<p>Внимание! Дата задается один раз и изменить ее будет нельзя!<small>Информация будет доступна только администратору</small>', 'Задать', 'Отмена', function() {
-			    		birthDayDataBtnWin.wait();
-			    		let closeBDTOut;
-				    	clearTimeout(closeBDTOut);
-				    	$.post('account/birthday/set', {date: dateVal}, function(response) {
-				    		if (response) {
-				    			birthDayDataBtnWin.setData('<h3 class="fz20px mt10px">Дата успешно задана!</h3>', false);
-				    			birthDayDataBtnWin.setButtons([]);
-				    			birthDayDataBtnWin.dialog(false);
-				    			closeBDTOut = setTimeout(function() {
-				    				birthDayDataBtnWin.close();
-				    			}, 10000);
-				    		} else {
-				    			notify('Ошибка! Дата не задана, повторите еще раз!', 'error');
-				    		}
-				    		birthDayDataBtnWin.wait(false);
-				    	}).fail(function(e) {
+					dateFormat:         'd M yy г.',
+					yearRange:          "1900:"+(new Date().getFullYear() + 1),
+					numberOfMonths:     1,
+					changeMonth:        true,
+					changeYear:         true,
+					monthNamesShort:    ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь', 'декабрь'],
+					dayNamesMin:        ['вс','пн','вт','ср','чт','пт','сб',],
+					firstDay:           1,
+					minDate:            new Date(1900, 0, 1, 0, 0, 0),
+					maxDate:            0,
+					onSelect: function(stringDate, dateObj) {
+						let monthes = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября', 'декабря'],
+						dateStr = dateObj.currentDay+' '+monthes[dateObj.currentMonth]+' '+dateObj.currentYear+' г.',
+						d = ('0'+dateObj.currentDay).substr(-2),
+						m = ('0'+(dateObj.currentMonth+1)).substr(-2);
+						
+						dateVal = d+'-'+m+'-'+dateObj.currentYear;
+						$('#userBirthdayDate').val(dateStr);
+						birthDayDataBtnWin.enabledButtons();
+					}
+				});
+				
+				
+				
+				$('#setBirthDayDataBtn').on(tapEvent, function() {
+					birthDayDataBtnWin.dialog('<p>Внимание! Дата задается один раз и изменить ее будет нельзя!<small>Информация будет доступна только администратору</small>', 'Задать', 'Отмена', function() {
+						birthDayDataBtnWin.wait();
+						let closeBDTOut;
+						clearTimeout(closeBDTOut);
+						$.post('account/birthday/set', {date: dateVal}, function(response) {
+							if (response) {
+								birthDayDataBtnWin.setData('<h3 class="fz20px mt10px">Дата успешно задана!</h3>', false);
+								birthDayDataBtnWin.setButtons([]);
+								birthDayDataBtnWin.dialog(false);
+								closeBDTOut = setTimeout(function() {
+									birthDayDataBtnWin.close();
+								}, 10000);
+							} else {
+								notify('Ошибка! Дата не задана, повторите еще раз!', 'error');
+							}
+							birthDayDataBtnWin.wait(false);
+						}).fail(function(e) {
 							notify('Системная ошибка!', 'error');
 							showError(e);
 						});
-			    	});	
-			    });
+					});	
+				});
 			});
 		});
 		

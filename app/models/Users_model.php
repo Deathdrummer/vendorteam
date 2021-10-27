@@ -66,6 +66,7 @@ class Users_model extends MY_Model {
 		else $this->db->select('u.id, u.avatar, u.nickname, u.rank_lider, us.lider, '.$this->groupConcatValue('us.static_id', 'statics'));
 		$this->db->join('users_statics us', 'us.user_id = u.id', 'LEFT OUTER');
 		$this->db->where('us.lider', 1);
+		$this->db->where('u.deleted', 0);
 		$this->db->group_by('u.id');
 		$this->db->order_by('u.id');
 		

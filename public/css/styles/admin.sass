@@ -186,6 +186,22 @@ html
 	
 	&.hovered:active
 		color: darken(#65a25b, 20%)
+	
+
+
+.blue
+	color: #3f8baf
+	
+	&_hovered
+		&:hover
+			color: darken(#3f8baf, 7%)
+		
+		&:active
+			color: darken(#3f8baf, 15%)
+	
+	&_bg
+		background-color: #3f8baf
+
 
 
 .lightblue
@@ -195,6 +211,12 @@ html
 		background-color: #dceaf5
 
 
+
+.grayblue
+	color: #96aab5
+	
+	&_bg
+		background-color: #96aab5
 
 
 .fontcolor
@@ -213,14 +235,49 @@ html
 
 
 
+.graggable
+	cursor: all-scroll
 
-.select
+
+
+.button
+	+btn()
+
+.file, .popup__file
+	+file()
+	
+
+.date, .popup__date
+	+date()
+
+
+.textarea, .popup__textarea
+	+textarea()
+	
+	&.changed
+		box-shadow: 0 0 0 2px #78e878
+	
+	&_noresize
+		textarea
+			resize: none
+		
+	&_vertical
+		textarea
+			resize: vertical
+	
+	&_horizontal
+		textarea
+			resize: horizontal
+
+
+
+.select, .popup__select
 	user-select: all
 	+select()
 
 
 	
-.field
+.field, .popup__field
 	+field()
 	
 	&_date
@@ -245,6 +302,13 @@ html
 			border-top: none
 		
 	
+	
+	
+.radio, .popup__radio
+	+radio()
+		
+.checkbox, .popup__checkbox
+	+checkbox()
 
 
 input[type="text"].changed, input[type="number"].changed
@@ -581,12 +645,6 @@ i.icon
 			&:empty::after
 				content: "контент"
 		
-		.select
-			+select()
-		
-		.field
-			+field()
-		
 		
 		
 		
@@ -618,26 +676,7 @@ i.icon
 			
 			.inline
 				display: inline-block
-				
-			.field
-				+field()
 			
-			
-			.textarea
-				+textarea()
-			
-			.file
-				+file()
-								
-			
-			.radio
-				+radio()
-					
-			.checkbox
-				+checkbox()
-			
-			.select
-				+select()
 			
 			.buttons
 				button
@@ -907,7 +946,16 @@ table:not(.clear):not(.ui-datepicker-calendar)
 				color: #536777
 				padding-top: 5px
 				padding-bottom: 5px
-				border: 1px solid darken(#d7dbde, 10%)
+				border:
+					left: 1px solid #bcc4ca
+					right: 1px solid #bcc4ca
+				
+				&:first-of-type
+					border-left-color: #d7dbde
+					
+				&:last-of-type
+					border-right-color: #d7dbde
+				
 				
 				i
 					cursor: pointer
@@ -960,7 +1008,9 @@ table:not(.clear):not(.ui-datepicker-calendar)
 				font-size: 14px
 				color: #667a8c
 				height: 52px
-				border: 1px solid #c8ced4
+				border:
+					left: 1px solid #e6e6e6
+					right: 1px solid #e6e6e6
 				
 				&.relative
 					position: relative
@@ -1192,8 +1242,6 @@ table:not(.clear):not(.ui-datepicker-calendar)
 						box-shadow: 0 0 5px 0 rgba(68, 68, 68, 0.45)
 					
 				.textarea
-					+textarea()
-					
 					textarea
 						min-height: 0 !important
 						
@@ -1202,9 +1250,9 @@ table:not(.clear):not(.ui-datepicker-calendar)
 					
 				
 				.select
-					+select()
-					
 					select
+						height: 30px
+						
 						&.changed
 							box-shadow: 0 0 0 2px #78e878
 							background-color: #efe
@@ -1219,8 +1267,6 @@ table:not(.clear):not(.ui-datepicker-calendar)
 						
 						
 				.date
-					+date()
-					
 					input
 						border-radius: 2px
 						border: 1px solid #a7acaf
@@ -1285,7 +1331,7 @@ table:not(.clear):not(.ui-datepicker-calendar)
 					
 					button, .button
 						display: inline-block
-						+btn((padding-left: 15px !important, padding-right: 15px !important), (noselect))
+						+btn((padding-left: 15px, padding-right: 15px), (noselect))
 						//box-shadow: 0 0 0 1px #d0d0d0 inset
 						
 						&.small
@@ -1361,7 +1407,15 @@ table:not(.clear):not(.ui-datepicker-calendar)
 				color: #536777
 				padding-top: 5px
 				padding-bottom: 5px
-				border: 1px solid darken(#eceff1, 10%)
+				border:
+					left: 1px solid #d4dce2
+					right: 1px solid #d4dce2
+				
+				&:first-of-type
+					border-left-color: #eceff1
+					
+				&:last-of-type
+					border-right-color: #eceff1
 				
 				.buttons
 					&.right
@@ -2038,22 +2092,12 @@ table:not(.clear):not(.ui-datepicker-calendar)
 				
 	
 	
-	&__field
-		+field()
-		
-		&_date
-			+date()
-	
-	&__select
-		+select()
 	
 	&__checkbox
 		+checkblock(2px)
 			
 	
 	&__textarea
-		+textarea()
-		
 		textarea
 			&.noresize
 				resize: none
@@ -2062,8 +2106,6 @@ table:not(.clear):not(.ui-datepicker-calendar)
 				min-height: 1px !important
 	
 	&__file
-		+file()
-		
 		&.error
 			box-shadow: 0 0 0 2px #f98989
 	
@@ -2190,14 +2232,7 @@ table:not(.clear):not(.ui-datepicker-calendar)
 					line-height: 14px
 					text-align: right
 				
-				.file
-					+file()
-				
-				.field
-					+field()
-					
 				.select
-					+select()
 					width: 100%
 					
 					&.time
@@ -2551,9 +2586,7 @@ table:not(.clear):not(.ui-datepicker-calendar)
 
 
 .payment_request_block
-	.field
-		+field()
-	
+
 	
 
 .payment_request_blank
@@ -3085,9 +3118,6 @@ table:not(.clear):not(.ui-datepicker-calendar)
 
 
 .ratingusers
-	
-	.field
-		+field()
 	
 	&__periodlabel
 		display: inline-block
@@ -4720,6 +4750,14 @@ p
 	&_white
 		background-color: #fff
 	
+	&_hovered
+		&:hover
+			border-color: darken(#b2bbc3, 7%)
+			transition: border-color 0.16s
+		
+		&:active
+			border-color: darken(#b2bbc3, 12%)
+	
 	
 	
 
@@ -4772,4 +4810,46 @@ p
 		+ .dropdownlist__item
 			border-top: 1px solid #eee
 	
+
+
+
+
+
+
+
+
+
+
+.pollingsquestions
+	
+	&__item
+		border: 1px solid #eee
+		border-radius: 3px
+		padding: 5px
+		margin-bottom: 10px
+		height: 50px
 			
+	
+
+.pollingsquestionsvariants
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+.ddrtable
+	
+	
+	
+	
+	
+	
+	

@@ -51,6 +51,20 @@ if (location.hostname != 'localhost' && location.pathname == '/account') {
 		
 		
 		
+		socket.on('pollings:reload', () => {
+			let staticId = $('[staticscontent].staticscontent_visible').attr('staticscontent');
+			getStaticMiniNews(staticId);
+		});
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		socket.on('mininewsfeed:reload', () => {
 			let staticId = $('[staticscontent].staticscontent_visible').attr('staticscontent');
 			getStaticMiniNews(staticId);

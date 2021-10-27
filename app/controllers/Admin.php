@@ -3323,8 +3323,7 @@ class Admin extends MY_Controller {
 				];
 				
 				if ($post['fields']) $params['fields'] = 'id '.$post['fields'];
-				
-				$users = $this->users->getUsers($params);
+				if (!$users = $this->users->getUsers($params)) exit('');
 				echo json_encode($users);
 				break;
 			

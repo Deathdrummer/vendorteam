@@ -24,6 +24,13 @@
 			- update: {}, // Данные при обновлении записи
 			- remove: {} // Данные при удалении записи
 		},
+		- before: {
+				- getList: false, // функция перед формированием списка записей
+				- add: false, // функция перед добавлением записи
+				- save: false, // функция перед сохранением записи
+				- update: false, // функция перед обновлением записи
+				- remove: false // функция перед удалением записи
+			},
 		- confirms: {
 			- getList: false, // функция при формировании списка записей
 			- add: false, // функция при добавлении записи
@@ -31,7 +38,7 @@
 			- update: false, // функция при обновлении записи
 			- remove: false, // функция при удалении записи
 		},
-		- removeConfirm: false, // Запрашивать подтверждение перед удалением
+		- removeConfirm: false, // Запрашивать подтверждение перед удалением bool или строка диалога
 		- listDirection: 'bottom', // направление списка: top bottom (добавление новой записи внизу или вверху)
 		- popup: false // Если список в попап окне - указать объект окна
 */
@@ -60,6 +67,13 @@ $.fn.ddrCRUD = function(settings, callback) {
 				update: {}, // Данные при обновлении записи
 				remove: {} // Данные при удалении записи
 			},
+			before: {
+				getList: false, // функция перед формированием списка записей
+				add: false, // функция перед добавлением записи
+				save: false, // функция перед сохранением записи
+				update: false, // функция перед обновлением записи
+				remove: false // функция перед удалением записи
+			},
 			confirms: {
 				getList: false, // функция при формировании списка записей
 				add: false, // функция при добавлении записи
@@ -69,6 +83,7 @@ $.fn.ddrCRUD = function(settings, callback) {
 			},
 			removeConfirm: false, // Запрашивать подтверждение перед удалением
 			listDirection: 'bottom', // направление списка: top bottom (добавление новой записи внизу или вверху)
+			exceptions: false, // селекторы-исключения при клике на которые не будут страбатывать кнопки "сохранить" и "удалить" запись ['[attrib1]', '#id2', ...]
 			popup: false // Если список в попап окне - указать объект окна
 		}, settings),
 		initParams = ops.data.getList,
@@ -96,10 +111,10 @@ $.fn.ddrCRUD = function(settings, callback) {
 
 
 	getAjaxHtml(functions+'get', ops.data.getList, function(html, getListStat) {
+		if (typeof ops.before.getList == 'function') ops.before.getList();
 		if (!getListStat) $(selector).html(ops.emptyList);
 		else $(selector).html(html);
 
-		_getListActions();
 		$(selector).find('[update]').setAttrib('disabled');
 
 		if (getListStat) {
@@ -107,15 +122,17 @@ $.fn.ddrCRUD = function(settings, callback) {
 			thisItemTag = thisItemSelector.localName,
 			thisItemClass = thisItemSelector.className ? '.'+thisItemSelector.className : '';
 		}
-
+		
+		
 		$(selector).changeInputs(function(item, data) {
+			console.log(thisItemTag+thisItemClass);
+			
 			$(item).closest(thisItemTag+thisItemClass).find('[update]:disabled, [save]:disabled').removeAttrib('disabled');
-		});
-
-
-
+		}, ops.exceptions);
+		
+		
 		// Добавить запись
-		$(ops.addSelector).on(tapEvent, function() {
+		$('body').off(tapEvent, ops.addSelector).on(tapEvent, ops.addSelector, function() {
 			addRow();
 		});
 
@@ -128,6 +145,7 @@ $.fn.ddrCRUD = function(settings, callback) {
 
 		function addRow() {
 			getAjaxHtml(functions+'add', ops.data.add, function(html, stat) {
+				if (typeof ops.before.add == 'function') ops.before.add();
 				if (!getListStat) {
 					$(selector).children().first().remove();
 					thisItemSelector = $(html)[0],
@@ -157,13 +175,16 @@ $.fn.ddrCRUD = function(settings, callback) {
 
 		// Сохранить запись
 		$(selector).on(tapEvent, '[save]', function() {
+			if (typeof ops.before.save == 'function') ops.before.save();
 			var thisItem = this,
 				thisItemSelector = $(thisItem).closest(thisItemTag+thisItemClass),
-				thisItemSort = $(thisItemSelector).index(),
+				countRows = $(selector).find('tr').length,
+				itemIndex = $(thisItemSelector).index(),
+				thisItemSort = (ops.listDirection == 'bottom') ? itemIndex : (-itemIndex + countRows),
 				//sf = ops.saveListItem.substr(0, 1) != '/' ? '/'+ops.saveListItem : ops.saveListItem,
 				fields = {},
 				fieldsToItem = {};
-
+				
 			$(thisItemSelector).formSubmit({
 				returnFields: function(f) {
 					$(thisItemSelector).find('input[name], textarea[name], select[name]').each(function(e) {
@@ -202,6 +223,7 @@ $.fn.ddrCRUD = function(settings, callback) {
 
 		// Обновить запись
 		$(selector).on(tapEvent, '[update]', function() {
+			if (typeof ops.before.update == 'function') ops.before.update();
 			var thisItem = this,
 				thisId = $(thisItem).attr('update'),
 				thisItemSelector = $(this).closest(thisItemTag+thisItemClass),
@@ -242,6 +264,7 @@ $.fn.ddrCRUD = function(settings, callback) {
 
 		// Удалить запись
 		$(selector).on(tapEvent, '[remove]', function() {
+			if (typeof ops.before.remove == 'function') ops.before.remove();
 			var thisId = $(this).attr('remove'),
 				thisItem = $(this).closest(thisItemTag+thisItemClass);
 
@@ -259,13 +282,13 @@ $.fn.ddrCRUD = function(settings, callback) {
 			function removeRow() {
 				$.post(functions+'remove', $.extend(ops.data.remove, {id: thisId}), function(response) {
 					if (response) {
-						if (typeof ops.confirms.remove == 'function') ops.confirms.remove(thisItem);
 						$(thisItem).remove();
 						notify('Запись удалена!', 'info');
 						if ($(selector).find(thisItemTag+thisItemClass).length == 0) {
 							$(selector).html(ops.emptyList);
 							getListStat = false;
 						}
+						if (typeof ops.confirms.remove == 'function') ops.confirms.remove(thisItem);
 					} else {
 						notify('Ошибка удаления!', 'error');
 					}
@@ -287,9 +310,10 @@ $.fn.ddrCRUD = function(settings, callback) {
 					popUp({
 						title: 'Удалить запись|4',
 						width: 400,
-						html: '<p class="center red strong">Вы действительно хотите удалить запись?</p>',
-						buttons: [{id: 'removeConfY', title: 'Да'}],
-						close: 'Нет', // заголовок кнопки "закрыть"
+						html: typeof ops.removeConfirm == 'string' ? ops.removeConfirm : '<p class="center red strong">Вы действительно хотите удалить запись?</p>',
+						buttons: [{id: 'removeConfY', title: 'Удалить'}],
+						closePos: 'left',
+						closeButton: 'Отмена',
 					}, function(removeConfYWin) {
 						$('#removeConfY').on(tapEvent, function() {
 							removeConfYWin.wait();
@@ -345,6 +369,7 @@ $.fn.ddrCRUD = function(settings, callback) {
 
 
 	}, function() {
+		_getListActions();
 		if (typeof callback == 'function') {
 			callback(obj);
 		}

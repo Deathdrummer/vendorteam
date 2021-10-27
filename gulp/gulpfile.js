@@ -31,14 +31,13 @@ const 	domain			= 'vendorteam.loc', // прописать домен
 		
 
 
-
+	
 
 
 
 // Отслеживание файлов
 function startWatch() {
 	var watchDirs = args.dirs != undefined ? args.dirs.split(',') : publicDirs;
-	
 	browserSync.init({
 		//server: {baseDir: '../'},
 		proxy: domain,

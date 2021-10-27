@@ -487,8 +487,11 @@ dynamicList = function(params) {
 
 
 
-
-$.fn.changeInputs = function(callback) {
+/*
+	- каллбэк
+	- селекторы - исключения, при которых не будет срабатывать функция. Пример: ['[attrib1]', '#id2', ...]
+*/
+$.fn.changeInputs = function(callback, exceptions) {
 	if (this.length == 0) {
 		console.warn('changeInputs ошибка! Селектор: не найден!');
 		return false;
@@ -499,7 +502,8 @@ $.fn.changeInputs = function(callback) {
 		return false;
 	}
 		
-	var selector = this;
+	var selector = this,
+		not = '';
 	
 	function _getEventData(e) {
 		return {
@@ -521,15 +525,25 @@ $.fn.changeInputs = function(callback) {
 		callback(thisItem, eData);
 	}
 	
+	if (exceptions) {
+		if (typeof exceptions == 'object') {
+			exceptions.forEach(function(item) {
+				not +=':not('+item+')';
+			});
+		} else if (typeof exceptions == 'string') {
+			not +=':not('+exceptions+')';
+		}
+	}
 	
-	$(selector).on('change', 'select, input[type="checkbox"], input[type="radio"], input[type="color"], input[type="number"]', function(event) {
+	
+	$(selector).on('change', `select${not}, input[type="checkbox"]${not}, input[type="radio"]${not}, input[type="color"]${not}, input[type="number"]${not}`, function(event) {
 		var eData = _getEventData(event);
 		_setAction(this, eData);
 	});
 	
 	
 	var keyDownVal;
-	$(selector).on('keyup keydown', 'input, textarea, [contenteditable]', function(event) {
+	$(selector).on('keyup keydown', `input${not}, textarea${not}, [contenteditable]${not}`, function(event) {
 		var thisItem = this, eData = _getEventData(event);
 		if (['text', 'password', 'email', 'tel', 'number'].indexOf(eData.st) != -1 || (eData.s == 'textarea' && !eData.codeShift && !eData.codeCtrl) || (eData.st == 'contenteditable')) {
 			if (eData.t == 'keydown') keyDownVal = $(thisItem).val() || $(thisItem).html();
@@ -681,6 +695,29 @@ getAjaxHtml = function() {
 		showError(e);
 	});
 }
+
+
+
+
+
+
+getAjaxJson = function() {
+	let a = arguments,
+		url = (typeof a[0] == 'string' ? (a[0].substr(0, 1) != '/' ? '/'+a[0] : a[0]) : false),
+		params = typeof a[1] == 'object' ? a[1] : {},
+		callback = typeof a[1] == 'function' ? a[1] : (a[2] !== undefined ? a[2] : false),
+		always = typeof a[1] == 'function' ? (typeof a[2] == 'function' ? a[2] :false) : (typeof a[2] == 'function' ? (typeof a[3] == 'function' ? a[3] :false) : false);
+		
+	$.post(url, params, function(json) {
+		if (callback) callback(json || null);
+	}, 'json').always(function() {
+		if (always) always();
+	}).fail(function(e) {
+		notify('Системная ошибка!', 'error');
+		showError(e);
+	});
+}
+
 
 
 

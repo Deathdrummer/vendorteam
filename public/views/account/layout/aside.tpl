@@ -16,13 +16,17 @@
 			
 			<div class="leftblock__icons">
 				<div class="leftblocktopicon" newmessages title="Сообщения от администрации">
-					<svg newmessage><use xlink:href="#message"></use><span class="leftblocktopicon__counter" newmessagecounter></span></svg>
+					<svg newmessage class="w30px h30px"><use xlink:href="#message"></use><span class="leftblocktopicon__counter" newmessagecounter></span></svg>
 				</div>
 				
 				
-				<div class="leftblocktopicon" getgifts>
+				<div class="leftblocktopicon" getgifts title="Подарки">
 					<i class="fa fa-gift"></i>
 					<span class="leftblocktopicon__counter" giftscounter></span>
+				</div>
+				
+				<div class="leftblocktopicon" getpollings title="Опросы">
+					<svg class="w30px h40px"><use xlink:href="#polling"></use><span class="leftblocktopicon__counter" pollingcounter></span></svg>
 				</div>
 				
 				{# <div class="leftblocktopicon leftblocktopicon_active">

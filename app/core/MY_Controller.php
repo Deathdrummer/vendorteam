@@ -9,6 +9,7 @@ class MY_Controller extends CI_Controller {
 	protected $week = [1 => 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
 	protected $weekShort = [1 => 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 	protected $minutes;
+	protected $timezoneOffset;
 	protected $constants;
 	protected $dataAccess;
 	protected $adminSections;
@@ -42,7 +43,7 @@ class MY_Controller extends CI_Controller {
 		}
 		
 		$this->minutes = range(0, 55, 5);
-		
+		$this->timezoneOffset = date('Z'); // смещение временной зоны в секундах
 		
 		
 		
@@ -123,6 +124,7 @@ class MY_Controller extends CI_Controller {
 				'statistics_amounts'	=> 'Статистика (доходы)',
 				'statistics'			=> 'Статистика (участники)',
 				'statistics_settings'	=> 'Статистика (настройки)',
+				'pollings'				=> 'Опросы',
 				'admins_actions'		=> 'История действий администраторов'
 			],
 		];
@@ -284,13 +286,15 @@ class MY_Controller extends CI_Controller {
 		
 		
 		//--------------------------------------------------------------------------- Twig фильтры
-		$this->twig->addFilter('d', function($date, $isShort = false) {
+		$this->twig->addFilter('d', function($date = null, $isShort = false) {
+			if (is_null($date)) return false;
 			if (!is_numeric($date)) $date = strtotime($date);
 			if ($isShort) return date('j', $date).' '.$this->monthesShort[date('n', $date)].' '.date('y', $date).' г.';
 			return date('j', $date).' '.$this->monthes[date('n', $date)].' '.date('Y', $date).' г.';
 		});
 		
-		$this->twig->addFilter('t', function($time) {
+		$this->twig->addFilter('t', function($time = null) {
+			if (is_null($time)) return false;
 			if (!is_numeric($time)) $time = strtotime($time);
 			return date('H:i', $time);
 		});

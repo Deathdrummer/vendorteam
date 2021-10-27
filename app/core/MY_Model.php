@@ -3,10 +3,12 @@
 class MY_Model extends CI_Model {
 	
 	protected $monthes = [1 => 'января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
-	
+	protected $timezoneOffset;
 	
 	public function __construct() {
 		parent::__construct();
+		
+		$this->timezoneOffset = date('Z'); // смещение временной зоны в секундах
 	}
 	
 	
@@ -118,7 +120,7 @@ class MY_Model extends CI_Model {
 	/**
 	 * Добавить в запрос concat
 	 * @param поле для теста (есть ли данные) false - нет поверки данных
-	 * @param все поля "название поля1":"поле в таблице1","название поля2":"поле в таблице2". Если оба названия схожи - то просто одно название
+	 * @param все поля "поле в таблице1":"название поля1",поле в таблице2":"название поля2", ... Если оба названия схожи - то просто одно название
 	 * @param название поля при выводе данных
 	 * @param уникальные значения
 	 * @return string
@@ -130,7 +132,8 @@ class MY_Model extends CI_Model {
 		if ($cData = preg_split("/[\s,]+/", $concatData)) {
 			foreach ($cData as $k => $item) {
 				$item = explode(':', $item);
-				$finalConcat .= "'$item[0]'".", ".(isset($item[1]) ? $item[1] : $item[0]).", ";
+				if (isset($item[1])) $finalConcat .= "'$item[1]'".", ".$item[0].", ";
+				else $finalConcat .= "'$item[0]'".", ".$item[0].", ";
 			}
 		}
 		
@@ -157,10 +160,14 @@ class MY_Model extends CI_Model {
 	protected function groupConcatValue($concatField = false, $fieldname = false, $distinct = false) {
 		if (!$fieldname) return '';
 		
+		$fieldData = explode(':', $fieldname);
+		$fieldname = $fieldData[0];
+		$outputField = isset($fieldData[1]) ? $fieldData[1] : $fieldData[0];
+		
 		if ($concatField === false) {
-			return "CAST(CONCAT('[', GROUP_CONCAT(".($distinct === true ? 'distinct' : '')." ".$fieldname."), ']') AS JSON) AS ".$fieldname;
+			return "CAST(CONCAT('[', GROUP_CONCAT(".($distinct === true ? 'distinct' : '')." ".$fieldname."), ']') AS JSON) AS ".$outputField;
 		} else {
-			return "IF(GROUP_CONCAT(".$concatField."), CAST(CONCAT('[', GROUP_CONCAT(".($distinct === true ? 'distinct' : '')." ".$concatField."), ']') AS JSON), NULL) AS ".$fieldname;
+			return "IF(GROUP_CONCAT(".$concatField."), CAST(CONCAT('[', GROUP_CONCAT(".($distinct === true ? 'distinct' : '')." ".$concatField."), ']') AS JSON), NULL) AS ".$outputField;
 		}
 	}
 	
@@ -220,16 +227,15 @@ class MY_Model extends CI_Model {
 		
 		if (is_array($items)) {
 			foreach ($items as $item) {
-				if (is_integer($item)) $str .= "JSON_CONTAINS(".$field.", '[".$item."]') OR ";
+				if (is_numeric($item)) $str .= "JSON_CONTAINS(".$field.", '[".$item."]') OR ";
 				else $str .= "JSON_CONTAINS(".$field.", '[\"".$item."\"]') OR ";
 			} 
 		} else {
-			if (is_integer($items)) $str .= "JSON_CONTAINS(".$field.", '[".$items."]') OR ";
+			if (is_numeric($items)) $str .= "JSON_CONTAINS(".$field.", '[".$items."]') OR ";
 			else $str .= "JSON_CONTAINS(".$field.", '[\"".$items."\"]') OR ";
 		}
 		
 		$str = rtrim($str, ' OR ').')';
-		
 		
 		return $str != '()' ? $str : '';
 	}

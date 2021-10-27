@@ -1,7 +1,7 @@
 /*
 	Модальное окно (21.01.2020) Создано в глубочайшем стрессе. (08.10.2020) - все супер, работа идет, стресса нет! Митя привыкает к школе
 	- опции
-		- title: заголовок
+		- title: заголовок название | размер | текст оверфлоу (1)
 		- width: ширина окна
 		- html: контент
 		- buttons: кнопки
@@ -285,16 +285,21 @@ function DdrPopUp(settings, callback) {
 				title = stData[0],
 				titleSize = stData[1] || '1',
 				titleOverflow = (stData[2] == 1) ? ' popup__title_overflow' : '';
-			$(ddrPopupSelector).find('[ddrpopuptitle]').replaceWith('<h5 ddrpopuptitle class="popup__title'+titleOverflow+' popup__title_'+titleSize+'">'+title+'</h5>');
+			
+			if ($(ddrPopupSelector).find('[ddrpopuptitle]').length) {
+				$(ddrPopupSelector).find('[ddrpopuptitle]').replaceWith('<h5 ddrpopuptitle class="popup__title'+titleOverflow+' popup__title_'+titleSize+'">'+title+'</h5>');
+			} else {
+				$(ddrPopupSelector).find('.popup__header').prepend('<h5 ddrpopuptitle class="popup__title'+titleOverflow+' popup__title_'+titleSize+'">'+title+'</h5>');
+			}
+		},
+		deleteTitle: function() {
+			$(ddrPopupSelector).find('[ddrpopuptitle]').empty();
 		},
 		onScroll: function(callback) {
 			$(ddrPopupSelector).scroll(function() {
 				if (callback && typeof callback == 'function') callback();
 				$(document).trigger('popup:scroll');
 			});
-		},
-		deleteTitle: function() {
-			$(ddrPopupSelector).find('[ddrpopuptitle]').empty();
 		},
 		setButtons: function(buttons, close) {
 			var buttonsHtml = '';
@@ -317,12 +322,16 @@ function DdrPopUp(settings, callback) {
 		enabledButtons: function() {
 			$(ddrPopupSelector).find('[ddrpopupbuttons]').children('[disabled]').removeAttrib('disabled');
 		},
-		setWidth: function(width) {
+		setWidth: function(width, callback) {
 			$(ddrPopupSelector).find('[ddrpopupwin]').addClass('popup__win_animated');
 			$(ddrPopupSelector).find('[ddrpopupwin]').width(width);
 			setTimeout(function() {
 				$(ddrPopupSelector).find('[ddrpopupwin].popup__win_animated').removeClass('popup__win_animated');
+				if (callback && typeof callback == 'function') callback();
 			}, (animationTime * 1000));
+		},
+		setClass: function(cls) {
+			$(ddrPopupSelector).find('[ddrpopupwin]').addClass(cls);
 		},
 		dialog: function(dialog, yBtn, nBtn, yFunc) {
 			if (dialog == false) {
