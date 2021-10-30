@@ -585,7 +585,6 @@ $(function() {
 										$.post('/pollings/questions/update', {question_id: questionId, title: $(question).val(), answers_type: $(answersType).val(), variants: variantsData, other_variant: otherVariant}, function(response) {
 											if (response) {
 												getQuestions();
-												
 											} else {
 												notify('Ошибка! Вопрос не обновлен!' ,'error');
 												pollingQuestionsWin.wait(false);

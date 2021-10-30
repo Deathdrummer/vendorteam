@@ -2897,11 +2897,6 @@ $(document).ready(function() {
 							});
 							
 							
-							/*$('#questionVariantOtherField').on('focus', function() {
-								$(this).removeClass('error');
-								$(this).closest('[questionothervariant]').find('[questionvariant]').setAttrib('checked');
-							});*/
-							
 							$('.pollingswin').find('[questioncustom]').on('keyup', function() {
 								let customText = $(this).val();
 								if (customText.length) {
@@ -2925,8 +2920,8 @@ $(document).ready(function() {
 							
 							$('#pollingCompleteBtn').on(tapEvent, function() {
 								saveAnswers(true, function() {
-									pollingsWin.setData('<h3 class="text-center dialog dialog_success fz22px">Опрос успешно пройден!</h3><h4 class="text-center dialog dialog_success">Спасибо за ответы!</h4>', false);
-									pollingsWin.setWidth(400);
+									pollingsWin.setData('<div class="mt15px mb15px"><h3 class="text-center dialog dialog_success fz24px mb10px">Опрос успешно пройден!</h3><h4 class="text-center dialog dialog_success fz18px">Спасибо за ответы!</h4></div>', false);
+									pollingsWin.setWidth(600);
 									pollingsWin.setButtons([{id: 'goToPollinsListBtn', title: 'К списку опросов'}], 'Закрыть');
 									
 									let pollingCounter = parseInt($('[pollingcounter]:visible').text());
@@ -2935,7 +2930,8 @@ $(document).ready(function() {
 									if (pollingCounter == 1) $('[pollingcounter]').closest('.leftblocktopicon.leftblocktopicon_active').removeClass('leftblocktopicon_active');
 									
 									$('#goToPollinsListBtn').on(tapEvent, function() {
-										getPollingsList();
+										let userId = getCookie('id');
+										getPollingsList(userId, pollingsWin);
 									});
 								});
 							});
@@ -3025,7 +3021,6 @@ $(document).ready(function() {
 				closePos: 'left'
 			}, function(pollingsWin) {
 				getPollingsList(userId, pollingsWin);
-					
 			});
 		});
 	}
