@@ -6,20 +6,34 @@
 </div>
 
 <div class="mb15px">
-	<span class="fz14px">Тип ответа:</span>
-	<div class="select fz14px w200px">
-		<select id="questionVariantsType" class="h24px">
-			{% if answers_types %}
-				<option disabled selected value="">Выбрать</option>
-				{% for aTypeId, aType in answers_types %}
-					<option value="{{aTypeId}}"{% if aTypeId == answers_type %} selected{% endif %}>{{aType}}</option>
-				{% endfor %}
-			{% else %}
-				<option disabled>Нет данных</option>
-			{% endif %}
-		</select>
-		<div class="select__caret"></div>
+	<div class="row gutters-5 justify-content-between">
+		<div class="col-auto">
+			<span class="fz14px">Тип ответа:</span>
+			<div class="select fz14px w200px">
+				<select id="questionVariantsType" class="h24px">
+					{% if answers_types %}
+						<option disabled selected value="">Выбрать</option>
+						{% for aTypeId, aType in answers_types %}
+							<option value="{{aTypeId}}"{% if aTypeId == answers_type %} selected{% endif %}>{{aType}}</option>
+						{% endfor %}
+					{% else %}
+						<option disabled>Нет данных</option>
+					{% endif %}
+				</select>
+				<div class="select__caret"></div>
+			</div>
+		</div>
+		<div class="col-auto">
+			<div class="d-flex align-items-center text-right" id="questionFormVariantOtherBlock"{% if answers_type == 3 %} hidden{% endif %}>
+				<span class="fz14px mr5px">Добавить вариант <strong>"другое"</strong>:</span>
+				<div class="checkblock">
+					<input type="checkbox" id="questionFormVariantOther"{% if other_variant %} checked{% endif %}>
+					<label for="questionFormVariantOther"></label>
+				</div>
+			</div>
+		</div>
 	</div>
+			
 </div>
 
 <div class="mb15px" id="questionFormVariantsBlock"{% if answers_type == 3 %} hidden{% endif %}>

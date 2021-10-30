@@ -51,7 +51,33 @@ searchInObject = function(arrObj, field, value) {
 
 
 
+
+
+
+
+
+/*
+	Получить контент из блока [contenteditable]
+		- селектор
+*/
+getContenteditable = function(selector) {
+	let content = $(selector).html(),
+		temp = document.createElement("div");
 	
+	if (content == '') return '';
+
+	content = content.replace(/<br><br>/gu, "\n")
+		.replace(/<div><br><\/div>/gu, "\n")
+		.replace(/<br>/gu, "\n")
+		.replace(/<div>/gu, "\n")
+		.replace(/<\/div>/gu, '')
+		.replace(/&nbsp;/gu, '');
+
+	temp.innerHTML = content;
+	var sanitized = temp.textContent || temp.innerText,
+	sanitized = sanitized.trim();
+	return sanitized || '';
+}
 
 
 

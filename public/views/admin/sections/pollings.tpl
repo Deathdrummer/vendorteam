@@ -18,6 +18,7 @@
 				<td class="w30rem"><strong>Аудитория опроса</strong></td>
 				<td class="w100px"><strong>Вопросы</strong></td>
 				<td class="w170px"><strong>Запустить опрос</strong></td>
+				<td class="w60px" title="Статистика"><strong>Стат.</strong></td>
 				<td class="w60px" title="Активен"><strong>Актив.</strong></td>
 				<td class="w90px"><strong>Операции</strong></td>
 			</tr>
@@ -277,6 +278,8 @@ $(function() {
 	
 	
 	
+	
+	
 	$('#pollingsList').on(tapEvent, '[pollingquestions]', function() {
 		let pollingId = $(this).attr('pollingquestions'),
 			pollingRow = $(this).closest('tr'),
@@ -444,8 +447,11 @@ $(function() {
 								
 								if (type == 3) { // если тип ответа - кастомный
 									$('#questionFormVariantsBlock').setAttrib('hidden');
+									$('#questionFormVariantOther').removeAttrib('checked');
+									$('#questionFormVariantOtherBlock').setAttrib('hidden');
 								} else {
 									$('#questionFormVariantsBlock').removeAttrib('hidden');
+									$('#questionFormVariantOtherBlock').removeAttrib('hidden');
 								}
 							});
 							
@@ -516,10 +522,10 @@ $(function() {
 								let question = $('#questionText'),
 									answersType = $('#questionVariantsType'),
 									variants = $(answersType).val() != 3 ? $('#pollingsQuestionsVariants').find('tr:not(.empty)') : null,
-									
+									otherVariant = $('#questionFormVariantOther').is(':checked'),
 									variantsData = [],
 									stat = true;
-									
+								
 								if ($(question).val() == '') {
 									$(question).addClass('error');
 									stat = false;
@@ -576,7 +582,7 @@ $(function() {
 								function saveQuestion(callback) {
 									if (questionId) {
 										pollingQuestionsWin.wait();
-										$.post('/pollings/questions/update', {question_id: questionId, title: $(question).val(), answers_type: $(answersType).val(), variants: variantsData}, function(response) {
+										$.post('/pollings/questions/update', {question_id: questionId, title: $(question).val(), answers_type: $(answersType).val(), variants: variantsData, other_variant: otherVariant}, function(response) {
 											if (response) {
 												getQuestions();
 												
@@ -593,7 +599,7 @@ $(function() {
 										});
 									} else {
 										pollingQuestionsWin.wait();
-										$.post('/pollings/questions/add', {polling_id: pollingId, title: $(question).val(), answers_type: $(answersType).val(), variants: variantsData}, function(response) {
+										$.post('/pollings/questions/add', {polling_id: pollingId, title: $(question).val(), answers_type: $(answersType).val(), variants: variantsData, other_variant: otherVariant}, function(response) {
 											if (response) {
 												let countQuestions = parseInt($(pollingRow).find('[pollingcountquestions]').text());
 												$(pollingRow).find('[pollingcountquestions]').text(countQuestions + 1);
@@ -623,6 +629,61 @@ $(function() {
 			
 		});
 	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	$('#pollingsList').on(tapEvent, '[pollingshowstatistics]', function() {
+		let pollingId = $(this).attr('pollingshowstatistics'),
+			pollingTitle = $(this).closest('tr').find('[name="title"]').val();
+		
+		popUp({
+			title: 'Статистика опроса "'+pollingTitle+'"|4',
+			width: 1000, // ширина окна
+			html: '', // контент
+			buttons: false, // массив кнопок
+			buttonsAlign: 'right', // выравнивание вправо
+			disabledButtons: false, // при старте все кнопки кроме закрытия будут disabled
+			closePos: 'right', // расположение кнопки "close" left - слева, right - справа
+			closeByButton: false, // Закрывать окно только по кнопкам [ddrpopupclose]
+			closeButton: false, // заголовок кнопки "закрыть"
+			onClose: false, // событие при закрытии окна
+			winClass: false, // добавить класс к модальному окну
+			contentToCenter: false, // весь контент по центру вертикально и горизонтально
+			buttonsOnTop: false, // Кнопки сверху
+			topClose: true, // верхний крестик "закрыть"
+			lang: 'ru'
+		}, function(pollingStatisticsWin) {
+			
+			
+			
+			
+		});
+	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

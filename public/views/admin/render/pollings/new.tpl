@@ -25,6 +25,7 @@
 	<td class="top center pt10px">-</td>
 	<td class="top center pt10px">-</td>
 	<td class="top center pt10px">-</td>
+	<td class="top center pt10px">-</td>
 	<td class="top center pt8px">
 		<div class="buttons inline notop">
 			<button class="small w30px" save title="Сохранить"><i class="fa fa-save"></i></button>

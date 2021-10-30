@@ -21,10 +21,10 @@
 			<div class="dcol-2">
 				<div class="d-flex justify-content-between">
 					<strong class="fz13px">Участники</strong>
-					<i class="fa fa-bars fz20px pointer" pollingauditoryusers="{{id}}" title="Управление аудиторией"></i>
+					{# <i class="fa fa-bars fz20px pointer"></i> #}
 				</div>
 					
-				<ul class="scroll_y scroll_y_thin h70px" pollingauditoryuserslist>
+				<ul class="pollingsauditory scroll_y scroll_y_thin h70px pointer" pollingauditoryuserslist pollingauditoryusers="{{id}}" title="Управление аудиторией (участники)">
 					{% if users %}
 						{% for uId, user in users %}
 							<li>{{user.nickname}}</li>
@@ -37,10 +37,10 @@
 			<div class="dcol-2">
 				<div class="d-flex justify-content-between">
 					<strong class="fz13px">Статики</strong>
-					<i class="fa fa-bars fz20px pointer" pollingauditorystatics="{{id}}" title="Управление аудиторией"></i>
+					{# <i class="fa fa-bars fz20px pointer"></i> #}
 				</div>
 					
-				<ul class="scroll_y scroll_y_thin h70px" pollingauditorystaticslist>
+				<ul class="pollingsauditory scroll_y scroll_y_thin h70px pointer" pollingauditorystaticslist pollingauditorystatics="{{id}}" title="Управление аудиторией (статики)">
 					{% if statics %}
 						{% for stId, static in statics %}
 							<li>{{static.name}}</li>
@@ -94,6 +94,11 @@
 				</div>
 				<sub>мин.</sub>
 			</div>
+		</div>
+	</td>
+	<td class="center top">
+		<div class="buttons inline notop pt10px">
+			<button class="small pay w30px" pollingshowstatistics="{{id}}" title="Посмотреть статистику"><i class="fa fa-bar-chart"></i></button>
 		</div>
 	</td>
 	<td class="center top">

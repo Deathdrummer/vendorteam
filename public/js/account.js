@@ -2833,6 +2833,7 @@ $(document).ready(function() {
 					qIndex = 0;
 				
 				getAjaxJson('pollings/account/questions', {polling_id: pollingId, user_id: userId}, function(questions) {
+					
 					if (!questions) {
 						pollingsWin.wait(false);
 						notify('Не удалось загрузить вопросы!', 'error');
@@ -2840,9 +2841,8 @@ $(document).ready(function() {
 					}
 					
 					pollingsWin.setTitle(questionTitle+'|4');
-					
 					$.each(questions, function(k, item) {
-						if (item.answered) {
+						if (item.answered || item.other) {
 							if (questions[qIndex+1] == undefined) qIndex = 0;
 							else qIndex = (k + 1);
 						}
@@ -2851,14 +2851,15 @@ $(document).ready(function() {
 					
 					
 					
-					(function getQuestionForm() { // start between end
+					(function getQuestionForm() {
 						pollingsWin.setData('pollings/account/question', questions[qIndex], function() {
-							let isAnswered = questions[qIndex]['answered'] ? 1 : 0;
+							let isAnswered = (questions[qIndex]['answered'] || questions[qIndex]['other']) ? 1 : 0,
+								hasOtherInList = questions[qIndex]['other_variant'] ? 1 : 0; // ???
 							
 							if (qIndex == 0 && questions.length > 1) {
 								pollingsWin.setButtons([{id: 'pollingNextBtn', title: 'Следующий вопрос', disabled: !isAnswered}]);
 							} else if (qIndex == 0 && questions.length == 1) {
-								pollingsWin.setButtons([{id: 'pollingCompleteBtn', title: 'Завершить'}]);
+								pollingsWin.setButtons([{id: 'pollingCompleteBtn', title: 'Завершить', disabled: 1}]);
 							} else if (qIndex > 0 && (qIndex + 1) < questions.length) {
 								pollingsWin.setButtons([{id: 'pollingPrevBtn', title: 'Предыдущий вопрос'}, {id: 'pollingNextBtn', title: 'Следующий вопрос', disabled: !isAnswered}]);
 							} else if (qIndex + 1 == questions.length) {
@@ -2866,8 +2867,26 @@ $(document).ready(function() {
 							}
 							
 							
-							$('.pollingswin').find('[questionvariant]').on('change', function() {
-								let countChecked = $('.pollingswin').find('[questionvariant]:checked').length;
+							$('.pollingswin').find('[questionvariant]').on(tapEvent, function(e) {
+								let isChecked = $(this).is(':checked'),
+									isOther = $(this).attr('questionvariant') == 'other',
+									countChecked = $('.pollingswin').find('[questionvariant]:checked').length;
+								
+								if (isOther) {
+									let otherField = $(this).closest('[questionothervariant]').find('#questionVariantOtherField'),
+										isOtherFieldFocused = $(otherField).is(':focus');
+									
+									$(this).closest('[questionothervariant]').removeClass('error');
+									
+									if (isOtherFieldFocused && !isChecked) {
+										e.stopPropagation();
+										e.preventDefault();
+										return false;
+									} else if (!isOtherFieldFocused && isChecked) {
+										$(otherField).focus();
+									} 
+								}
+								
 								if (countChecked) {
 									$('#pollingNextBtn[disabled]').removeAttrib('disabled');
 									$('#pollingCompleteBtn[disabled]').removeAttrib('disabled');
@@ -2877,6 +2896,11 @@ $(document).ready(function() {
 								}
 							});
 							
+							
+							/*$('#questionVariantOtherField').on('focus', function() {
+								$(this).removeClass('error');
+								$(this).closest('[questionothervariant]').find('[questionvariant]').setAttrib('checked');
+							});*/
 							
 							$('.pollingswin').find('[questioncustom]').on('keyup', function() {
 								let customText = $(this).val();
@@ -2888,8 +2912,6 @@ $(document).ready(function() {
 									$('#pollingCompleteBtn:not([disabled])').setAttrib('disabled');
 								}
 							});
-							
-							
 							
 							
 							$('#pollingPrevBtn').on(tapEvent, function() {
@@ -2919,7 +2941,6 @@ $(document).ready(function() {
 							});
 							
 							
-							
 							function saveAnswers(end, callback) {
 								let dataToSave = {
 										polling_id: pollingId,
@@ -2927,35 +2948,54 @@ $(document).ready(function() {
 										question_id: questions[qIndex]['question_id'],
 									},
 									isVariants = !!$('.pollingswin').find('[questionvariant]').length,
+									hasOther = !!$('.pollingswin').find('[questionvariant="other"]:checked').length,
 									isCustom = !!$('.pollingswin').find('[questioncustom]').length,
-									answerData;
+									answerData,
+									saveStat = true;
 								
 								if (isVariants && !isCustom) {
 									dataToSave['variants'] = [];
 									$('.pollingswin').find('[questionvariant]:checked').each(function() {
-										dataToSave['variants'].push(parseInt($(this).attr('questionvariant')));
+										let questionVariant = $(this).attr('questionvariant');
+										if (questionVariant != 'other') dataToSave['variants'].push(parseInt(questionVariant));
+										else dataToSave['other'] = hasOther ? getContenteditable($(this).closest('[questionothervariant]').find('#questionVariantOtherField')) : null;
 									});
 								} else if (!isVariants && isCustom) {
 									dataToSave['custom'] = $('.pollingswin').find('[questioncustom]').val();
 								}
 								
-								$.post('pollings/account/save', dataToSave, function(response) {
-									if (response) {
-										questions[qIndex]['answered'] = dataToSave['variants'] || dataToSave['custom'];
-										if (end == false && questions[qIndex + 1] != undefined) {
-											qIndex += 1;
-											getQuestionForm();
-										}
-										if (callback && typeof callback == 'function') callback();
-									} else {
-										notify('Ошибка! Ответ не сохранился!', 'error');
-										pollingsWin.wait(false);
+								
+								if (hasOther) {
+									let otherBlock = $('.pollingswin').find('[questionvariant="other"]').closest('[questionothervariant]'),
+										otherValue = getContenteditable($(otherBlock).find('#questionVariantOtherField'));
+									if (otherValue == '') {
+										$(otherBlock).addClass('error');
+										saveStat = false;
 									}
-								}).fail(function(e) {
-									showError(e);
-									notify('Системная ошибка!', 'error');
-									pollingsWin.wait(false);
-								});
+								}
+								
+								
+								if (saveStat) {
+									$.post('pollings/account/save', dataToSave, function(response) {
+										if (response) {
+											questions[qIndex]['answered'] = dataToSave['variants'] || dataToSave['custom'];
+											questions[qIndex]['answered_other'] = dataToSave['other'] || null;
+											
+											if (end == false && questions[qIndex + 1] != undefined) {
+												qIndex += 1;
+												getQuestionForm();
+											}
+											if (callback && typeof callback == 'function') callback();
+										} else {
+											notify('Ошибка! Ответ не сохранился!', 'error');
+											pollingsWin.wait(false);
+										}
+									}).fail(function(e) {
+										showError(e);
+										notify('Системная ошибка!', 'error');
+										pollingsWin.wait(false);
+									});
+								}	
 							}
 							
 						});
@@ -2993,30 +3033,36 @@ $(document).ready(function() {
 	
 	
 	// напоминание о непройденных опросах
-	let isOpenedHasPollingsWin = false;
-	setInterval(function() {
-		let noOpenedWins = !$('.popup__win_opening').length,
-			hasPollings = parseInt(getCookie('pollings')) > 0;
-		if (!isOpenedHasPollingsWin && noOpenedWins && countPollings > 0) {
-			popUp({
-				title: 'Необходимо пройти опросы!|4',
-				width: 500,
-				html: '<h3 class="fz20px red text-center mt30px mb30px">Вам необходимо пройти все предложенные опросы!</h3>',
-				buttons: [{id: 'openPollingsListBtn', title: 'Показать опросы'}],
-				closePos: 'left',
-				closeByButton: true,
-				onClose: function() {
-					isOpenedHasPollingsWin = false;
-				}
-			}, function(pollingsWin) {
-				isOpenedHasPollingsWin = true;
-				$('#openPollingsListBtn').on(tapEvent, function() {
-					let userId = getCookie('id');
-					getPollingsList(userId, pollingsWin);
+	let isOpenedHasPollingsWin = false,
+		isOpenedHasPollingsWinInterval;
+	(function openPollingsNotifyWin() {
+		isOpenedHasPollingsWinInterval = setInterval(function() {
+			let noOpenedWins = !$('.popup__win_opening').length,
+				hasPollings = parseInt(getCookie('pollings')) > 0;
+			if (!isOpenedHasPollingsWin && noOpenedWins && countPollings > 0) {
+				popUp({
+					title: 'Необходимо пройти опросы!|4',
+					width: 500,
+					html: '<h3 class="fz20px red text-center mt30px mb30px">Вам необходимо пройти все предложенные опросы!</h3>',
+					buttons: [{id: 'openPollingsListBtn', title: 'Показать опросы'}],
+					closePos: 'left',
+					closeByButton: true,
+					onClose: function() {
+						clearInterval(isOpenedHasPollingsWinInterval);
+						isOpenedHasPollingsWin = false;
+						openPollingsNotifyWin();
+					}
+				}, function(pollingsWin) {
+					isOpenedHasPollingsWin = true;
+					$('#openPollingsListBtn').on(tapEvent, function() {
+						let userId = getCookie('id');
+						getPollingsList(userId, pollingsWin);
+					});
 				});
-			});
-		}
-	}, (1 * 1000 * 60));
+			}
+		}, (10 * 1000));
+	})();
+		
 	
 	
 	

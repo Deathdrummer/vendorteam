@@ -4838,6 +4838,34 @@ p
 	
 	
 	
+.pollingsauditory
+	position: relative
+	
+	> *
+		transition: opacity 0.16s
+	
+	&::after
+		content: 'Выбрать'
+		display: block
+		position: absolute
+		top: calc(50% - 10px)
+		left: 0
+		text-align: center
+		width: 100%
+		font-size: 20px
+		color: #a0b4c3
+		opacity: 0
+		z-index: 1000
+		transition: opacity 0.16s
+	
+	
+	&:hover
+		> *
+			opacity: 0.15
+		
+		&::after
+			opacity: 1
+
 	
 	
 	
@@ -4845,6 +4873,9 @@ p
 	
 	
 	
+	
+	
+
 .ddrtable
 	
 	

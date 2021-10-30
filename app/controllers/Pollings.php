@@ -337,6 +337,33 @@ class Pollings extends MY_Controller {
 	
 	
 	
+	//------------------------------------------------------------------------------------------------------- Статистика
+	/**
+	 * Статистика
+	 * @param 
+	 * @return 
+	*/
+	public function statistics($action = false) {
+		$post = bringTypes($this->input->post());
+		if (!$action) return false;
+		
+		switch ($action) {
+			case '':
+				$data['common'] = $this->pollings->statistics('common', $post);
+				echo $this->twig->render($this->viewsPath.'');
+				break;
+				
+			
+			default: break;
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

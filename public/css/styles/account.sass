@@ -1841,7 +1841,7 @@ img.avatar
 			padding-left: 15px
 			padding-right: 15px
 			font-size: 16px
-			+font(roboto, bold)
+			+font(roboto, medium)
 			transition: background-color 0.16s
 		
 		&_main
@@ -1860,7 +1860,10 @@ img.avatar
 			&[disabled]
 				cursor: default
 				pointer-events: none
-				background-color: #b3b3b3
+				background-color: #dddddd
+				color: #939393
+				+font(roboto, medium)
+				box-shadow: none
 		
 		&_close
 			//border: 1px solid #444
@@ -4418,6 +4421,9 @@ img.avatar
 
 
 
+
+
+
 .pollingswin
 	&__question
 		font-size: 18px
@@ -4432,6 +4438,10 @@ img.avatar
 		
 	&__variants
 		li
+			&.error
+				.pollingswin__variant
+					background-color: #ffa4a4 !important
+				
 			+ li
 				margin-top: 15px
 	
@@ -4465,6 +4475,7 @@ img.avatar
 		width: 100%
 		cursor: pointer
 		
+		
 		&:hover
 			//border: 1px solid #f4f3f7
 			background-color: #eae7f1
@@ -4472,7 +4483,20 @@ img.avatar
 		
 		&:active
 			//border: 1px solid #f4f3f7
-			background-color: #ded5f9
+			background-color: #d0c0ff
+			
 		
+		&_other
+			display: flex
+			align-items: center
 		
-		
+	
+	&__otherfield
+		width: 100%
+		max-height: 78px
+		+scrollbar(#d4ccde, #a99fc5, 6px, 3px, 3px)
+		overflow-y: scroll
+		cursor: text
+		border-left: 2px solid #a99fc5
+		padding-left: 5px
+				

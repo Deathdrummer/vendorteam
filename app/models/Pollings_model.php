@@ -158,7 +158,7 @@ class Pollings_model extends MY_Model {
 				break;
 			
 			case 'get':
-				$this->db->select('id, title, answers_type');
+				$this->db->select('id, title, answers_type, other_variant');
 				$this->db->where('id', $data['question_id']);
 				if (!$qData = $this->_row($this->pollingQuestionsTable)) return false;
 				$qData['variants'] = $this->variants('all', $data);
@@ -168,9 +168,7 @@ class Pollings_model extends MY_Model {
 			case 'add':
 				$variants = arrTakeItem($data, 'variants');
 				
-				$this->db->select('MAX(sort) AS max_sort');
-				$maxSort = $this->_row($this->pollingQuestionsTable);
-				$data['sort'] = ($maxSort + 1) ?: 999999;
+				$data['sort'] = $this->_getLastQuestionSortIndex($data['polling_id']);
 				
 				if (!$this->db->insert($this->pollingQuestionsTable, $data)) return false;
 				$questionId = $this->db->insert_id();
@@ -466,7 +464,7 @@ class Pollings_model extends MY_Model {
 				break;
 			
 			case 'get':
-				$this->db->select('q.id AS question_id, q.title, q.answers_type, '.$this->groupConcat('qv.question_id', 'qv.id:id, qv.content:content, qv.scores:scores, qv.sort:sort', 'variants'));
+				$this->db->select('q.id AS question_id, q.title, q.answers_type, q.other_variant, '.$this->groupConcat('qv.question_id', 'qv.id:id, qv.content:content, qv.scores:scores, qv.sort:sort', 'variants'));
 				$this->db->where('q.polling_id', $data['polling_id']);
 				$this->db->join($this->pollingQuestionsVariantsTable.' qv', 'q.id = qv.question_id', 'LEFT OUTER');
 				$this->db->group_by('q.id');
@@ -480,6 +478,7 @@ class Pollings_model extends MY_Model {
 					
 					if (isset($answeredQuestions[$row['question_id']])) {
 						$row['answered'] = isset($answeredQuestions[$row['question_id']]['variants']) ? $answeredQuestions[$row['question_id']]['variants'] : (isset($answeredQuestions[$row['question_id']]['custom']) ? $answeredQuestions[$row['question_id']]['custom'] : null);
+						$row['other'] = $answeredQuestions[$row['question_id']]['other'];
 					}
 					
 					$row['variants'] = json_decode($row['variants'], true);
@@ -492,14 +491,15 @@ class Pollings_model extends MY_Model {
 			
 			case 'save':
 				$variants = (isset($data['variants']) && $data['variants']) ? json_encode(arrTakeItem($data, 'variants')) : null;
+				$other = (isset($data['other']) && $data['other']) ? arrTakeItem($data, 'other') : null;
 				$custom = (isset($data['custom']) && $data['custom']) ? arrTakeItem($data, 'custom') : null;
 				
 				$this->db->where($data);
 				if ($this->db->count_all_results($this->pollingAnswersTable) == 0) {
-					if (!$this->db->insert($this->pollingAnswersTable, array_merge($data, ['variants' => $variants, 'custom' => $custom]))) return false;
+					if (!$this->db->insert($this->pollingAnswersTable, array_merge($data, ['variants' => $variants, 'other' => $other, 'custom' => $custom]))) return false;
 				} else {
 					$this->db->where($data);
-					if (!$this->db->update($this->pollingAnswersTable, ['variants' => $variants, 'custom' => $custom])) return false;
+					if (!$this->db->update($this->pollingAnswersTable, ['variants' => $variants, 'other' => $other, 'custom' => $custom])) return false;
 					return true;
 				}
 				break;
@@ -525,6 +525,53 @@ class Pollings_model extends MY_Model {
 			default: break;
 		}
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//------------------------------------------------------------------------------------------------------- Статистика
+	
+	/**
+	 * Статистика
+	 * @param 
+	 * @return 
+	*/
+	public function statistics($action = false) {
+		$args = func_get_args();
+		$action = isset($args[0]) ? $args[0] : false;
+		$data = isset($args[1]) ? $args[1] : false;
+		if (!$action) return false;
+		
+		switch ($action) {
+			case 'common': // общая статистика (цифры)
+				$this->db->where('p.id', $data['polling_id']);
+				break;
+			
+			
+			default: break;
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -563,9 +610,6 @@ class Pollings_model extends MY_Model {
 	
 	
 	
-	
-	
-	
 	/**
 	 * Получить ID вопросов опроса
 	 * @param ID опроса
@@ -583,15 +627,13 @@ class Pollings_model extends MY_Model {
 	
 	
 	
-	
-	
 	/**
 	 * @param 
 	 * @return 
 	 */
 	private function _getAnsweredQuestions($userId = false, $pollingId = false) {
 		if (!$userId) return false;
-		$this->db->select('question_id, variants, custom');
+		$this->db->select('question_id, variants, other, custom');
 		$this->db->where('user_id', $userId);
 		if ($pollingId) $this->db->where('polling_id', $pollingId);
 		if (!$answers = $this->_result($this->pollingAnswersTable)) return false;
@@ -636,5 +678,23 @@ class Pollings_model extends MY_Model {
 		if (!$result = $this->_result($this->pollingAnswersTable)) return false;
 		return arrRestructure($result, 'polling_id user_id', 'answers_count', true);
 	}
+	
+	
+	
+	
+	/**
+	 * 	Получить последний индекс сортировки вопросв
+	 * @param polling_id
+	 * @return
+	*/
+	protected function _getLastQuestionSortIndex($pollingId = false) {
+		if (!$pollingId) return false;
+		$this->db->select('MAX(sort) AS max_sort');
+		$this->db->where('polling_id', $data['polling_id']);
+		$maxSort = $this->_row($this->pollingQuestionsTable) ?: 0;
+		return ($maxSort + 1) ?: 999999;
+	}
+	
+	
 	
 }
