@@ -466,6 +466,10 @@ $bPoints: map-remove($grid-breakpoints, xs)
 	.w#{$i}, .w-#{$i}
 		width: percentage((1 / 100) * $i) !important
 		max-width: percentage((1 / 100) * $i) !important
+	
+	.h#{$i}, .h-#{$i}
+		height: percentage((1 / 100) * $i) !important
+		max-height: percentage((1 / 100) * $i) !important
 		
 $bPoints: map-remove($grid-breakpoints, xs)
 @each $breakpoint, $minWidth in $bPoints

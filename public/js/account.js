@@ -2980,6 +2980,8 @@ $(document).ready(function() {
 											if (end == false && questions[qIndex + 1] != undefined) {
 												qIndex += 1;
 												getQuestionForm();
+											} else {
+												setCookie('pollings', 0, 0);
 											}
 											if (callback && typeof callback == 'function') callback();
 										} else {
@@ -3034,7 +3036,7 @@ $(document).ready(function() {
 		isOpenedHasPollingsWinInterval = setInterval(function() {
 			let noOpenedWins = !$('.popup__win_opening').length,
 				hasPollings = parseInt(getCookie('pollings')) > 0;
-			if (!isOpenedHasPollingsWin && noOpenedWins && countPollings > 0) {
+			if (!isOpenedHasPollingsWin && noOpenedWins && hasPollings) {
 				popUp({
 					title: 'Необходимо пройти опросы!|4',
 					width: 500,

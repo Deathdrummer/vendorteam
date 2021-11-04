@@ -645,30 +645,115 @@ $(function() {
 	
 	
 	
-	
+	//------------------------------------------------------------------------------------- Статистика опроса
 	$('#pollingsList').on(tapEvent, '[pollingshowstatistics]', function() {
 		let pollingId = $(this).attr('pollingshowstatistics'),
 			pollingTitle = $(this).closest('tr').find('[name="title"]').val();
 		
 		popUp({
-			title: 'Статистика опроса "'+pollingTitle+'"|4',
-			width: 1000, // ширина окна
-			html: '', // контент
-			buttons: false, // массив кнопок
-			buttonsAlign: 'right', // выравнивание вправо
-			disabledButtons: false, // при старте все кнопки кроме закрытия будут disabled
-			closePos: 'right', // расположение кнопки "close" left - слева, right - справа
-			closeByButton: false, // Закрывать окно только по кнопкам [ddrpopupclose]
-			closeButton: false, // заголовок кнопки "закрыть"
-			onClose: false, // событие при закрытии окна
-			winClass: false, // добавить класс к модальному окну
-			contentToCenter: false, // весь контент по центру вертикально и горизонтально
-			buttonsOnTop: false, // Кнопки сверху
-			topClose: true, // верхний крестик "закрыть"
-			lang: 'ru'
+			title: 'Статистика опроса <strong>'+pollingTitle+'</strong>|4',
+			width: 1200, 
+			buttons: false,
+			closePos: 'left',
+			closeButton: 'Закрыть',
+			winClass: 'pollingstat'
 		}, function(pollingStatisticsWin) {
 			
+			pollingStatisticsWin.setData('pollings/statistics', function() {
+				let startSection = $('#pollingstatNav').find('[pollingstatnavactive]').attr('pollingstatopensection');
+				
+				loadPollingSection(startSection);
+				
+				$('#pollingstatNav').on(tapEvent, '[pollingstatopensection]:not(.pollingstat__navitem_active)', function() {
+					let section = $(this).attr('pollingstatopensection');
+					$('#pollingstatNav').find('[pollingstatopensection].pollingstat__navitem_active').removeClass('pollingstat__navitem_active');
+					$(this).addClass('pollingstat__navitem_active');
+					loadPollingSection(section, function() {
+						if (section == 'questions_total') {
+							$('[openothervariantanswers]').on(tapEvent, function() {
+								let otherList = $(this).parent().find('[othervariantanswerslist]');
+								
+								if ($(otherList).hasClass('pollingstatotherlist_visible')) {
+									$(otherList).removeClass('pollingstatotherlist_visible');
+								} else {
+									$(otherList).addClass('pollingstatotherlist_visible');
+								}
+							});
+							
+						} else if (section == 'questions_users') {
+							
+							$('#pollingStatStatics').on(tapEvent, '[qustatic]', function() {
+								let staticId = $(this).attr('qustatic');
+								$('#pollingStatUsers.pollingstatusers_empty').removeClass('pollingstatusers_empty');
+								$('#pollingStatStatics').find('[qustatic]').removeClass('pollingstatstatics__item_active');
+								$(this).addClass('pollingstatstatics__item_active');
+								$('#pollingStatUsers').find('[qustaticgroup]').addClass('pollingstatusers__item_hidden');
+								$('#pollingStatUsers').find('[qustaticgroup="'+staticId+'"]').removeClass('pollingstatusers__item_hidden');
+							});
+							
+							
+							$('#pollingStatUsers').on(tapEvent, '[quuser]', function() {
+								let userId = $(this).attr('quuser');
+								$('#userQquestionsBlock').html('');
+								$('#userQquestionsBlock').addClass('pollingstatusersblock_loading');
+								$('#pollingStatUsers').find('[quuser]').removeClass('pollingstatusers__item_active');
+								$(this).addClass('pollingstatusers__item_active');
+								getAjaxHtml('pollings/statistics/questions_user', {user_id: userId, polling_id: pollingId}, function(html, stat) {
+									if (stat) {
+										$('#userQquestionsBlock').removeClass('pollingstatusersblock_empty');
+										$('#userQquestionsBlock').html(html);
+									} else {
+										$('#userQquestionsBlock').addClass('pollingstatusersblock_empty');
+									}
+								}, function() {
+									$('#userQquestionsBlock').removeClass('pollingstatusersblock_loading');
+								});
+							});
+						}
+					});
+				});
+			});
 			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			// загрузить раздел статистики
+			function loadPollingSection(section, callback, ops) {
+				if (section == undefined) return false;
+				
+				if (section == '') {
+					$('#pollingStatSection').html('<div class="d-flex align-items-center justify-content-center h100"><p class="pollingstat__empty">Рездел пуст</p></div>');
+					return false;
+				}
+				
+				setLloading();
+				
+				let params = Object.assign({polling_id: pollingId}, ops);
+				getAjaxHtml('pollings/statistics/'+section, params, function(html, stat) {
+					if (!stat) $('#pollingStatSection').html('<div class="d-flex align-items-center justify-content-center h100"><p class="pollingstat__empty">Рездел пуст</p></div>');
+					else {
+						$('#pollingStatSection').html(html);
+						if (callback && typeof callback == 'function') callback();
+					} 
+				}, function() {
+					setLloading(false);
+				});
+			}
+			
+			// загрузка ...
+			function setLloading(stat) {
+				if (stat == undefined || stat === true) $('#pollingStatSection:not(.pollingstat__content_loading)').addClass('pollingstat__content_loading');
+				else $('#pollingStatSection.pollingstat__content_loading').removeClass('pollingstat__content_loading');
+			}
 			
 			
 		});
@@ -694,7 +779,7 @@ $(function() {
 	
 	
 	
-	
+	//------------------------------------------------------------------------------------- Удалить опрос
 	$('#pollingsList').on(tapEvent, '[pollingremove]', function() {
 		let row = $(this).closest('tr'),
 			pollingId = $(this).attr('pollingremove'),

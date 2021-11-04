@@ -481,8 +481,9 @@ class Pollings_model extends MY_Model {
 						$row['other'] = $answeredQuestions[$row['question_id']]['other'];
 					}
 					
-					$row['variants'] = json_decode($row['variants'], true);
+					$row['variants'] = arrSortByField(json_decode($row['variants'], true), 'sort', 'ASC');
 					$row['polling_id'] = $data['polling_id'];
+					
 					$pollingData[] = $row;
 				}
 				
@@ -550,12 +551,126 @@ class Pollings_model extends MY_Model {
 	public function statistics($action = false) {
 		$args = func_get_args();
 		$action = isset($args[0]) ? $args[0] : false;
-		$data = isset($args[1]) ? $args[1] : false;
+		if (isset($args[1])) extract($args[1]);
 		if (!$action) return false;
 		
 		switch ($action) {
-			case 'common': // общая статистика (цифры)
-				$this->db->where('p.id', $data['polling_id']);
+			case 'reach': // охват (цифры и список участников)
+				$this->load->model(['users_model' => 'users', 'admin_model' => 'admin']);
+				$reachData = [];
+				
+				$questionsCount = $this->_getQuestionsCount($polling_id);
+				$usersIds = $this->_getReachUsersIds($polling_id);
+				$usersAnswersCount = $this->_getUsersAnswersCount($polling_id);
+				
+				$usersDone = []; $usersInProcess = []; $usersNoStart = [];
+				foreach ($usersIds as $userId) {
+					$answersCount = isset($usersAnswersCount[$userId]) ? $usersAnswersCount[$userId] : 0;
+					if ($answersCount > 0 && $answersCount < $questionsCount) $usersInProcess[] = $userId;
+					elseif ($answersCount == $questionsCount) $usersDone[] = $userId;
+					elseif ($answersCount == 0) $usersNoStart[] = $userId;
+				}
+					
+				
+				$reachData['users'] = $this->users->getUsers(['where_in' => ['field' => 'u.id', 'values' => $usersIds], 'where' => ['us.main' => 1], 'fields' => 'nickname avatar, static']);
+				$reachData['statics'] = $this->admin->getStatics(true);
+				
+				$reachData['all'] = $usersIds;
+				$reachData['done'] = $usersDone;
+				$reachData['process'] = $usersInProcess;
+				$reachData['nostart'] = $usersNoStart;
+				
+				return $reachData;
+				break;
+			
+			case 'questions_total': // Общая статистика по вопросам
+				$this->db->where('polling_id', $polling_id);
+				if (!$result = $this->_result($this->pollingAnswersTable)) return false;
+				
+				
+				$variantsTitles = $this->_getQuestionsVariants($polling_id);
+				$questionsTitles = $this->_getQuestionsData($polling_id);
+				
+				$questionsData = []; $total = [];
+				foreach ($result as $k => $row) {
+					
+					if ($row['variants']) {
+						$variants = json_decode($row['variants'], true);
+						foreach ($variants as $variant) {
+							if (!isset($questionsData[$row['question_id']]['variants'][$variant])) $questionsData[$row['question_id']]['variants'][$variant] = 0;
+							$questionsData[$row['question_id']]['variants'][$variant] += 1;
+							
+							if (!isset($total[$row['question_id']])) $total[$row['question_id']] = 0;
+							$total[$row['question_id']] += 1;
+						}
+					} 
+					
+					if ($row['other']) {
+						if (!isset($questionsData[$row['question_id']]['variants']['other'])) $questionsData[$row['question_id']]['variants']['other'] = 0;
+						$questionsData[$row['question_id']]['variants']['other'] += 1;
+						
+						$questionsData[$row['question_id']]['other'][] = $row['other'];
+						
+						if (!isset($total[$row['question_id']])) $total[$row['question_id']] = 0;
+						$total[$row['question_id']] += 1;
+					}
+					
+					
+					if ($row['custom']) {
+						$questionsData[$row['question_id']]['custom'][] = $row['custom'];
+					}
+					
+					
+					if (isset($questionsData[$row['question_id']]['variants'])) {
+						uksort($questionsData[$row['question_id']]['variants'], function($a, $b) {
+				        	if (!isset($a) || !isset($b)) return 0;
+						    if ($a == 'other') {
+						        return 1;
+						    } else {
+						        return $a < $b ? -1 : 1;
+						    }
+						});
+					}
+					
+				}
+				
+				return ['questions_total'=> $questionsData, 'total' => $total, 'questions' => $questionsTitles, 'variants' => $variantsTitles];
+				break;
+			
+			
+			case 'questions_users': // Статистика по участникам
+				$this->load->model(['users_model' => 'users', 'admin_model' => 'admin']);
+				$usersIds = $this->_getReachUsersIds($polling_id);
+				$users = $this->users->getUsers(['where_in' => ['field' => 'u.id', 'values' => $usersIds], 'where' => ['us.main' => 1], 'fields' => 'nickname avatar, static']);
+				$staticsIds = array_column($users, 'static');
+				$data['statics'] = $this->admin->getStatics(false, $staticsIds);
+				$data['users'] = $users;
+				return $data;
+				break;
+			
+			case 'questions_user': // Статистика по участникам
+				$this->db->select('question_id, variants, other, custom');
+				$this->db->where(['user_id' => $user_id, 'polling_id' => $polling_id]);
+				if (!$result = $this->_result($this->pollingAnswersTable)) return false;
+				
+				$variantsData = $this->_getQuestionsVariants($polling_id, true);
+				$questionsTitles = $this->_getQuestionsData($polling_id);
+				
+				$answersData = []; $totalScores = 0;
+				foreach ($result as $row) {
+					if ($row['variants']) {
+						$variants = json_decode($row['variants'], true);
+						foreach ($variants as $variant) $totalScores += $variantsData[$variant]['scores'];
+						$row['variants'] = $variants;
+					} 
+					$answersData[$row['question_id']] = $row;
+				}
+				
+				return ['useranswers' => $answersData, 'total_scores' => $totalScores, 'questions' => $questionsTitles, 'variants' => $variantsData];
+				break;
+			
+			case 'scores': // сводка по баллам
+				return 'fdgdfg';
 				break;
 			
 			
@@ -672,10 +787,12 @@ class Pollings_model extends MY_Model {
 	 * @param 
 	 * @return [polling_id => [user_id => answers_count]]
 	 */
-	public function _getAnsweredUsers() {
+	private function _getAnsweredUsers($pollingId = false) {
 		$this->db->select('polling_id, user_id, COUNT(question_id) AS answers_count');
+		if ($pollingId) $this->db->where('polling_id', $pollingId);
 		$this->db->group_by('polling_id, user_id');
 		if (!$result = $this->_result($this->pollingAnswersTable)) return false;
+		if ($pollingId) return arrRestructure($result, 'user_id', 'answers_count', true);
 		return arrRestructure($result, 'polling_id user_id', 'answers_count', true);
 	}
 	
@@ -687,14 +804,129 @@ class Pollings_model extends MY_Model {
 	 * @param polling_id
 	 * @return
 	*/
-	protected function _getLastQuestionSortIndex($pollingId = false) {
+	private function _getLastQuestionSortIndex($pollingId = false) {
 		if (!$pollingId) return false;
 		$this->db->select('MAX(sort) AS max_sort');
-		$this->db->where('polling_id', $data['polling_id']);
+		$this->db->where('polling_id', $pollingId);
 		$maxSort = $this->_row($this->pollingQuestionsTable) ?: 0;
 		return ($maxSort + 1) ?: 999999;
 	}
 	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	 */
+	private function _getReachUsersIds($pollingId = false) {
+		if (!$pollingId) return false;
+		$this->db->select('users, statics');
+		$this->db->where('id', $pollingId);
+		if (!$data = $this->_row($this->pollingsTable)) return false;
+		
+		$users = $data['users'] ? json_decode($data['users'], true) : [];
+		$statics = $data['statics'] ? json_decode($data['statics'], true) : [];
+		
+		$staticsUsers = [];
+		if ($statics) {
+			$this->db->select('user_id');
+			$this->db->where_in('static_id', $statics);
+			$this->db->where('main', 1);
+			if($staticsUsers = $this->_result('users_statics')) {
+				$staticsUsers = array_column($staticsUsers, 'user_id');
+			}
+		}
+		
+		return array_unique(array_merge($users, $staticsUsers));
+	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * получить количество вопросов, на которые уже ответили участники
+	 * @param 
+	 * @return 
+	 */
+	private function _getUsersAnswersCount($pollingId = false) {
+		if (!$pollingId) return false;
+		$this->db->select('a.user_id, COUNT(a.id) AS count_answers');
+		$this->db->where('a.polling_id', $pollingId);
+		$this->db->group_by('a.user_id');
+		if (!$result = $this->_result($this->pollingAnswersTable.' a')) return false;
+		return arrRestructure($result, 'user_id', 'count_answers', true);
+	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * получить количество вопросов в опросе(ах)
+	 * @param 
+	 * @return 
+	 */
+	private function _getQuestionsCount($pollingId = false) {
+		$this->db->select('polling_id, COUNT(id) AS count_questions');
+		if ($pollingId) $this->db->where('polling_id', $pollingId);
+		$this->db->group_by('polling_id');
+		
+		if ($pollingId) {
+			if (!$result = $this->_row($this->pollingQuestionsTable)) return false;
+			return $result['count_questions'];
+		} 
+		
+		if (!$result = $this->_result($this->pollingQuestionsTable)) return false;
+		return arrRestructure($result, 'polling_id', 'count_questions', true);
+	}
+	
+	
+	
+	
+	/**
+	 * Получить варианты ответов указанного опроса
+	 * @param ID опроса
+	 * @return [question_id => [variant_id => content]]
+	 */
+	private function _getQuestionsVariants($pollingId = false, $unionList = false) {
+		if (!$pollingId) return false;
+		$this->db->select('qv.id AS variant_id, qv.question_id, qv.content, qv.scores');
+		$this->db->join($this->pollingQuestionsTable.' q', 'q.id = qv.question_id', 'LEFT OUTER');
+		$this->db->where('q.polling_id', $pollingId);
+		if (!$result = $this->_result($this->pollingQuestionsVariantsTable.' qv')) return false;
+		
+		$data = [];
+		foreach ($result as $row) {
+			if ($unionList) {
+				$data[$row['variant_id']] = [
+					'content' 	=> $row['content'],
+					'scores' 	=> $row['scores']
+				];
+			} else {
+				$data[$row['question_id']][$row['variant_id']] = $row['content'];
+			}
+		}
+		return $data;
+	}
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	 */
+	private function _getQuestionsData($pollingId = false) {
+		if (!$pollingId) return false;
+		$this->db->select('id AS question_id, title');
+		$this->db->where('polling_id', $pollingId);
+		if (!$result = $this->_result($this->pollingQuestionsTable)) return false;
+		return setArrKeyFromField($result, 'question_id', 'title');
+	}
 	
 	
 }

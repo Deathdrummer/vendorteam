@@ -21,7 +21,6 @@
 			<div class="dcol-2">
 				<div class="d-flex justify-content-between">
 					<strong class="fz13px">Участники</strong>
-					{# <i class="fa fa-bars fz20px pointer"></i> #}
 				</div>
 					
 				<ul class="pollingsauditory scroll_y scroll_y_thin h70px pointer" pollingauditoryuserslist pollingauditoryusers="{{id}}" title="Управление аудиторией (участники)">
@@ -37,7 +36,6 @@
 			<div class="dcol-2">
 				<div class="d-flex justify-content-between">
 					<strong class="fz13px">Статики</strong>
-					{# <i class="fa fa-bars fz20px pointer"></i> #}
 				</div>
 					
 				<ul class="pollingsauditory scroll_y scroll_y_thin h70px pointer" pollingauditorystaticslist pollingauditorystatics="{{id}}" title="Управление аудиторией (статики)">

@@ -345,16 +345,41 @@ class Pollings extends MY_Controller {
 	*/
 	public function statistics($action = false) {
 		$post = bringTypes($this->input->post());
-		if (!$action) return false;
+		//if (!$action) return false;
 		
 		switch ($action) {
-			case '':
-				$data['common'] = $this->pollings->statistics('common', $post);
-				echo $this->twig->render($this->viewsPath.'');
+			case 'reach':
+				$data = $this->pollings->statistics('reach', $post);
+				echo $this->twig->render($this->viewsPath.'statistics/reach', $data);
 				break;
-				
 			
-			default: break;
+			case 'questions_total':	
+				$data = $this->pollings->statistics('questions_total', $post);
+				echo $this->twig->render($this->viewsPath.'statistics/questions_total', $data);
+				break;
+			
+			case 'questions_users':	
+				$data = $this->pollings->statistics('questions_users', $post);
+				echo $this->twig->render($this->viewsPath.'statistics/questions_users', $data);
+				break;
+			
+			case 'questions_user':	
+				$data = $this->pollings->statistics('questions_user', $post);
+				echo $this->twig->render($this->viewsPath.'statistics/questions_user', $data);
+				break;
+			
+			case 'scores':
+				$data = []; //$this->pollings->statistics('scores', $post);
+				echo $this->twig->render($this->viewsPath.'statistics/scores', $data);
+				break;
+			
+			case 'empty':
+				echo $this->twig->render($this->viewsPath.'statistics/empty', $data);
+				break;
+			
+			default: // Инициализация
+				echo $this->twig->render($this->viewsPath.'statistics/main');
+				break;
 		}
 	}
 	

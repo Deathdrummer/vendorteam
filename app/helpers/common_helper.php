@@ -616,12 +616,12 @@ if ( ! function_exists('arr_mergeItems')) {
 
 
 
-if ( ! function_exists('arr_sortByField')) {
+if ( ! function_exists('arrSortByField')) {
     /**
      * Сортировка массива по определенному полю
     */
-    function arr_sortByField($array = [], $field = null, $sort = 'desc', $keepKeys = false) {
-        if(empty($array) || is_null($field)) {if(config_item('log_helper')) toLog('Ошибка! arr_sortByField ошибка входящих данных'); return false;}
+    function arrSortByField($array = [], $field = null, $sort = 'desc', $keepKeys = false) {
+        if(empty($array) || is_null($field)) {if(config_item('log_helper')) toLog('Ошибка! arrSortByField ошибка входящих данных'); return false;}
         if(config_item('log_helper')) toLog('Сортировка по полю '.$field.' от '.(strtolower($sort) == 'asc' ? 'а-я' : 'я-а'));
         uasort($array, function($a, $b) use($field, $sort) {
             if ($a[$field] == $b[$field]) return 0;

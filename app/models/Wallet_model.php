@@ -303,7 +303,7 @@ class Wallet_model extends MY_Model {
 		foreach ($usersHistory as $user) {
 			if (!$history = $user['history']) continue;
 			if (!$history = json_decode($history, true)) continue;
-			if (!$history = arr_sortByField($history, 'id', 'ASC')) continue;
+			if (!$history = arrSortByField($history, 'id', 'ASC')) continue;
 			
 			$finalSumm = 0;
 			foreach ($history as $item) {
