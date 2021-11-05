@@ -22,16 +22,17 @@
 				<div class="d-flex justify-content-between">
 					<strong class="fz13px">Участники</strong>
 				</div>
-					
-				<ul class="pollingsauditory scroll_y scroll_y_thin h70px pointer" pollingauditoryuserslist pollingauditoryusers="{{id}}" title="Управление аудиторией (участники)">
-					{% if users %}
-						{% for uId, user in users %}
-							<li>{{user.nickname}}</li>
-						{% endfor %}
-					{% else %}
-						<li><p class="empty fz12px">Участники не выбраны</p></li>
-					{% endif %}
-				</ul>
+				<div class="pollingsauditory">
+					<ul class="scroll_y scroll_y_thin h70px pointer" pollingauditoryuserslist pollingauditoryusers="{{id}}" title="Управление аудиторией (участники)">
+						{% if users %}
+							{% for uId, user in users %}
+								<li>{{user.nickname}}</li>
+							{% endfor %}
+						{% else %}
+							<li><p class="empty fz12px">Участники не выбраны</p></li>
+						{% endif %}
+					</ul>
+				</div>
 			</div>
 			<div class="dcol-2">
 				<div class="d-flex justify-content-between">

@@ -51,20 +51,6 @@ if (location.hostname != 'localhost' && location.pathname == '/account') {
 		
 		
 		
-		socket.on('pollings:reload', () => {
-			let staticId = $('[staticscontent].staticscontent_visible').attr('staticscontent');
-			getStaticMiniNews(staticId);
-		});
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 		socket.on('mininewsfeed:reload', () => {
 			let staticId = $('[staticscontent].staticscontent_visible').attr('staticscontent');
 			getStaticMiniNews(staticId);
@@ -97,12 +83,59 @@ if (location.hostname != 'localhost' && location.pathname == '/account') {
 			let staticId = $('[staticscontent].staticscontent_visible').attr('staticscontent');
 			getStaticMiniNews(staticId);
 		}, (180 * 1000));
+		
+		
+		
+		
+		
+		
+		
+		
+		//--------------------------------------- опросы
+		socket.on('pollings:new', (pollingId) => {
+			getAjaxJson('pollings/account/has_user_in_polling', {user_id: userId, polling_id: pollingId}, function(count) {
+				if (count) {
+					setTimeout(function() {
+						setCookie('pollings', count);
+					}, (10 * 1000));
+					
+					$('[pollingcounter]').text(count);
+					$('[getpollings]:not(.leftblocktopicon_active)').addClass('leftblocktopicon_active');
+					$('[getpollings]').attr('title', 'Есть новые опросы!');
+					notify('У вас есть новый опрос!', 'success', 10);
+				}
+			});
+		});
+		
+		
+		let testingTime = setInterval(() => {
+			let date = new Date();
+			if (date.getMinutes() % 5 == 0 && date.getSeconds() == 1) {
+				clearInterval(testingTime);
+				setInterval(() => { 
+					getAjaxJson('pollings/account/reload_pollings', {user_id: userId}, function(count) {
+						if (count) {
+							setCookie('pollings', count);
+							$('[pollingcounter]').text(count);
+							$('[getpollings]:not(.leftblocktopicon_active)').addClass('leftblocktopicon_active');
+							$('[getpollings]').attr('title', 'Есть новые опросы!');
+						
+						} else {
+							deleteCookie('pollings');
+							$('[pollingcounter]').text('');
+							$('[getpollings].leftblocktopicon_active').removeClass('leftblocktopicon_active');
+							$('[getpollings]').removeAttrib('title');
+						}		
+					});
+				}, (300 * 1000));
+			}
+		}, 1000);
+		
 	
 	
 	
 	
 	}
-	
-} else if (location.hostname != 'localhost') {
-	socket = io.connect("https://vendorteam.ru:5050/accounts");
+} else {
+	//socket = io.connect("https://vendorteam.ru:5050/accounts");
 }

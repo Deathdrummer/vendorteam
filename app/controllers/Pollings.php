@@ -322,6 +322,24 @@ class Pollings extends MY_Controller {
 				echo '1';
 				break;
 			
+			case 'has_user_in_polling':
+				$hasNewPolling = $this->pollings->account('has_user_in_polling', $post);
+				if ($hasNewPolling) {
+					$this->load->model('users_model', 'users');
+					$userStatics = $this->users->getUsersStatics($post['user_id'], true);
+					$count = $this->pollings->account('count', ['user_id' => $post['user_id'], 'statics' => $userStatics]);
+					echo $count ?: 0;
+				} else echo 0;
+				break;
+			
+			case 'reload_pollings':
+				$this->load->model('users_model', 'users');
+				$userStatics = $this->users->getUsersStatics($post['user_id'], true);
+				
+				if (!$count = $this->pollings->account('count', ['user_id' => $post['user_id'], 'statics' => $userStatics])) exit('0');
+				echo $count;
+				break;
+			
 			
 			default: break;
 		}
@@ -349,22 +367,22 @@ class Pollings extends MY_Controller {
 		
 		switch ($action) {
 			case 'reach':
-				$data = $this->pollings->statistics('reach', $post);
+				if (!$data = $this->pollings->statistics('reach', $post)) exit('');
 				echo $this->twig->render($this->viewsPath.'statistics/reach', $data);
 				break;
 			
 			case 'questions_total':	
-				$data = $this->pollings->statistics('questions_total', $post);
+				if (!$data = $this->pollings->statistics('questions_total', $post)) exit('');
 				echo $this->twig->render($this->viewsPath.'statistics/questions_total', $data);
 				break;
 			
 			case 'questions_users':	
-				$data = $this->pollings->statistics('questions_users', $post);
+				if (!$data = $this->pollings->statistics('questions_users', $post)) exit('');
 				echo $this->twig->render($this->viewsPath.'statistics/questions_users', $data);
 				break;
 			
-			case 'questions_user':	
-				$data = $this->pollings->statistics('questions_user', $post);
+			case 'questions_user':
+				if (!$data = $this->pollings->statistics('questions_user', $post)) exit('');
 				echo $this->twig->render($this->viewsPath.'statistics/questions_user', $data);
 				break;
 			

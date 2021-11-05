@@ -114,7 +114,7 @@ $(function() {
 				});
 			},
 			remove: function() {
-				if ($('#pollingsList').find('tr:not(.empty)').length > 1) {
+				if ($('#pollingsList').find('tr:not(.empty)').length > 0) {
 					pollingsScrollTable.reInit();
 				}
 			}
@@ -260,7 +260,7 @@ $(function() {
 		$.post('/pollings/status', {polling_id: pollingId, status: status}, function(response) {
 			if (response) {
 				notify('Опрос '+(status ? 'включен!' : 'выключен!'), (!status && 'info'));
-				//if (status) socket.emit('pollings:reload', messId);
+				if (status) socket.emit('pollings:added', pollingId);
 			} else {
 				notify('Ошибка! Не удалось изменить статус опроса!', 'error');
 			}
@@ -739,8 +739,11 @@ $(function() {
 				
 				let params = Object.assign({polling_id: pollingId}, ops);
 				getAjaxHtml('pollings/statistics/'+section, params, function(html, stat) {
-					if (!stat) $('#pollingStatSection').html('<div class="d-flex align-items-center justify-content-center h100"><p class="pollingstat__empty">Рездел пуст</p></div>');
-					else {
+					if (!stat) {
+						$('#pollingStatSection').addClass('pollingstat__content_empty');
+						$('#pollingStatSection').html('<div class="d-flex align-items-center justify-content-center h100"><p class="pollingstat__empty">Рездел пуст</p></div>');
+					} else {
+						$('#pollingStatSection.pollingstat__content_empty').removeClass('pollingstat__content_empty');
 						$('#pollingStatSection').html(html);
 						if (callback && typeof callback == 'function') callback();
 					} 

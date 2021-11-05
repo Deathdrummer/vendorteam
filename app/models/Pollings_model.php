@@ -518,8 +518,11 @@ class Pollings_model extends MY_Model {
 				foreach ($pollings as $k => $row) {
 					if (!isset($answers[$row['id']]) || $answers[$row['id']] < $row['count_questions']) $pollingsCount += 1;
 				}
-				
 				return $pollingsCount;
+				break;
+			
+			case 'has_user_in_polling':
+				return $this->_hasUserInPolling($data['user_id'], $data['polling_id']);
 				break;
 			
 			
@@ -559,9 +562,9 @@ class Pollings_model extends MY_Model {
 				$this->load->model(['users_model' => 'users', 'admin_model' => 'admin']);
 				$reachData = [];
 				
-				$questionsCount = $this->_getQuestionsCount($polling_id);
-				$usersIds = $this->_getReachUsersIds($polling_id);
-				$usersAnswersCount = $this->_getUsersAnswersCount($polling_id);
+				if (!$questionsCount = $this->_getQuestionsCount($polling_id)) return false;
+				if (!$usersIds = $this->_getReachUsersIds($polling_id)) return false;
+				if (!$usersAnswersCount = $this->_getUsersAnswersCount($polling_id)) return false;
 				
 				$usersDone = []; $usersInProcess = []; $usersNoStart = [];
 				foreach ($usersIds as $userId) {
@@ -640,7 +643,7 @@ class Pollings_model extends MY_Model {
 			
 			case 'questions_users': // Статистика по участникам
 				$this->load->model(['users_model' => 'users', 'admin_model' => 'admin']);
-				$usersIds = $this->_getReachUsersIds($polling_id);
+				if (!$usersIds = $this->_getReachUsersIds($polling_id)) return false;
 				$users = $this->users->getUsers(['where_in' => ['field' => 'u.id', 'values' => $usersIds], 'where' => ['us.main' => 1], 'fields' => 'nickname avatar, static']);
 				$staticsIds = array_column($users, 'static');
 				$data['statics'] = $this->admin->getStatics(false, $staticsIds);
@@ -926,6 +929,39 @@ class Pollings_model extends MY_Model {
 		$this->db->where('polling_id', $pollingId);
 		if (!$result = $this->_result($this->pollingQuestionsTable)) return false;
 		return setArrKeyFromField($result, 'question_id', 'title');
+	}
+	
+	
+	
+	
+	
+	/**
+	 * Проверить имеется ли участник в опросе
+	 * @param ID участника
+	 * @param ID опроса
+	 * @return bool
+	 */
+	private function _hasUserInPolling($userId = false, $pollingId = false) {
+		if (!$userId || !$pollingId) return false;
+		
+		$this->db->select('users, statics');
+		$this->db->where('id', $pollingId);
+		if (!$data = $this->_row($this->pollingsTable)) return false;
+		
+		$users = $data['users'] ? json_decode($data['users'], true) : [];
+		if (in_array($userId, $users)) return true;
+		
+		if (!$statics = ($data['statics'] ? json_decode($data['statics'], true) : [])) return false;
+		
+		$this->db->select('user_id');
+		$this->db->where_in('static_id', $statics);
+		$this->db->where('main', 1);
+		$staticsUsers = [];
+		if ($staticsUsers = $this->_result('users_statics')) {
+			$staticsUsers = array_column($staticsUsers, 'user_id') ?: [];
+			if (in_array($userId, $staticsUsers)) return true;
+		}
+		return false;
 	}
 	
 	

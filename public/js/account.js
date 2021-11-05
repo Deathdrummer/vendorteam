@@ -2981,7 +2981,7 @@ $(document).ready(function() {
 												qIndex += 1;
 												getQuestionForm();
 											} else {
-												setCookie('pollings', 0, 0);
+												setCookie('pollings', 0);
 											}
 											if (callback && typeof callback == 'function') callback();
 										} else {
@@ -3013,19 +3013,18 @@ $(document).ready(function() {
 		$('[pollingcounter]').text(countPollings);
 		$('[getpollings]').addClass('leftblocktopicon_active');
 		$('[getpollings]').attr('title', 'Есть новые опросы!');
-		
-		
-		$('[getpollings]').on(tapEvent, function() {
-			let userId = getCookie('id');
-				
-			popUp({
-				closeByButton: true,
-				closePos: 'left'
-			}, function(pollingsWin) {
-				getPollingsList(userId, pollingsWin);
-			});
-		});
 	}
+	
+	$('[getpollings]').on(tapEvent, function() {
+		let userId = getCookie('id');
+			
+		popUp({
+			closeByButton: true,
+			closePos: 'left'
+		}, function(pollingsWin) {
+			getPollingsList(userId, pollingsWin);
+		});
+	});
 	
 	
 	
@@ -3060,11 +3059,6 @@ $(document).ready(function() {
 		}, (10 * 1000));
 	})();
 		
-	
-	
-	
-	
-	
 	
 	
 	

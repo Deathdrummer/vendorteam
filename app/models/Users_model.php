@@ -123,12 +123,14 @@ class Users_model extends MY_Model {
 	 * @param users ID
 	 * @return array [id] => 45, [name] => EU Alliance, [isset] => 1
 	 */
-	public function getUsersStatics($usersId = null) {
+	public function getUsersStatics($usersId = null, $returnIds = false) {
 		if (is_null($usersId)) return false;
 		$this->db->select('static_id, lider, main');
 		$this->db->where('user_id', $usersId);
 		$query = $this->db->get('users_statics');
 		$response = $query->result_array();
+		if ($returnIds) return array_column($response, 'static_id');
+		
 		if (!$allStatics = $this->admin_model->getStatics()) return false;
 		$usersStatics = $response ? setArrKeyFromField($response, 'static_id') : [];
 		
