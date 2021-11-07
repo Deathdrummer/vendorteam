@@ -190,37 +190,37 @@ html
 
 
 .blue
-	color: #3f8baf
+	color: #3f8baf !important
 	
 	&_hovered
 		&:hover
-			color: darken(#3f8baf, 7%)
+			color: darken(#3f8baf, 7%) !important
 		
 		&:active
-			color: darken(#3f8baf, 15%)
+			color: darken(#3f8baf, 15%) !important
 	
 	&_bg
-		background-color: #3f8baf
+		background-color: #3f8baf !important
 
 
 
 .lightblue
-	color: #dceaf5
+	color: #dceaf5 !important
 	
 	&_bg
-		background-color: #dceaf5
+		background-color: #dceaf5 !important
 
 
 
 .grayblue
-	color: #96aab5
+	color: #96aab5 !important
 	
 	&_bg
-		background-color: #96aab5
+		background-color: #96aab5 !important
 
 
 .fontcolor
-	color: #6e8292
+	color: #6e8292 !important
 	
 
 
@@ -228,10 +228,10 @@ html
 
 .border
 	&_bottom
-		border-bottom: 1px solid #d7dbde
+		border-bottom: 1px solid #d7dbde !important
 	
 	&_top
-		border-bottom: 1px solid #d7dbde
+		border-bottom: 1px solid #d7dbde !important
 
 
 
@@ -909,6 +909,10 @@ table:not(.clear):not(.ui-datepicker-calendar)
 	&.table_fixed
 		table-layout: fixed
 	
+	&.noborderbottom
+		tbody
+			border-bottom: none
+	
 	td
 		padding-left: 5px
 		padding-right: 5px
@@ -969,12 +973,19 @@ table:not(.clear):not(.ui-datepicker-calendar)
 				&.active
 					background-color: #abb8c1
 					color: #00427b
+				
+				&.top
+					vertical-align: top
+				
+				&.bottom
+					vertical-align: bottom
 	
 	
 	tbody
 		background-color: #f7f7f7
+		border-bottom: 1px solid #d7dbde
 		
-		
+			
 		> tr
 			transition: background-color 0.16s
 			
@@ -1037,6 +1048,9 @@ table:not(.clear):not(.ui-datepicker-calendar)
 				
 				&.top
 					vertical-align: top
+				
+				&.bottom
+					vertical-align: bottom
 				
 				img
 					max-width: 50px
@@ -4897,7 +4911,6 @@ p
 .pollingstat
 	&__nav
 		position: relative
-		width: 200px
 		border-top: 1px solid #eee	
 		
 		li
@@ -5309,12 +5322,43 @@ p
 		
 
 
-	
-	
-	
-	
 
-.ddrtable
+
+
+
+
+.questionsscores
+	display: flex
+	
+	.scroll
+		display: flex
+		flex-grow: 1
+		flex-shrink: 1
+		+resp(flex-basis, (xs: 200px, sm: auto))
+		min-width: 200px
+		//max-width: 100%
+		overflow-x: scroll
+		overflow-y: hidden
+		+scrollbar(#8e8a93, #1e1528, 8px)
+	
+	&__table_left
+		flex: 0 1 180px
+		width: 180px
+		
+	&__table_center
+		flex: 1 0 100%
+		max-width: 100%
+		
+	&__table_right
+		flex: 0 1 auto
+		max-width: 200px
+
+
+
+
+
+	
+	
 	
 	
 	

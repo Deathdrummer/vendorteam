@@ -23,6 +23,7 @@
 		tfoot = $(table).children('tfoot').length ? $(table).children('tfoot')[0].outerHTML : false;
 	
 	$(table).children('thead, tfoot').remove();
+	$(table).addClass('noborderbottom');
 	$(table).wrap('<div id="ddrTable'+rand+'"></div>');
 	
 	let container = $('#ddrTable'+rand);

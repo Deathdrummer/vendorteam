@@ -709,7 +709,10 @@ $(function() {
 									$('#userQquestionsBlock').removeClass('pollingstatusersblock_loading');
 								});
 							});
-						}
+							
+						} else if (section == 'scores') {
+							$('.scroll').ddrScrollTable();
+						} 
 					});
 				});
 			});

@@ -387,7 +387,7 @@ class Pollings extends MY_Controller {
 				break;
 			
 			case 'scores':
-				$data = []; //$this->pollings->statistics('scores', $post);
+				if (!$data = $this->pollings->statistics('scores', $post)) exit('');
 				echo $this->twig->render($this->viewsPath.'statistics/scores', $data);
 				break;
 			
