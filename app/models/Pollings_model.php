@@ -722,9 +722,6 @@ class Pollings_model extends MY_Model {
 					$usersScoresData[$userId]['total_parcent'] = round($usersScoresData[$userId]['total_parcent'], 1);
 				}
 				
-				
-				toLog($usersScoresData);
-				
 				return ['scoresdata' => $usersScoresData, 'statics' => $statics, 'questions' => $questionsTitles];
 				break;
 			

@@ -31,7 +31,7 @@
 				<thead class="h100px">
 					<tr>
 						{% for qId, question in questions %}
-							<td class="w100px bottom"><p class="fz12px mb0px">{{question}}</p></td>
+							<td class="w150px bottom"><p class="w150px fz12px mb0px">{{question}}</p></td>
 						{% endfor %}
 						<td class="p-0"></td>
 					</tr>
@@ -41,11 +41,15 @@
 						<tr>
 							{% for qId, question in questions %}
 								<td class="center">
-									<div class="progressbar mb2px">
-										<progress class="progressbar__progress h12px" value="{{userData['questions'][qId]['scores_parcent']}}" max="100"></progress>
-									</div>
-									<strong class="fz14px">{{userData['questions'][qId]['scores_parcent']}}%</strong>
-									<small class="grayblue fz10px">({{userData['questions'][qId]['scores_user']}} из {{userData['questions'][qId]['scores_max']}})</small>
+									{% if userData['questions'][qId]['scores_parcent'] %}
+										<div class="progressbar mb2px">
+											<progress class="progressbar__progress h12px" value="{{userData['questions'][qId]['scores_parcent']}}" max="100"></progress>
+										</div>
+										<strong class="fz14px">{{userData['questions'][qId]['scores_parcent']}}%</strong>
+										<small class="grayblue fz10px">({{userData['questions'][qId]['scores_user']}} из {{userData['questions'][qId]['scores_max']}})</small>
+									{% else %}
+										<p class="empty grayblue fz12px">Нет баллов</p>
+									{% endif %}
 								</td>
 							{% endfor %}
 							<td class="p-0"></td>
@@ -67,11 +71,15 @@
 					{% for userId, userData in scoresdata %}
 						<tr>
 							<td class="center">
-								<div class="progressbar mb2px">
-									<progress class="progressbar__progress h12px" value="{{userData.total_parcent}}" max="100"></progress>
-								</div>
-								<strong class="fz14px">{{userData.total_parcent}}%</strong>
-								<small class="grayblue">{{userData.total_scores}} {{userData.total_scores|padej(['балл', 'балла', 'баллов'])}}</small>
+								{% if userData.total_parcent %}
+									<div class="progressbar mb2px">
+										<progress class="progressbar__progress h12px" value="{{userData.total_parcent}}" max="100"></progress>
+									</div>
+									<strong class="fz14px">{{userData.total_parcent}}%</strong>
+									<small class="grayblue fz10px">{{userData.total_scores}} {{userData.total_scores|padej(['балл', 'балла', 'баллов'])}}</small>
+								{% else %}
+									<p class="empty grayblue fz12px">Нет баллов</p>
+								{% endif %}
 							</td>
 						</tr>	
 					{% endfor %}

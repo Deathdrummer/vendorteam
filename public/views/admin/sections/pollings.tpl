@@ -153,8 +153,12 @@ $(function() {
 			returnFields: 'nickname',
 			onChoose: function(users) {
 				getAjaxHtml('pollings/users/set', {polling_id: pollingId, users: users}, function(html, stat) {
-					if (stat) $(usersList).html(html);
-					else $(usersList).html('<li><p class="empty fz12px">Участники не выбраны</p></li>');
+					if (stat) {
+						$(usersList).html(html);
+						socket.emit('pollings:added', pollingId);
+					} else {
+						$(usersList).html('<li><p class="empty fz12px">Участники не выбраны</p></li>');
+					}
 					notify('Участники успешно заданы!');
 				});
 			},
@@ -584,6 +588,7 @@ $(function() {
 										pollingQuestionsWin.wait();
 										$.post('/pollings/questions/update', {question_id: questionId, title: $(question).val(), answers_type: $(answersType).val(), variants: variantsData, other_variant: otherVariant}, function(response) {
 											if (response) {
+												socket.emit('pollings:added', pollingId);
 												getQuestions();
 											} else {
 												notify('Ошибка! Вопрос не обновлен!' ,'error');
@@ -603,6 +608,7 @@ $(function() {
 												let countQuestions = parseInt($(pollingRow).find('[pollingcountquestions]').text());
 												$(pollingRow).find('[pollingcountquestions]').text(countQuestions + 1);
 												$(pollingRow).find('[pollingsstatus]').removeAttrib('disabled');
+												socket.emit('pollings:added', pollingId);
 												getQuestions();
 											} else {
 												notify('Ошибка! Вопрос не добавлен!' ,'error');
