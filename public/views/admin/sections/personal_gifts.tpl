@@ -208,14 +208,19 @@
 										personalGiftsAddWin.wait();
 										let giftsToAdd = [];
 										$('#personalGiftsList').find('[personalgifttoadd]:checked').each(function() {
-											let giftId = $(this).val();
-											giftsToAdd.push(parseInt(giftId));
+											let giftId = $(this).val(),
+												count = $(this).closest('tr').find('[personalgifttoaddcount]').val();
+											giftsToAdd.push({
+												id: parseInt(giftId),
+												count: count
+											});
 										});
 										
 										$.post('admin/personalgifts/add', {user_id: userId, gifts: giftsToAdd}, function(response) {
 											if (response) {
 												personalGiftsAddWin.close();
 												notify('Подарки успешно добавлены');
+												socket.emit('gifts:new', userId, giftsToAdd.length);
 												getUserGiftsList();
 											} else {
 												personalGiftsAddWin.wait(false);

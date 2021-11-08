@@ -96,22 +96,26 @@ class Gifts_model extends MY_Model {
 				break;
 			
 			case 'add':
-				$this->db->where_in('id', $data['gifts']);
+				$giftsFromForm = setArrKeyFromField($data['gifts'], 'id', 'count');
+				$giftsIds = array_keys($giftsFromForm);
+				$this->db->where_in('id', $giftsIds);
 				if (!$result = $this->_result($this->giftsTable)) return false;
 				
 				$date = time();
 				$giftsToAdd = [];
 				foreach ($result as $gift) {
-					$value = rand($gift['items_from'], $gift['items_to']);
-					
-					$giftsToAdd[] = [
-						'user_id'		=> $data['user_id'],
-						'section'		=> 'personal',
-						'title'			=> $gift['title'],
-						'action'		=> $gift['action'],
-						'value'			=> $value,
-						'date_generate'	=> $date
-					];
+					$countGifts = $giftsFromForm[$gift['id']] > 1 ? $giftsFromForm[$gift['id']] : 1;
+					for ($i = 0; $i < $countGifts; $i++) { 
+						$value = rand($gift['items_from'], $gift['items_to']);
+						$giftsToAdd[] = [
+							'user_id'		=> $data['user_id'],
+							'section'		=> 'personal',
+							'title'			=> $gift['title'],
+							'action'		=> $gift['action'],
+							'value'			=> $value,
+							'date_generate'	=> $date
+						];
+					}	
 				}
 				if ($giftsToAdd) $this->db->insert_batch($this->usersGiftsTable, $giftsToAdd);
 				return true;

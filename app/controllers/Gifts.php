@@ -182,7 +182,20 @@ class Gifts extends MY_Controller {
 	
 	
 	
-	
+	/**
+	 * @param 
+	 * @return 
+	 */
+	public function get_count_gifts() {
+		$userId = $this->input->post('user_id');
+		if ($countGifts = $this->gifts->hasUserGifts($userId)) {
+			set_cookie('gifts', $countGifts, 0);
+			echo $countGifts;
+		} else {
+			delete_cookie('gifts');
+			echo 0;
+		}
+	}
 	
 	
 	

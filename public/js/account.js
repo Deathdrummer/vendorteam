@@ -2756,52 +2756,52 @@ $(document).ready(function() {
 		$('[giftscounter]').text(countGifts);
 		$('[getgifts]').addClass('leftblocktopicon_active');
 		$('[getgifts]').attr('title', 'Вам подарки!');
-		
-		$('[getgifts]').on(tapEvent, function() {
-			popUp({
-				title: false,
-				width: 500,
-				winClass: 'giftwin'
-			}, function(giftsWin) {
-				giftsWin.setData('gifts/show_message', function() {
-					$('#getGifts').on(tapEvent, function() {
-						(function getGift() {
-							giftsWin.setData('gifts/get_gift', function() {
-								
-								$('#takeGiftBtn').on(tapEvent, function() {
-									let giftId = $(this).attr('giftid');
-									$.post('/gifts/take_gift', {gift_id: giftId}, function(response) {
-										if (response) {
-											giftsWin.setData('gifts/gift_success', function() {
-												if (!getCookie('gifts')) {
-													$('[getgifts]').removeClass('leftblocktopicon_active');
-													$('[getgifts]').removeAttrib('title');
-												} 
-												
-												$('#getNextGiftBtn').on(tapEvent, function() {
-													getGift();
-												});
-												
-												$('#closeGiftsWinBtn').on(tapEvent, function() {
-													giftsWin.close();
-												});
+	}
+	
+	$('[getgifts]').on(tapEvent, function() {
+		popUp({
+			title: false,
+			width: 500,
+			winClass: 'giftwin'
+		}, function(giftsWin) {
+			giftsWin.setData('gifts/show_message', function() {
+				$('#getGifts').on(tapEvent, function() {
+					(function getGift() {
+						giftsWin.setData('gifts/get_gift', function() {
+							
+							$('#takeGiftBtn').on(tapEvent, function() {
+								let giftId = $(this).attr('giftid');
+								$.post('/gifts/take_gift', {gift_id: giftId}, function(response) {
+									if (response) {
+										giftsWin.setData('gifts/gift_success', function() {
+											if (!getCookie('gifts')) {
+												$('[getgifts]').removeClass('leftblocktopicon_active');
+												$('[getgifts]').removeAttrib('title');
+											} 
+											
+											$('#getNextGiftBtn').on(tapEvent, function() {
+												getGift();
 											});
-										} else {
-											notify('Ошибка получения подарка, попробуйте еще раз', 'error');
-										}
-									});
-								});
-								
-								$('#closeGiftsWinBtn').on(tapEvent, function() {
-									giftsWin.close();
+											
+											$('#closeGiftsWinBtn').on(tapEvent, function() {
+												giftsWin.close();
+											});
+										});
+									} else {
+										notify('Ошибка получения подарка, попробуйте еще раз', 'error');
+									}
 								});
 							});
-						})();
-					});
+							
+							$('#closeGiftsWinBtn').on(tapEvent, function() {
+								giftsWin.close();
+							});
+						});
+					})();
 				});
 			});
 		});
-	}
+	});
 	
 	
 	

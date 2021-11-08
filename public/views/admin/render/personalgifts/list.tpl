@@ -4,6 +4,7 @@
 			<tr>
 				<td>Название</td>
 				<td>Действие</td>
+				<td class="w61px">Кол-во</td>
 				<td class="w20px"></td>
 			</tr>
 		</thead>
@@ -14,6 +15,11 @@
 					<td>
 						{{actions[gift.action]}} от <strong>{{gift.items_from}}</strong> до <strong>{{gift.items_to}}</strong>
 						{% if gift.action == 'balance' %}руб.{% elseif gift.action == 'stage' %}дн.{% endif %}
+					</td>
+					<td>
+						<div class="field w50px">
+							<input type="number" showrows min="1" personalgifttoaddcount value="1">
+						</div>
 					</td>
 					<td class="center">
 						<div class="checkblock right">
