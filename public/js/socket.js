@@ -79,10 +79,16 @@ if (location.hostname != 'localhost' && location.pathname == '/account') {
 		
 		
 			
-		setInterval(() => { 
-			let staticId = $('[staticscontent].staticscontent_visible').attr('staticscontent');
-			getStaticMiniNews(staticId);
-		}, (180 * 1000));
+		let testingMiniNFTime = setInterval(() => {
+			let date = new Date();
+			if (date.getMinutes() % 5 == 0 && date.getSeconds() == 1) {
+				clearInterval(testingMiniNFTime);
+				setInterval(() => { 
+					let staticId = $('[staticscontent].staticscontent_visible').attr('staticscontent');
+					getStaticMiniNews(staticId);
+				}, (300 * 1000));
+			}
+		}, 1000);
 		
 		
 		

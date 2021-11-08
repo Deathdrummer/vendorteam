@@ -28,8 +28,8 @@ class Mininewsfeed_model extends MY_Model {
 			case 'get':
 				if (!$data) return false;
 				$this->db->where('type', $data);
-				if (!$data = $this->_result($this->templatesTable)) return false;
-				return $data;
+				if (!$result = $this->_result($this->templatesTable)) return false;
+				return $result;
 				break;
 			
 			case 'save':

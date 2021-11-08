@@ -20,23 +20,25 @@ class Cron extends MY_Controller {
 	public function update_users_ranks() {
 		if (!$this->_isCliRequest()) redirect();
 		$this->load->model(['users_model' => 'users', 'mininewsfeed_model' => 'mininewsfeed']);
-		$newRanksUsers = $this->users->setRanksToUsers();
+		$updatedRanksUsers = $this->users->setRanksToUsers(); // возвращает обновленные звания [user_id => [id (rank_id), rabk]]
 		
 		
 		//----------------------------------------------------------- Отправка уведомлений о присвоении нового звания
 		if (!$ranksTemplates = $this->mininewsfeed->templates('get', 2)) return false;
-		$newRanksUsers = setArrKeyfromField($newRanksUsers, 'id', 'rank');
+		$ranksTemplates = setArrKeyfromField($ranksTemplates, 'to_rank');
+		
 		
 		$newRanksUsersData = [];
-		if ($newRanksUsers) {
-			$usersData = $this->_getUsersStatics(array_keys($newRanksUsers));
+		if ($updatedRanksUsers) {
+			$usersData = $this->_getUsersStatics(array_keys($updatedRanksUsers));
 			$ranksData = $this->admin_model->getRanks(true, false);
 			$ranksData = setArrKeyfromField($ranksData, 'id', 'name');
 			
 			$date = time();
 			
-			foreach ($newRanksUsers as $userId => $rank) { // id rank
+			foreach ($updatedRanksUsers as $userId => $rank) { // id rank
 				if (!$userData = isset($usersData[$userId]) ? $usersData[$userId] : false) continue;
+				if (!isset($ranksTemplates[$userData['rank']])) continue;
 				
 				$randTemplateKey = array_rand($ranksTemplates);
 				$message = preg_replace_callback('/\[(\w+)\]/', function($matches) use (&$userData, &$ranksData) {
@@ -44,7 +46,7 @@ class Cron extends MY_Controller {
 					
 					if ($field == 'rank') return isset($ranksData[$userData['rank']]) ? $ranksData[$userData['rank']] : '';
 					return isset($userData[$field]) ? $userData[$field] : '';
-				}, $ranksTemplates[$randTemplateKey]['text']);
+				}, $ranksTemplates[$userData['rank']]['text']);
 				
 				$newRanksUsersData[] = [
 					'type'		=> 2,

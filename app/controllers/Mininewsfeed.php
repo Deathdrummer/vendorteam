@@ -34,13 +34,16 @@ class Mininewsfeed extends MY_Controller {
 			
 			case 'get':
 				$data['types'] = $this->miniFeedTypes;
+				if ($this->post['type'] == 2) $data['ranks'] = $this->admin_model->getRanks();
 				$data['newsfeedlist'] = $this->mininewsfeed->templates('get', $this->post['type']);
 				echo $this->twig->render($this->viewsTemplatesPath.'list.tpl', $data);
 				break;
 			
 			case 'add':
 				$data['types'] = $this->miniFeedTypes;
-				echo $this->twig->render($this->viewsTemplatesPath.'item.tpl');
+				$data['type'] = $this->post['type'];
+				if ($this->post['type'] == 2) $data['ranks'] = $this->admin_model->getRanks();
+				echo $this->twig->render($this->viewsTemplatesPath.'item.tpl', $data);
 				break;
 			
 			case 'save':
@@ -49,6 +52,8 @@ class Mininewsfeed extends MY_Controller {
 				if (!$insertId = $this->mininewsfeed->templates('save', $data)) exit('0');
 				$fieldsToItem = $this->post['fields_to_item'];
 				$fieldsToItem['id'] = $insertId;
+				$fieldsToItem['type'] = $this->post['type'];
+				if ($this->post['type'] == 2) $fieldsToItem['ranks'] = $this->admin_model->getRanks();
 				echo $this->twig->render($this->viewsTemplatesPath.'item.tpl', $fieldsToItem);
 				break;
 			
@@ -90,11 +95,13 @@ class Mininewsfeed extends MY_Controller {
 			if ($this->post['edit_later']) $data = $this->mininewsfeed->later('item', $this->post);
 			else $data = $this->mininewsfeed->list('item', $this->post);
 			
-			$sec = ($data['date'] + date('Z')) % 86400;
-			$hours = floor($sec / (60 * 60));
-			$minutes = ($sec % ($hours * 60 * 60)) / 60;
-			$data['form_hours'] = $hours;
-			$data['form_minutes'] = $minutes;
+			if (!$data) exit('<p class="empty center">Это событие уже отправлено!</p>');
+			
+			$date = $data['date'] + $this->timezoneOffset; // добавляем для правильного отображения даты в списке
+			$hoursMinutes = $date % 86400;
+			$data['date'] = $date - $hoursMinutes;
+			$data['form_hours'] = floor($hoursMinutes / (60 * 60)); 
+			$data['form_minutes'] = ($hoursMinutes % (60 * 60)) / 60;
 		}
 		
 		

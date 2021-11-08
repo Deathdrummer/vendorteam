@@ -361,14 +361,14 @@ $(document).ready(function() {
 			closePos: 'left'
 		}, function(miniNewsFeedNewRanksWin) {
 			
-			miniNewsFeedNewRanksWin.setData('mininewsfeed/templates/init', {list_id: 'miniNewsFeedNewRankList', btn_id: 'nFNewRankAddBtn'}, function() {
+			miniNewsFeedNewRanksWin.setData('mininewsfeed/templates/init', {list_id: 'miniNewsFeedNewRankList', btn_id: 'nFNewRankAddBtn', type: 2}, function() {
 				$('#miniNewsFeedNewRankList').ddrCRUD({
 					addSelector: '#nFNewRankAddBtn',
 					emptyList: '<tr><td colspan="3">Нет данных</td></tr>',
 					functions: 'mininewsfeed/templates',
 					data: {
 						getList: {type: 2}, //Данные при получении списка записей
-						add: {}, // Данные при добавлении записи
+						add: {type: 2}, // Данные при добавлении записи
 						save: {type: 2}, // Данные при сохранении записи
 						update: {}, // Данные при обновлении записи
 						remove: {} // Данные при удалении записи

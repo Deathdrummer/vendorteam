@@ -1,9 +1,18 @@
 <tr>
-	<td>
-		<div class="field">
-			<input type="text" name="title" value="{{title}}" placeholder="Введите название шаблона">
-		</div>
-	</td>
+	{% if type == 2 %}
+		<td>
+			<div class="select">
+				<select name="to_rank" class="fz12px">
+					{% if ranks %}
+						{% for rId, rank in ranks %}
+							<option value="{{rId}}"{% if to_rank == rId %} selected{% endif %}>{{rank.name}}</option>
+						{% endfor %}
+					{% endif %}
+				</select>
+				<div class="select__caret"></div>
+			</div>
+		</td>
+	{% endif %}
 	<td>
 		<div class="textarea">
 			<textarea rows="2" name="text" class="h40px fz12px noresize" placeholder="Введите тест шаблона">{{text}}</textarea>
