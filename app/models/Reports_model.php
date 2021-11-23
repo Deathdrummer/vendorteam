@@ -170,11 +170,11 @@ class Reports_model extends My_Model {
 	 * @return массив 
 	 */
 	public function getMainReportPatternsTitles($reportsIds = false, $limit = false, $offset = 0) {
+		$limit = 
 		$this->db->select('id, name AS title, variant, is_key');
 		if ($reportsIds) $this->db->where_in('id', $reportsIds);
-		if ($limit) $this->db->limit($limit, $offset);
 		$this->db->order_by('id', 'DESC');
-		if (!$result = $this->_resultWithCount('reports_patterns')) return false;
+		if (!$result = $this->_resultWithCount('reports_patterns', $limit, $offset)) return false;
 		
 		$data['items'] = [];
 		foreach ($result['items'] as $item) {
@@ -207,9 +207,8 @@ class Reports_model extends My_Model {
 	public function getRewardsPeriodsTitles($reportsIds = false, $limit = false, $offset = 0) {
 		$this->db->select('id, title');
 		if ($reportsIds) $this->db->where_in('id', $reportsIds);
-		if ($limit) $this->db->limit($limit, $offset);
 		$this->db->order_by('id', 'DESC');
-		if (!$result = $this->_resultWithCount('rewards_periods')) return false;
+		if (!$result = $this->_resultWithCount('rewards_periods', $limit, $offset)) return false;
 		
 		$data['items'] = [];
 		foreach ($result['items'] as $item) {

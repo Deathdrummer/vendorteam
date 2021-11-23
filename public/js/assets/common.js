@@ -109,6 +109,20 @@ jQuery(document).ready(function($) {
 	
 	
 	
+	// Скопировать в буфер
+	$('body').on(tapEvent, '[copytoclipboard]', function() {
+		let str = $(this).attr('copytoclipboard');
+		str = str.trim();
+		if (str == '') {
+			notify('Нечего копировать!', 'error');
+		} else {
+			copyStringToClipboard(str);
+			notify('Скопировано');
+		}
+    });
+	
+	
+	
 
 	/* --- Параллакс --- */
 	$('body').find('[parallax]').each(function() {

@@ -1004,9 +1004,11 @@ class Admin_model extends My_Model {
 	 * Получить список ролей
 	 * @return 
 	*/
-	public function getRoles() {
+	public function getRoles($nameOnly = false) {
 		$query = $this->db->get('roles');
 		$rolesData = $query->result_array();
+		
+		if ($nameOnly) return setArrKeyFromField($rolesData, 'id', 'name');
 		
 		$tableRoles = [];
 		foreach ($rolesData as $item) {
@@ -1233,7 +1235,7 @@ class Admin_model extends My_Model {
 	
 	
 	//------------------------------------------------------------------------------------------------ Уровни доступа
-	public function getAccountsAccess($decode = true) {
+	public function getAccountsAccess($decode = true, $nameOnly = false) {
 		$query = $this->db->get('accounts_access');
 		$accountsAccessData = $query->result_array();
 		
@@ -1241,6 +1243,11 @@ class Admin_model extends My_Model {
 		
 		$tableAccountsAccess = [];
 		foreach ($accountsAccessData as $item) {
+			if ($nameOnly) {
+				$tableAccountsAccess[$item['id']] = $item['name'];
+				continue;
+			}
+			
 			$itemId = $item['id'];
 			unset($item['id']);
 			if ($itemId == $defaultAccess) $item['default'] = 1;

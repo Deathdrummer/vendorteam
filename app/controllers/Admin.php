@@ -189,7 +189,7 @@ class Admin extends MY_Controller {
 							case '1': // Изменение статиков участника
 								$ranks = $this->admin_model->getRanks();
 								$userData = $this->users_model->getUsers(['where' => ['u.id' => $info['user_id'], 'us.main' => 1], 'fields' => 'avatar nickname static_name static_icon rank']);
-								$userData = reset($userData) ?: false;
+								$userData = $userData ? reset($userData) : false;
 								$userData['rank'] = is_array($userData) && isset($ranks[$userData['rank']]['name']) ? $ranks[$userData['rank']]['name'] : false;
 								$list[$k]['user'] = isset($userData) ? $userData : false;
 								
@@ -216,7 +216,7 @@ class Admin extends MY_Controller {
 							case '2': // Исключение/возврат исключенного участника
 								$ranks = $this->admin_model->getRanks();
 								$userData = $this->users_model->getUsers(['where' => ['u.id' => $info['user_id'], 'us.main' => 1], 'fields' => 'avatar nickname static_name static_icon rank']);
-								$userData = reset($userData) ?: false;
+								$userData = $userData ? reset($userData) : false;
 								$userData['rank'] = is_array($userData) && isset($ranks[$userData['rank']]['name']) ? $ranks[$userData['rank']]['name'] : false;
 								
 								$list[$k]['user'] = $userData;
@@ -226,7 +226,7 @@ class Admin extends MY_Controller {
 							case '3': // Удаление/возврат удаленного участника
 								$ranks = $this->admin_model->getRanks();
 								$userData = $this->users_model->getUsers(['where' => ['u.id' => $info['user_id'], 'us.main' => 1], 'fields' => 'avatar nickname static_name static_icon rank']);
-								$userData = reset($userData) ?: false;
+								$userData = $userData ? reset($userData) : false;
 								$userData['rank'] = is_array($userData) && isset($ranks[$userData['rank']]['name']) ? $ranks[$userData['rank']]['name'] : false;
 								
 								$list[$k]['user'] = $userData;
@@ -272,7 +272,7 @@ class Admin extends MY_Controller {
 								} elseif ($info['type'] == 'remove') {
 									$ranks = $this->admin_model->getRanks();
 									$userData = $this->users_model->getUsers(['where' => ['u.id' => $info['user_id'], 'us.main' => 1], 'fields' => 'avatar nickname static_name static_icon rank']);
-									$userData = reset($userData) ?: false;
+									$userData = $userData ? reset($userData) : false;
 									$userData['rank'] = is_array($userData) && isset($ranks[$userData['rank']]['name']) ? $ranks[$userData['rank']]['name'] : false;
 									
 									$list[$k]['info'] = 'Номер заказа: <strong>'.$info['order'].'</strong>';
@@ -290,7 +290,7 @@ class Admin extends MY_Controller {
 								
 								$ranks = $this->admin_model->getRanks();
 								$userData = $this->users_model->getUsers(['where' => ['u.id' => $userId, 'us.main' => 1], 'fields' => 'avatar nickname static_name static_icon rank']);
-								$userData = reset($userData) ?: false;
+								$userData = $userData ? reset($userData) : false;
 								$userData['rank'] = is_array($userData) && isset($ranks[$userData['rank']]['name']) ? $ranks[$userData['rank']]['name'] : false;
 									
 								$list[$k]['user'] = $userData;

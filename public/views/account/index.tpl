@@ -84,121 +84,123 @@
 							{% for i, staticId in statics|keys %}
 								<div class="{% if i == 0 %}staticscontent staticscontent_visible{% else %}staticscontent{% endif %}" staticscontent="{{staticId}}">
 									<div class="row gutters-10 mt-4 flex-md-nowrap">
-										{% if (not access or access.content.compound == 1) and statics[staticId]['stopstage'] == 0 %}
 										<div class="col-12 col-md-4 col-lg-3 col-xl-3">
-											<div class="column column_staticusers">
-												<div class="column__title">
-													<p>Состав команды</p>
-												</div>
-												
-												<div class="column__content">
-													<div class="row gutters-5">
-														<div class="col-12"> <!-- <div class="col-5"> -->
-															<div class="staticpanel">
-																<div class="staticusers noselect" staticusers="{{statics[staticId]['lider']}}">
-																	{% for friend in friends[staticId]|sortusers %}
-																		<div class="staticuser" userid="{{friend.id}}">
-																			<div class="staticuser__image" style="background-image: url('{{base_url('public/images/users/'~friend.avatar)|is_file('public/images/user_mini.jpg')}}')">
-																				<div class="staticuser__stat{#online#}"></div>
-																				{% if friend.is_resign and is_lider %}<div class="staticuser__resign" title="Увольняется"></div>{% endif %}
-																			</div>
-																			<div class="staticuser__name mr-auto">
-																				<p>{{friend.nickname}}</p>
-																				<span>{{friend.role}}</span>
-																				<span>{{friend.rank}}</span>
-																			</div>
-																			<div class="staticuser__info">
-																				{% if statics[staticId]['lider'] %}
-																					<div class="staticuser__color">
-																						<div setstaticusercolor{% if friend.color %} style="background-color: {{friend.color}}"{% endif %}></div>
+											{% set notCompound = true %}
+											{% if (not access or access.content.compound == 1) and statics[staticId]['stopstage'] == 0 %}
+												{% set notCompound = false %}
+												<div class="column column_staticusers">
+													<div class="column__title">
+														<p>Состав команды</p>
+													</div>
+													
+													<div class="column__content">
+														<div class="row gutters-5">
+															<div class="col-12"> <!-- <div class="col-5"> -->
+																<div class="staticpanel">
+																	<div class="staticusers noselect" staticusers="{{statics[staticId]['lider']}}">
+																		{% for friend in friends[staticId]|sortusers %}
+																			<div class="staticuser" userid="{{friend.id}}">
+																				<div class="staticuser__image" style="background-image: url('{{base_url('public/images/users/'~friend.avatar)|is_file('public/images/user_mini.jpg')}}')">
+																					<div class="staticuser__stat{#online#}"></div>
+																					{% if friend.is_resign and is_lider %}<div class="staticuser__resign" title="Увольняется"></div>{% endif %}
+																				</div>
+																				<div class="staticuser__name mr-auto">
+																					<p>{{friend.nickname}}</p>
+																					<span>{{friend.role}}</span>
+																					<span>{{friend.rank}}</span>
+																				</div>
+																				<div class="staticuser__info">
+																					{% if statics[staticId]['lider'] %}
+																						<div class="staticuser__color">
+																							<div setstaticusercolor{% if friend.color %} style="background-color: {{friend.color}}"{% endif %}></div>
+																						</div>
+																					{% endif %}
+																					<div class="staticuser__mess" hidden>
+																						<svg><use xlink:href="#message"></use></svg>
+																						<span>1</span>
 																					</div>
-																				{% endif %}
-																				<div class="staticuser__mess" hidden>
-																					<svg><use xlink:href="#message"></use></svg>
-																					<span>1</span>
 																				</div>
 																			</div>
-																		</div>
-																	{% endfor %}
-																</div>
-																<div class="staticbuttons">
-																	{% if statics[staticId]['lider'] %}
-																		<div class="staticbuttons__row">
-																			<button newraid="{{staticId}}">Создать рейд</button>
-																			<button setcompound="{{staticId}}|1">Коэфф.</button>
-																			<button setkeys="{{staticId}}|1">Ключи</button>
-																		</div>
-																		<div class="staticbuttons__row">
-																			{% if statics[staticId]['payformat'] == 1 %}
-																				<button myreward="{{staticId}}">Моя премия</button>	
-																			{% endif %}
-																			{% if id in [2,21] %}<button setrating="{{staticId}}|1">Рейтинги</button>{% endif %}
-																		</div>
-																	{% else %}
-																		<div class="staticbuttons__row">
-																			<button setcompound="{{staticId}}|0">Коэффициенты</button>
-																			<button setkeys="{{staticId}}|0">Ключи</button>
-																			{% if statics[staticId]['payformat'] == 1 %}<button myreward="{{staticId}}">Моя премия</button>{% endif %}	
-																		</div>
-																	{% endif %}
+																		{% endfor %}
+																	</div>
+																	<div class="staticbuttons">
+																		{% if statics[staticId]['lider'] %}
+																			<div class="staticbuttons__row">
+																				<button newraid="{{staticId}}">Создать рейд</button>
+																				<button setcompound="{{staticId}}|1">Коэфф.</button>
+																				<button setkeys="{{staticId}}|1">Ключи</button>
+																			</div>
+																			<div class="staticbuttons__row">
+																				{% if statics[staticId]['payformat'] == 1 %}
+																					<button myreward="{{staticId}}">Моя премия</button>	
+																				{% endif %}
+																				{% if id in [2,21] %}<button setrating="{{staticId}}|1">Рейтинги</button>{% endif %}
+																			</div>
+																		{% else %}
+																			<div class="staticbuttons__row">
+																				<button setcompound="{{staticId}}|0">Коэффициенты</button>
+																				<button setkeys="{{staticId}}|0">Ключи</button>
+																				{% if statics[staticId]['payformat'] == 1 %}<button myreward="{{staticId}}">Моя премия</button>{% endif %}	
+																			</div>
+																		{% endif %}
+																	</div>
 																</div>
 															</div>
-														</div>
-														{#<div class="col-7">
-															<div class="messages">
-																<div class="messages__block">
-																	<div class="message">
-																		<div class="message__image">
-																			<img src="{{base_url()}}public/images/operator.jpg" alt="">
-																		</div>
-																		<div class="message__content">
-																			<div class="message__title">
-																				<p>Имя участника (роль)</p>
-																				<small>12.03.2019</small>
-																			</div>
-																			<p class="message__text">Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
-																			Lorem Ipsum has been the industry's standard dummy text ever since the 1500s</p>
-																		</div>
-																		
-																	</div>
-																	
-																	{% for i in 1..15 %}
+															{#<div class="col-7">
+																<div class="messages">
+																	<div class="messages__block">
 																		<div class="message">
 																			<div class="message__image">
-																				<img src="{{base_url()}}public/images/i.jpg" alt="">
+																				<img src="{{base_url()}}public/images/operator.jpg" alt="">
 																			</div>
 																			<div class="message__content">
 																				<div class="message__title">
 																					<p>Имя участника (роль)</p>
 																					<small>12.03.2019</small>
 																				</div>
-																				<p class="message__text">Lorem Ipsum</p>
+																				<p class="message__text">Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
+																				Lorem Ipsum has been the industry's standard dummy text ever since the 1500s</p>
 																			</div>
+																			
 																		</div>
-																	{% endfor %}
+																		
+																		{% for i in 1..15 %}
+																			<div class="message">
+																				<div class="message__image">
+																					<img src="{{base_url()}}public/images/i.jpg" alt="">
+																				</div>
+																				<div class="message__content">
+																					<div class="message__title">
+																						<p>Имя участника (роль)</p>
+																						<small>12.03.2019</small>
+																					</div>
+																					<p class="message__text">Lorem Ipsum</p>
+																				</div>
+																			</div>
+																		{% endfor %}
+																		
+																	</div>
 																	
+																	
+																	<div class="send_message">
+																		<div class="send_message__image">
+																			<img src="{{base_url()}}public/images/i.jpg" alt="">
+																		</div>
+																		<div class="send_message__content">
+																			<div class="textarea" contenteditable="true"></div>
+																		</div>
+																		<div class="send_message__send" title="Отправить сообщение">
+																			<svg id="staticSendMessage"><use xlink:href="#send_message"></use></svg>
+																		</div>
+																	</div>
 																</div>
-																
-																
-																<div class="send_message">
-																	<div class="send_message__image">
-																		<img src="{{base_url()}}public/images/i.jpg" alt="">
-																	</div>
-																	<div class="send_message__content">
-																		<div class="textarea" contenteditable="true"></div>
-																	</div>
-																	<div class="send_message__send" title="Отправить сообщение">
-																		<svg id="staticSendMessage"><use xlink:href="#send_message"></use></svg>
-																	</div>
-																</div>
-															</div>
-														</div>#}
-													</div>		
-												</div>
-											</div> <!--  -->
+															</div>#}
+														</div>		
+													</div>
+												</div> <!--  -->
+											{% endif %}
 											
-											
-											<div class="column">
+											<div class="column{% if notCompound %} h100{% endif %}">
 												<div class="column__title">
 													<p>Важные события</p>
 												</div>
@@ -211,7 +213,7 @@
 												</div>
 											</div>
 										</div>
-										{% endif %}
+										
 										
 										{% if not access or access.content.news == 1 %}
 										<div class="col-12 col-md-8 col-lg-9 col-xl-9">
@@ -247,6 +249,10 @@
 									</div>
 								</div>
 							{% endfor %}
+						{% else %}	
+							<div class="w100 h100 d-flex align-items-center justify-content-center">
+								<h2 class="fz30px red">Вы не состоите ни в одном из статиков</h2>
+							</div>
 						{% endif %}
 					{% else %}
 						<!-- Общее сообщение -->

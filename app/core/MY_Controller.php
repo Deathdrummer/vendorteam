@@ -90,6 +90,7 @@ class MY_Controller extends CI_Controller {
 						'colorsUsers'	=> 'Цвета рейдеров',
 					],],
 				'users_addict' 			=> 'Участники доп.',
+				'users_v2' 				=> 'Участники (версия 2)',
 				'raidliders' 			=> 'Рейд-лидеры',
 				'personages' 			=> 'Персонажи',
 				'operators' 			=> 'Операторы',

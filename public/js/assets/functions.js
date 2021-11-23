@@ -3,7 +3,7 @@ tapEvent = ('ontouchstart' in window) ? 'tap' : 'click';
 
 thisDevice = 'desktop';
 if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent)) {
-    thisDevice = 'mobile';
+	thisDevice = 'mobile';
 };
 
 
@@ -26,11 +26,11 @@ monthNames = {
 
 
 Counter = function(start, order, step) {
-    var count = start || 0;
-    return function(num) {
-        count = num != undefined ? num : count;
-        return order == undefined || order == '+' ? (order == '-' ? count-=step : count+=step) : count-=step;
-    }
+	var count = start || 0;
+	return function(num) {
+		count = num != undefined ? num : count;
+		return order == undefined || order == '+' ? (order == '-' ? count-=step : count+=step) : count-=step;
+	}
 };
 
 
@@ -101,22 +101,22 @@ $.fn.removeAttrib = function(attr) {
 
 
 /*
-	Является ли строка json
+	Является ли переданное значение json
 	- строка
 */
 isJson = function(str) {
 	if (str == undefined || typeof str == 'undefined') return false;
-    try {
-        JSON.parse(str);
-    } catch (e) {
-        return false;
-    }
-    return true;
+	try {
+		JSON.parse(str);
+	} catch (e) {
+		return false;
+	}
+	return true;
 };
 
 
 /*
-	Является ли строка целым числом
+	Является ли переданное значение целым числом
 */
 isInt = function(n) {
 	if (n == undefined || typeof n == 'undefined') return false;
@@ -126,13 +126,30 @@ isInt = function(n) {
 
 
 /*
-	Является ли строка числом с плавающей точкой
+	Является ли переданное значение числом с плавающей точкой
 */
 isFloat = function(n) {
 	if (n == undefined || typeof n == 'undefined') return false;
 	if (typeof n != 'string') return Number(n) === n && n % 1 !== 0;
 	return Number(n)+'' === n && Number(n) % 1 !== 0;
 };
+
+
+/*
+	Является ли переданное значение массивом
+*/
+
+isArray = function(item) {
+	return Array.isArray(item) && item instanceof Object;
+}
+
+
+/*
+	Является ли переданное значение объектом
+*/
+isObject = function(item) {
+	return !Array.isArray(item) && item instanceof Object;
+}
 
 
 
@@ -226,30 +243,30 @@ copyStringToClipboard = function(str) {
 
 // Задать куки
 setCookie = function(cname, cvalue, exdays) {
-    // expire the old cookie if existed to avoid multiple cookies with the same name
-    if  (getCookie(cname)) {
-        document.cookie = cname + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
-    }
-    var d = new Date();
-    d.setTime(d.getTime() + ((exdays || 365) * 24 * 60 * 60 * 1000));
-    var expires = "expires=" + d.toGMTString();
-    document.cookie = cname + "=" + cvalue + "; " + expires + "; path=/";
+	// expire the old cookie if existed to avoid multiple cookies with the same name
+	if  (getCookie(cname)) {
+		document.cookie = cname + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+	}
+	var d = new Date();
+	d.setTime(d.getTime() + ((exdays || 365) * 24 * 60 * 60 * 1000));
+	var expires = "expires=" + d.toGMTString();
+	document.cookie = cname + "=" + cvalue + "; " + expires + "; path=/";
 };
 
 
 // Получить куки
 getCookie = function(cname) {
-    var name = cname + "=";
-    var ca = document.cookie.split(';');
-    for (var i = 0; i < ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0) == ' ')
-            c = c.substring(1);
-        if (c.indexOf(name) == 0) {
-            return decodeURIComponent(c.substring(name.length, c.length));
-        }
-    }
-    return '';
+	var name = cname + "=";
+	var ca = document.cookie.split(';');
+	for (var i = 0; i < ca.length; i++) {
+		var c = ca[i];
+		while (c.charAt(0) == ' ')
+			c = c.substring(1);
+		if (c.indexOf(name) == 0) {
+			return decodeURIComponent(c.substring(name.length, c.length));
+		}
+	}
+	return '';
 };
 
 
@@ -354,7 +371,7 @@ tapEventInfo = function(e, d) {
 
 
 random = function(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+	return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
 
@@ -398,10 +415,10 @@ getArgs = function(arg) {
 
 //------------------------  проверка существования файла
 urlExists = function(url) {
-    var http = new XMLHttpRequest();
-    http.open('HEAD', url, false);
-    http.send();
-    return http.status != 404;
+	var http = new XMLHttpRequest();
+	http.open('HEAD', url, false);
+	http.send();
+	return http.status != 404;
 };
 
 
@@ -489,9 +506,9 @@ dynamicList = function(params) {
 		
 		popUp({
 			title: ops.removeQuestion,
-		    width: 500,
-		    buttons: [{id: 'remove'+thisId, title: 'Удалить'}],
-		    closeButton: 'Отмена',
+			width: 500,
+			buttons: [{id: 'remove'+thisId, title: 'Удалить'}],
+			closeButton: 'Отмена',
 		}, function(removeWin) {
 			$('#remove'+thisId).on(tapEvent, function() {
 				$.post(ops.phpFunctionRemove, {id: thisId}, function(response) {
@@ -721,15 +738,36 @@ getAjaxHtml = function() {
 		callback = typeof a[1] == 'function' ? a[1] : (a[2] !== undefined ? a[2] : false),
 		always = typeof a[1] == 'function' ? (typeof a[2] == 'function' ? a[2] :false) : (typeof a[2] == 'function' ? (typeof a[3] == 'function' ? a[3] :false) : false);
 		
-	$.post(url, params, function(html) {
-		html = html.trim();
-		if (html && callback) callback(html, true);
-		else if (callback) callback('<p class="empty center">Нет данных</p>', false);
-	}, 'html').always(function() {
-		if (always) always();
-	}).fail(function(e) {
-		notify('Системная ошибка!', 'error');
-		showError(e);
+	return new Promise(function(resolve, reject) {
+		$.post(url, params, function(html, stat, xhr) {
+			html = html.trim();
+			let headersData = xhr.getAllResponseHeaders(),
+				headers = {};
+				
+			headersData = headersData.split("\n");
+			headersData.forEach(function (header) {
+				header = header.split(": ");
+				let key = header.shift();
+				if (key.length == 0) return;
+				if (!/ddr-/.test(key)) return;
+				key = key.replace('ddr-', '');
+				key = key.toLowerCase(); 
+				val = header[0].replace("\r", '');
+				if (isInt(val)) val = parseInt(val);
+				if (isJson(val)) val = JSON.parse(val);
+				headers[key] = val;
+			});
+			
+			resolve({html: (html || null), headers: headers});
+			if (html && callback) callback(html, true, headers);
+			else if (callback) callback('<p class="empty center">Нет данных</p>', false, headers);
+		}, 'html').always(function() {
+			if (always) always();
+		}).fail(function(e) {
+			reject(e);
+			notify('Системная ошибка!', 'error');
+			showError(e);
+		});
 	});
 }
 
@@ -744,16 +782,66 @@ getAjaxJson = function() {
 		params = typeof a[1] == 'object' ? a[1] : {},
 		callback = typeof a[1] == 'function' ? a[1] : (a[2] !== undefined ? a[2] : false),
 		always = typeof a[1] == 'function' ? (typeof a[2] == 'function' ? a[2] :false) : (typeof a[2] == 'function' ? (typeof a[3] == 'function' ? a[3] :false) : false);
+	
+	return new Promise(function(resolve, reject) {
+		$.post(url, params, function(json, stat, xhr) {
+			let headersData = xhr.getAllResponseHeaders(),
+				headers = {};
+			headersData = headersData.split("\n");
+			headersData.forEach(function (header) {
+				header = header.split(": ");
+				let key = header.shift();
+				if (key.length == 0) return;
+				if (!/ddr-/.test(key)) return;
+				key = key.replace('ddr-', '');
+				key = key.toLowerCase(); 
+				val = header[0].replace("\r", '');
+				if (isInt(val)) val = parseInt(val);
+				if (isJson(val)) val = JSON.parse(val);
+				headers[key] = val;
+			});
+			
+			resolve({json: (json || null), headers: headers});
+			if (callback) callback(json || null, headers);
+		}, 'json').always(function() {
+			if (always) always();
+		}).fail(function(e) {
+			reject(e);
+			notify('Системная ошибка!', 'error');
+			showError(e);
+		});
+	});	
 		
-	$.post(url, params, function(json) {
-		if (callback) callback(json || null);
-	}, 'json').always(function() {
-		if (always) always();
-	}).fail(function(e) {
-		notify('Системная ошибка!', 'error');
-		showError(e);
-	});
 }
+
+
+
+
+
+
+
+
+
+
+/*
+	функция работы с localStorage
+		- ключ
+		- значение (если значение не указано - то ведется запрос данных по ключу, если значение - FALSE - то данные по ключу удаляются)
+*/
+ddrLs = function(key, value) {
+	if (!key || typeof key != 'string') return false;
+	if (value === false) {
+		localStorage.removeItem(key);
+	} else if (value !== undefined) {
+		if (typeof value == 'object') value = JSON.stringify(value);
+		localStorage.setItem(key, value);
+	} else {
+		let getValue = localStorage.getItem(key);
+		if (isJson(getValue)) getValue = JSON.parse(getValue);
+		return getValue || null;
+	}
+}
+
 
 
 
@@ -826,10 +914,10 @@ initEditors = function(selector, callback) {
 		lineHeights: lineHeights,
 		fontSizes: fontSizes,
 		codeviewFilter: false,
-  		codeviewIframeFilter: true,
-  		disableGrammar: true,
-  		codemirror: {
-		    theme: 'monokai'
+		codeviewIframeFilter: true,
+		disableGrammar: true,
+		codemirror: {
+			theme: 'monokai'
 		},
 		toolbar: [
 			['font', ['bold', 'italic', 'underline', 'clear']],
@@ -942,15 +1030,15 @@ $.fn.chooseInputFile = function(callback) {
 			var type = e.target.result.split('/')[0].substr(5, e.target.result.split('/')[0].length),
 				ext = file.name.split('.');
 			
-        	if (callback && typeof callback == 'function') callback({
-        		name: file.name,
-        		ext: ext[ext.length - 1],
-        		type: type, //image  application video  audio
-        		size: file.size,
-        		src: e.target.result
-        	}, thisInp);
-        };
-        reader.readAsDataURL(file);
+			if (callback && typeof callback == 'function') callback({
+				name: file.name,
+				ext: ext[ext.length - 1],
+				type: type, //image  application video  audio
+				size: file.size,
+				src: e.target.result
+			}, thisInp);
+		};
+		reader.readAsDataURL(file);
 	});
 };
 

@@ -96,6 +96,23 @@ if (location.hostname != 'localhost' && location.pathname == '/account') {
 		
 		
 		
+		//--------------------------------------- подарки
+		socket.on('gifts:update', (userId) => {
+			getAjaxJson('gifts/get_count_gifts', {user_id: userId}, function(count) {
+				$('[giftscounter]').text(count);
+				$('[getgifts]:not(.leftblocktopicon_active)').addClass('leftblocktopicon_active');
+				$('[getgifts]').attr('title', 'Есть новые подарки!');
+				notify('У Вас есть новые подарки!', 'success', 10);
+			}, function() {
+				//setCookie('gifts', giftsLength);
+			});
+		});
+		
+		
+		
+		
+		
+		
 		
 		//--------------------------------------- опросы
 		socket.on('pollings:new', (pollingId) => {

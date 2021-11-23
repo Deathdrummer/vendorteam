@@ -205,8 +205,8 @@ function DdrPopUp(settings, callback) {
 		$(ddrPopupSelector).find('.popup__win').addClass('popup__win_closing');
 		popupCloseTOut = setTimeout(function() {
 			$(ddrPopupSelector).remove();
-			enableScroll();
 			if (o.onClose && typeof o.onClose == 'function') o.onClose(ddrPopupSelector);
+			enableScroll();
 		}, (animationTime * 1000));
 	};
 
@@ -249,8 +249,7 @@ function DdrPopUp(settings, callback) {
 			let params = typeof a[1] == 'object' ? a[1] : false;
 			let callback = (!params && typeof a[1] == 'function') ? a[1] : ((a[2] !== undefined && typeof a[2] == 'function') ? a[2] : false);
 			let width = (typeof a[1] != 'function' && typeof a[1] != 'object') && /\d+(px|vh|\%)?/.test(a[1]) ? a[1] : ((typeof a[2] != 'function' && typeof a[2] != 'object') && /\d+(px|vh|\%)?/.test(a[2]) ? a[2] : ((typeof a[3] != 'function' && typeof a[3] != 'object') && /\d+(px|vh|\%)?/.test(a[3]) ? a[3] : false));
-
-
+			
 			if (string) {
 				if (width) $(ddrPopupSelector).find('[ddrpopupwin]').width(width);
 				$(ddrPopupSelector).find('[ddrpopupcontent]').html(string);

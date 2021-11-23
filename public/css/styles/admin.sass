@@ -170,27 +170,34 @@ html
 
 .red
 	color: #fb8080
+	fill: #fb8080 !important
 	
 	&:hover
 		color: darken(#fb8080, 10%)
+		fill: darken(#fb8080, 10%)
 	
 	&:active
 		color: darken(#fb8080, 20%)
+		fill: darken(#fb8080, 20%)
+
 
 
 .green
 	color: #65a25b
+	fill: #65a25b !important
 	
 	&.hovered:hover
 		color: darken(#65a25b, 10%)
+		fill: darken(#65a25b, 10%)
 	
 	&.hovered:active
 		color: darken(#65a25b, 20%)
-	
+		fill: darken(#65a25b, 20%)
 
 
 .blue
 	color: #3f8baf !important
+	fill: #3f8baf !important
 	
 	&_hovered
 		&:hover
@@ -203,9 +210,13 @@ html
 		background-color: #3f8baf !important
 
 
+.darkblue
+	color: #536777 !important
+	fill: #536777 !important
 
 .lightblue
 	color: #dceaf5 !important
+	fill: #dceaf5 !important
 	
 	&_bg
 		background-color: #dceaf5 !important
@@ -214,6 +225,7 @@ html
 
 .grayblue
 	color: #96aab5 !important
+	fill: #96aab5 !important
 	
 	&_bg
 		background-color: #96aab5 !important
@@ -221,6 +233,7 @@ html
 
 .fontcolor
 	color: #6e8292 !important
+	fill: #6e8292 !important
 	
 
 
@@ -237,6 +250,14 @@ html
 
 .graggable
 	cursor: all-scroll
+
+
+
+
+.uppercase
+	text-transform: uppercase
+
+
 
 
 
@@ -322,6 +343,35 @@ i.icon
 	top: 7px
 	right: 7px
 	font-size: 1em
+
+
+
+.scrollblock
+	overflow-y: scroll
+	+scrollbar(#eee, #aaa, 4px, 2px, 2px)
+	
+	&_bordered
+		border: 1px solid #bcc6ca
+
+
+
+
+
+
+
+.rounded
+	border-radius: 50%
+
+.bordered
+	border: 1px solid #e6e6e6
+
+
+
+
+
+
+
+
 
 
 
@@ -882,6 +932,9 @@ img.avatar
 	overflow: hidden
 
 
+.breakword
+	word-break: break-word
+
 
 
 .ddrlist
@@ -1002,7 +1055,12 @@ table:not(.clear):not(.ui-datepicker-calendar)
 				background-color: #a3c3d2 !important
 			
 			&.changed
-				background-color: #eaffcd !important
+				&:nth-child(odd)
+					background-color: #eaffcd !important
+				
+				&:nth-child(even)
+					background-color: #e4f9c8 !important
+				
 			
 			&.pointer
 				&:hover
@@ -1057,6 +1115,23 @@ table:not(.clear):not(.ui-datepicker-calendar)
 				
 				.checkblock
 					+checkblock(2px)
+					
+					input.changed ~ label::after
+						color: #00af57 !important
+					
+					input.changed ~ label::before
+						content: ''
+						display: block
+						position: absolute
+						left: -17px
+						top: -5px
+						border-radius: 50%
+						width: 34px
+						height: 34px
+						background-color: rgba(#78e878, 0.4)
+						pointer-events: none
+						z-index: 0
+				
 				
 				&.access_block
 					width: 60px
@@ -1217,6 +1292,10 @@ table:not(.clear):not(.ui-datepicker-calendar)
 						width: 100%
 						transition: border-color 0.16s
 						
+						&.changed
+							box-shadow: 0 0 0 2px #78e878
+							background-color: #efe
+						
 				
 				.number
 					width: 100px
@@ -1255,12 +1334,20 @@ table:not(.clear):not(.ui-datepicker-calendar)
 						background-color: #f4f5f6
 						box-shadow: 0 0 5px 0 rgba(68, 68, 68, 0.45)
 					
+					&.changed
+						box-shadow: 0 0 0 2px #78e878
+						
+					
 				.textarea
 					textarea
 						min-height: 0 !important
 						
 						&.noresize
 							resize: none
+					
+					&.changed	
+						box-shadow: 0 0 0 2px #78e878
+						background-color: #efe
 					
 				
 				.select
@@ -1270,6 +1357,10 @@ table:not(.clear):not(.ui-datepicker-calendar)
 						&.changed
 							box-shadow: 0 0 0 2px #78e878
 							background-color: #efe
+					
+					&.changed	
+						box-shadow: 0 0 0 2px #78e878
+						background-color: #efe
 				
 				.checkbox
 					text-align: center
@@ -1278,22 +1369,14 @@ table:not(.clear):not(.ui-datepicker-calendar)
 						
 					input
 						//display: none
+						&.changed ~ label::after
+							color: #f00 !important
 						
 						
 				.date
 					input
-						border-radius: 2px
-						border: 1px solid #a7acaf
-						background: #fff
+						border: 1px solid #d0d6da
 						height: 30px
-						padding-right: 4px
-						padding-left: 4px
-						color: #666
-						width: 100%
-						transition: border-color 0.16s
-						
-						&:focus
-							border-color: darken(#a7acaf, 30%)
 						
 						&.changed
 							box-shadow: 0 0 0 2px #78e878
@@ -5366,3 +5449,399 @@ p
 	
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+.usersv2
+	&__waiting
+		+loading((bgColor: (#fff, 0.6), text: 'Загрузка...', icon: '\f110', iconFz: '30px', textFz: '12px', spinSpeed: '800ms'))
+	
+	.buttons
+		button
+			position: relative
+			
+			i.icon, svg.icon
+				position: absolute
+				top: 3px
+				right: 3px
+				z-index: 100
+				
+			i.icon
+				font-size: 10px
+			
+			svg.icon
+				fill: #fff
+	
+	&__list
+		height: 70vh
+		padding-right: 5px
+		overflow-y: scroll
+		overflow-x: hidden
+		+scrollbar(#eaf0f3, #dde7ed, 4px, 2px, 2px)
+		
+		li
+			display: block
+			background-color: #e7edf1
+			padding: 5px
+			border-radius: 5px
+			cursor: pointer
+			transition: background-color 0.16s
+			
+			&:hover
+				background-color: #e2eaef
+			
+			&.placeholder
+				//display: none !important
+			
+			+ li
+				margin-top: 5px
+			
+			span
+				font-size: 12px
+				+font(roboto, medium)
+		
+		
+		&_totable
+			li
+				background-color: #e1eb9f
+				
+				&:hover
+					background-color: #dae595
+		
+
+
+
+
+
+
+
+
+
+
+.usersv2buttons
+	display: flex
+	align-items: center
+	
+	button
+		background-color: #e6eef3
+		font-size: 14px
+		+font(roboto, medium)
+		border-radius: 3px
+		padding-left: 10px
+		padding-right: 10px
+		
+		+ button
+			margin-left: 10px
+		
+		&:hover
+			background-color: #c3d9e7
+		
+		&.active
+			background-color: #89d0fd
+	
+	
+	
+	
+
+.usersv2statics
+	margin-top: -10px
+	
+	&__item
+		margin-top: 10px
+		
+		input[type="checkbox"]
+			display: none
+			
+			&:checked ~ label
+				border-color: #adc9f3
+				background-color: #c0d9ff
+				
+				span
+					color: #244d8d !important
+		
+		label
+			display: block
+			border: 1px solid #ecf0f3
+			background-color: #f8fafd
+			border-radius: 3px
+			padding: 4px
+			cursor: pointer
+			
+			&:hover
+				border-color: #d8e2e9
+				background-color: darken(#f8fafd, 3%)
+				transition: border-color 0.16s, background-color 0.16s
+			
+			 
+
+
+
+
+
+.usersv2staticstabs
+	display: flex
+	border: 1px solid #ecf2f5
+	background-color: #f7f7f7
+	height: 42px
+	overflow-x: hidden
+	
+	&__item
+		padding: 0 5px
+		font-size: 12px
+		flex: 0 0 130px
+		max-width: 130px
+		display: flex
+		align-items: center
+		border-right: 1px solid #dce3e7
+		
+		&:not(.usersv2staticstabs__item_active):not(.usersv2staticstabs__item_static)
+			cursor: pointer
+		
+		&:hover:not(.usersv2staticstabs__item_active):not(.usersv2staticstabs__item_static)
+			background-color: darken(#f7f7f7, 5%)
+		
+		&_active
+			background-color: #4296bb
+			
+			strong
+				color: #fff
+		
+		&_static
+			justify-content: center
+		
+		//+ .usersv2staticstabs__item
+			//border-right: 1px solid #ecf2f5
+		
+		> div
+			flex: 0 0 32px
+			margin-right: 4px
+		
+			img
+				border-radius: 4px !important
+				width: 32px
+				height: 32px
+		
+		strong
+			font-size: 10px
+			line-height: 10px
+			display: block
+
+
+
+
+
+.sorttd
+	position: relative
+	padding-right: 10px !important
+	
+	&::after
+		content: '\f0dc'
+		position: absolute
+		right: 3px
+		+font(fontAwesome)
+		font-size: 14px
+		color: #96a5b1
+	
+	&_active
+		background-color: #b7c2cb
+		
+		&::after
+			color: #3577a9
+
+
+
+
+.usersv2showlists
+	display: inline-flex
+	border: 1px solid #d0d6da
+	flex: 0 0 auto
+	max-width: 100%
+	border-radius: 3px
+	overflow: hidden
+	
+	&__item
+		+ .usersv2showlists__item
+			border-left: 1px solid #d0d6da
+		
+		input[type="checkbox"]
+			display: none
+			
+			&:checked ~ label
+				background-color: #4296bb
+				color: #fff
+		
+		
+		label
+			display: flex
+			align-items: center
+			justify-content: center
+			cursor: pointer
+			padding: 5px
+			height: 32px
+			font-size: 18px
+			+font(roboto, bold)
+			color: #93aebb
+			width: 50px
+			
+			&:hover
+				background-color: #e8f0f3
+				transition: background-color 0.16s
+			
+
+
+
+
+.usersv2staticslist
+	position: relative
+	+scrollbar(#e7eef1, #a4c9d9, 4px, 2px, 2px)
+	overflow-y: scroll
+	min-height: 200px
+	max-height: 70vh
+	width: 250px
+	
+	li
+		margin-right: 7px
+		
+		+ li 
+			margin-top: 1px
+		
+		&:nth-child(odd)
+			> label
+				background-color: #fdfdfd
+	
+		&:nth-child(even)
+			> label
+				background-color: #fafbfe
+			
+		> label
+			border-radius: 3px
+			cursor: pointer
+			
+			&:hover
+				background-color: #eef3f9
+				transition: background-color 0.16s
+			
+			.usersv2staticsitem__checks
+				//pointer-events: none
+			
+	
+		> input
+			display: none
+			
+			&:checked ~ label
+				background-color: #bedfff
+				//border-bottom: 1px solid #888
+				
+				.usersv2staticsitem__static
+					span
+						color: #36628d
+				
+				.usersv2staticsitem__checks
+					//pointer-events: auto
+					
+					input[type="checkbox"], input[type="radio"]
+						~ label
+							border-color: #b6d3ef
+						
+						&:checked ~ label
+							border-color: #3caddf
+	
+
+
+.usersv2staticsitem
+	display: flex
+	align-items: center	
+	padding: 2px 6px 2px 2px
+	
+	&__static
+		display: flex
+		align-items: center
+		width: 100%
+		
+		img
+			flex: 1 0 30px
+			max-width: 30px
+			height: 30px
+			border-radius: 3px
+		
+		span
+			display: block
+			font-size: 12px
+			line-height: 12px
+			color: #92a1ad
+			margin-left: 4px
+	
+	
+	&__checks
+		display: flex
+		padding-left: 5px
+		
+		> div + div
+			margin-left: 4px
+			
+		
+		input[type="checkbox"], input[type="radio"]
+			display: none
+			
+			
+			~ label
+				position: relative
+				display: block
+				border-radius: 50%
+				width: 20px
+				height: 20px
+				background-color: #fff
+				border: 1px solid #e6e9f1
+				cursor: pointer
+				
+				&:hover
+					border-color: #b2c0e7
+					transition: background-color 0.16s, border-color 0.16s
+			
+			&:checked ~ label
+				background-color: #43bcf1
+				border-color: #32ade3
+				transition: background-color 0s, border-color 0s
+			
+			
+		input[type="checkbox"]
+			~ label::after
+				content: 'Л'
+				+font(roboto, bold)
+				position: absolute
+				top: 1px
+				color: #eee
+				width: 100%
+				height: 100%
+				display: flex
+				align-items: center
+				justify-content: center
+			
+			&:checked ~ label::after
+				color: #fff
+		
+		
+		input[type="radio"]
+			~ label::after
+				content: 'Г'
+				+font(roboto, bold)
+				position: absolute
+				top: 1px
+				left: 1px
+				color: #eee
+				width: 100%
+				height: 100%
+				display: flex
+				align-items: center
+				justify-content: center
+			
+			&:checked ~ label::after
+				color: #fff
+		
+		

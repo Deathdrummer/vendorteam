@@ -10,7 +10,12 @@
 	let table = this,
 		ops = $.extend({
 			minHeight: '200px',
-			maxHeight: '300px'
+			maxHeight: '300px',
+			onScrollStart: false,
+			onScrollStop: false,
+			onScrollTop: false,
+			onScrollBottom: false,
+			latency: false
 		}, params);
 	
 	
@@ -24,7 +29,7 @@
 	
 	$(table).children('thead, tfoot').remove();
 	$(table).addClass('noborderbottom');
-	$(table).wrap('<div id="ddrTable'+rand+'"></div>');
+	$(table).wrap('<div id="ddrTable'+rand+'" class="w100"></div>');
 	
 	let container = $('#ddrTable'+rand);
 	
@@ -35,13 +40,12 @@
 	$(table).wrap('<div class="scroll_y scroll_y_thin" style="overflow-y:scroll;min-height:'+ops.minHeight+';max-height:'+ops.maxHeight+';" id="scrollTableWrap'+rand+'"></div>');
 	
 	let tableTopTd = $('#ddrTableTop'+rand).find('tr:first').children('td'),
-		tableMainTd = $(table).find('tr:first').children('td'),
 		tableBottomTd = tfoot ? $('#ddrTableBottom'+rand).find('tr:first').children('td') : false;
 	
 	$(tableTopTd).each(function(k, td) {
 		if (k + 1 == tableTopTd.length) return true;
-		$(tableMainTd).eq(k).css('width', $(td).outerWidth());
-		if (tableBottomTd) $(tableBottomTd).eq(k).css('width', $(td).outerWidth());
+		$(table).find('tr').children('td:nth-child('+(k+1)+')').css({'width': $(td).outerWidth(), 'max-width': $(td).outerWidth()});
+		if (tableBottomTd) $(tableBottomTd).eq(k).css({'width': $(td).outerWidth(), 'max-width': $(td).outerWidth()});
 	});
 	
 	let resizeTOut;
@@ -50,11 +54,33 @@
 		resizeTOut = setTimeout(function() {
 			$(tableTopTd).each(function(k, td) {
 				if (k + 1 == tableTopTd.length) return true;
-				$(tableMainTd).eq(k).css('width', $(td).outerWidth());
-				if (tableBottomTd) $(tableBottomTd).eq(k).css('width', $(td).outerWidth());
+				$(table).find('tr').children('td:nth-child('+(k+1)+')').css({'width': $(td).outerWidth(), 'max-width': $(td).outerWidth()});
+				if (tableBottomTd) $(tableBottomTd).eq(k).css({'width': $(td).outerWidth(), 'max-width': $(td).outerWidth()});
 			});
 		}, 3);
 	});
+	
+	
+	// scroll events
+	$('#scrollTableWrap'+rand).ddrScrollEvents({
+		onScrollStart: function() {
+			if (ops.onScrollStart && typeof ops.onScrollStart == 'function') ops.onScrollStart();
+			$(table).trigger('onScrollStart');
+		},
+		onScrollStop: function(dir) {
+			if (ops.onScrollStop && typeof ops.onScrollStop == 'function') ops.onScrollStop(dir);
+			$(table).trigger('onScrollStop');
+		},
+		onScrollTop: function() {
+			if (ops.onScrollTop && typeof ops.onScrollTop == 'function') ops.onScrollTop();
+			$(table).trigger('onScrollTop');
+		},
+		onScrollBottom: function() {
+			if (ops.onScrollBottom && typeof ops.onScrollBottom == 'function') ops.onScrollBottom();
+			$(table).trigger('onScrollBottom');
+		}
+	}, ops.latency);
+	
 	
 	return {
 		scroll(to, speed) {
@@ -74,13 +100,12 @@
 		},
 		reInit() {
 			tableTopTd = $('#ddrTableTop'+rand).find('tr:first').children('td'),
-			tableMainTd = $(table).find('tr:first').children('td'),
 			tableBottomTd = tfoot ? $('#ddrTableBottom'+rand).find('tr:first').children('td'): false;
 			
 			$(tableTopTd).each(function(k, td) {
 				if (k + 1 == tableTopTd.length) return true;
-				$(tableMainTd).eq(k).css('width', $(td).outerWidth());
-				if (tableBottomTd) $(tableBottomTd).eq(k).css('width', $(td).outerWidth());
+				$(table).find('tr').children('td:nth-child('+(k+1)+')').css({'width': $(td).outerWidth(), 'max-width': $(td).outerWidth()});
+				if (tableBottomTd) $(tableBottomTd).eq(k).css({'width': $(td).outerWidth(), 'max-width': $(td).outerWidth()});
 			});
 		}
 	};

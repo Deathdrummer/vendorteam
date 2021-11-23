@@ -46,8 +46,7 @@ class MY_Model extends CI_Model {
 	 * @param перемешать массив
 	 * @return array
 	*/
-	protected function _result($table = false, $fieldAsKey = false, $rand = false) {
-		if (!$table) return false;
+	protected function _result($table = '', $fieldAsKey = false, $rand = false) {
 		$query = $this->db->get($table);
 		if (!$result = $query->result_array()) return false;
 		if ($rand) shuffle($result);
@@ -79,31 +78,27 @@ class MY_Model extends CI_Model {
 	
 	
 	
+	
+	
 	/**
-	 * Получить данные из таблицы + количество записей без лимитов
+	 * Получить данные из таблицы с лмимтами + количество записей без учате лимитов
 	 * @param название таблицы
 	 * @param лимит
 	 * @param смещение
-	 * @return array [data, total]
+	 * @return array [data, count]
 	*/
 	protected function _resultWithCount($table = false, $limit = false, $offset = 0) {
 		if (!$table) return false;
 		$query = $this->db->get_compiled_select($table, false);
 		if ($limit) $this->db->limit($limit, $offset);
-		$respone = $this->db->query($query);
-		$count = $respone->result_id->num_rows ?: null;
-		
-		$itemsQuery = $this->db->get();
-		$items = $itemsQuery->result_array();
-		
+		if (!$result = $this->_result()) return false;
+		$qCount = $this->db->query($query);
+		$countItems = $qCount->result_id->num_rows ?: null;
 		return [
-			'items'	=> $items,
-			'total' => $count
+			'items'	=> $result,
+			'total' => $countItems
 		];
 	}
-	
-	
-	
 	
 	
 	
