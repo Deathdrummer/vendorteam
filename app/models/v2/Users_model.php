@@ -5,6 +5,8 @@ class Users_model extends MY_Model {
 	private $usersStaticsTable = 'users_statics';
 	private $usersTable = 'users';
 	private $staticsTable = 'statics';
+	private $classesTable = 'classes';
+	private $usersClassesTable = 'users_classes';
 	private $usersListPart = 20;
 	private $usersFieldsSql;
 	private $allFields = [
@@ -13,10 +15,10 @@ class Users_model extends MY_Model {
 		'rank' 				=> ['title' => 'Звание', 'cls' => 'w170px'],
 		'lider' 			=> ['title' => 'Лидер', 'cls' => 'w60px center', 'icon' => '<div title="Лидер"><svg class="w18px h18px darkblue"><use xlink:href="#crown"></use></svg></div>'],
 		'email' 			=> ['title' => 'E-mail', 'cls' => 'w200px'],
-		'reg_date' 			=> ['title' => 'Дата регистрации', 'cls' => 'w170px'],
+		'reg_date' 			=> ['title' => 'Дата регистрации', 'cls' => 'w160px'],
 		'stage' 			=> ['title' => 'Стаж', 'cls' => 'w72px'],
 		'payment' 			=> ['title' => 'Средство платежа', 'cls' => 'w210px'],
-		'birthday' 			=> ['title' => 'Дата рождения', 'cls' => 'w170px'],
+		'birthday' 			=> ['title' => 'Дата рождения', 'cls' => 'w160px'],
 		'deposit_percent' 	=> ['title' => 'Процент отчисления в депозит', 'cls' => 'w72px center', 'icon' => '<i class="fa fa-percent" title="Процент отчисления в депозит"></i>'],
 		'role' 				=> ['title' => 'Роль', 'cls' => 'w170px'],
 		'access' 			=> ['title' => 'Доступ', 'cls' => 'w170px'],
@@ -335,6 +337,7 @@ class Users_model extends MY_Model {
 				break;
 			
 			case 'set':
+				if (!isset($userId) ||!isset($staticId)) return false;
 				$this->db->where(['user_id' => $userId, 'static_id' => $staticId]);
 				
 				if (isset($stat)) { // удалить или добавить статик
@@ -368,6 +371,131 @@ class Users_model extends MY_Model {
 			default: break;
 		}
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function classes($action = false) {
+		$args = func_get_args();
+		$action = isset($args[0]) ? $args[0] : false;
+		if (isset($args[1]) && is_array($args[1])) extract(snakeToCamelcase($args[1])); // keys to uppercase
+		
+		switch ($action) {
+			case 'user':
+				if (!isset($userId)) return false;
+				$classes = $this->_getClasses();
+				
+				$this->db->select('class_id, IF(class_id, 1, 0) AS checked, mentor');
+				$this->db->where('user_id', $userId);
+				if ($userClasses = $this->_result($this->usersClassesTable)) {
+					$userClasses = setArrKeyFromField($userClasses, 'class_id');
+					$classes = array_replace_recursive($classes, $userClasses);
+				}
+				return $classes;
+				break;
+			
+			case 'set':
+				if (!isset($userId) ||!isset($classId)) return false;
+				$this->db->where(['user_id' => $userId, 'class_id' => $classId]);
+				
+				if (isset($stat)) { // удалить или добавить класс
+					if ($stat == 0) {
+						$this->db->delete($this->usersClassesTable);
+						return true;
+					} elseif ($stat == 1) {
+						if ($this->db->count_all_results($this->usersClassesTable) > 0) return false;
+						return $this->db->insert($this->usersClassesTable, ['user_id' => $userId, 'class_id' => $classId]);
+					}
+					
+				} elseif (isset($mentor)) {
+					if ($this->db->count_all_results($this->usersClassesTable) > 0) {
+						$this->db->where(['user_id' => $userId, 'class_id' => $classId]);
+						return $this->db->update($this->usersClassesTable, ['mentor' => $mentor]);
+					} else {
+						return $this->db->insert($this->usersClassesTable, ['user_id' => $userId, 'class_id' => $classId, 'mentor' => $mentor]);
+					}
+				}
+				break;
+			
+			default: break;
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function userinfo($action = false) {
+		$args = func_get_args();
+		$action = isset($args[0]) ? $args[0] : false;
+		if (isset($args[1]) && is_array($args[1])) extract(snakeToCamelcase($args[1])); // keys to uppercase
+		
+		switch ($action) {
+			case 'get':
+				if (!isset($userId)) return false;
+				
+				$this->db->select('u.nickname, u.avatar, u.deposit, u.rank, u.payment, '.$this->groupConcat('us.static_id', 'us.static_id:static,us.lider:lider,us.main:main', 'statics'));
+				$this->db->join($this->usersStaticsTable.' us', 'u.id = us.user_id');
+				$this->db->where('u.id', $userId);
+				$this->db->group_by('u.id');
+				if (!$userData = $this->_row($this->usersTable.' u')) return false;
+				
+				$this->load->model(['wallet_model' => 'wallet', 'account_model' => 'account']);
+				$ranks = $this->admin_model->getRanks();
+				
+				$currentRank = arrTakeItem($userData, 'rank');
+				$userData['rank'] = $this->account->getNextRankData($userId);
+				$userData['rank']['current_rank'] = $ranks[$currentRank]['name'];
+				
+				$userStatics = setArrKeyFromField(json_decode($userData['statics'], true), 'static');
+				$statics = $this->admin_model->getStatics(false, array_keys($userStatics));
+				$userData['statics'] = array_replace_recursive($userStatics, $statics);
+				
+				
+				$userData['balance'] = $this->wallet->getUserHistory($userId);
+				$userData['current'] = $this->wallet->getUserBalance($userId);
+				
+				$visits = $this->account->getVisitsCoeffs(['period_id' => 113, 'static_id' => 1]);
+				$coeffs = array_column($visits['coeffs'], 'rate_summ');
+				$maxCoeff = max($coeffs);
+				$userCoeff = isset($visits['coeffs'][$userId]) ? $visits['coeffs'][$userId]['rate_summ'] : false;
+				$visitPercent = $userCoeff ? (100 / $maxCoeff) * $userCoeff : null;
+				$userData['visits'] = $visitPercent;
+				
+				
+				return $userData;
+				break;
+			
+			default: break;
+		}
+	}
+	
+	
+	
+	
 	
 	
 	
@@ -480,10 +608,26 @@ class Users_model extends MY_Model {
 	 * @return 
 	 */
 	private function _getStatics() {
-		$this->db->select('s.id, s.name, s.icon');
-		if (!$statics = $this->_result($this->staticsTable.' s')) return false;
+		$this->db->select('id, name, icon');
+		if (!$statics = $this->_result($this->staticsTable)) return false;
 		return setArrKeyFromField($statics, 'id');
 	}
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	 */
+	private function _getClasses() {
+		$this->db->select('id, name');
+		if (!$classes = $this->_result($this->classesTable)) return false;
+		return setArrKeyFromField($classes, 'id');
+	}
+	
+	
+	
 	
 	
 	

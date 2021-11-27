@@ -916,6 +916,21 @@ img.avatar
 	border: 1px solid #d5dbe0
 	border-radius: 3px
 	display: block
+	
+	//&_online
+	position: relative
+	
+	&::after
+		content: ""
+		position: absolute
+		display: block
+		width: 12px
+		height: 12px
+		border-radius: 50%
+		background-color: #55aaff
+		border: 1px solid #fff
+		bottom: 0px
+		right: 0px
 
 
 	
@@ -5702,7 +5717,7 @@ p
 	+scrollbar(#e7eef1, #a4c9d9, 4px, 2px, 2px)
 	overflow-y: scroll
 	min-height: 200px
-	max-height: 70vh
+	max-height: 60vh
 	width: 250px
 	
 	li
@@ -5803,6 +5818,18 @@ p
 				&:hover
 					border-color: #b2c0e7
 					transition: background-color 0.16s, border-color 0.16s
+				
+				&::after
+					+font(roboto, bold)
+					position: absolute
+					top: 1px
+					color: #eee
+					width: 100%
+					height: 100%
+					display: flex
+					align-items: center
+					justify-content: center
+					
 			
 			&:checked ~ label
 				background-color: #43bcf1
@@ -5813,16 +5840,8 @@ p
 		input[type="checkbox"]
 			~ label::after
 				content: 'Л'
-				+font(roboto, bold)
-				position: absolute
 				top: 1px
-				color: #eee
-				width: 100%
-				height: 100%
-				display: flex
-				align-items: center
-				justify-content: center
-			
+				
 			&:checked ~ label::after
 				color: #fff
 		
@@ -5830,18 +5849,98 @@ p
 		input[type="radio"]
 			~ label::after
 				content: 'Г'
-				+font(roboto, bold)
-				position: absolute
 				top: 1px
 				left: 1px
-				color: #eee
-				width: 100%
-				height: 100%
-				display: flex
-				align-items: center
-				justify-content: center
 			
 			&:checked ~ label::after
 				color: #fff
 		
+		
+		.mentor
+			~ label::after
+				content: 'М' !important
+				font-size: 11px
+				top: 0px
+				left: 0.6px
+			
+			&:checked ~ label::after
+				color: #fff
+		
+
+
+
+
+.usersv2personageslist
+	position: relative
+	+scrollbar(#e7eef1, #a4c9d9, 4px, 2px, 2px)
+	overflow-y: scroll
+	min-height: 200px
+	max-height: 60vh
+	width: 250px
+
+
+
+
+
+.usersv2usercard
+	
+	&__item
+		span
+			font-size: 14px
+			&::after
+				content: ':'
+		strong
+			font-size: 14px
+	
+	&__statics
+		margin-top: 10px
+		//+scrollbar(#e7eef1, #a4c9d9, 4px, 2px, 2px)overflow-y: scroll
+		//height: 400px
+	
+	&__line
+		+hr(5%, 95%, #d7dbde)
+
+	
+.usersv2usercardstatic
+	position: relative
+	display: flex
+	margin-bottom: 10px
+
+	&__icon
+		width: 30px
+		height: 30px
+		object-fit: cover
+		margin-right: 3px
+		border-radius: 3px
+	
+	&__caption
+		align-content: space-between 	
+		
+	&__name
+		font-size: 12px
+		line-height: 13px
+		display: block
+		max-width: 110px
+		
+	
+	&__stat
+		display: flex
+		align-items: center
+		
+		> * + *
+			margin-left: 3px
+		
+		div
+			display: inline-block
+			
+			svg
+				display: block
+				width: 14px
+				height: 14px
+				fill: #16abc1
+			
+		i
+			font-size: 15px
+			line-height: 15px
+			color: #0eb523
 		

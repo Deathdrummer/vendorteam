@@ -160,6 +160,54 @@ class Users extends MY_Controller {
 	
 	
 	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function classes($action = false) {
+		$post = bringTypes($this->input->post());
+		switch ($action) {
+			case 'set':
+				if (!$this->usersV2->classes('set', $post)) exit('0');
+				echo '1';
+				break;
+			
+			default:
+				$data['classes'] = $this->usersV2->classes('user', $post);
+				echo $this->twig->render($this->viewsPath.'classes/user.tpl', $data);
+				break;
+		}
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function userinfo($action = false) {
+		$post = bringTypes($this->input->post());
+		switch ($action) {
+			case 'init':
+				
+				break;
+			
+			default:
+				$data = $this->usersV2->userinfo('get', $post);
+				echo $this->twig->render($this->viewsPath.'user.tpl', $data);
+			break;
+		}
+		
+	}
+	
+	
+	
 	
 	
 	

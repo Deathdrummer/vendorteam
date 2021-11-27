@@ -83,6 +83,35 @@
 <script type="text/javascript"><!--
 $(function() {
 	
+	if (location.hostname != 'localhost') {
+		socket.on('set_online_user', (userId, users) => {
+			let countUsersOnline = Object.keys(users).length;
+			$('#usersList').find('[userid="'+userId+'"]').find('.avatar').addClass('avatar_online').attr('title', 'Онлайн');
+			$('#onlineUsersCount').text(countUsersOnline);
+		});
+		
+		socket.on('set_offline_user', (userId, users) => {
+			$('#usersList').find('[userid="'+userId+'"]').find('.avatar').removeClass('avatar_online').removeAttrib('title');
+			let countUsersOnline = Object.keys(users).length;
+			$('#onlineUsersCount').text(countUsersOnline);
+		});
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	let saveFieldTimeout = 500, // таймаут сохранение значения поля
 		scrollOffset = 0,
 		isEndOfList = false,
@@ -364,6 +393,38 @@ $(function() {
 	
 	
 	
+	
+	//------------- Карточка участника
+	$('#usersList').on(tapEvent, '[userv2card]', function() {
+		let userId = $(this).attr('userv2card'),
+			nickname = $(this).closest('tr').find('[userfield="nickname"]').val() || 'без никнейма';
+		
+		popUp({
+			title: 'Карточка участника <strong>'+nickname+'</strong>|4',
+			width: 800,
+			buttons: false, 
+			buttonsAlign: 'right',
+			disabledButtons: false,
+			closePos: 'left',
+			closeButton: 'Закрыть',
+			onClose: false, // событие при закрытии окна
+			winClass: false
+		}, function(userCardWin) {
+			userCardWin.setData('users/userinfo', {user_id: userId}, function() {
+				$('#usersv2UserCard').ddrTable({
+					minHeight: '50px',
+					maxHeight: '300px'
+				});
+				
+			});
+		});
+	});
+	
+	
+	
+	
+	
+	
 
 
 
@@ -434,7 +495,7 @@ $(function() {
 	
 	
 	function setUserStatic(params, callback) {
-		if (params == undefined || Object.keys(params).length < 3) return false; // user_id static_id typeStat 
+		if (params == undefined || Object.keys(params).length < 3) return false;
 		getAjaxJson('users/statics/set', params, function(stat) {
 			if (callback && typeof callback == 'function') callback(stat);
 		});
@@ -442,8 +503,19 @@ $(function() {
 	
 	
 	
+	function setUserClass(params, callback) {
+		if (params == undefined || Object.keys(params).length < 3) return false;
+		getAjaxJson('users/classes/set', params, function(stat) {
+			if (callback && typeof callback == 'function') callback(stat);
+		});
+	}
 	
-	let usersColorsTooltip, usersStaticsTooltip;
+	
+	
+	
+	
+	
+	let usersColorsTooltip, usersStaticsTooltip, usersClassesTooltip, usersPersonagesTooltip;
 	function getUsers(reboot) {
 		if (reboot === undefined && isEndOfList) return false;
 		else if (reboot) {
@@ -469,6 +541,17 @@ $(function() {
 			})
 		]).then((data) => {
 			if (reboot) $('#totalUsers').text(data[1]['headers']['total'] || 0);
+			
+			if (location.hostname != 'localhost') {
+				socket.emit('take_users_online', users => {
+					$.each(users, function(k, item) {
+						$('#usersList').find('[userid="'+item['user_id']+'"]').find('.avatar').addClass('avatar_online').attr('title', 'Онлайн');
+					});
+					let countUsersOnline = Object.keys(users).length;
+					$('#onlineUsersCount').text(countUsersOnline);
+				});
+			}
+			
 			
 			let theadCols = '';
 				theadCols += '<td class="w230px sorttd pointer" usersv2field="nickname"><strong>Участник</strong></td>';
@@ -635,13 +718,16 @@ $(function() {
 			if (usersColorsTooltip) usersColorsTooltip.destroy();
 			usersColorsTooltip = new jBox('Tooltip', {
 				attach: '[userv2color]',
+				onOpen: function() {
+					closeToolTips('colors');
+				},
 				trigger: 'click',
 				closeOnMouseleave: true,
 				addClass: 'raiderscolorswrap',
 				outside: 'x',
 				ignoreDelay: true,
 				zIndex: 1200,
-				//pointer: 'left',
+				pointer: 'top',
 				//pointTo: 'left',
 				position: {
 				  x: 'right',
@@ -704,13 +790,14 @@ $(function() {
 				closeOnMouseleave: true,
 				//addClass: '',
 				onOpen: function() {
-					usersStaticsTooltip.setContent('<div class="d-flex w250px h70vh align-items-center justify-content-center flex-column"><i class="fa fa-spinner fa-pulse fz22px"></i><p>Загрузка статиков...</p></div>');
+					closeToolTips('statics');
+					usersStaticsTooltip.setContent('<div class="d-flex w250px h60vh align-items-center justify-content-center flex-column"><i class="fa fa-spinner fa-pulse fz22px"></i><p>Загрузка статиков...</p></div>');
 				},
 				outside: 'x',
 				ignoreDelay: true,
 				zIndex: 1200,
 				repositionOnContent: true,
-				//pointer: 'left',
+				pointer: 'top',
 				//pointTo: 'left',
 				position: {
 				  x: 'left',
@@ -719,32 +806,31 @@ $(function() {
 			});
 			
 			
-			
-			$('body').off('mousedown', '[userv2statics]').on('mousedown', '[userv2statics]', function() {
+			$('body').off(tapEvent, '[userv2statics]').on(tapEvent, '[userv2statics]', function() {
 				let staticsBtn = this;
 				uSUserId = $(this).attr('userv2statics');
 				getAjaxHtml('users/statics/user', {user_id: uSUserId}, function(html) {
 					usersStaticsTooltip.setContent(html);
 					
-					$('body').off('change', '[usersv2taticlistitem]').on('change', '[usersv2taticlistitem]', function() {
+					$('body').off('change', '[usersv2staticlistitem]').on('change', '[usersv2staticlistitem]', function() {
 						let staticItem = this,
-							static = $(staticItem).attr('usersv2taticlistitem'),
+							static = $(staticItem).attr('usersv2staticlistitem'),
 							isChecked = $(staticItem).is(':checked') ? 1 : 0;
 						
 						setUserStatic({user_id: uSUserId, static_id: static, stat: isChecked}, function() {
 							if (!isChecked) {
-								$(staticItem).siblings('label').find('[usersv2taticlider]').removeAttrib('checked');
-								$(staticItem).siblings('label').find('[usersv2taticmain]').removeAttrib('checked');
+								$(staticItem).siblings('label').find('[usersv2staticlider]').removeAttrib('checked');
+								$(staticItem).siblings('label').find('[usersv2staticmain]').removeAttrib('checked');
 							}
 							setDoneStatics(staticsBtn);
 						});
 					});
 					
 					
-					$('body').off('change', '[usersv2taticlider]').on('change', '[usersv2taticlider]', function() {
+					$('body').off('change', '[usersv2staticlider]').on('change', '[usersv2staticlider]', function() {
 						let mainCheck = $(this).closest('li').children('input'),
 							isChecked = $(this).is(':checked') ? 1 : 0,
-							static = $(this).attr('usersv2taticlider');
+							static = $(this).attr('usersv2staticlider');
 						
 						setUserStatic({user_id: uSUserId, static_id: static, lider: isChecked}, function() {
 							if ($(mainCheck).is(':checked') == false) {
@@ -754,12 +840,10 @@ $(function() {
 						});
 					});
 					
-					
-					
-					$('body').off('change', '[usersv2taticmain]').on('change', '[usersv2taticmain]', function() {
+					$('body').off('change', '[usersv2staticmain]').on('change', '[usersv2staticmain]', function() {
 						let mainCheck = $(this).closest('li').children('input'),
 							isChecked = $(this).is(':checked') ? 1 : 0,
-							static = $(this).attr('usersv2taticmain');
+							static = $(this).attr('usersv2staticmain');
 							
 						setUserStatic({user_id: uSUserId, static_id: static, main: isChecked}, function() {
 							if ($(mainCheck).is(':checked') == false) {
@@ -768,21 +852,8 @@ $(function() {
 							setDoneStatics(staticsBtn);
 						});
 					});
-					
 				});
 			});
-			
-			
-			// Закрыть календари и тултипы при скролле
-			$('#usersTable').off('onScrollStart').on('onScrollStart', function() {
-				usersColorsTooltip.close();
-				usersStaticsTooltip.close();
-				$('#usersList').find('[date]').datepicker('hide');
-				$('#usersList').find('[date]').blur();
-			});
-			
-			
-			
 			
 			// Добавить галочку к кнопке при выборе статиков
 			function setDoneStatics(btn) {
@@ -794,28 +865,139 @@ $(function() {
 			
 			
 			
+			
+			
+			
+			
+			
+			
+			
 			//------------- Классы
+			let uCUserId;
+			if (usersClassesTooltip) usersClassesTooltip.destroy();
+			usersClassesTooltip = new jBox('Tooltip', {
+				attach: '[userv2classes]',
+				trigger: 'click',
+				closeOnMouseleave: true,
+				//addClass: '',
+				onOpen: function() {
+					closeToolTips('classes');
+					usersClassesTooltip.setContent('<div class="d-flex w250px h200px align-items-center justify-content-center flex-column"><i class="fa fa-spinner fa-pulse fz22px"></i><p>Загрузка классов...</p></div>');
+				},
+				outside: 'x',
+				ignoreDelay: true,
+				zIndex: 1200,
+				repositionOnContent: true,
+				pointer: 'top',
+				//pointTo: 'left',
+				position: {
+				  x: 'left',
+				  y: 'center'
+				}
+			});
+			
+			
+			
+			$('body').off(tapEvent, '[userv2classes]').on(tapEvent, '[userv2classes]', function() {
+				let classesBtn = this;
+				uCUserId = $(this).attr('userv2classes');
+				getAjaxHtml('users/classes/user', {user_id: uCUserId}, function(html) {
+					usersClassesTooltip.setContent(html);
+					
+					$('body').off('change', '[usersv2classeslistitem]').on('change', '[usersv2classeslistitem]', function() {
+						let staticItem = this,
+							cls = $(staticItem).attr('usersv2classeslistitem'),
+							isChecked = $(staticItem).is(':checked') ? 1 : 0;
+						
+						setUserClass({user_id: uCUserId, class_id: cls, stat: isChecked}, function() {
+							if (!isChecked) {
+								$(staticItem).siblings('label').find('[usersv2classesmentor]').removeAttrib('checked');
+							}
+							setDoneClasses(classesBtn);
+						});
+					});
+					
+					
+					$('body').off('change', '[usersv2classesmentor]').on('change', '[usersv2classesmentor]', function() {
+						let mentorCheck = $(this).closest('li').children('input'),
+							isChecked = $(this).is(':checked') ? 1 : 0,
+							cls = $(this).attr('usersv2classesmentor');
+						
+						setUserClass({user_id: uCUserId, class_id: cls, mentor: isChecked}, function() {
+							if ($(mentorCheck).is(':checked') == false) {
+								$(mentorCheck).setAttrib('checked');
+							}
+							setDoneClasses(classesBtn);
+						});
+					});
+				});
+			});
+			
+			// Добавить галочку к кнопке при выборе статиков
+			function setDoneClasses(btn) {
+				$(btn).addClass('done');
+				$(btn).closest('tr').addClass('changed');
+			}
+			
+			
+			
+			
 			
 			
 			
 			
 			
 			//------------- Персонажи
+			let uPUserId;
+			if (usersPersonagesTooltip) usersPersonagesTooltip.destroy();
+			usersPersonagesTooltip = new jBox('Tooltip', {
+				attach: '[userv2personages]',
+				trigger: 'click',
+				closeOnMouseleave: true,
+				//addClass: '',
+				onOpen: function() {
+					closeToolTips('personages');
+				},
+				outside: 'x',
+				ignoreDelay: true,
+				zIndex: 1200,
+				repositionOnContent: true,
+				pointer: 'top',
+				//pointTo: 'left',
+				position: {
+				  x: 'left',
+				  y: 'center'
+				}
+			});
 			
 			
 			
+			$('body').off(tapEvent, '[userv2personages]').on(tapEvent, '[userv2personages]', function() {
+				uPUserId = $(this).attr('userv2personages');
+				getAjaxHtml('admin/personages/get', {from_id: uPUserId, users_list: 1}, function(html) {
+					usersPersonagesTooltip.setContent('<div class="usersv2personageslist">'+html+'</div>');
+				});
+			});
 			
 			
 			
-			
-			
+			// Закрыть календари и тултипы при скролле
+			$('#usersTable').off('onScrollStart').on('onScrollStart', function() {
+				closeToolTips();
+				$('#usersList').find('[date]').datepicker('hide');
+				$('#usersList').find('[date]').blur();
+			});
 			
 			
 		});
 	}
 	
-	
-	
+	function closeToolTips(exclude) {
+		if (exclude != 'colors' && typeof usersColorsTooltip.close === 'function') usersColorsTooltip.close();
+		if (exclude != 'statics' && typeof usersStaticsTooltip.close === 'function') usersStaticsTooltip.close();
+		if (exclude != 'classes' && typeof usersClassesTooltip.close === 'function') usersClassesTooltip.close();
+		if (exclude != 'personages' && typeof usersPersonagesTooltip.close === 'function') usersPersonagesTooltip.close();
+	}
 	
 	
 	

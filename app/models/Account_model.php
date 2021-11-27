@@ -301,30 +301,23 @@ class Account_model extends My_Model {
 	 * @param 
 	 * @return 
 	*/
-	public function getNextRankData() {
+	public function getNextRankData($userId = false) {
 		$this->db->select('u.reg_date, u.stage, u.rank');
-		$this->db->where('u.id', $this->userData['id']);
-		$queryU = $this->db->get('users u');
-		$respUser = $queryU->row_array();
+		$this->db->where('u.id', ($userId ?: $this->userData['id']));
+		if (!$userData = $this->_row('users u')) return false;
 		
-		$stageDaysCount = ($countDays = floor((time() - $respUser['reg_date']) / (60 * 60 * 24)) + $respUser['stage']) > 0 ? $countDays : 1;
+		$userDays = floor((time() - $userData['reg_date']) / (60 * 60 * 24)) ?: 1;
+		$stageDaysCount = ($countDays = floor((time() - $userData['reg_date']) / (60 * 60 * 24)) + $userData['stage']) > 0 ? $countDays : 1;
 		
-		$this->db->order_by('r.period', 'ASC');
 		$this->db->select('r.name, r.period');
-		$query = $this->db->get('ranks r');
+		$this->db->where('r.period >', $stageDaysCount);
+		$this->db->order_by('r.period', 'ASC');
+		if (!$nextRank = $this->_row('ranks r')) return false;
 		
-		$data = [];
-		if ($ranks = $query->result_array()) {
-			foreach ($ranks as $rank) {
-				if ($stageDaysCount < $rank['period']) {
-					$data['count_days'] = $rank['period'] - $stageDaysCount;
-					$data['next_rank'] = $rank['name'];
-					break;
-				}
-			}
-		}
-		
-		return $data;
+		return [
+			'count_days' 	=> $nextRank['period'] - $stageDaysCount,
+			'next_rank'		=> $nextRank['name']
+		];
 	}
 	
 	

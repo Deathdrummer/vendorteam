@@ -3,7 +3,7 @@
 		<div class="d-flex align-items-center justify-content-between">
 			<img src="{{base_url('public/images/users/mini/'~avatar)|no_file('public/images/user_mini.jpg')}}" alt="{{nickname}}" class="avatar w40px h40px">
 			<div class="field ml4px w170px">
-				<input type="text" value="{{nickname}}" userfield="nickname">
+				<input type="text" value="{{nickname}}" class="fz12px" userfield="nickname">
 			</div>
 		</div>
 	</td>
@@ -32,7 +32,7 @@
 				
 				{% elseif field in ['stage', 'deposit_percent'] %}
 					<div class="field">
-						<input type="number" value="{{value}}" showrows userfield="{{field}}">
+						<input type="number" value="{{value}}" class="fz14px" showrows userfield="{{field}}">
 					</div>
 				
 				{% elseif field in ['payment'] %}
@@ -50,7 +50,7 @@
 				
 				{% elseif field in ['reg_date', 'birthday'] %}
 					<div class="date">
-						<input type="text" value="{{value|d}}" date userfield="{{field}}">
+						<input type="text" value="{{value|d}}" class="fz12px" date userfield="{{field}}">
 					</div>
 					
 				{# {% elseif field in ['statics'] %}
@@ -67,9 +67,9 @@
 				{% elseif field in ['role', 'access'] %}
 					<div class="select">
 						{% if field == 'role' %}
-							<select userfield="{{field}}">
+							<select userfield="{{field}}" class="fz12px">
 								{% if roles %}
-									<option selected disabled>Выбрать</option>
+									<option selected disabled>Не выбрана</option>
 									{% for rId, role in roles %}
 										<option value="{{rId}}"{% if value == rId %} selected{% endif %}>{{role}}</option>
 									{% endfor %}
@@ -78,9 +78,9 @@
 								{% endif %}
 							</select>
 						{% elseif field == 'access' %}
-							<select userfield="{{field}}">
+							<select userfield="{{field}}" class="fz12px">
 								{% if access %}
-									<option selected disabled>Выбрать</option>
+									<option selected disabled>Не выбран</option>
 									{% for aId, name in access %}
 										<option value="{{aId}}"{% if value == aId %} selected{% endif %}>{{name}}</option>
 									{% endfor %}
@@ -132,17 +132,17 @@
 	</td>
 	<td class="center">
 		<div class="buttons notop inline">
-			<button class="small w28px alt2" title="Классы"><i class="fa fa-th-list fz14px"></i></button>
+			<button class="small w28px alt2" userv2classes="{{id}}" title="Классы"><i class="fa fa-th-list fz14px"></i></button>
 		</div>
 	</td>
 	<td class="center">
 		<div class="buttons notop inline">
-			<button class="small w28px alt2" title="Персонажи"><i class="fa fa-th-list fz14px"></i></button>
+			<button class="small w28px alt2" userv2personages="{{id}}" title="Персонажи"><i class="fa fa-th-list fz14px"></i></button>
 		</div>
 	</td>
 	<td class="center">
 		<div class="buttons notop inline">
-			<button class="small w28px" title="Карточка участника"><i class="fa fa-id-card"></i></button>
+			<button class="small w28px" userv2card="{{id}}" title="Карточка участника"><i class="fa fa-id-card"></i></button>
 			
 			{% if excluded %}
 				<button class="small w28px pay" returnexcludeduser="{{id}}" title="Вернуть отстраненного участника"><i class="fa fa-user-o"></i><i class="icon fa fa-plus"></i></button>

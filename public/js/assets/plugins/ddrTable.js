@@ -18,9 +18,8 @@
 			latency: false
 		}, params);
 	
-	
+	if (table.length == 0) return false;
 	if (table[0].localName != 'table') throw Error('ddrTable ошибка! Необходимо указать таблицу в качестве селектора!');
-	
 	
 	
 	let rand = random(0,9999),

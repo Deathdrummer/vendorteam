@@ -127,6 +127,15 @@
 
 
 
+=hr($start: 10%, $end: 90%, $bgColor: #d4dbe0)
+	border: 0
+	height: 1px
+	background:
+		color: $bgColor
+		image: linear-gradient(to left, #fff 0%, $bgColor $start, $bgColor $end, #fff 100%)
+
+
+
 =loading($params: (bgColor: ('#fff', '0.94'), text: '', icon: '\f110', iconFz: '30px', textFz: '12px', spinSpeed: '1s'))
 	position: relative
 	height: 100%
