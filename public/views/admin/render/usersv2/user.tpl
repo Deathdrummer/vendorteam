@@ -10,7 +10,8 @@
 			</li>
 			<li class="usersv2usercard__item">
 				<span>Звание</span>
-				<strong>{{rank.current_rank}}</strong><span class="fontcolor"> -> {{rank.next_rank}} <small>({{rank.count_days}} д.)</small></span>
+				<strong>{{rank.current_rank}}</strong>
+				{% if rank.next_rank %}<span class="fontcolor"> -> {{rank.next_rank}} <small>({{rank.count_days}} д.)</small></span>{% endif %}
 			</li>
 			<li class="usersv2usercard__item">
 				<span>Баланс</span>

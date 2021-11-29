@@ -1163,9 +1163,10 @@ class Account extends MY_Controller {
 	public function change_user_color() {
 		if (!$this->input->is_ajax_request()) return false;
 		$data = $this->input->post();
+		if (!isset($data['user_id']) || !isset($data['color'])) return false;
 		$this->load->model('users_model');
-		if ($this->users_model->changeUserColor($data['user_id'], $data['color'])) echo '1';
-		else echo '';
+		if (!$this->users_model->changeUserColor($data['user_id'], $data['color'])) exit('0');
+		echo '1';
 	}
 	
 	
