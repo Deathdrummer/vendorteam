@@ -3203,7 +3203,7 @@ $(document).ready(function() {
 				
 				
 				$('#setBirthDayDataBtn').on(tapEvent, function() {
-					birthDayDataBtnWin.dialog('<p>Внимание! Дата задается один раз и изменить ее будет нельзя!<small>Информация будет доступна только администратору</small>', 'Задать', 'Отмена', function() {
+					birthDayDataBtnWin.dialog('<p>Внимание! Дата задается один раз и изменить ее будет нельзя!</p><small>Информация будет доступна только администратору</small>', 'Задать', 'Отмена', function() {
 						birthDayDataBtnWin.wait();
 						let closeBDTOut;
 						clearTimeout(closeBDTOut);

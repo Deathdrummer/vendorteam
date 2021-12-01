@@ -106,7 +106,8 @@ class MY_Controller extends CI_Controller {
 				'ratings' 				=> 'Рейтинги',
 				'timesheet'				=> 'Расписание',
 				'offtime'				=> 'Выходные',
-				'vacation'				=> 'Отпуска'
+				'vacation'				=> 'Отпуска',
+				'planner'				=> 'Планировщик'
 			],
 			'Статистика и отчеты' => [
 				'reports'				=> [

@@ -7,7 +7,7 @@
 	<p class="mr10px">Сместить диапазон:</p>
 	<div class="buttons notop left">
 		<button offtimehistory="-" class="small w34px main" title="На месяц назад"><i class="fa fa-angle-left"></i></button>
-		<button{% if history_disabled %} disabled{% endif %} offtimehistory="+" class="small w34px main" title="На месяц вперед"><i class="fa fa-angle-right"></i></button>
+		<button{% if history_disabled %} disabled{% else %} offtimehistory="+"{% endif %} class="small w34px main" title="На месяц вперед"><i class="fa fa-angle-right"></i></button>
 	</div>
 </div>
 
@@ -17,7 +17,7 @@
 			{% for week in offtime_dates|batch(7) %}
 				<tr>
 					{% for date in week %}
-						{% if disabled[static][date] is not defined and current_date < date - location.timeoffset %}
+						{% if disabled[static][date] is not defined and current_date < (date - location.timeoffset) %}
 							<td>
 								<div class="offtime__title">
 									<strong>{{date|d}}</strong>

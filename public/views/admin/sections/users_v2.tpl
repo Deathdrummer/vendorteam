@@ -130,7 +130,7 @@ $(function() {
 			latency: 100
 		});
 	
-	if (!ddrLs('usersv2:selected_statics')) ddrLs('usersv2:current_static', false);
+	if (!ddrStore('usersv2:selected_statics')) ddrStore('usersv2:current_static', false);
 	
 	getStaticsTabs(function() {
 		getUsers(true);
@@ -145,7 +145,7 @@ $(function() {
 
 	//---------------------------------------------------- Столбцы
 	$('#usersv2FielsdBtn').on(tapEvent, function() {
-		let fieldsData = ddrLs('usersv2:selected_fields'),
+		let fieldsData = ddrStore('usersv2:selected_fields'),
 			setReload = false;
 		popUp({
 			title: 'Столбцы|4',
@@ -154,13 +154,13 @@ $(function() {
 			closeButton: 'Закрыть',
 			onClose: function() {
 				if (setReload) {
-					ddrLs('usersv2:selected_fields', fieldsData);
+					ddrStore('usersv2:selected_fields', fieldsData);
 					getUsers(true);
 				}
 			},
 			winClass: false,
 		}, function(usersFieldsWin) {
-			usersFieldsWin.setData('users/fields', {selected_fields_keys: ddrLs('usersv2:selected_fields')}, function() {
+			usersFieldsWin.setData('users/fields', {selected_fields_keys: ddrStore('usersv2:selected_fields')}, function() {
 				
 				new Sortable($('#usersFieldsAll')[0], {
 					group: 'shared',
@@ -210,7 +210,7 @@ $(function() {
 				}	
 			}
 		}, function(usersStaticsWin) {
-			usersStaticsWin.setData('users/statics', {selected_statics: ddrLs('usersv2:selected_statics')}, function() {
+			usersStaticsWin.setData('users/statics', {selected_statics: ddrStore('usersv2:selected_statics')}, function() {
 				
 				
 				$('#usersv2StaticsGroups').find('[usersv2groupbtn]').on(tapEvent, function() {
@@ -246,9 +246,9 @@ $(function() {
 						selectedStatics.push(isInt(stId) ? parseInt(stId) : stId);
 					});
 					
-					ddrLs('usersv2:selected_statics', selectedStatics);
-					if (selectedStatics.length) ddrLs('usersv2:current_static', selectedStatics.shift());
-					else ddrLs('usersv2:current_static', null);
+					ddrStore('usersv2:selected_statics', selectedStatics);
+					if (selectedStatics.length) ddrStore('usersv2:current_static', selectedStatics.shift());
+					else ddrStore('usersv2:current_static', null);
 				}
 				
 			});
@@ -269,7 +269,7 @@ $(function() {
 		let staticId = $(this).attr('usersv2tabsstatic');
 		$('#usersv2StaticsTabs').find('.usersv2staticstabs__item_active').removeClass('usersv2staticstabs__item_active');
 		$(this).addClass('usersv2staticstabs__item_active');
-		ddrLs('usersv2:current_static', staticId);
+		ddrStore('usersv2:current_static', staticId);
 		getUsers(true);
 	});
 	
@@ -305,8 +305,8 @@ $(function() {
 		$('#usersv2SearchStr').val('');
 		searchStr = null;
 		sortField = null;
-		ddrLs('usersv2:selected_statics', false);
-		ddrLs('usersv2:current_static', false);
+		ddrStore('usersv2:selected_statics', false);
+		ddrStore('usersv2:current_static', false);
 		getStaticsTabs(function() {
 			getUsers(true);
 		});
@@ -463,8 +463,8 @@ $(function() {
 		searchStr = $('#usersv2SearchStr').val();
 		if (searchStr.length < 2) return false;
 		
-		ddrLs('usersv2:selected_statics', false);
-		ddrLs('usersv2:current_static', false);
+		ddrStore('usersv2:selected_statics', false);
+		ddrStore('usersv2:current_static', false);
 		
 		getStaticsTabs(function() {
 			getUsers(true);
@@ -476,13 +476,13 @@ $(function() {
 	
 	function getStaticsTabs(callback) {
 		getAjaxHtml('users/statics/tabs', {
-			selected_statics: ddrLs('usersv2:selected_statics'),
-			current_static: ddrLs('usersv2:current_static'),
+			selected_statics: ddrStore('usersv2:selected_statics'),
+			current_static: ddrStore('usersv2:current_static'),
 			search_field: searchField,
 			search_str: searchStr
 		}, function(html, stat, headers) {
 			if (stat) {
-				ddrLs('usersv2:current_static', headers.current_static);
+				ddrStore('usersv2:current_static', headers.current_static);
 				$('#usersv2StaticsTabs').html(html);
 			} else $('#usersv2StaticsTabs').html('');
 			if (callback && typeof callback == 'function') callback();
@@ -523,7 +523,7 @@ $(function() {
 			scrollOffset = 0;
 		}
 		
-		let fields = ddrLs('usersv2:selected_fields');
+		let fields = ddrStore('usersv2:selected_fields');
 		
 		$('.usersv2').addClass('usersv2__waiting');
 		
@@ -532,7 +532,7 @@ $(function() {
 			getAjaxHtml('users/list', {
 				offset: scrollOffset,
 				fields: fields,
-				static: ddrLs('usersv2:current_static'),
+				static: ddrStore('usersv2:current_static'),
 				search_field: searchField,
 				search_str: searchStr,
 				sort_field: sortField,

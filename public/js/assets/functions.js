@@ -828,7 +828,7 @@ getAjaxJson = function() {
 		- ключ
 		- значение (если значение не указано - то ведется запрос данных по ключу, если значение - FALSE - то данные по ключу удаляются)
 */
-ddrLs = function(key, value) {
+ddrStore = function(key, value) {
 	if (!key || typeof key != 'string') return false;
 	if (value === false) {
 		localStorage.removeItem(key);

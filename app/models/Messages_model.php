@@ -119,6 +119,7 @@ class Messages_model extends MY_Model {
 		if (!$userId) return false;
 		$this->db->select('id, title, to');
 		$this->db->where("JSON_CONTAINS(JSON_KEYS(um.to), '\"".$userId."\"')");
+		$this->db->order_by('id', 'DESC');
 		if (!$res = $this->_result($this->usersMesagesTable.' um')) return false;
 		
 		$data = [];

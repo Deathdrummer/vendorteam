@@ -22,6 +22,19 @@ if (!function_exists('snakeToCamelcase')) {
 
 
 
+if (!function_exists('jsonResponse')) {
+	/**
+	 * ответ для AJAX запроса
+	 * @param 
+	 * @return 
+	*/
+	function jsonResponse($stat = false) {
+		if ($stat) echo '1';
+		else echo '0';
+	}
+}
+
+
 
 
 if (!function_exists('arrRemoveByKeys')) {
@@ -398,13 +411,18 @@ if (!function_exists('getDatesRange')) {
 	 * - шаг даты для диапазона (day день, week неделя и т.д.)
 	 * - направление диапазона (+ возрастание или - убывание)
 	 * - что вернуть (маска функции Date()) Например: 'Y-m-d H:i' По-умолчанию UNIX
+	 * - строгость UNIX даты. по-умолчанию - строго
 	*/
-	function getDatesRange($currentDate = null, $itemsCount = null, $dateType = 'day', $order = '+', $returnMask = false) {
+	function getDatesRange($currentDate = null, $itemsCount = null, $dateType = 'day', $order = '+', $returnMask = false, $strict = true) {
 		$currentDate = !is_null($currentDate) ? (!is_numeric($currentDate) ? strtotime($currentDate) : $currentDate) : time();
 		$datesRange = [];
 		for ($i = 0; $i < $itemsCount; $i++) {
+			strtotime(date('Y-m-d', strtotime('+'.$i.$dateType, $currentDate)));
 			if ($returnMask) $datesRange[] = date($returnMask, strtotime('+'.$i.$dateType, $currentDate));
-			else $datesRange[] = strtotime('+'.$i.$dateType, $currentDate);
+			else {
+				if ($strict) $datesRange[] = strtotime('+'.$i.$dateType, $currentDate);
+				else $datesRange[] = strtotime(date('Y-m-d', strtotime('+'.$i.$dateType, $currentDate)));
+			}
 		}
 		return $datesRange;
 	}

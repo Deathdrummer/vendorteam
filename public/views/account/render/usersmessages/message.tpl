@@ -3,4 +3,4 @@
 	<p class="fz14px">{{date|d}} в {{date|t}}</p>
 </div>
 
-<div>{{message|raw}}</div>
+<div class="format">{{message|raw}}</div>
