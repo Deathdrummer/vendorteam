@@ -194,8 +194,8 @@ class Users extends MY_Controller {
 	public function userinfo($action = false) {
 		$post = bringTypes($this->input->post());
 		switch ($action) {
-			case 'init':
-				
+			case 'change_deposit':
+				echo jsonResponse($this->usersV2->userinfo('changeDeposit', $post));
 				break;
 			
 			default:

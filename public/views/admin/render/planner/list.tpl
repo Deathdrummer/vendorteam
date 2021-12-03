@@ -14,6 +14,7 @@
 												<img src="{{base_url('public/images/users/mini/'~user.avatar)|no_file('public/images/user_mini.jpg')}}" alt="" class="avatar h30px w30px">
 												<p class="ml4px fz12px" plannerusername>{{user.nickname}}</p>
 												<div class="ml-auto d-flex align-items-center">
+													<i class="fa fa-gift fz16px fontcolor fontcolor_hovered mr4px" plannergiftsbtn="{{user.id}}" title="Отправить подарки"></i>
 													<i class="fa fa-envelope fz14px fontcolor fontcolor_hovered" plannersendmessbtn="{{user.id}}" title="Отправить сообщение"></i>
 												</div>
 											</div>

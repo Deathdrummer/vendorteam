@@ -200,7 +200,7 @@
 												</div> <!--  -->
 											{% endif %}
 											
-											<div class="column{% if notCompound %} h100{% endif %}">
+											<div class="column{% if notCompound %} h100{% endif %} mb30px mb-md-0px">
 												<div class="column__title">
 													<p>Важные события</p>
 												</div>

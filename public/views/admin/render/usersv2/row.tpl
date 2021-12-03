@@ -1,7 +1,7 @@
 <tr userid="{{id}}">
 	<td>
 		<div class="d-flex align-items-center justify-content-between">
-			<img src="{{base_url('public/images/users/mini/'~avatar)|no_file('public/images/user_mini.jpg')}}" alt="{{nickname}}" class="avatar w40px h40px">
+			<img src="{{base_url('public/images/users/mini/'~avatar)|no_file('public/images/user_mini.jpg')}}" userv2card="{{id}}" alt="{{nickname}}" class="avatar w40px h40px pointer" title="Карточка участника «{{nickname}}»">
 			<div class="field ml4px w170px">
 				<input type="text" value="{{nickname}}" class="fz12px" userfield="nickname">
 			</div>

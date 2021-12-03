@@ -489,6 +489,11 @@ class Users_model extends MY_Model {
 				return $userData;
 				break;
 			
+			case 'changeDeposit':
+				$this->db->where('id', $userId);
+				return $this->db->update('users', ['deposit' => $deposit]);
+				break;
+			
 			default: break;
 		}
 	}

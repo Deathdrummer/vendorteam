@@ -19,7 +19,11 @@
 			</li>
 			<li class="usersv2usercard__item">
 				<span>Резерв</span>
-				<strong>{{deposit|number_format(2, '.', ' ')}} ₽</strong>
+				<div class="usersv2usercard__input">
+					<input type="text" id="usersv2UserCardDeposit" value="{{deposit}}">
+				</div>
+				
+				{#<strong contenteditable></strong>#}
 			</li>
 			<li class="usersv2usercard__item">
 				<span>Плат. данные</span>

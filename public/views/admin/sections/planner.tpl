@@ -76,8 +76,8 @@ $(function() {
 	
 	
 	
-	
-	$('body').on(tapEvent, '[plannersendmessbtn]', function() {
+	// ------------------------- Отправить сообщение
+	$('body').off(tapEvent, '[plannersendmessbtn]').on(tapEvent, '[plannersendmessbtn]', function() {
 		let userId = parseInt($(this).attr('plannersendmessbtn')),
 			nickname = $(this).closest('[planneruser]').find('[plannerusername]').text();
 		
@@ -126,6 +126,76 @@ $(function() {
 				});
 				
 			});
+		});
+	});
+	
+	
+	
+	
+	
+	
+	
+	// ------------------------- Отправить подарок
+	$('body').off(tapEvent, '[plannergiftsbtn]').on(tapEvent, '[plannergiftsbtn]', function() {
+		let userId = $(this).attr('plannergiftsbtn');
+		popUp({
+			title: 'Добавить подарки',
+		    width: 600,
+		    buttons: [{id: 'personalGiftsAddBtn', title: 'Выбрать'}],
+		    buttonsAlign: 'left',
+		    disabledButtons: true,
+		    closePos: 'left',
+		    closeByButton: false,
+		    closeButton: 'Отмена',
+		    winClass: false,
+		    contentToCenter: false,
+		    buttonsOnTop: false,
+		    topClose: true
+		}, function(personalGiftsAddWin) {
+			personalGiftsAddWin.setData('admin/personalgifts/get', {section: 'personal'}, function(html) {
+				
+				$('#personalGiftsList').ddrScrollTableY({height: '600px', cls: 'scroll_y_thin'});
+				
+				$('#personalGiftsList').find('[personalgifttoadd]').on('change', function() {
+					let countChecked = $('#personalGiftsList').find('[personalgifttoadd]:checked').length;
+					if (countChecked) $('#personalGiftsAddBtn').removeAttrib('disabled');
+					else $('#personalGiftsAddBtn').setAttrib('disabled');
+				});
+				
+				$('#personalGiftsAddBtn').on(tapEvent, function() {
+					personalGiftsAddWin.wait();
+					let giftsToAdd = [];
+					$('#personalGiftsList').find('[personalgifttoadd]:checked').each(function() {
+						let giftId = $(this).val(),
+							count = $(this).closest('tr').find('[personalgifttoaddcount]').val();
+						giftsToAdd.push({
+							id: parseInt(giftId),
+							count: count
+						});
+					});
+					
+					$.post('admin/personalgifts/add', {user_id: userId, gifts: giftsToAdd}, function(response) {
+						if (response) {
+							personalGiftsAddWin.close();
+							notify('Подарки успешно добавлены');
+							socket.emit('gifts:new', userId, giftsToAdd.length);
+						} else {
+							personalGiftsAddWin.wait(false);
+							notify('Ошибка добавления подарков', 'error');
+						}
+					}).fail(function(e) {
+						personalGiftsAddWin.wait(false);
+						showError(e);
+						notify('Системная ошибка!', 'error');
+					});
+				});
+				
+				
+				
+			});
+			
+				
+			
 		});
 	});
 	

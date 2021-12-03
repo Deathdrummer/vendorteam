@@ -416,6 +416,20 @@ $(function() {
 					maxHeight: '300px'
 				});
 				
+				$('#usersv2UserCardDeposit').number(true, 2, '.', ' ');
+				
+				let setDepositTOut;
+				$('#usersv2UserCardDeposit').on('keyup', function() {
+					let input = this;
+					clearTimeout(setDepositTOut);
+					setDepositTOut = setTimeout(function() {
+						let deposit = parseFloat($(input).val());
+						getAjaxJson('users/userinfo/change_deposit', {user_id: userId, deposit: deposit}, function(response) {
+							if (!response) notify('Ошибка изменения резерва!', 'error');
+							else $(input).parent().addClass('usersv2usercard__input_changed');
+						});
+					}, 300);
+				});
 			});
 		});
 	});

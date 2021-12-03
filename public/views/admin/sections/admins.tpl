@@ -78,8 +78,12 @@
 				$('[permission]').on('change', function() {
 					let url = $(this).attr('permission'),
 						subitems = $(this).closest('tr').siblings('tr[subitems="'+url+'"]'),
+						elemitems = $(this).closest('tr.adminpermissions__subitem').siblings('tr[elemitems="'+url+'"]'),
 						isSub = !!subitems,
-						isChecked = !$(this).is(':checked');
+						isChecked = !$(this).is(':checked'),
+						siblingsLength = $(this).closest('tbody').find('[permission]:checked').length,
+						level = $(this).hasAttrib('permissionelem') ? 2 : 1;
+					
 					if (subitems.length) {
 						$(subitems).find('[permission]').each(function() {
 							if (isChecked) $(this).removeAttrib('checked');
@@ -87,12 +91,32 @@
 						});
 					}
 					
-					if (isSub) $(this).closest('[subitems]').prev('.adminpermissions__item').find('[permission]:not([permissionsub])').setAttrib('checked');
+					if (elemitems.length) {
+						$(elemitems).find('[permission]').each(function() {
+							if (isChecked) $(this).removeAttrib('checked');
+							else $(this).setAttrib('checked');
+						});
+					}
+					
+					if (isSub) {
+						$(this).closest('[subitems]').prev('.adminpermissions__item').find('[permission]:not([permissionsub])').setAttrib('checked');
+						$(this).closest('[elemitems]').prev('.adminpermissions__subitem').find('[permission]:not([permissionelem])').setAttrib('checked');
+					}
+					
+					
+					if (siblingsLength == 0) {
+						if (level == 1) {
+							$(this).closest('.adminpermissions__subitems').prev('.adminpermissions__item').find('[permission]').removeAttrib('checked');
+						} else if (level == 2) {
+							$(this).closest('.adminpermissions__subitems').prev('.adminpermissions__subitem').find('[permission]').removeAttrib('checked');
+						}
+					}
 					
 					permissions = [];
 					$('#adminPermissionsForm').find('[permission]:checked').each(function() {
 						permissions.push($(this).attr('permission'));
 					});
+					
 					$(input).val(permissions.join(','));
 					$(saveUpdateBtns).removeAttrib('disabled');
 				});	
@@ -108,6 +132,18 @@
 						$('[subitems="'+url+'"]').removeClass('adminpermissions__subitems_opened');
 					} else {
 						$('[subitems="'+url+'"]').addClass('adminpermissions__subitems_opened');
+					}
+					
+				});	
+				
+				$('[openelemitems]').on(tapEvent, function() {
+					let url = $(this).attr('openelemitems'),
+						isOpened = $('[elemitems="'+url+'"]').hasClass('adminpermissions__subitems_opened');
+					
+					if (isOpened) {
+						$('[elemitems="'+url+'"]').removeClass('adminpermissions__subitems_opened');
+					} else {
+						$('[elemitems="'+url+'"]').addClass('adminpermissions__subitems_opened');
 					}
 					
 				});	

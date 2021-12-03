@@ -2,33 +2,33 @@
 	<div class="section_title">
 		<h2>KPI планы</h2>
 	</div>
-
+	
 	<fieldset>
 		<legend>Панель управления</legend>
 		
 		<div class="item inline">
 			<div class="buttons notop">
-				<button id="kpiPeriodsButton" class="fieldheight" title="Новый KPI период"><i class="fa fa-list-alt"></i></button>
-				<button id="kpiFormButton" class="fieldheight" title="Заполнить KPI план"><i class="fa fa-vcard-o"></i></button>
-				<button id="kpiCheckPlanButton" class="fieldheight" title="Отметить достижения KPI плана"><i class="fa fa-check-square-o"></i></button>
+				{% if permissions is not defined or id~'.kpiPeriodsButton' in permissions %}<button id="kpiPeriodsButton" class="fieldheight" title="Новый KPI период"><i class="fa fa-list-alt"></i></button>{% endif %}
+				{% if permissions is not defined or id~'.kpiFormButton' in permissions %}<button id="kpiFormButton" class="fieldheight" title="Заполнить KPI план"><i class="fa fa-vcard-o"></i></button>{% endif %}
+				{% if permissions is not defined or id~'.kpiCheckPlanButton' in permissions %}<button id="kpiCheckPlanButton" class="fieldheight" title="Отметить достижения KPI плана"><i class="fa fa-check-square-o"></i></button>{% endif %}
 				
-				<button id="kpiReportsButton" class="fieldheight alt ml30px" title="Сохраненные отчеты"><i class="fa fa-list"></i></button>
-				<button id="kpiStatisticsButton" class="fieldheight alt" title="Статистика выполнения задач"><i class="fa fa-bar-chart-o"></i></button>
-				<button id="kpiStatisticsSaveButton" disabled class="fieldheight alt" title="Сохранить статистику"><i class="fa fa-save"></i></button>
+				{% if permissions is not defined or id~'.kpiReportsButton' in permissions %}<button id="kpiReportsButton" class="fieldheight alt ml30px" title="Сохраненные отчеты"><i class="fa fa-list"></i></button>{% endif %}
+				{% if permissions is not defined or id~'.kpiStatisticsButton' in permissions %}<button id="kpiStatisticsButton" class="fieldheight alt" title="Статистика выполнения задач"><i class="fa fa-bar-chart-o"></i></button>{% endif %}
+				{% if permissions is not defined or id~'.kpiStatisticsSaveButton' in permissions %}<button id="kpiStatisticsSaveButton" disabled class="fieldheight alt" title="Сохранить статистику"><i class="fa fa-save"></i></button>{% endif %}
 				
-				<button id="kpiReportsBonusButton" class="fieldheight pay ml30px" title="Сохраненные бонусные отчеты"><i class="fa fa-list"></i><i class="fa fa-percent icon"></i></button>
-				<button id="kpiStatisticsBonusButton" class="fieldheight pay" title="Статистика перевыполнения задач"><i class="fa fa-bar-chart-o"></i><i class="fa fa-percent icon"></i></button>
-				<button id="kpiStatisticsBonusSaveButton" disabled class="fieldheight pay" title="Сохранить перевыплаты"><i class="fa fa-save"></i><i class="fa fa-percent icon"></i></button>
+				{% if permissions is not defined or id~'.kpiReportsBonusButton' in permissions %}<button id="kpiReportsBonusButton" class="fieldheight pay ml30px" title="Сохраненные бонусные отчеты"><i class="fa fa-list"></i><i class="fa fa-percent icon"></i></button>{% endif %}
+				{% if permissions is not defined or id~'.kpiStatisticsBonusButton' in permissions %}<button id="kpiStatisticsBonusButton" class="fieldheight pay" title="Статистика перевыполнения задач"><i class="fa fa-bar-chart-o"></i><i class="fa fa-percent icon"></i></button>{% endif %}
+				{% if permissions is not defined or id~'.kpiStatisticsBonusSaveButton' in permissions %}<button id="kpiStatisticsBonusSaveButton" disabled class="fieldheight pay" title="Сохранить перевыплаты"><i class="fa fa-save"></i><i class="fa fa-percent icon"></i></button>{% endif %}
 			</div>
 		</div>
 		
 		<div class="item inline right">
 			<div class="buttons notop">
-				<button id="kpiPersonagesTemplatesButton" class="fieldheight alt2 ml-5" title="Шаблоны задач для персонажей"><i class="fa fa-newspaper-o"></i></button>
-				<button id="kpiPersonagesTasksButton" class="fieldheight alt2" title="Задачи для персонажей"><i class="fa fa-users"></i></button>
-				<button id="kpiCustomTasksButton" class="fieldheight alt" title="Задачи для кастомных полей"><i class="fa fa-tasks"></i></button>
-				<button id="kpiGiftsButton" class="fieldheight" title="Подарки за перевыполнение"><i class="fa fa-gift"></i></button>
-				<button id="kpiAmountsButton" class="fieldheight pay" title="Задать суммы выплат"><i class="fa fa-money"></i></button>
+				{% if permissions is not defined or id~'.kpiPersonagesTemplatesButton' in permissions %}<button id="kpiPersonagesTemplatesButton" class="fieldheight alt2 ml-5" title="Шаблоны задач для персонажей"><i class="fa fa-newspaper-o"></i></button>{% endif %}
+				{% if permissions is not defined or id~'.kpiPersonagesTasksButton' in permissions %}<button id="kpiPersonagesTasksButton" class="fieldheight alt2" title="Задачи для персонажей"><i class="fa fa-users"></i></button>{% endif %}
+				{% if permissions is not defined or id~'.kpiCustomTasksButton' in permissions %}<button id="kpiCustomTasksButton" class="fieldheight alt" title="Задачи для кастомных полей"><i class="fa fa-tasks"></i></button>{% endif %}
+				{% if permissions is not defined or id~'.kpiGiftsButton' in permissions %}<button id="kpiGiftsButton" class="fieldheight" title="Подарки за перевыполнение"><i class="fa fa-gift"></i></button>{% endif %}
+				{% if permissions is not defined or id~'.kpiAmountsButton' in permissions %}<button id="kpiAmountsButton" class="fieldheight pay" title="Задать суммы выплат"><i class="fa fa-money"></i></button>{% endif %}
 			</div>
 		</div>
 		
@@ -60,7 +60,6 @@
 		
 		<div id="kpiDataContainer" class="reports mt-3"></div>
 	</fieldset>
-	
 </div>
 
 

@@ -4911,6 +4911,21 @@ p
 				
 		&_opened
 			display: table-row	
+		
+		
+		&_elems
+			background-color: #cedbed
+			
+			table
+				tr
+					+ tr
+						border-top: 1px solid #ccd0d4
+					td
+						padding-left: 3px
+						padding-right: 5px
+					
+		
+		
 	
 	&__checkboxsmall
 		
@@ -5913,6 +5928,40 @@ p
 	
 	&__line
 		+hr(5%, 95%, #d7dbde)
+	
+	&__input
+		position: relative
+		display: inline-block
+		
+		&_changed
+			input
+				color: #0eb523
+				
+			&::after
+				opacity: 1 !important
+		
+		input
+			border: none
+			font-size: 14px
+			line-height: 14px
+			height: 22px
+			+font(roboto, bold)
+			vertical-align: bottom
+			width: 90px
+		
+		&:hover::after
+			opacity: 1
+		
+		&::after
+			content: '\f040'
+			+font(fontAwesome)
+			font-size: 14px
+			color: #0eb523
+			position: absolute
+			right: -5px
+			top: 0
+			opacity: 0
+			
 
 	
 .usersv2usercardstatic

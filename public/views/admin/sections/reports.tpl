@@ -3,16 +3,19 @@
 		<h2>Отчеты</h2>
 	</div>
 	
-	<ul class="tabstitles">
-		{% if permissions is not defined or id~'.main' in permissions %}<li id="main" class="active">Выплаты участникам</li>{% endif %}
-		{% if permissions is not defined or id~'.rewards' in permissions %}<li id="rewards">Премии</li>{% endif %}
-		{% if permissions is not defined or id~'.second' in permissions %}<li id="second">Список заказов</li>{% endif %}
-		{% if permissions is not defined or id~'.paymentsPatterns' in permissions %}<li id="paymentsPatterns">Payment Brago</li>{% endif %}
-		{% if permissions is not defined or id~'.paymentRequests' in permissions %}<li id="paymentRequests">Заявки на оплату</li>{% endif %}
-		{% if permissions is not defined or id~'.keys' in permissions %}<li id="keys">Ключи</li>{% endif %}
-		{% if permissions is not defined or id~'.wallet' in permissions %}<li id="wallet">Выплата баланса</li>{% endif %}
-	</ul>
-	
+	{% if permissions is defined and id~'.paymentRequests' in permissions %}
+		<ul class="tabstitles">
+			{% if permissions is not defined or id~'.main' in permissions %}<li id="main" class="active">Выплаты участникам</li>{% endif %}
+			{% if permissions is not defined or id~'.rewards' in permissions %}<li id="rewards">Премии</li>{% endif %}
+			{% if permissions is not defined or id~'.second' in permissions %}<li id="second">Список заказов</li>{% endif %}
+			{% if permissions is not defined or id~'.paymentsPatterns' in permissions %}<li id="paymentsPatterns">Payment Brago</li>{% endif %}
+			{% if permissions is not defined or id~'.paymentRequests' in permissions %}<li id="paymentRequests">Заявки на оплату</li>{% endif %}
+			{% if permissions is not defined or id~'.keys' in permissions %}<li id="keys">Ключи</li>{% endif %}
+			{% if permissions is not defined or id~'.wallet' in permissions %}<li id="wallet">Выплата баланса</li>{% endif %}
+		</ul>
+	{% else %}
+		<p class="empty">Нет разрешенных разделов</p>
+	{% endif %}
 	
 	
 	<div class="tabscontent">
@@ -112,7 +115,7 @@
 		
 		
 		
-		{% if permissions is not defined or id~'.paymentRequests' in permissions %}
+		{% if permissions is defined and id~'.paymentRequests' in permissions %}
 		<div tabid="paymentRequests">
 			<fieldset>
 				<legend>Заявки на оплату</legend>
@@ -120,13 +123,13 @@
 				<div class="d-flex align-items-center">
 					<div class="item inline">
 						<div class="buttons notop">
-							<button id="paymentRequestsNew" class="fieldheight" title="Новая заявка на оплату"><i class="fa fa-plus"></i></button>
-							<button id="paymentRequestsTemplates" class="fieldheight ml-0" title="Новая заявка из шаблона"><i class="fa fa-newspaper-o"></i></button>
-							<a class="button fieldheight" target="_self" href="{{base_url()}}reports/paymentrequest_export" download="Заявки_на_оплату_{{date('Y-m-d_H_i')}}.csv" title="Экспортировать отчет"><i class="fa fa-download"></i></a>
-							<button id="paymentRequestsSetStatToAll" class="fieldheight ml-0" title="Рассчитать все заявки"><i class="fa fa-calculator"></i><i class="fa fa-bullhorn fz12px icon"></i></button>
-							<button id="setSalaryBtn" class="fieldheight ml-0" title="Рассчитать оклады"><i class="fa fa-calculator"></i><i class="fa fa-rub fz12px icon"></i></button>
-							<button id="addictPayBtn" class="fieldheight ml-0" title="Дополнительные выплаты"><i class="fa fa-rub"></i><i class="fa fa-plus fz12px icon"></i></button>
-							<button id="raidLidersPaysBtn" class="fieldheight ml-0" title="Выплаты рейд-лидерам"><i class="fa fa-rub"></i><svg class="icon w14px h12px"><use xlink:href="#crown"></use></svg></button>
+							{% if permissions is not defined or id~'.paymentRequests.paymentRequestsNew' in permissions %}<button id="paymentRequestsNew" class="fieldheight" title="Новая заявка на оплату"><i class="fa fa-plus"></i></button>{% endif %}
+							{% if permissions is not defined or id~'.paymentRequests.paymentRequestsTemplates' in permissions %}<button id="paymentRequestsTemplates" class="fieldheight ml-0" title="Новая заявка из шаблона"><i class="fa fa-newspaper-o"></i></button>{% endif %}
+							{% if permissions is not defined or id~'.paymentRequests.export' in permissions %}<a class="button fieldheight" target="_self" href="{{base_url()}}reports/paymentrequest_export" download="Заявки_на_оплату_{{date('Y-m-d_H_i')}}.csv" title="Экспортировать отчет"><i class="fa fa-download"></i></a>{% endif %}
+							{% if permissions is not defined or id~'.paymentRequests.paymentRequestsSetStatToAll' in permissions %}<button id="paymentRequestsSetStatToAll" class="fieldheight ml-0" title="Рассчитать все заявки"><i class="fa fa-calculator"></i><i class="fa fa-bullhorn fz12px icon"></i></button>{% endif %}
+							{% if permissions is not defined or id~'.paymentRequests.setSalaryBtn' in permissions %}<button id="setSalaryBtn" class="fieldheight ml-0" title="Рассчитать оклады"><i class="fa fa-calculator"></i><i class="fa fa-rub fz12px icon"></i></button>{% endif %}
+							{% if permissions is not defined or id~'.paymentRequests.addictPayBtn' in permissions %}<button id="addictPayBtn" class="fieldheight ml-0" title="Дополнительные выплаты"><i class="fa fa-rub"></i><i class="fa fa-plus fz12px icon"></i></button>{% endif %}
+							{% if permissions is not defined or id~'.paymentRequests.raidLidersPaysBtn' in permissions %}<button id="raidLidersPaysBtn" class="fieldheight ml-0" title="Выплаты рейд-лидерам"><i class="fa fa-rub"></i><svg class="icon w14px h12px"><use xlink:href="#crown"></use></svg></button>{% endif %}
 						</div>
 					</div>
 					
@@ -157,7 +160,7 @@
 					
 					<div class="item inline ml-auto">
 						<div class="buttons notop">
-							<button class="fieldheight pay" id="setSummmToPayRaidLidersBtn" title="Таблица с суммами выплат РЛ"><i class="fa fa-money"></i></button>
+							{% if permissions is not defined or id~'.paymentRequests.setSummmToPayRaidLidersBtn' in permissions %}<button class="fieldheight pay" id="setSummmToPayRaidLidersBtn" title="Таблица с суммами выплат РЛ"><i class="fa fa-money"></i></button>{% endif %}
 						</div>
 					</div>
 				</div>
@@ -188,13 +191,9 @@
 							<tbody>
 								<tr>
 									<td class="nopadding">
-										{% if item.avatar %}
-											<div class="avatar mini" style="background-image: url('{{base_url('public/images/users/mini/'~item.avatar)}}')"></div>
-										{% else %}
-											<div class="avatar mini" style="background-image: url('{{base_url('public/images/user_mini.jpg')}}')"></div>
-										{% endif %}
+										<div class="avatar mini pointer" usercard="{{item.user_id}}|{{item.nickname}}" style="background-image: url('{{base_url('public/images/users/mini/'~item.avatar)|no_file('public/images/user_mini.jpg')}}')"></div>
 									</td>
-									<td>{{item.nickname}}</td>
+									<td usercard="{{item.user_id}}|{{item.nickname}}">{{item.nickname}}</td>
 									<td class="w200px">
 										<div class="d-flex align-items-center">
 											<div class="mr-1">
@@ -2124,6 +2123,55 @@ $(document).ready(function() {
 	
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	//------------- Карточка участника
+	$('#paymentRequestsList').off(tapEvent, '[usercard]').on(tapEvent, '[usercard]', function() {
+		
+		let d = $(this).attr('usercard').split('|'),
+			userId = d[0],
+			nickname = d[1] || 'без никнейма';
+		
+		popUp({
+			title: 'Карточка участника <strong>'+nickname+'</strong>|4',
+			width: 800,
+			buttons: false, 
+			buttonsAlign: 'right',
+			disabledButtons: false,
+			closePos: 'left',
+			closeButton: 'Закрыть',
+			onClose: false,
+			winClass: false
+		}, function(userCardWin) {
+			userCardWin.setData('users/userinfo', {user_id: userId}, function() {
+				$('#usersv2UserCard').ddrTable({
+					minHeight: '50px',
+					maxHeight: '300px'
+				});
+				
+				$('#usersv2UserCardDeposit').number(true, 2, '.', ' ');
+				
+				let setDepositTOut;
+				$('#usersv2UserCardDeposit').on('keyup', function() {
+					let input = this;
+					clearTimeout(setDepositTOut);
+					setDepositTOut = setTimeout(function() {
+						let deposit = parseFloat($(input).val());
+						getAjaxJson('users/userinfo/change_deposit', {user_id: userId, deposit: deposit}, function(response) {
+							if (!response) notify('Ошибка изменения резерва!', 'error');
+							else $(input).parent().addClass('usersv2usercard__input_changed');
+						});
+					}, 300);
+				});
+			});
+		});
+	});
 	
 	
 	
