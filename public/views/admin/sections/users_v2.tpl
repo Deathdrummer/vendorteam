@@ -537,7 +537,9 @@ $(function() {
 			scrollOffset = 0;
 		}
 		
-		let fields = ddrStore('usersv2:selected_fields');
+		let fields = ddrStore('usersv2:selected_fields'),
+			isMainAdmin = !getCookie('slaveadmin');
+			
 		
 		$('.usersv2').addClass('usersv2__waiting');
 		
@@ -580,7 +582,7 @@ $(function() {
 			theadCols += '<td class="w50px center" title="Статики"><strong>Стат</strong></td>';
 			theadCols += '<td class="w50px center" title="Классы"><strong>Клс</strong></td>';
 			theadCols += '<td class="w50px center" title="Персонажи"><strong>Перс</strong></td>';
-			theadCols += '<td class="w150px"><strong>Опции</strong></td>';
+			theadCols += '<td class="'+(isMainAdmin ? 'w150px' : 'w116px')+'"><strong>Опции</strong></td>';
 			$('#usersTableThead').html(theadCols);
 			
 			

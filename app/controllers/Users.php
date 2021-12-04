@@ -57,7 +57,7 @@ class Users extends MY_Controller {
 					$dataToFields = $this->usersV2->fields('dataToFields', $post);
 				}
 				
-				$data = array_merge($data, $dataToFields);
+				$data = array_merge($data, $dataToFields, ['is_main_admin' => !get_cookie('slaveadmin')]);
 				echo $this->twig->render($this->viewsPath.'list.tpl', $data);
 				break;
 		}		
