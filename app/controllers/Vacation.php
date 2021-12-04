@@ -18,7 +18,7 @@ class Vacation extends MY_Controller {
 		if (!$this->input->is_ajax_request()) return false;
 		$static = $this->input->post('static');
 		$shift = $this->input->post('shift') ?: 0;
-		$userId = decrypt(get_cookie('id')); //$this->session->userdata('id');
+		$userId = $this->getUserId();
 		
 		$this->load->model('users_model', 'usersmodel');
 		$userRank = $this->usersmodel->getUserRank($userId) ?: false;

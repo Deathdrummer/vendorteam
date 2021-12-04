@@ -491,6 +491,39 @@ class MY_Controller extends CI_Controller {
 	
 	
 	
+	protected function getUserId() {
+		$originUserId = get_cookie('origin_id') ?: false;
+		$currentUserId = get_cookie('id') ?: false;
+		$visitUserId = urldecode($this->input->get('visituser')) ?: false;
+		
+		
+		/*if ($visitUserId && $currentUserId !== $visitUserId) {
+			set_cookie('id', $visitUserId, 0);
+			return decrypt($visitUserId);
+		} 
+		decrypt($currentUserId);*/
+		
+		if ($visitUserId) {
+			if (!$originUserId && $currentUserId) set_cookie('origin_id', $currentUserId, 0);
+			if ($currentUserId !== $visitUserId) set_cookie('id', $visitUserId, 0);
+			return decrypt($visitUserId);
+		}
+		
+		
+		if (!$this->input->is_ajax_request() && $originUserId && $originUserId !== $currentUserId) {
+			set_cookie('id', $originUserId, 0);
+			delete_cookie('origin_id');
+			redirect();
+			//return decrypt($originUserId);
+		}
+		
+		return decrypt($currentUserId);
+	}
+	
+	
+	
+	
+	
 	/**
 	 * @param 
 	 * @return 

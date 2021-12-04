@@ -25,7 +25,7 @@ class Vacation_model extends MY_Model {
 		
 		if ($currentStatic) {
 			$this->load->model('users_model', 'usersmodel');
-			$userData = $this->usersmodel->getUsers(['where' => ['u.id' => decrypt(get_cookie('id'))/*$this->session->userdata('id')*/]])[0];
+			$userData = $this->usersmodel->getUsers(['where' => ['u.id' => $this->getUserId()]])[0];
 			$data[$userData['id']]['user_id'] = $userData['id'];
 			$data[$userData['id']]['nickname'] = $userData['nickname'];
 			$data[$userData['id']]['dates'] = [];

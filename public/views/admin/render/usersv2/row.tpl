@@ -143,7 +143,7 @@
 	<td class="center">
 		<div class="buttons notop inline">
 			<button class="small w28px" userv2card="{{id}}" title="Карточка участника"><i class="fa fa-id-card"></i></button>
-			<a href="{{base_url('account?visituser='~id|encrypt)}}" target="_blank" class="button w28px h24px"><i class="fa fa-user"></i></a>
+			<a href="{{base_url('account?visituser='~id|encrypt|url_encode)}}" target="_blank" class="button w28px h24px"><i class="fa fa-user"></i></a>
 			
 			{% if excluded %}
 				<button class="small w28px pay" returnexcludeduser="{{id}}" title="Вернуть отстраненного участника"><i class="fa fa-user-o"></i><i class="icon fa fa-plus"></i></button>

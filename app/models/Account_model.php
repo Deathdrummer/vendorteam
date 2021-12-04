@@ -21,8 +21,8 @@ class Account_model extends My_Model {
 	
 	public function __construct() {
 		parent::__construct();
-		if (!$userId = decrypt(get_cookie('id'))/*$this->session->userdata('id')*/) return false;
-		$this->userData = $this->getUserData($userId/*$this->session->userdata('id')*/);
+		if (!$userId = $this->getUserId()) return false;
+		$this->userData = $this->getUserData($userId);
 	}
 	
 	

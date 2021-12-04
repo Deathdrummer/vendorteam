@@ -118,6 +118,7 @@ class Planner_model extends MY_Model {
 	private function _getBirthdaysUsers($month = false) {
 		if (!$month) return false;
 		$this->db->select('id, nickname, avatar, birthday');
+		$this->db->where(['deleted' => 0, 'verification' => 1, 'excluded' => 0]);
 		//$this->db->where(['birthday >=' => $startDate, 'birthday <' => $endDate]);
 		if (!$users = $this->_result('users')) return false;
 		

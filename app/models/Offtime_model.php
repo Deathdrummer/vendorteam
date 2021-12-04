@@ -6,7 +6,7 @@ class Offtime_model extends My_Model {
 	
 	public function __construct() {
 		parent::__construct();
-		if ($userId = decrypt(get_cookie('id'))/*$this->session->has_userdata('id')*/) {
+		if ($userId = $this->getUserId()) {
 			$this->load->model('account_model');
 			$this->userData = $this->account_model->getUserData($userId/*$this->session->userdata('id')*/);
 		}
@@ -328,7 +328,7 @@ class Offtime_model extends My_Model {
 		$periodEnd = strtotime(date('Y-m-d', strtotime('first day of next month')));
 		
 		$this->db->where([
-			'user_id' 	=> decrypt(get_cookie('id')), //$this->session->userdata('id'),
+			'user_id' 	=> $this->getUserId(),
 			'date >=' 	=> $periodStart,
 			'date <' 	=> $periodEnd
 		]);

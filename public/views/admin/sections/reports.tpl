@@ -3,7 +3,7 @@
 		<h2>Отчеты</h2>
 	</div>
 	
-	{% if permissions is defined and id~'.paymentRequests' in permissions %}
+	{% if permissions is not defined or (permissions is defined and id in permissions) %}
 		<ul class="tabstitles">
 			{% if permissions is not defined or id~'.main' in permissions %}<li id="main" class="active">Выплаты участникам</li>{% endif %}
 			{% if permissions is not defined or id~'.rewards' in permissions %}<li id="rewards">Премии</li>{% endif %}
@@ -115,7 +115,7 @@
 		
 		
 		
-		{% if permissions is defined and id~'.paymentRequests' in permissions %}
+		{% if permissions is not defined or (permissions is defined and id~'.paymentRequests' in permissions) %}
 		<div tabid="paymentRequests">
 			<fieldset>
 				<legend>Заявки на оплату</legend>

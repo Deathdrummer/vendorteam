@@ -11,9 +11,11 @@ class Account extends MY_Controller {
 		parent::__construct();
 		
 		$this->load->model(['account_model' => 'account', 'admin_model' => 'admin']);
-		$this->userId = decrypt(get_cookie('id')); //$this->session->userdata();
+		
+		$this->userId = $this->getUserId();
+		
 		if (!$this->isset_user() || $this->is_deleted_user()) {
-			delete_cookie('id'); //$this->session->unset_userdata('id');
+			delete_cookie('id');
 			if (!$this->input->is_ajax_request()) redirect();
 			else exit('0');
 		}
@@ -99,8 +101,12 @@ class Account extends MY_Controller {
 	 * @return 
 	*/
 	public function logout() {
-		delete_cookie('id'); //$this->session->unset_userdata('id');
-		delete_cookie('token'); //$this->session->unset_userdata('token');
+		delete_cookie('id');
+		delete_cookie('origin_id');
+		delete_cookie('gifts');
+		delete_cookie('pollings');
+		delete_cookie('birthday');
+		delete_cookie('token');
 		redirect();
 	}
 	

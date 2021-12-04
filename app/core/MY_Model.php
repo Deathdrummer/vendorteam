@@ -292,6 +292,12 @@ class MY_Model extends CI_Model {
 	
 	
 	
+	protected function getUserId() {
+		if ($this->input->get('visituser')) return decrypt(urldecode($this->input->get('visituser')));
+		return decrypt(get_cookie('id'));
+	}
+	
+	
 	
 	protected function getAdminId() {
 		if ($token = get_cookie('token')) return decrypt($token);
