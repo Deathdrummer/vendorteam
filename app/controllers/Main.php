@@ -16,13 +16,13 @@ class Main extends MY_Controller {
 	public function index() {
 		$data = $this->admin_model->getSettings();
 
-		$data['is_auth'] = get_cookie('id')/*$this->session->userdata('id')*/ ? true : false;
+		$data['is_auth'] = decrypt(get_cookie('id'))/*$this->session->userdata('id')*/ ? true : false;
 		
 		if ($data['is_auth']) redirect('account', 'location', 301);
 		
 		if ($data['is_auth']) {
 			$this->load->model('users_model');
-			$userData = $this->users_model->getUsers(['where' => ['u.id' => get_cookie('id')/*$this->session->userdata('id')*/]]);
+			$userData = $this->users_model->getUsers(['where' => ['u.id' => decrypt(get_cookie('id'))/*$this->session->userdata('id')*/]]);
 			$data['avatar'] = 'public/images/users/mini/'.$userData[0]['avatar'];
 		}
 		
@@ -72,7 +72,7 @@ class Main extends MY_Controller {
 		if ($data['email'] == '' || $data['password'] == '') exit('0');
 		if ($userData = $this->main_model->getAuth($data['email'], $data['password'])) {
 			if ($userData['deleted'] == 1) exit('2'); // Если пользователь удален
-			set_cookie('id', $userData['id'], 31536000); //$this->session->set_userdata('id', $userData['id']);
+			set_cookie('id', encrypt($userData['id']), 31536000); //$this->session->set_userdata('id', $userData['id']);
 			exit('1');
 		}
 		exit('0');

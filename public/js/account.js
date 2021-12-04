@@ -74,7 +74,6 @@ $(document).ready(function() {
 					
 					if (authEmail != '' && authPassword != '') {
 						$.post('/main/auth', {email: authEmail, password: authPassword}, function(response) {
-							
 							if (response == 0) {
 								$('#authEmail, #authPassword').addClass('error');
 								notify('Ошибка! Введены неверные данные!', 'error');

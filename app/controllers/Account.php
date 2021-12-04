@@ -11,7 +11,7 @@ class Account extends MY_Controller {
 		parent::__construct();
 		
 		$this->load->model(['account_model' => 'account', 'admin_model' => 'admin']);
-		$this->userId = get_cookie('id'); //$this->session->userdata();
+		$this->userId = decrypt(get_cookie('id')); //$this->session->userdata();
 		if (!$this->isset_user() || $this->is_deleted_user()) {
 			delete_cookie('id'); //$this->session->unset_userdata('id');
 			if (!$this->input->is_ajax_request()) redirect();

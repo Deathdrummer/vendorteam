@@ -6,9 +6,9 @@ class Timesheet_model extends My_Model {
 	
 	public function __construct() {
 		parent::__construct();
-		if (get_cookie('id')/*$this->session->has_userdata('id')*/) {
+		if ($userId = decrypt(get_cookie('id'))/*$this->session->has_userdata('id')*/) {
 			$this->load->model('account_model');
-			$this->userData = $this->account_model->getUserData(get_cookie('id')/*$this->session->userdata('id')*/);
+			$this->userData = $this->account_model->getUserData($userId/*$this->session->userdata('id')*/);
 		}
 	}
 	

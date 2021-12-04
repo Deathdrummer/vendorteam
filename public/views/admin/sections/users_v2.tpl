@@ -580,7 +580,7 @@ $(function() {
 			theadCols += '<td class="w50px center" title="Статики"><strong>Стат</strong></td>';
 			theadCols += '<td class="w50px center" title="Классы"><strong>Клс</strong></td>';
 			theadCols += '<td class="w50px center" title="Персонажи"><strong>Перс</strong></td>';
-			theadCols += '<td class="w110px"><strong>Опции</strong></td>';
+			theadCols += '<td class="w150px"><strong>Опции</strong></td>';
 			$('#usersTableThead').html(theadCols);
 			
 			

@@ -470,6 +470,20 @@ class MY_Controller extends CI_Controller {
 		});
 		
 		
+		
+		
+		$this->twig->addFilter('encrypt', function($str = false) {
+			if (!$str) return false;
+			return encrypt($str);
+		});
+		
+		
+		$this->twig->addFilter('decrypt', function($str = false) {
+			if (!$str) return false;
+			return decrypt($str);
+		});
+		
+		
 	}
 	
 	
