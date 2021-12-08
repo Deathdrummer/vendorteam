@@ -2537,7 +2537,8 @@ $(document).ready(function() {
 					let kpiPeriodId = $(this).attr('kpiplanperiod'),
 						kpiPeriodTitle = $(this).children('strong').text(),
 						kpiPeriodDate = $(this).children('small').text(),
-						userId = getCookie('id');
+						userId = getCookie('id', true);
+						console.log(userId);
 						
 					kpiPlanWin.setData('account/kpiplan/get_user_progress', {kpi_period_id: kpiPeriodId, user_id: userId, period_title: kpiPeriodTitle, period_date: kpiPeriodDate}, function(html, stat) {
 						if (!stat) kpiPlanWin.setData(html, false);
@@ -2929,7 +2930,7 @@ $(document).ready(function() {
 									if (pollingCounter == 1) $('[pollingcounter]').closest('.leftblocktopicon.leftblocktopicon_active').removeClass('leftblocktopicon_active');
 									
 									$('#goToPollinsListBtn').on(tapEvent, function() {
-										let userId = getCookie('id');
+										let userId = getCookie('id', true);
 										getPollingsList(userId, pollingsWin);
 									});
 								});
@@ -3073,7 +3074,7 @@ $(document).ready(function() {
 	
 	
 	//------------------------------------------------------------------ Сообщения
-	$.post('messages/account/status', {user_id: getCookie('id')}, function(response) {
+	$.post('messages/account/status', {user_id: getCookie('id', true)}, function(response) {
 		if (response.all > 0) {
 			$('[newmessages]').addClass('leftblocktopicon_stendby');
 		}
@@ -3096,7 +3097,7 @@ $(document).ready(function() {
 			closeButton: 'Закрыть'
 		}, function(newMessageWin) {
 			(function openMessagesList() {
-				newMessageWin.setData('messages/account/list', {user_id: getCookie('id')}, function() {
+				newMessageWin.setData('messages/account/list', {user_id: getCookie('id', true)}, function() {
 					newMessageWin.setWidth(600);
 					newMessageWin.setButtons([], 'Отмена'); 
 					ddrInitTabs('userMessages');
@@ -3106,11 +3107,11 @@ $(document).ready(function() {
 							messId = d[0],
 							stat = d[1];
 						
-						newMessageWin.setData('messages/account/get', {id: messId, user_id: getCookie('id')}, function() {
+						newMessageWin.setData('messages/account/get', {id: messId, user_id: getCookie('id', true)}, function() {
 							newMessageWin.setWidth(1000);
 							newMessageWin.setButtons([{id: 'usersMessagesGoBack', title: 'Назад'}], 'Отмена'); 
 							
-							$.post('messages/account/set_read', {id: messId, user_id: getCookie('id')}, function(response) {
+							$.post('messages/account/set_read', {id: messId, user_id: getCookie('id', true)}, function(response) {
 								if (response) {
 									let countUnread = parseInt($('[newmessagecounter]').text(response.unread));
 									if (countUnread > 1) {
