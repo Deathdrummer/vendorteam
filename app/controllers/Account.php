@@ -1384,7 +1384,7 @@ class Account extends MY_Controller {
 				break;
 			
 			case 'get_user_progress':
-				if (!$userId = decrypt($post['user_id']) ?? false) exit('');
+				if (!$userId = $post['user_id'] ?? false) exit('');
 				$this->load->model(['admin_model' => 'admin', 'users_model' => 'users']);
 				$periodData = $this->kpi->getPeriod($post['kpi_period_id']);
 				
