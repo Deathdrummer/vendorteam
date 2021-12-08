@@ -270,7 +270,7 @@
       };
     }).sort(function(left, right) {
       var a = left.criteria, b = right.criteria;
-      return a < b ? -1 : a > b ? 1 : 0;
+      return a < b ? -1 : (a > b ? 1 : 0);
     }), 'value');
   };
 

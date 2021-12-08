@@ -84,8 +84,6 @@ class Offtime extends MY_Controller {
 		
 		$data['users'] = $this->offtime_model->getOfftimeUsers($static);
 		
-		toLog($data['users']);
-		
 		$rolesLimits = $this->offtime_model->getRolesLimits($static);
 		
 		if ($data['users']) {

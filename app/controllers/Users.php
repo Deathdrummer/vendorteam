@@ -132,8 +132,9 @@ class Users extends MY_Controller {
 		switch ($action) {
 			case 'tabs':
 				$statics = $this->usersV2->statics('tabs', $post);
-				$data['statics'] = $statics['statics'];
-				$data['current_static'] = $statics['current'] ?: $post['current_static'];
+				
+				$data['statics'] = $statics['statics'] ?? [];
+				$data['current_static'] = $statics['current'] ?? $post['current_static'];
 				echo $this->twig->render($this->viewsPath.'statics/tabs.tpl', $data);
 				break;
 			

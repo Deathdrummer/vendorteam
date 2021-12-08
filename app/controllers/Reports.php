@@ -2,6 +2,9 @@
 
 class Reports extends MY_Controller {
 	
+	
+	private $walletReportToLog = false;
+	
 	public function __construct() {
 		parent::__construct();
 		$this->load->model(['reports_model', 'admin_model', 'account_model']);
@@ -1229,22 +1232,30 @@ class Reports extends MY_Controller {
 					];
 				}
 				
-				
-				toLog('--------- Списание баланса -----------');
-				toLog('Отправить данные в сохраненный отчет');
-				toLog($toReportData);
+				if ($this->walletReportToLog) {
+					toLog('--------- Списание баланса -----------');
+					toLog('Отправить данные в сохраненный отчет');
+					toLog($toReportData);
+				}
+					
 				// Отправить данные в сохраненный отчет
 				if ($toReportData) $this->wallet->saveWalletReportData($toReportData);
 				
-				toLog('--------- Списание баланса -----------');
-				toLog('отправить выплаты в историю');
-				toLog($amountsData);
+				if ($this->walletReportToLog) {
+					toLog('--------- Списание баланса -----------');
+					toLog('отправить выплаты в историю');
+					toLog($amountsData);
+				}
+					
 				// отправить выплаты в историю
 				if ($amountsData) $this->wallet->setToWallet($amountsData, null, $postData['title'], '-');
 				
-				toLog('--------- Списание баланса -----------');
-				toLog('отправить в резерв');
-				toLog($toDepositdata);
+				if ($this->walletReportToLog) {
+					toLog('--------- Списание баланса -----------');
+					toLog('отправить в резерв');
+					toLog($toDepositdata);
+				}
+					
 				// отправить в резерв
 				if ($toDepositdata) $this->wallet->updateUsersDeposit($toDepositdata);
 				
@@ -1259,8 +1270,6 @@ class Reports extends MY_Controller {
 			case 'get_saved_report': // Сформировать отчет / Экспортировать отчет
 				$this->load->model('admin_model', 'admin');
 				if (!$report = $this->wallet->getReportData($postData['report_id'] ?: $reportId)) exit('');
-				
-				//toLog($report);
 				
 				$data['statics'] = $this->admin->getStatics(true, array_keys($report));
 				

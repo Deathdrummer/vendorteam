@@ -1384,24 +1384,25 @@ class Account extends MY_Controller {
 				break;
 			
 			case 'get_user_progress':
+				if (!$userId = decrypt($post['user_id']) ?? false) exit('');
 				$this->load->model(['admin_model' => 'admin', 'users_model' => 'users']);
 				$periodData = $this->kpi->getPeriod($post['kpi_period_id']);
 				
-				if (!$formdata = $this->kpi->getUserProgressForm($periodData, $post['user_id'])) exit('');
-				if (!$statistics = $this->kpi->calcUserStatistics($post['kpi_period_id'], $post['user_id'])) exit('');
+				if (!$formdata = $this->kpi->getUserProgressForm($periodData, $userId)) exit('');
+				if (!$statistics = $this->kpi->calcUserStatistics($post['kpi_period_id'], $userId)) exit('');
 				$data['custom_fields'] = $this->kpi->getPeriodCustomFields($periodData['custom_fields']);
 				
 				$progress = $this->kpi->getProgressTasks($periodData['id']);
-				$data['progress'] = isset($progress[$post['user_id']]) ? $progress[$post['user_id']] : [];
+				$data['progress'] = isset($progress[$userId]) ? $progress[$userId] : [];
 				
 				$data['statics'] = $this->admin->getStatics(true, array_keys($formdata));
 				$data['ranks'] = $this->admin->getRanks();
-				$usersIds = [$post['user_id']];
+				$usersIds = [$userId];
 				
 				$data['personages'] = $this->users->getUsersPersonages($usersIds, true);
 				$data['formdata'] = $formdata;
 				$data['statistics'] = $statistics;
-				$data['user_id'] = $post['user_id'];
+				$data['user_id'] = $userId;
 				$data['default_text'] = $this->admin->getSettings('kpi_default_text');
 				$data['period_title'] = $post['period_title'];
 				$data['period_date'] = $post['period_date'];

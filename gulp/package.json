@@ -33,19 +33,19 @@
     "gulp-uglify": "^3.0.2",
     "gulp-util": "^3.0.8",
     "node-bourbon": "^4.2.8",
-    "node-sass": "^6.0.1",
+    "node-sass": "^7.0.0",
     "svg4everybody": "^2.1.9",
     "webpack-stream": "^7.0.0",
-    "yargs": "^17.2.1"
+    "yargs": "^17.3.0"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "cra-template": "1.1.2",
-    "directory-tree": "^3.0.0",
+    "directory-tree": "^3.0.1",
     "express": "^4.17.1",
     "gulp-svgmin": "^4.1.0",
-    "sass": "^1.43.4",
-    "socket.io": "^4.3.2",
-    "yargs": "^17.2.1"
+    "sass": "^1.44.0",
+    "socket.io": "^4.4.0",
+    "yargs": "^17.3.0"
   }
 }

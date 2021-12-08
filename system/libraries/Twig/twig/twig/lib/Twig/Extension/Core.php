@@ -1169,7 +1169,7 @@ function twig_length_filter(Twig_Environment $env, $thing)
         return count($thing);
     }
 
-    if (method_exists($thing, '__toString') && !$thing instanceof \Countable) {
+    if (!is_array($thing) && method_exists($thing, '__toString') && !$thing instanceof \Countable) {
         return mb_strlen((string) $thing, $env->getCharset());
     }
 

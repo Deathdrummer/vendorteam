@@ -105,7 +105,7 @@ abstract class Twig_Node_Expression_Call extends Twig_Node_Expression
         $compiler->raw($isArray ? ']' : ')');
     }
 
-    protected function getArguments($callable = null, $arguments)
+    protected function getArguments($callable = null, $arguments = false)
     {
         $callType = $this->getAttribute('type');
         $callName = $this->getAttribute('name');

@@ -156,6 +156,7 @@ class Account_model extends My_Model {
 	 * @return 
 	*/
 	public function issetUser() {
+		if (!isset($this->userData) || !isset($this->userData['id'])) return false;
 		$this->db->where('id', $this->userData['id']);
 		if ($this->db->count_all_results('users') > 0) return true;
 		return false;
@@ -765,7 +766,7 @@ class Account_model extends My_Model {
 	 * @param 
 	 * @return 
 	*/
-	public function setCompound($compoundUsers = [], $periodId, $staticId) {
+	public function setCompound($compoundUsers = [], $periodId = false, $staticId = false) {
 		$this->db->select('cd.user_id, cd.persones_count, cd.effectiveness, cd.fine');
 		$this->db->where(['cd.period_id' => $periodId, 'cd.static_id' => $staticId]);
 		$queryCD = $this->db->get('compounds_data cd');
