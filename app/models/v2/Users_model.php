@@ -12,11 +12,11 @@ class Users_model extends MY_Model {
 	private $allFields = [
 		'color' 			=> ['title' => 'Цвет', 'cls' => 'w60px center'],
 		'agreement' 		=> ['title' => 'Соглашение', 'cls' => 'w60px center', 'icon' => '<i class="fa fa-handshake-o" title="Соглашение"></i>'],
-		'rank' 				=> ['title' => 'Звание', 'cls' => 'w170px'],
+		'rank' 				=> ['title' => 'Звание', 'cls' => 'w220px'],
 		'lider' 			=> ['title' => 'Лидер', 'cls' => 'w60px center', 'icon' => '<div title="Лидер"><svg class="w18px h18px darkblue"><use xlink:href="#crown"></use></svg></div>'],
 		'email' 			=> ['title' => 'E-mail', 'cls' => 'w200px'],
 		'reg_date' 			=> ['title' => 'Дата регистрации', 'cls' => 'w160px'],
-		'stage' 			=> ['title' => 'Стаж', 'cls' => 'w72px'],
+		'stage' 			=> ['title' => 'Стаж', 'cls' => 'w100px'],
 		'payment' 			=> ['title' => 'Средство платежа', 'cls' => 'w210px'],
 		'birthday' 			=> ['title' => 'Дата рождения', 'cls' => 'w160px'],
 		'deposit_percent' 	=> ['title' => 'Процент отчисления в депозит', 'cls' => 'w72px center', 'icon' => '<i class="fa fa-percent" title="Процент отчисления в депозит"></i>'],
@@ -73,7 +73,7 @@ class Users_model extends MY_Model {
 				$sqlFields = isset($fields) ? $this->_getSqlFields($fields) : '';
 				$staticsFields = ['main', 'lider'];
 				
-				$select = 'u.id, u.nickname, u.avatar, u.deleted, u.excluded, ';
+				$select = 'u.id, u.nickname, u.avatar, u.deleted, u.excluded, u.frozen, ';
 				if (isset($fields) && !!array_intersect($staticsFields, $fields)) $select .= $this->groupConcat('us.static_id', 'us.static_id:id,us.main:main,us.lider:lider', 'statics_data');
 				if ($sqlFields) $select .= $sqlFields;
 				
@@ -85,6 +85,9 @@ class Users_model extends MY_Model {
 				
 				if (isset($static) && is_numeric($static)) $this->db->where(['us.static_id' => $static]);
 				elseif (isset($static) && $static == 'nostatic') $this->db->where(['us.static_id' => null]);
+				
+				
+				if (isset($ranks)) $this->db->where_in('u.rank', $ranks);
 				
 				
 				if (isset($showLists)) {
@@ -100,9 +103,12 @@ class Users_model extends MY_Model {
 								$this->db->where('u.deleted', 0);
 								break;
 							
-							
 							case 'excluded':
 								$this->db->or_where('u.excluded', 1);
+								break;
+							
+							case 'frozen':
+								$this->db->or_where('u.frozen', 1);
 								break;
 							
 							case 'deleted':
@@ -122,10 +128,12 @@ class Users_model extends MY_Model {
 				
 				//toLog($this->db->last_query());
 				
+				// Если в списке полей есть звание - загрузить модель 
+				if (in_array('rank', $fields)) $this->load->model('account_model', 'account');
 				
 				if (isset($fields)) {
 					$result['items'] = array_map(function($row) use ($fields) {
-						$data = array_splice($row, 0, 5); // забираем срец массива со статичными данными (которые всегда должны отображаться)
+						$user = array_splice($row, 0, 6); // забираем срец массива со статичными данными (которые всегда должны отображаться)
 						if (isset($row['statics_data'])) {
 						if (!$statics = json_decode(arrTakeItem($row, 'statics_data'), true)) return $row;
 							$staticsIds = [];
@@ -142,10 +150,17 @@ class Users_model extends MY_Model {
 							if (in_array('lider', $fields)) $row['lider'] = $lider;
 						}
 						
-						$data['fields'] = arrGetByKeys($fields, $row);
-						return $data;
+						// если есть поле "звание" - добавить данные сл. звания
+						if (in_array('rank', $fields)) {
+							$row['rank'] = [
+								'current'	=> $row['rank'],
+								'next'		=> $this->account->getNextRankData($user['id'])
+							];
+						}
+						$user['fields'] = arrGetByKeys($fields, $row);
+						
+						return $user;
 					}, $result['items']);
-				
 				}
 				
 				setAjaxHeader(['total' => $result['total'], 'part' => $this->usersListPart]);
@@ -186,6 +201,14 @@ class Users_model extends MY_Model {
 				return $this->db->update($this->usersTable, ['excluded' => 0]);
 				break;
 			
+			case 'freeze':
+				if (!isset($userId)) return false;
+				$this->db->where('id', $userId);
+				if (($userFrozen = $this->_row('users', 'frozen')) === false) return false;
+				$this->db->where('id', $userId);
+				if (!$this->db->update($this->usersTable, ['frozen' => ($userFrozen ? 0 : 1)])) return false;
+				return ($userFrozen ? 1 : 2);
+				break;
 			
 			case 'changeColor':
 				if (!isset($userId)) return false;
@@ -236,8 +259,7 @@ class Users_model extends MY_Model {
 				}
 				
 				if (in_array('rank', $fields)) {
-					$ranks = $this->admin_model->getRanks(false, false);
-					$data['ranks'] = setArrKeyfromField($ranks, 'id', 'name');
+					$data['ranks'] = $this->_getRanks('name');
 				}
 				
 				if (in_array('role', $fields)) {
@@ -442,6 +464,84 @@ class Users_model extends MY_Model {
 	
 	
 	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function ranks($action = false) {
+		$args = func_get_args();
+		$action = isset($args[0]) ? $args[0] : false;
+		if (isset($args[1]) && is_array($args[1])) extract(snakeToCamelcase($args[1])); // keys to uppercase
+		
+		switch ($action) {
+			case 'list':
+				$ranksList = $this->_getRanks('id, name');
+				$checkedRanks = isset($checkedRanks) ? array_fill_keys($checkedRanks, ['checked' => 1]) : [];
+				
+				$data['all_disabled'] = count($ranksList) == count($checkedRanks);
+				$data['none_disabled'] = count($checkedRanks) == 0;
+				$data['ranks'] = array_replace_recursive($ranksList, $checkedRanks);
+				
+				return $data;
+				break;
+			
+			case 'set':
+				$ranksList = $this->_getRanks('name, period');
+				$userStage = $this->_getUserStage($userId);
+				$setToStage = $ranksList[$newRank]['period'] - $userStage['summ'];
+				$updateStage = $userStage['stage'] + $setToStage;
+				
+				$this->db->where('id', $userId);
+				$this->db->update('users', ['stage' => $updateStage, 'rank' => $newRank]);
+				$this->load->model('account_model');
+				
+				return [
+					'rank' 	=> $ranksList[$newRank]['name'],
+					'next' 	=> $this->account_model->getNextRankData($userId),
+					'stage'	=> $updateStage
+				];
+				break;
+			
+			case 'update':
+				$ranksList = $this->_getRanks('name, period');
+				$userStage = $this->_getUserStage($userId);
+				$userRank = $this->_getUserRank($userId);
+				
+				$updateUserRank = [];
+				foreach ($ranksList as $rank) {
+					$nexRank = next($ranksList) ?: false;
+					if (($userStage['summ'] >= $rank['period'] && ($nexRank && $userStage['summ'] < $nexRank['period']) && $rank['id'] != $userRank) || ($userStage['summ'] >= $rank['period'] && !$nexRank && $rank['id'] != $userRank)) {
+						$updateUserRank = ['rank' => $rank['id']];
+					}
+				}
+				
+				if ($updateUserRank) {
+					$this->db->where('id', $userId);
+					$this->db->update('users', $updateUserRank);
+				}
+				
+				$this->load->model('account_model');
+				return [
+					'rank' 		=> $updateUserRank ? $ranksList[$updateUserRank['rank']]['name'] : $ranksList[$userRank]['name'],
+					'next' 		=> $this->account_model->getNextRankData($userId),
+					'updated' 	=> !!$updateUserRank
+				];
+				break;
+			
+			
+			default: break; // no action
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	/**
@@ -464,11 +564,11 @@ class Users_model extends MY_Model {
 				if (!$userData = $this->_row($this->usersTable.' u')) return false;
 				
 				$this->load->model(['wallet_model' => 'wallet', 'account_model' => 'account']);
-				$ranks = $this->admin_model->getRanks();
+				$ranks = $this->_getRanks('name');
 				
 				$currentRank = arrTakeItem($userData, 'rank');
 				$userData['rank'] = $this->account->getNextRankData($userId);
-				$userData['rank']['current_rank'] = $ranks[$currentRank]['name'];
+				$userData['rank']['current_rank'] = $ranks[$currentRank];
 				
 				$userStatics = setArrKeyFromField(json_decode($userData['statics'], true), 'static');
 				$statics = $this->admin_model->getStatics(false, array_keys($userStatics));
@@ -562,6 +662,44 @@ class Users_model extends MY_Model {
 	
 	
 	
+	
+	/**
+	 * @param 
+	 * @return 
+	 */
+	private function _getUserStage($userId = false) {
+		if (!$userId) return false;
+		$this->db->select('reg_date, stage');
+		$this->db->where('id', $userId);
+		if (!$userData = $this->_row('users')) return false;
+		
+		return [
+			'stage'	=> $userData['stage'],
+			'summ'	=> floor((time() - $userData['reg_date']) / 86400) + $userData['stage']
+		];
+	}
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	 */
+	private function _getUserRank($userId = false) {
+		if (!$userId) return false;
+		$this->db->select('rank');
+		$this->db->where('id', $userId);
+		if (!$userRank = $this->_row('users', 'rank')) return false;
+		return $userRank;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 	/**
 	 * @param 
 	 * @return 
@@ -629,6 +767,36 @@ class Users_model extends MY_Model {
 		$this->db->select('id, name');
 		if (!$classes = $this->_result($this->classesTable)) return false;
 		return setArrKeyFromField($classes, 'id');
+	}
+	
+	
+	
+	
+	
+	/**
+	 * Получить список званий
+	 * @param веернуть поля (если задать одно поле то вернет [ID => заданное поле]) По-умолчанию вернет все поля
+	 * @return array
+	 */
+	private function _getRanks($fields = null) {
+		if ($fields && is_string($fields)) $fields = preg_split("/[\s,]+/", $fields);
+		$this->db->order_by('period', 'ASC');
+		
+		$this->db->select('id');
+		if ($fields) $this->db->select(implode(', ', $fields));
+		if (!$ranks = $this->_result('ranks')) return false;
+		
+		if ($fields && in_array('coefficient', $fields)) {
+			$data = [];
+			foreach ($ranks as $item) {
+				$item['coefficient'] = json_decode($item['coefficient'], true);
+				$data[$item['id']] = $item;
+			}
+			return $data;
+		}
+		
+		if (count($fields) == 1) return setArrKeyFromField($ranks, 'id', reset($fields)); 
+		return setArrKeyFromField($ranks, 'id', true);
 	}
 	
 	

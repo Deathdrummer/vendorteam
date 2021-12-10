@@ -842,9 +842,8 @@ class Admin_model extends My_Model {
 		if ($setIdAsKey) {
 			$data = [];
 			foreach ($ranksData as $item) {
-				$id = arrTakeItem($item, 'id');
 				$item['coefficient'] = json_decode($item['coefficient'], true);
-				$data[$id] = $item;
+				$data[$item['id']] = $item;
 			}
 		} else {
 			$data = $ranksData;

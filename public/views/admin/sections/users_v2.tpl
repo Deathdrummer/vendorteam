@@ -12,7 +12,14 @@
 			<p class="fz14px uppercase">Онлайн: <strong id="onlineUsersCount">----</strong></p>
 		</div>
 		
-			
+		
+		
+		
+		
+		
+		<div class="buttons notop mr40px" title="Выбрать звания">
+			<button id="usersv2Ranks">Звания <i class="fa fa-angle-down fz16px ml4px"></i></button>
+		</div>
 		
 		
 		<div class="usersv2showlists mr40px" id="usersv2ShowLists">
@@ -29,6 +36,11 @@
 			<div class="usersv2showlists__item" title="Отстраненные">
 				<input type="checkbox" id="usersv2showlistsExcluded" usersv2showlist="excluded">
 				<label for="usersv2showlistsExcluded">О</label>
+			</div>
+			
+			<div class="usersv2showlists__item" title="Замороженные">
+				<input type="checkbox" id="usersv2showlistsFrozen" usersv2showlist="frozen">
+				<label for="usersv2showlistsFrozen">З</label>
 			</div>
 			
 			<div class="usersv2showlists__item" title="Удаленные">
@@ -56,7 +68,7 @@
 		<div class="buttons notop">
 			<button id="usersv2FielsdBtn" title="Столбцы"><i class="fa fa-columns"></i></button>
 			<button id="usersv2StaticsBtn" title="Статики"><i class="fa fa-bars"></i></button>
-			<button id="usersv2SettingsBtn" title="Настройки отображения"><i class="fa fa-sliders"></i></button>
+			{# <button id="usersv2SettingsBtn" title="Настройки отображения"><i class="fa fa-sliders"></i></button> #}
 		</div>
 	</div>
 	
@@ -120,6 +132,7 @@ $(function() {
 		sortField,
 		sortOrder,
 		checkedShowLists,
+		checkedRanks = ddrStore('usersv2:ranks') || [],
 		usersTable = $('#usersTable').ddrTable({
 			minHeight: '52px',
 			maxHeight: 'calc(100vh - 310px)',
@@ -355,13 +368,102 @@ $(function() {
 	
 	
 	
+	
+	
+	
+	//-------------------- Выбор и запоминание типов списков
+	$('#usersv2ShowLists').find('[usersv2showlist]').each(function(k, item) {
+		let listType = $(item).attr('usersv2showlist'),
+			shoosedLists = ddrStore('usersv2:showlists');
+		if (shoosedLists.indexOf(listType) !== -1) $(item).setAttrib('checked');
+	});
+	
 	$('#usersv2ShowLists').find('[usersv2showlist]').on('change', function() {
 		checkedShowLists = [];
 		$('#usersv2ShowLists').find('[usersv2showlist]:checked').each(function() {
 			checkedShowLists.push($(this).attr('usersv2showlist'));
 		});
+		
+		ddrStore('usersv2:showlists', checkedShowLists);
 		getUsers(true);
 	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//------------- Звания
+	if (checkedRanks.length) $('#usersv2Ranks').addClass('done');
+	$('#usersv2Ranks').jBox('Tooltip', {
+		trigger: 'click',
+		closeOnMouseleave: true,
+		onOpen: function() {
+			let content = this;
+			content.setContent('<div class="d-flex w250px h200px align-items-center justify-content-center flex-column"><i class="fa fa-spinner fa-pulse fz22px"></i><p>Загрузка званий...</p></div>');
+			getAjaxHtml('users/ranks', {checked_ranks: checkedRanks}, function(html, stat) {
+				if (stat) {
+					content.setContent(html);
+					
+					$('#usersv2RanksList').on(tapEvent, '[usersv2rankslistitem]', function() {
+						checkedRanks = [];
+						$('#usersv2RanksList').find('[usersv2rankslistitem]').each(function(k, item) {
+							if ($(item).is(':checked')) checkedRanks.push(parseInt($(item).attr('usersv2rankslistitem')));
+						});
+						
+						if (checkedRanks.length) $('#usersv2Ranks').addClass('done');
+						else $('#usersv2Ranks').removeClass('done');
+						
+						$('[usersv2rankslistcheck]').removeAttrib('disabled');
+						ddrStore('usersv2:ranks', checkedRanks);
+						getUsers(true);
+					});
+					
+					
+					$('[usersv2rankslistcheck]').on(tapEvent, function() {
+						let stat = $(this).attr('usersv2rankslistcheck'),
+							otherBtnStat = stat == '0' ? '1' : '0';
+						
+						$('#usersv2RanksList').find('[usersv2rankslistitem]').each(function(k, item) {
+							if (stat == 1) {
+								$(item).setAttrib('checked');
+								checkedRanks.push(parseInt($(item).attr('usersv2rankslistitem')));
+							} else if (stat == 0) {
+								$(item).removeAttrib('checked');
+							}
+						});
+						if (stat == 0) checkedRanks = [];
+						
+						$(this).setAttrib('disabled');
+						$('[usersv2rankslistcheck="'+otherBtnStat+'"]').removeAttrib('disabled');
+						
+						if (checkedRanks.length) $('#usersv2Ranks').addClass('done');
+						else $('#usersv2Ranks').removeClass('done');
+						
+						ddrStore('usersv2:ranks', checkedRanks);
+						getUsers(true);
+					});
+					
+				} else content.setContent('<div class="d-flex align-items-center justify-content-center w250px h200px"><p class="fz14px empty center">Нет званий</p></div>'); 
+			});
+		},
+		outside: 'y',
+		ignoreDelay: true,
+		zIndex: 1200,
+		repositionOnContent: true,
+		position: {
+		  x: 'center',
+		  y: 'bottom'
+		}
+	});
+	
+	
+	
 	
 	
 	
@@ -381,7 +483,24 @@ $(function() {
 			type = $(input)[0].type.replace('select-one', 'select'),
 			value = type == 'checkbox' ? $(input).is(':checked') : ($(input).hasAttrib('date') ? $(input).attr('date') : $(input).val());
 			
-		saveUserField({user_id: userId, field: field, value: value}, function() {
+		saveUserField({user_id: userId, field: field, value: value}, function(stat, response) {
+			if (field == 'stage' && response) {
+				$(tr).find('[usersv2currentrank]').text(response.rank);
+				if (response.next) {
+					$(tr).find('[usersv2nextcountdays]').text(response.next.count_days);
+					$(tr).find('[usersv2nextrank]').text(response.next.next_rank);
+					$(tr).find('[usersv2nextrank]').closest('p').show();
+				} else {
+					$(tr).find('[usersv2nextrank]').closest('p').hide();
+				}
+				
+				// Если звание обновляется
+				if (response.updated) {
+					console.log($(tr).find('[usersv2ranktd]').length);
+					$(tr).find('[usersv2ranktd]').addClass('changed');
+				} 
+			}
+				
 			$(input).addClass('changed');
 			$(tr).addClass('changed');
 		});
@@ -456,7 +575,7 @@ $(function() {
 	
 	
 	//----------------------------------------------------
-	
+	// user_id field value
 	let changeFieldTOut;
 	function saveUserField(params, callback) {
 		clearTimeout(changeFieldTOut);
@@ -464,7 +583,11 @@ $(function() {
 		
 		changeFieldTOut = setTimeout(function() {
 			getAjaxJson('/users/list/save', params, function(stat) {
-				if (callback && typeof callback == 'function') callback(stat);
+				if (params.field == 'stage') {
+					getAjaxJson('users/ranks/update', {user_id: params.user_id}, function(json) {
+						if (callback && typeof callback == 'function') callback(stat, json);
+					});
+				} else if (callback && typeof callback == 'function') callback(stat);
 			});
 		}, (saveFieldTimeout || 500));
 	}
@@ -529,7 +652,7 @@ $(function() {
 	
 	
 	
-	let usersColorsTooltip, usersStaticsTooltip, usersClassesTooltip, usersPersonagesTooltip;
+	let usersColorsTooltip, usersStaticsTooltip, usersClassesTooltip, usersPersonagesTooltip, usersSetRankTooltip;
 	function getUsers(reboot) {
 		if (reboot === undefined && isEndOfList) return false;
 		else if (reboot) {
@@ -553,7 +676,8 @@ $(function() {
 				search_str: searchStr,
 				sort_field: sortField,
 				sort_order: sortOrder,
-				show_lists: checkedShowLists
+				show_lists: ddrStore('usersv2:showlists'),
+				ranks: checkedRanks,
 			})
 		]).then((data) => {
 			if (reboot) $('#totalUsers').text(data[1]['headers']['total'] || 0);
@@ -570,6 +694,7 @@ $(function() {
 			
 			
 			let theadCols = '';
+				theadCols += '<td class="p0 w40px center"><strong>№</strong></td>';
 				theadCols += '<td class="w230px sorttd pointer" usersv2field="nickname"><strong>Участник</strong></td>';
 				if (data[0]['json']) {
 					$.each(data[0]['json'], function(field, fData) {
@@ -601,6 +726,11 @@ $(function() {
 					isEndOfList = true;
 				}
 			}
+			
+			
+			$('#usersList').find('[usersv2num]').each(function(k, item) {
+				$(item).text(k+1);
+			});
 			
 			if (sortField) $('[usersv2field="'+sortField+'"]').addClass('sorttd_active');
 			
@@ -684,6 +814,92 @@ $(function() {
 					}
 				});
 			});
+			
+			
+			
+			//------------- Заорозить\разморозить участника
+			$('#usersList').off(tapEvent, '[usersv2freezestage]').on(tapEvent, '[usersv2freezestage]', function() {
+				let userId = $(this).attr('usersv2freezestage'),
+					btn = this,
+					tr = $(btn).closest('tr'),
+					td = $(btn).closest('td');
+				
+				getAjaxJson('users/list/freeze', {user_id: userId}, function(response) {
+					if (response > 0) {
+						if (response == 1) {
+							notify('Участник успешно раморожен!');
+							$(btn).replaceWith('<div title="Заморозить стаж"><i class="fa fa-play-circle fz18px pointer green green_hovered" usersv2freezestage="'+userId+'"></i></div>');
+						} else if (response == 2) {
+							notify('Участник успешно заморожен!');
+							$(btn).replaceWith('<div title="Разморозить стаж"><i class="fa fa-stop-circle fz18px pointer red red_hovered" usersv2freezestage="'+userId+'"></i></div>');
+						}
+						
+						$(td).find('[userfield="stage"]').addClass('changed');
+						$(tr).addClass('changed');
+					} else {
+						notify('Ошибка разморозки/заморозки участника!', 'error');
+					}
+				});
+			});
+			
+			
+			
+			
+			
+			
+			//------------- Присвоить звание
+			if (usersSetRankTooltip) usersSetRankTooltip.destroy();
+			usersSetRankTooltip = new jBox('Tooltip', {
+				attach: '[usersv2setrank]',
+				trigger: 'click',
+				closeOnMouseleave: true,
+				outside: 'x',
+				ignoreDelay: true,
+				zIndex: 1200,
+				pointer: 'top',
+				position: {
+				  x: 'right',
+				  y: 'center'
+				},
+				onOpen: function() {
+					usersSetRankTooltip.setContent('<div class="d-flex w250px h200px align-items-center justify-content-center flex-column"><i class="fa fa-spinner fa-pulse fz22px"></i><p>Загрузка званий...</p></div>');
+					
+					let btn = $(this.target),
+						td = $(btn).closest('td'),
+						stage = $(btn).closest('tr').find('[userfield="stage"]'),
+						d = $(btn).attr('usersv2setrank').split('|'),
+						userId = d[0],
+						currentRank = d[1];
+					
+					getAjaxHtml('users/ranks/to_user', {current: currentRank}, function(html) {
+						usersSetRankTooltip.setContent(html);
+						$('#usersv2RanksToUserList').on(tapEvent, '[usersv2rankssetrank]', function() {
+							let rankId = $(this).attr('usersv2rankssetrank');
+							
+							getAjaxJson('users/ranks/set', {user_id: userId, new_rank: rankId, current_rank: currentRank}, function(response) {
+								if (response) {
+									$(btn).attr('usersv2setrank', userId+'|'+rankId);
+									$(td).find('[usersv2currentrank]').text(response.rank);
+									if (response.next) {
+										$(td).find('[usersv2nextcountdays]').text(response.next.count_days);
+										$(td).find('[usersv2nextrank]').text(response.next.next_rank);
+										$(td).find('[usersv2nextrank]').closest('p').show();
+									} else {
+										$(td).find('[usersv2nextrank]').closest('p').hide();
+									}
+									$(stage).val(response.stage);
+									usersSetRankTooltip.close();
+									$(td).addClass('changed');
+									$(td).closest('tr').addClass('changed');
+								} else {
+									notify('Ошибка! Не удалось изменить звание', 'error');
+								}
+							});
+						});
+					});
+				}
+			});
+			
 			
 			
 			
@@ -1009,6 +1225,7 @@ $(function() {
 	}
 	
 	function closeToolTips(exclude) {
+		if (exclude != 'ranks' && typeof usersSetRankTooltip.close === 'function') usersSetRankTooltip.close();
 		if (exclude != 'colors' && typeof usersColorsTooltip.close === 'function') usersColorsTooltip.close();
 		if (exclude != 'statics' && typeof usersStaticsTooltip.close === 'function') usersStaticsTooltip.close();
 		if (exclude != 'classes' && typeof usersClassesTooltip.close === 'function') usersClassesTooltip.close();

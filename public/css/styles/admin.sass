@@ -172,12 +172,12 @@ html
 	color: #fb8080
 	fill: #fb8080 !important
 	
-	&:hover
+	&.hovered:hover
 		color: darken(#fb8080, 10%)
 		fill: darken(#fb8080, 10%)
 		cursor: pointer
 	
-	&:active
+	&.hovered:active
 		color: darken(#fb8080, 20%)
 		fill: darken(#fb8080, 20%)
 		cursor: pointer
@@ -1111,6 +1111,7 @@ table:not(.clear):not(.ui-datepicker-calendar)
 				
 				&.changed
 					background-color: #eaffcd !important
+					box-shadow: 0 0 0 2px rgba(#00c900, 0.52) inset
 				
 				&.noheight
 					height: auto !important
@@ -5795,6 +5796,7 @@ p
 						
 						&:checked ~ label
 							border-color: #3caddf
+				
 	
 
 

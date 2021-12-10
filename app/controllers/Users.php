@@ -24,28 +24,28 @@ class Users extends MY_Controller {
 		
 		switch ($action) {
 			case 'save':
-				if (!$this->usersV2->list('save', $post)) exit('0');
-				echo '1';
+				echo jsonResponse($this->usersV2->list('save', $post));
 				break;
 			
 			case 'delete':
-				if (!$this->usersV2->list('delete', $post)) exit('0');
-				echo '1';
+				echo jsonResponse($this->usersV2->list('delete', $post));
 				break;
 			
 			case 'return_deleted':
-				if (!$this->usersV2->list('return_deleted', $post)) exit('0');
-				echo '1';
+				echo jsonResponse($this->usersV2->list('return_deleted', $post));
 				break;
 			
 			case 'exclude':
-				if (!$this->usersV2->list('exclude', $post)) exit('0');
-				echo '1';
+				echo jsonResponse($this->usersV2->list('exclude', $post));
 				break;
 			
 			case 'return_excluded':
-				if (!$this->usersV2->list('return_excluded', $post)) exit('0');
-				echo '1';
+				echo jsonResponse($this->usersV2->list('return_excluded', $post));
+				break;
+				
+			case 'freeze':
+				if (($result = $this->usersV2->list('freeze', $post)) === false) exit('0');
+				echo $result;
 				break;
 				
 			default:
@@ -108,7 +108,7 @@ class Users extends MY_Controller {
 			default:
 				$data['fields'] = $this->usersV2->fields('all', $post);
 				$data['selected_fields'] = $this->usersV2->fields('selected', $post);
-				echo $this->twig->render($this->viewsPath.'fields/list.tpl', $data);
+				echo $this->twig->render($this->viewsPath.'fields/list', $data);
 				break;
 		}
 		
@@ -135,12 +135,12 @@ class Users extends MY_Controller {
 				
 				$data['statics'] = $statics['statics'] ?? [];
 				$data['current_static'] = $statics['current'] ?? $post['current_static'];
-				echo $this->twig->render($this->viewsPath.'statics/tabs.tpl', $data);
+				echo $this->twig->render($this->viewsPath.'statics/tabs', $data);
 				break;
 			
 			case 'user':
 				$data['statics'] = $this->usersV2->statics('user', $post);
-				echo $this->twig->render($this->viewsPath.'statics/user.tpl', $data);
+				echo $this->twig->render($this->viewsPath.'statics/user', $data);
 				break;
 			
 			case 'set':
@@ -150,7 +150,7 @@ class Users extends MY_Controller {
 			
 			default:
 				$data['statics'] = $this->usersV2->statics('all', $post);
-				echo $this->twig->render($this->viewsPath.'statics/list.tpl', $data);
+				echo $this->twig->render($this->viewsPath.'statics/list', $data);
 				break;
 		}
 		
@@ -175,11 +175,53 @@ class Users extends MY_Controller {
 			
 			default:
 				$data['classes'] = $this->usersV2->classes('user', $post);
-				echo $this->twig->render($this->viewsPath.'classes/user.tpl', $data);
+				echo $this->twig->render($this->viewsPath.'classes/user', $data);
 				break;
 		}
 		
 	}
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function ranks($action = false) {
+		$post = bringTypes($this->input->post());
+		switch ($action) {
+			case 'to_user':
+				$data['ranks'] = $this->admin_model->getRanks();
+				$data['current'] = $post['current'];
+				echo $this->twig->render($this->viewsPath.'ranks/to_user', $data);
+				break;
+			
+			case 'set':
+				if (!$result = $this->usersV2->ranks('set', $post)) exit('0');
+				echo json_encode($result);
+				break;
+			
+			case 'update':
+				if (!$result = $this->usersV2->ranks('update', $post)) exit('0');
+				echo json_encode($result);
+				break;
+			
+			default:
+				$data = $this->usersV2->ranks('list', $post);
+				echo $this->twig->render($this->viewsPath.'ranks/list', $data);
+				break;
+		}
+		
+	}
+	
+	
+	
+	
+	
 	
 	
 	
@@ -201,7 +243,7 @@ class Users extends MY_Controller {
 			
 			default:
 				$data = $this->usersV2->userinfo('get', $post);
-				echo $this->twig->render($this->viewsPath.'user.tpl', $data);
+				echo $this->twig->render($this->viewsPath.'user', $data);
 			break;
 		}
 		

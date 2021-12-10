@@ -1,4 +1,5 @@
 <tr userid="{{id}}">
+	<td class="center"><strong usersv2num></strong></td>
 	<td>
 		<div class="d-flex align-items-center justify-content-between">
 			<img src="{{base_url('public/images/users/mini/'~avatar)|no_file('public/images/user_mini.jpg')}}" userv2card="{{id}}" alt="{{nickname}}" class="avatar w40px h40px pointer" title="Карточка участника «{{nickname}}»">
@@ -9,12 +10,20 @@
 	</td>
 	{% if fields %}
 		{% for field, value in fields %}
-			<td class="{% if field in ['lider', 'nda', 'stage', 'color', 'agreement'] %}center{% endif %} text-overflow">
+			<td class="{% if field in ['lider', 'nda', 'stage', 'color', 'agreement'] %}center{% endif %} text-overflow"{% if field == 'rank' %} usersv2ranktd{% endif %}>
 				{% if field in ['email', 'rank'] %}
 					{% if field == 'email' %}
 						<span class="text-overflow fz14px pointer" title="{{value}}" copytoclipboard="{{value}}">{{value}}</span>
 					{% elseif field == 'rank' %}
-						<span class="text-overflow fz14px" title="{{ranks[value]}}">{{ranks[value]}}</span>
+						<div class="row gutters-4 align-items-center">
+							<div class="col">
+								<p class="text-overflow fz14px" usersv2currentrank title="{{ranks[value.current]}}">{{ranks[value.current]}}</p>
+								<p {% if not fields['rank']['next'] %} style="display:none;"{% endif %} class="text-overflow mt3px"><i class="fa fa-arrow-right mr3px"></i> <span class="fz12px" usersv2nextrank>{{fields['rank']['next']['next_rank']}}</span> <small>(<small usersv2nextcountdays>{{fields['rank']['next']['count_days']}}</small> дн.)</small></p>
+							</div>
+							<div class="col-auto">
+								<div title="Изменить звание"><i class="fa fa-bars fz18px pointer blue blue_hovered" usersv2setrank="{{id}}|{{value.current}}"></i></div>
+							</div>
+						</div>
 					{% endif %}
 				
 				{% elseif field in ['nda'] %}
@@ -31,8 +40,21 @@
 					{% endif %}
 				
 				{% elseif field in ['stage', 'deposit_percent'] %}
-					<div class="field">
-						<input type="number" value="{{value}}" class="fz14px" showrows userfield="{{field}}">
+					<div class="row gutters-4 align-items-center">
+						<div class="col">
+							<div class="field">
+								<input type="number" value="{{value}}" class="fz14px" showrows userfield="{{field}}">
+							</div>
+						</div>
+						{% if field == 'stage' %}
+							<div class="col-auto">
+								{% if frozen %}
+									<div title="Разморожить стаж"><i class="fa fa-stop-circle fz18px pointer red red_hovered" usersv2freezestage="{{id}}"></i></div>
+								{% else %}
+									<div title="Заморозить стаж"><i class="fa fa-play-circle fz18px pointer green green_hovered" usersv2freezestage="{{id}}"></i></div>
+								{% endif %}
+							</div>
+						{% endif %}
 					</div>
 				
 				{% elseif field in ['payment'] %}

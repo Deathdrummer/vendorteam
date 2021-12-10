@@ -653,17 +653,18 @@ class Users_model extends MY_Model {
 		
 		$this->db->select('u.id, u.reg_date, u.stage, u.rank');
 		$this->db->where(['u.verification' => 1, 'u.deleted' => 0]); // присваивать звания только верифицированным и не удаленным
-		$query = $this->db->get('users u');
-		if (!$usersList = $query->result_array()) return false;
+		if (!$usersList = $this->_result('users u')) return false;
 		
 		$now = time();
 		$updateUsersData = [];
+		
 		foreach ($usersList as $user) {
-			$userPeriod = ($now - $user['reg_date']) > 0 ? floor(($now - $user['reg_date']) / (60 * 60 * 24)) + $user['stage'] : 0;
+			$userPeriod = ($now - $user['reg_date']) > 0 ? (floor(($now - $user['reg_date']) / (60 * 60 * 24)) + $user['stage']) : 0;
 			$userRank = $user['rank'];
 			
-			foreach ($ranksData as $key => $rank) {
-				if (($userPeriod >= $rank['period'] && (isset($ranksData[$key + 1]) && $userPeriod < $ranksData[$key + 1]['period']) && $rank['id'] != $userRank) || ($userPeriod >= $rank['period'] && (!isset($ranksData[$key + 1])) && $rank['id'] != $userRank)) {
+			foreach ($ranksData as $rank) {
+				$nexRank = next($ranksData) ?: false;
+				if (($userPeriod >= $rank['period'] && ($nexRank && $userPeriod < $nexRank['period']) && $rank['id'] != $userRank) || ($userPeriod >= $rank['period'] && !$nexRank && $rank['id'] != $userRank)) {
 					$updateUsersData[$user['id']] = [
 						'id' 	=> $user['id'],
 						'rank'	=> $rank['id']

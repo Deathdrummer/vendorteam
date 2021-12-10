@@ -98,7 +98,7 @@ class Cron extends MY_Controller {
 		}
 		if (!$staticsIds) return false;
 		
-		if (!$usersList = $this->users_model->getUsers(['where_in' => ['field' => 'us.static_id', 'values' => $staticsIds], 'or_where' => ['u.deleted' => 1]])) return false;
+		if (!$usersList = $this->users_model->getUsers(['where_in' => ['field' => 'us.static_id', 'values' => $staticsIds], 'or_where' => ['u.deleted' => 1, 'u.frozen' => 1]])) return false;
 		
 		$updateUsers = [];
 		foreach ($usersList as $user) {
