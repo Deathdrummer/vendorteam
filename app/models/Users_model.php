@@ -652,7 +652,7 @@ class Users_model extends MY_Model {
 		if (!$ranksData = $this->admin_model->getRanks(true, false)) return false;
 		
 		$this->db->select('u.id, u.reg_date, u.stage, u.rank');
-		$this->db->where(['u.verification' => 1, 'u.deleted' => 0]); // присваивать звания только верифицированным и не удаленным
+		$this->db->where(['u.verification' => 1, 'u.deleted' => 0, 'u.frozen' => 0]); // присваивать звания только верифицированным и не удаленным и не замороженным
 		if (!$usersList = $this->_result('users u')) return false;
 		
 		$now = time();
@@ -673,9 +673,7 @@ class Users_model extends MY_Model {
 			}
 		}
 		
-		if (!empty($updateUsersData)) {
-			$this->db->update_batch('users', array_values($updateUsersData), 'id');
-		}
+		if (!empty($updateUsersData)) $this->db->update_batch('users', array_values($updateUsersData), 'id');
 		
 		return $updateUsersData;
 	}
