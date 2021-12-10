@@ -374,7 +374,7 @@ $(function() {
 	//-------------------- Выбор и запоминание типов списков
 	$('#usersv2ShowLists').find('[usersv2showlist]').each(function(k, item) {
 		let listType = $(item).attr('usersv2showlist'),
-			shoosedLists = ddrStore('usersv2:showlists');
+			shoosedLists = ddrStore('usersv2:showlists') || [];
 		if (shoosedLists.indexOf(listType) !== -1) $(item).setAttrib('checked');
 	});
 	
