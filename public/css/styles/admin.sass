@@ -5779,9 +5779,15 @@ p
 		> input
 			display: none
 			
+			&:not(:checked)
+				~ .usersv2staticsitem_active
+					box-shadow: 0 0 0 2px inset #8fddff
+			
 			&:checked ~ label
 				background-color: #bedfff
 				//border-bottom: 1px solid #888
+				
+				
 				
 				.usersv2staticsitem__static
 					span

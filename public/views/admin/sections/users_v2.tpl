@@ -852,7 +852,7 @@ $(function() {
 			usersSetRankTooltip = new jBox('Tooltip', {
 				attach: '[usersv2setrank]',
 				trigger: 'click',
-				closeOnMouseleave: true,
+				//closeOnMouseleave: true,
 				outside: 'x',
 				ignoreDelay: true,
 				zIndex: 1200,
@@ -873,9 +873,16 @@ $(function() {
 					
 					getAjaxHtml('users/ranks/to_user', {current: currentRank}, function(html) {
 						usersSetRankTooltip.setContent(html);
+						let rankId;
+						
 						$('#usersv2RanksToUserList').on(tapEvent, '[usersv2rankssetrank]', function() {
-							let rankId = $(this).attr('usersv2rankssetrank');
-							
+							rankId = $(this).attr('usersv2rankssetrank');
+							$('#usersv2RanksToUserSetBtn').removeAttrib('disabled');
+						});
+						
+						
+						$('#usersv2RanksToUserSetBtn').on(tapEvent, function() {
+							//------------------------------------------ Сделать подтверждение
 							getAjaxJson('users/ranks/set', {user_id: userId, new_rank: rankId, current_rank: currentRank}, function(response) {
 								if (response) {
 									$(btn).attr('usersv2setrank', userId+'|'+rankId);
@@ -896,6 +903,7 @@ $(function() {
 								}
 							});
 						});
+						
 					});
 				}
 			});
