@@ -124,7 +124,7 @@ class Users_model extends MY_Model {
 				
 				if (isset($sortField)) $this->db->order_by('u.'.$sortField, $sortOrder);
 				$this->db->group_by('u.id');
-				if (!$result = $this->_resultWithCount($this->usersTable.' u', $this->usersListPart, (isset($offset) ? ($offset * $this->usersListPart) : 0))) {toLog($this->db->last_query());  return false;}
+				if (!$result = $this->_resultWithCount($this->usersTable.' u', $this->usersListPart, (isset($offset) ? ($offset * $this->usersListPart) : 0))) return false;
 				
 				//toLog($this->db->last_query());
 				
