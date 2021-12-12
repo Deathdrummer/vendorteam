@@ -131,7 +131,6 @@ $(function() {
 		searchStr,
 		sortField,
 		sortOrder,
-		checkedShowLists,
 		checkedRanks = ddrStore('usersv2:ranks') || [],
 		usersTable = $('#usersTable').ddrTable({
 			minHeight: '52px',
@@ -372,14 +371,14 @@ $(function() {
 	
 	
 	//-------------------- Выбор и запоминание типов списков
+	let shoosedLists = ddrStore('usersv2:showlists') || [];
 	$('#usersv2ShowLists').find('[usersv2showlist]').each(function(k, item) {
-		let listType = $(item).attr('usersv2showlist'),
-			shoosedLists = ddrStore('usersv2:showlists') || [];
+		let listType = $(item).attr('usersv2showlist');
 		if (shoosedLists.indexOf(listType) !== -1) $(item).setAttrib('checked');
 	});
 	
 	$('#usersv2ShowLists').find('[usersv2showlist]').on('change', function() {
-		checkedShowLists = [];
+		let checkedShowLists = [];
 		$('#usersv2ShowLists').find('[usersv2showlist]:checked').each(function() {
 			checkedShowLists.push($(this).attr('usersv2showlist'));
 		});
@@ -411,6 +410,7 @@ $(function() {
 					content.setContent(html);
 					
 					$('#usersv2RanksList').on(tapEvent, '[usersv2rankslistitem]', function() {
+						let allRanksCount = $('#usersv2RanksList').find('[usersv2rankslistitem]').length;
 						checkedRanks = [];
 						$('#usersv2RanksList').find('[usersv2rankslistitem]').each(function(k, item) {
 							if ($(item).is(':checked')) checkedRanks.push(parseInt($(item).attr('usersv2rankslistitem')));
@@ -419,7 +419,10 @@ $(function() {
 						if (checkedRanks.length) $('#usersv2Ranks').addClass('done');
 						else $('#usersv2Ranks').removeClass('done');
 						
-						$('[usersv2rankslistcheck]').removeAttrib('disabled');
+						if (checkedRanks.length == 0) $('[usersv2rankslistcheck="0"]').setAttrib('disabled');
+						else if (checkedRanks.length == allRanksCount) $('[usersv2rankslistcheck="1"]').setAttrib('disabled');
+						else  $('[usersv2rankslistcheck]').removeAttrib('disabled');
+						
 						ddrStore('usersv2:ranks', checkedRanks);
 						getUsers(true);
 					});
@@ -852,7 +855,7 @@ $(function() {
 			usersSetRankTooltip = new jBox('Tooltip', {
 				attach: '[usersv2setrank]',
 				trigger: 'click',
-				//closeOnMouseleave: true,
+				closeOnMouseleave: true,
 				outside: 'x',
 				ignoreDelay: true,
 				zIndex: 1200,
