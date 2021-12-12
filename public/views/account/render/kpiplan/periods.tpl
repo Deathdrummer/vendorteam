@@ -1,8 +1,13 @@
-{% if periods.total %}
-	<div class="popup__title">
-		<h6 class="white center">Выберите период</h6>
+<div class="popup__title">
+	<h6 class="white center">Выберите период</h6>
+	
+	<div class="buttons inline notop ml-auto">
+		<button title="Назад" kpiperiodsbtn="prev"{% if start %} disabled{% endif %}><i class="fa fa-chevron-left"></i></button>
+		<button title="Вперед" kpiperiodsbtn="next"{% if end %} disabled{% endif %}><i class="fa fa-chevron-right"></i></button>
 	</div>
+</div>
 
+{% if periods.total %}
 	<div class="popup__data">
 		<ul class="popup__list popup__list_vertical">
 			{% for period in periods.items %}

@@ -1290,6 +1290,32 @@ class Reports_model extends My_Model {
 	}
 	
 	
+	
+	/**
+	 * @param 
+	 * @return 
+	 */
+	public function getActivePeriod() {
+		if (!$mainStaticId = $this->userData['main_static']) return false;
+		$this->db->select('location');
+		$this->db->where('id', $mainStaticId);
+		if (!$location = $this->_row('statics', 'location')) return false;
+		
+		$zonesMap = [
+			1 => 'active_u',
+			2 => 'active_e',
+			3 => 'active_a'
+		];
+		
+		$this->db->select('name');
+		$this->db->where($zonesMap[$location], 1);
+		if (!$periodName = $this->_row('reports_periods', 'name')) return false;
+		return $periodName;
+	}
+	
+	
+	
+	
 	/**
 	 * Задать активный период
 	 * @param ID периода

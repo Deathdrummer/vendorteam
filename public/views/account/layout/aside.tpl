@@ -70,6 +70,8 @@
 			
 			<li walletbalance class="pointer"><span>Мой баланс:</span> <strong>{{balance|number_format(2, '.', ' ')}} руб.</strong> <sup>NDA {% if nda %}<i class="fa fa-check"></i>{% else %}<i class="fa fa-ban"></i>{% endif %}</sup></li>
 			
+			<li><span title="Активный период">Период:</span> <strong class="fz14px">{{active_period|default('не указан')}}</strong></li>
+			
 			{% if id in [2,21] %}
 				<li myrating class="pointer"><span>Рейтинг:</span> <strong>{{rating|default('Нет рейтинга')}}</strong></li>
 			{% endif %}
@@ -208,7 +210,7 @@
 						{#{% include 'views/account/render/payment_order.tpl' %}#}
 					{% endif %}
 					
-					{% if not access or access.navdown.message %}<li onclick="window.open('{{callbackform_setting}}')"><svg><use xlink:href="#message"></use></svg><span>Обращение в Support отдел</span></li>{% endif %}
+					{% if not access or access.navdown.message %}<li onclick="window.open('{{callbackform_setting}}')"><svg><use xlink:href="#message"></use></svg><span>Обращение в HR</span></li>{% endif %}
 					{#{% include 'views/account/render/complaints.tpl' %}#}
 				</ul>
 			{% endif %}

@@ -2523,6 +2523,7 @@ $(document).ready(function() {
 	
 	//--------------------------------------------------- Мой KPI план
 	$('[mykpiplan]').on(tapEvent, function() {
+		let kpiPeriodsOffset = 0;
 		popUp({
 			title: 'Мой KPI план|4',
 			width: 400,
@@ -2532,24 +2533,36 @@ $(document).ready(function() {
 			buttons: false,
 			closeButton: false,
 		}, function(kpiPlanWin) {
-			kpiPlanWin.setData('account/kpiplan/get_periods', function() {
-				$('[kpiplanperiod]').on(tapEvent, function() {
-					let kpiPeriodId = $(this).attr('kpiplanperiod'),
-						kpiPeriodTitle = $(this).children('strong').text(),
-						kpiPeriodDate = $(this).children('small').text(),
-						userId = getCookie('id', true);
-						console.log(userId);
-						
-					kpiPlanWin.setData('account/kpiplan/get_user_progress', {kpi_period_id: kpiPeriodId, user_id: userId, period_title: kpiPeriodTitle, period_date: kpiPeriodDate}, function(html, stat) {
-						if (!stat) kpiPlanWin.setData(html, false);
-						else {
-							kpiPlanWin.setWidth(1000);
-						}
+			
+			(function getKpiPeriods() {
+				kpiPlanWin.setData('account/kpiplan/get_periods', {offset: kpiPeriodsOffset}, function() {
+					$('[kpiperiodsbtn]').on(tapEvent, function() {
+						let dir = $(this).attr('kpiperiodsbtn');
+						if (dir == 'prev' && kpiPeriodsOffset > 0) kpiPeriodsOffset -= 1;
+						else if (dir == 'next') kpiPeriodsOffset += 1;
+						getKpiPeriods();
+					});
+					
+					
+					$('[kpiplanperiod]').on(tapEvent, function() {
+						let kpiPeriodId = $(this).attr('kpiplanperiod'),
+							kpiPeriodTitle = $(this).children('strong').text(),
+							kpiPeriodDate = $(this).children('small').text(),
+							userId = getCookie('id', true);
+							
+						kpiPlanWin.setData('account/kpiplan/get_user_progress', {kpi_period_id: kpiPeriodId, user_id: userId, period_title: kpiPeriodTitle, period_date: kpiPeriodDate}, function(html, stat) {
+							if (!stat) kpiPlanWin.setData(html, false);
+							else kpiPlanWin.setWidth(1000);
+						});
 					});
 				});
-			});
+			})();
+			
 		});
 	});
+	
+	
+			
 	
 	
 	

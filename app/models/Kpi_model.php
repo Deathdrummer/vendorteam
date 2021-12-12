@@ -19,6 +19,8 @@ class Kpi_model extends MY_Model {
 	private $kpiTemplatesDataTable = 'kpi_templates_data';
 	private $kpiUsersStaticsTable = 'kpi_users_statics';
 	
+	private $kpiPeriodsPart = 4;
+	
 	public function __construct() {
 		parent::__construct();
 	}
@@ -31,8 +33,9 @@ class Kpi_model extends MY_Model {
 	 * @param 
 	 * @return 
 	*/
-	public function getPeriods($periodsIds = false) {
+	public function getPeriods($periodsIds = false, $offset = false) {
 		if ($periodsIds) $this->db->where_in('id', $periodsIds);
+		if ($offset !== false) $this->db->limit($this->kpiPeriodsPart, ($offset * $this->kpiPeriodsPart));
 		$this->db->order_by('id', 'DESC');
 		
 		if (!$result = $this->_resultWithCount($this->kpiPeriodsTable)) return false;
