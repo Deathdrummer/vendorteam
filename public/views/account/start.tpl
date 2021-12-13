@@ -58,7 +58,7 @@
 								{% else %}
 									<div class="header__account" id="account">
 										<i class="fa fa-user-circle-o"></i>
-										<p>Войти в ЛК</p>
+										<p>Войти<span class="hidden-xs-down"> в ЛК</span></p>
 									</div>
 								{% endif %}
 							{% endif %}
