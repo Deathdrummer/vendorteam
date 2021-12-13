@@ -2,8 +2,8 @@
 	<h6 class="white center">Выберите период</h6>
 	
 	<div class="buttons inline notop ml-auto">
-		<button title="Назад" kpiperiodsbtn="prev"{% if start %} disabled{% endif %}><i class="fa fa-chevron-left"></i></button>
-		<button title="Вперед" kpiperiodsbtn="next"{% if end %} disabled{% endif %}><i class="fa fa-chevron-right"></i></button>
+		<button title="Назад" kpiperiodsbtn="next"{% if end %} disabled{% endif %}><i class="fa fa-chevron-left"></i></button>
+		<button title="Вперед" kpiperiodsbtn="prev"{% if start %} disabled{% endif %}><i class="fa fa-chevron-right"></i></button>
 	</div>
 </div>
 
