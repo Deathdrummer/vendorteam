@@ -31,6 +31,15 @@
 			{% endfor %}
 		</tbody>
 	</table>
+	
+	
+	{% if message %}
+		<div class="textarea mt20px">
+			<textarea id="personalGiftsMessage" rows="5" placeholder="Сообщение участнику"></textarea>
+		</div>	
+	{% endif %}
+	
+	
 {% else %}
 	<p class="empty center">Нет подарков</p>
 {% endif %}

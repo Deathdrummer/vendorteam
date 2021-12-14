@@ -113,6 +113,7 @@ class Gifts_model extends MY_Model {
 							'title'			=> $gift['title'],
 							'action'		=> $gift['action'],
 							'value'			=> $value,
+							'message'		=> $data['message'] ?? null,
 							'date_generate'	=> $date
 						];
 					}	

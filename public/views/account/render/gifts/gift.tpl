@@ -11,6 +11,19 @@
 		{% endif %}
 	</div>
 	
+	
+	
+	
+	{% if gift.message %}
+		<div class="giftwin__message">
+		<hr class="giftwin__line">
+			<h3>Сообщение</h3>
+			<p class="format">{{gift.message}}</p>
+		</div>
+	{% endif %}
+		
+	
+	
 	<div class="giftwin__buttons">
 		<button class="giftwin__button giftwin__button_small" id="takeGiftBtn" giftid="{{gift.id}}">Получить</button>
 	</div>

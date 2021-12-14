@@ -3391,6 +3391,7 @@ class Admin extends MY_Controller {
 			
 			case 'get':
 				$data['gifts'] = $this->gifts->personalgifts('get');
+				$data['message'] = $post['message'] ?? false;
 				echo $this->twig->render('views/admin/render/personalgifts/list.tpl', $data);
 				break;
 			

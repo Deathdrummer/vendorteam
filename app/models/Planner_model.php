@@ -54,15 +54,9 @@ class Planner_model extends MY_Model {
 		
 		switch ($type) {
 			case 'birthdays':
-				//$startDate = strtotime(date('Y-m-d', strtotime("first day of ${offset} month")));
-				//$offset += 1;
-				//$endDate = strtotime(date('Y-m-d', strtotime("first day of ${offset} month")));
-				
 				$firstDayDate = strtotime("first day of ${offset} month");
 				$month = date('n', $firstDayDate);
-				
-				$bDaysUsers = $this->_getBirthdaysUsers($month);
-				return $bDaysUsers;
+				return $this->_getBirthdaysUsers($month, $showLists ?? false);
 				break;
 			
 			default: break; // no action
@@ -115,11 +109,44 @@ class Planner_model extends MY_Model {
 	 * @param 
 	 * @return 
 	 */
-	private function _getBirthdaysUsers($month = false) {
+	private function _getBirthdaysUsers($month = false, $showLists = false) {
 		if (!$month) return false;
 		$this->db->select('id, nickname, avatar, birthday');
-		$this->db->where(['deleted' => 0, 'verification' => 1, 'excluded' => 0]);
-		//$this->db->where(['birthday >=' => $startDate, 'birthday <' => $endDate]);
+		//$this->db->where(['deleted' => 0, 'verification' => 1, 'excluded' => 0]);
+		$this->db->where('birthday is NOT NULL');
+		
+		if ($showLists) {
+			$this->db->group_start();
+			foreach ($showLists as $item) {
+				switch ($item) {
+					case 'verify':
+						$this->db->or_where('verification', 1);
+						break;
+					
+					case 'new':
+						$this->db->or_where('verification', 0);
+						$this->db->where('deleted', 0);
+						break;
+					
+					case 'excluded':
+						$this->db->or_where('excluded', 1);
+						break;
+					
+					case 'frozen':
+						$this->db->or_where('frozen', 1);
+						break;
+					
+					case 'deleted':
+						$this->db->or_where('deleted', 1);
+						break;
+					
+					default: break;
+				}
+			}
+			$this->db->group_end();
+		} 
+		
+		
 		if (!$users = $this->_result('users')) return false;
 		
 		$usersData = [];
@@ -128,7 +155,6 @@ class Planner_model extends MY_Model {
 			$usersData[date('j', $user['birthday'])][] = $user;
 		}
 		ksort($usersData);
-		
 		return $usersData;
 	}
 	

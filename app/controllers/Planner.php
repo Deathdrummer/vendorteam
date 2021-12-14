@@ -27,9 +27,6 @@ class Planner extends MY_Controller {
 			default:
 				$data = $this->planner->list('get', $post);
 				$data['data'] = $this->planner->data($post);
-				
-				
-				
 				echo $this->twig->render($this->viewsPath.'list', $data);
 				break;
 		}

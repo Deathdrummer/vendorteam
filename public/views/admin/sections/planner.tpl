@@ -5,9 +5,10 @@
 		<strong id="plannerMonth" class="planner__date fontcolor"></strong>
 		
 		
-		<div class="plannertypes mr40px" id="plannerTypes">
+		
+		<div class="plannertypes mr40px" plannerpanel id="plannerTypes">
 			<div class="plannertypes__item" title="Верифицированные">
-				<input type="radio" name="plannertype" id="plannertypesVerify" usersv2showlist="verify" checked>
+				<input type="radio" name="plannertype" id="plannertypesVerify" plannerdatatype="birthdays" checked>
 				<label for="plannertypesVerify">Дни рождения</label>
 			</div>
 			
@@ -15,6 +16,34 @@
 				<input type="radio" name="plannertype" id="plannertypesNew" usersv2showlist="new">
 				<label for="plannertypesNew">Н</label>
 			</div> #}
+		</div>
+		
+		
+		<div class="usersv2showlists mr40px" plannerpanel id="plannerShowLists">
+			<div class="usersv2showlists__item" title="Верифицированные">
+				<input type="checkbox" id="usersv2showlistsVerify" plannershowlist="verify">
+				<label for="usersv2showlistsVerify">В</label>
+			</div>
+			
+			<div class="usersv2showlists__item" title="Новые">
+				<input type="checkbox" id="usersv2showlistsNew" plannershowlist="new">
+				<label for="usersv2showlistsNew">Н</label>
+			</div>
+			
+			<div class="usersv2showlists__item" title="Отстраненные">
+				<input type="checkbox" id="usersv2showlistsExcluded" plannershowlist="excluded">
+				<label for="usersv2showlistsExcluded">О</label>
+			</div>
+			
+			<div class="usersv2showlists__item" title="Замороженные">
+				<input type="checkbox" id="usersv2showlistsFrozen" plannershowlist="frozen">
+				<label for="usersv2showlistsFrozen">З</label>
+			</div>
+			
+			<div class="usersv2showlists__item" title="Удаленные">
+				<input type="checkbox" id="usersv2showlistsDeleted" plannershowlist="deleted">
+				<label for="usersv2showlistsDeleted">У</label>
+			</div>
 		</div>
 		
 		
@@ -76,8 +105,41 @@ $(function() {
 	
 	
 	
+	
+	
+	
+	//-------------------- Выбор и запоминание типов списков
+	let shoosedLists = ddrStore('planner:showlists') || [];
+	if (shoosedLists.length) {
+		$('#plannerShowLists').find('[plannershowlist]').each(function(k, item) {
+			let listType = $(item).attr('plannershowlist');
+			if (shoosedLists.indexOf(listType) !== -1) $(item).setAttrib('checked');
+		});
+	}
+		
+	
+	$('#plannerShowLists').find('[plannershowlist]').on('change', function() {
+		let checkedShowLists = [];
+		$('#plannerShowLists').find('[plannershowlist]:checked').each(function() {
+			checkedShowLists.push($(this).attr('plannershowlist'));
+		});
+		ddrStore('planner:showlists', checkedShowLists);
+		getList();
+	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	// ------------------------- Отправить сообщение
-	$('body').off(tapEvent, '[plannersendmessbtn]').on(tapEvent, '[plannersendmessbtn]', function() {
+	/*$('body').off(tapEvent, '[plannersendmessbtn]').on(tapEvent, '[plannersendmessbtn]', function() {
 		let userId = parseInt($(this).attr('plannersendmessbtn')),
 			nickname = $(this).closest('[planneruser]').find('[plannerusername]').text();
 		
@@ -127,7 +189,7 @@ $(function() {
 				
 			});
 		});
-	});
+	});*/
 	
 	
 	
@@ -152,7 +214,7 @@ $(function() {
 		    buttonsOnTop: false,
 		    topClose: true
 		}, function(personalGiftsAddWin) {
-			personalGiftsAddWin.setData('admin/personalgifts/get', {section: 'personal'}, function(html) {
+			personalGiftsAddWin.setData('admin/personalgifts/get', {section: 'personal', message: 1}, function(html) {
 				
 				$('#personalGiftsList').ddrScrollTableY({height: '600px', cls: 'scroll_y_thin'});
 				
@@ -164,7 +226,7 @@ $(function() {
 				
 				$('#personalGiftsAddBtn').on(tapEvent, function() {
 					personalGiftsAddWin.wait();
-					let giftsToAdd = [];
+					let giftsToAdd = [], message = '';
 					$('#personalGiftsList').find('[personalgifttoadd]:checked').each(function() {
 						let giftId = $(this).val(),
 							count = $(this).closest('tr').find('[personalgifttoaddcount]').val();
@@ -174,7 +236,9 @@ $(function() {
 						});
 					});
 					
-					$.post('admin/personalgifts/add', {user_id: userId, gifts: giftsToAdd}, function(response) {
+					message = $('#personalGiftsMessage').val().trim();
+					
+					$.post('admin/personalgifts/add', {user_id: userId, gifts: giftsToAdd, message: message}, function(response) {
 						if (response) {
 							personalGiftsAddWin.close();
 							notify('Подарки успешно добавлены');
@@ -207,17 +271,17 @@ $(function() {
 	
 	function getList(callback) {
 		$('#plannerLoading').addClass('planner_loading');
-		$('#plannerTypes').addClass('plannertypes_disabled');
+		$('[plannerpanel]').addClass('plannertypes_disabled');
 		$('#plannerButtons').find('button').prop('disabled', true);
 		
 		Promise.all([
-			getAjaxHtml('planner/list', {type: type, offset: offset}),
+			getAjaxHtml('planner/list', {type: type, offset: offset, show_lists: ddrStore('planner:showlists')}),
 			getAjaxJson('planner/list/date', {offset: offset})
 		]).then(([html, date]) => {
 			$('#plannerMonth').text(date.json.month+' '+date.json.year+' г.');
 			$('#plennerList').html(html.html);
 			$('#plannerLoading').removeClass('planner_loading');
-			$('#plannerTypes').removeClass('plannertypes_disabled');
+			$('[plannerpanel]').removeClass('plannertypes_disabled');
 			$('#plannerButtons').find('button:not([listoffsetbtn="reset"])').prop('disabled', false);
 			if (offset != 0) $('#plannerButtons').find('button[listoffsetbtn="reset"]').prop('disabled', false);
 			else $('#plannerButtons').find('button[listoffsetbtn="reset"]').prop('disabled', true);
