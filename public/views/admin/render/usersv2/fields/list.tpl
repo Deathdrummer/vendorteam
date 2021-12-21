@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row gutters-5">
 	<div class="col-6">
 		<p>Все столбцы</p>
 		<ul class="usersv2__list" id="usersFieldsAll">
@@ -7,7 +7,7 @@
 					<li userslistfield="{{field}}"><span>{{fData.title}}</span></li>
 				{% endfor %}
 			{% else %}
-				<p class="empty">Столбцы не загрузились</p>
+				<p class="empty fz14px">Столбцы не загрузились</p>
 			{% endif %}
 		</ul>
 	</div>
