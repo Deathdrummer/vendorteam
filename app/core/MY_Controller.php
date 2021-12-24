@@ -153,6 +153,7 @@ class MY_Controller extends CI_Controller {
 						'kpiAmountsButton' 				=> 'Задать суммы выплат',
 					],
 				],
+				'kpi_planesv2'	=> 'KPI планы (версия 2)',
 				'statistics_amounts'	=> 'Статистика (доходы)',
 				'statistics'			=> 'Статистика (участники)',
 				'statistics_settings'	=> 'Статистика (настройки)',

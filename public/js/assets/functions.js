@@ -754,35 +754,41 @@ getAjaxHtml = function() {
 		always = typeof a[1] == 'function' ? (typeof a[2] == 'function' ? a[2] :false) : (typeof a[2] == 'function' ? (typeof a[3] == 'function' ? a[3] :false) : false);
 		
 	return new Promise(function(resolve, reject) {
-		$.post(url, params, function(html, stat, xhr) {
-			html = html.trim();
-			let headersData = xhr.getAllResponseHeaders(),
-				headers = {};
+		try {
+			$.post(url, params, function(html, stat, xhr) {
+				html = html.trim();
+				let headersData = xhr.getAllResponseHeaders(),
+					headers = {};
+					
+				headersData = headersData.split("\n");
+				headersData.forEach(function (header) {
+					header = header.split(": ");
+					let key = header.shift();
+					if (key.length == 0) return;
+					if (!/ddr-/.test(key)) return;
+					key = key.replace('ddr-', '');
+					key = key.toLowerCase(); 
+					val = header[0].replace("\r", '');
+					if (isInt(val)) val = parseInt(val);
+					if (isJson(val)) val = JSON.parse(val);
+					headers[key] = val;
+				});
 				
-			headersData = headersData.split("\n");
-			headersData.forEach(function (header) {
-				header = header.split(": ");
-				let key = header.shift();
-				if (key.length == 0) return;
-				if (!/ddr-/.test(key)) return;
-				key = key.replace('ddr-', '');
-				key = key.toLowerCase(); 
-				val = header[0].replace("\r", '');
-				if (isInt(val)) val = parseInt(val);
-				if (isJson(val)) val = JSON.parse(val);
-				headers[key] = val;
+				resolve({html: (html || null), headers: headers});
+				if (html && callback) callback(html, true, headers);
+				else if (callback) callback('<p class="empty center">Нет данных</p>', false, headers);
+			}, 'html').always(function() {
+				if (always) always();
+			}).fail(function(e) {
+				reject(e);
+				notify('Системная ошибка!', 'error');
+				showError(e);
 			});
-			
-			resolve({html: (html || null), headers: headers});
-			if (html && callback) callback(html, true, headers);
-			else if (callback) callback('<p class="empty center">Нет данных</p>', false, headers);
-		}, 'html').always(function() {
-			if (always) always();
-		}).fail(function(e) {
+		} catch(e) {
 			reject(e);
 			notify('Системная ошибка!', 'error');
 			showError(e);
-		});
+		}
 	});
 }
 
@@ -799,32 +805,38 @@ getAjaxJson = function() {
 		always = typeof a[1] == 'function' ? (typeof a[2] == 'function' ? a[2] :false) : (typeof a[2] == 'function' ? (typeof a[3] == 'function' ? a[3] :false) : false);
 	
 	return new Promise(function(resolve, reject) {
-		$.post(url, params, function(json, stat, xhr) {
-			let headersData = xhr.getAllResponseHeaders(),
-				headers = {};
-			headersData = headersData.split("\n");
-			headersData.forEach(function (header) {
-				header = header.split(": ");
-				let key = header.shift();
-				if (key.length == 0) return;
-				if (!/ddr-/.test(key)) return;
-				key = key.replace('ddr-', '');
-				key = key.toLowerCase(); 
-				val = header[0].replace("\r", '');
-				if (isInt(val)) val = parseInt(val);
-				if (isJson(val)) val = JSON.parse(val);
-				headers[key] = val;
+		try {
+			$.post(url, params, function(json, stat, xhr) {
+				let headersData = xhr.getAllResponseHeaders(),
+					headers = {};
+				headersData = headersData.split("\n");
+				headersData.forEach(function (header) {
+					header = header.split(": ");
+					let key = header.shift();
+					if (key.length == 0) return;
+					if (!/ddr-/.test(key)) return;
+					key = key.replace('ddr-', '');
+					key = key.toLowerCase(); 
+					val = header[0].replace("\r", '');
+					if (isInt(val)) val = parseInt(val);
+					if (isJson(val)) val = JSON.parse(val);
+					headers[key] = val;
+				});
+				
+				resolve({json: (json || null), headers: headers});
+				if (callback) callback(json || null, headers);
+			}, 'json').always(function() {
+				if (always) always();
+			}).fail(function(e) {
+				reject(e);
+				notify('Системная ошибка!', 'error');
+				showError(e);
 			});
-			
-			resolve({json: (json || null), headers: headers});
-			if (callback) callback(json || null, headers);
-		}, 'json').always(function() {
-			if (always) always();
-		}).fail(function(e) {
+		} catch(e) {
 			reject(e);
 			notify('Системная ошибка!', 'error');
 			showError(e);
-		});
+		}	
 	});	
 		
 }
