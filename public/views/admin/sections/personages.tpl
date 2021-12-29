@@ -59,9 +59,9 @@
 				<table class="table_hover" id="gamesIdsTable">
 					<thead>
 						<tr>
-							<td class="w45px">ID</td>
-							<td class="w450px">ID игры</td>
-							<td class="w200px">Кол-во персонажей</td>
+							{# <td class="w45px">ID</td> #}
+							<td class="w150px">ID игры</td>
+							<td class="w100px">Кол-во персонажей</td>
 							<td></td>
 							<td class="w320px">Действует до</td>
 							<td class="w350px">Владелец</td>
