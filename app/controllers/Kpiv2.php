@@ -15,6 +15,32 @@ class Kpiv2 extends MY_Controller {
 	
 	
 	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function import($action = false) {
+		$post = bringTypes($this->input->post());
+		$importExcelFile = bringTypes($this->input->files('file')) ?? false;
+		switch ($action) {
+			case 'form':
+				echo $this->twig->render($this->viewsPath.'import/form');
+				break;
+			
+			default:
+				echo jsonResponse($this->kpiv2->import(['import_excel_file' => $importExcelFile]));
+				break;
+		}
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	/**
 	 * @param 
@@ -95,37 +121,6 @@ class Kpiv2 extends MY_Controller {
 				$data['fields'] = $this->kpiv2->fields('get_choosed');
 				$data['data'] = $this->kpiv2->table('all');
 				echo $this->twig->render($this->viewsPath.'table/index', $data);
-				break;
-		}
-		
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	/**
-	 * @param 
-	 * @return 
-	*/
-	public function import($action = false) {
-		$post = bringTypes($this->input->post());
-		$file = bringTypes($this->input->files('file'));
-		switch ($action) {
-			case 'form':
-				echo $this->twig->render($this->viewsPath.'import/form');
-				break;
-			
-			default:
-				if ($file['error'] !== 0) exit('0');
-				if (!file_exists($file['tmp_name'])) return false;
-				$importData = json_decode(file_get_contents($file['tmp_name']), true);
-				echo jsonResponse($this->kpiv2->table('import_data', ['import_data' => $importData]));
 				break;
 		}
 		

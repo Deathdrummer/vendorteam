@@ -4,10 +4,113 @@ class Kpi_model extends MY_Model {
 	
 	private $fieldsTable = 'kpiv2_fields';
 	private $dataTable = 'kpiv2_data';
+	private $fieldsMap = [
+		'id' 		=> 'account_id',	
+		'бустер' 	=> 'booster',
+		'сервер' 	=> 'server',		
+		'персонаж' 	=> 'personage'	
+	];
+	
 	
 	public function __construct() {
 		parent::__construct();
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function import($action = false) {
+		$args = func_get_args();
+		$action = (isset($args[0]) && is_string($args[0])) ? $args[0] : false;
+		if ((isset($args[1]) && is_array($args[1])) || (isset($args[0]) && is_array($args[0]))) extract(snakeToCamelcase($args[1] ?? $args[0] ?? null)); // keys to camelcase
+		
+		switch ($action) {
+			case 'init':
+				break;
+			
+			default:
+				if ($importExcelFile['error'] !== 0) exit('0');
+				if (!file_exists($importExcelFile['tmp_name'])) return false;
+				if (!$importData = json_decode(@file_get_contents($importExcelFile['tmp_name'] ?? []), true)) return false;
+				
+				$customFields = $this->_getFieldsMap(); // [title => id] кастомные поля, созданные на сайте и их ID 
+				$tableLastBoosters = $this->_getLastBoosters(); // [id => booster]
+				$date = time();
+				
+				
+				$importBuildedData = [];
+				foreach ($importData as $row) {
+					$buildedRow = [];
+					foreach ($row as $field => $value) {
+						$field = mb_strtolower(trim(str_replace(['\n', '\r'], '', $field)));
+						
+						if (array_key_exists($field, $this->fieldsMap)) {
+							$buildedRow[$this->fieldsMap[$field]] = $this->fieldsMap[$field] == 'booster' ? [$date => $value] : $value;
+						} elseif ($customFields && array_key_exists($field, $customFields)) {
+							$buildedRow['_custom_fields_'][$customFields[$field]] = $value;
+						}
+					}
+					
+					$hash = md5($buildedRow['account_id'].$buildedRow['server'].$buildedRow['personage']);
+					$importBuildedData[$hash] = $buildedRow;
+				}
+				
+				$dataToInsert = false; $dataToUpdate = false;
+				if ($dataFromTable = $this->_getDataFromTable(array_keys($importBuildedData))) {
+					
+					$importedRowsToUpdate = array_intersect_key($importBuildedData, $dataFromTable);
+					$replacedData = array_replace_recursive($dataFromTable, $importedRowsToUpdate);
+					$dataToUpdate = array_values(array_map(function($row) {
+						$newRow['id'] = $row['id'];
+						$newRow['_custom_fields_'] = json_encode($row['_custom_fields_']);
+						
+						$importedBooster = end($row['booster']) ?? false;
+						$lastBooster = prev($row['booster']) ?? false;
+						
+						if ($lastBooster && $lastBooster === $importedBooster) $row['booster'] = array_slice($row['booster'], 0, (count($row['booster']) - 1), true);
+						$newRow['booster'] = json_encode($row['booster']);
+						
+						return $newRow;
+					}, $replacedData));
+					
+					$dataToInsert = array_diff_key($importBuildedData, $dataFromTable);
+				
+				} else {
+					$dataToInsert = $importBuildedData;
+				}
+				
+				
+				$dataToInsert = array_values(array_map(function($row) {
+					$row['_custom_fields_'] = json_encode($row['_custom_fields_']);
+					$row['booster'] = json_encode($row['booster']);
+					return $row;
+				}, $dataToInsert));
+				
+				
+				if ($dataToInsert) $this->db->insert_batch($this->dataTable, $dataToInsert);
+				if ($dataToUpdate) if ($dataToUpdate) $this->db->update_batch($this->dataTable, $dataToUpdate, 'id');
+				return true;
+				break;
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -35,20 +138,13 @@ class Kpi_model extends MY_Model {
 				if (!$fields = $this->_result($this->fieldsTable)) return false;
 				return setArrKeyFromField($fields, 'id');
 				break;
-			
-			case 'get_map':
-				$this->db->select('id, LOWER(title) AS title');
-				$this->db->where('choosed', 1);
-				if (!$fields = $this->_result($this->fieldsTable)) return false;
-				return setArrKeyFromField($fields, 'title', 'id');
-				break;
 				
 			case 'add':
-				return $this->db->insert($this->fieldsTable, ['title' => $fieldTitle, 'width' => $fieldWidth]);
+				return $this->db->insert($this->fieldsTable, ['title' => $fieldTitle, 'width' => $fieldWidth, 'type' => $fieldType, 'center' => $fieldCenter]);
 				break;
 			
 			case 'edit':
-				$this->db->select('id, title, width');
+				$this->db->select('id, title, width, type, center');
 				$this->db->where('id', $id);
 				if (!$row = $this->_row($this->fieldsTable)) return false;
 				return $row;
@@ -56,7 +152,7 @@ class Kpi_model extends MY_Model {
 			
 			case 'update':
 				$this->db->where('id', $id);
-				return $this->db->update($this->fieldsTable, ['title' => $fieldTitle, 'width' => $fieldWidth]);
+				return $this->db->update($this->fieldsTable, ['title' => $fieldTitle, 'width' => $fieldWidth, 'type' => $fieldType, 'center' => $fieldCenter]);
 				break;
 			
 			case 'set_choosed':
@@ -95,95 +191,17 @@ class Kpi_model extends MY_Model {
 				if (!$tableData = $this->_result($this->dataTable)) return false;
 				$data = [];
 				foreach ($tableData as $row) {
-					$customFields = json_decode($row['custom_fields'], true);
-					unset($row['custom_fields']);
-					
+					$customFields = $row['_custom_fields_'] ? json_decode($row['_custom_fields_'], true) : [];
+					unset($row['_custom_fields_']);
 					
 					$bustersRow = $row['booster'] ? json_decode($row['booster'], true) : null;
 					$lastDate = is_array($bustersRow) ? max(array_keys($bustersRow)) : null;
 					$row['booster'] = $bustersRow[$lastDate] ?? null;
 					
-					
-					$data[] = array_replace($row, $customFields);
+					$data[] = $customFields ? array_replace($row, $customFields) : $row;
 				}
 				
 				return $data;
-				break;
-			
-			case 'import_data':
-				$constFields = [
-					'id' 		=> 'account_id',	
-					'сервер' 	=> 'server',		
-					'персонаж' 	=> 'personage', 	
-					'бустер' 	=> 'booster'
-				];
-				
-				
-				$customFields = $this->fields('get_map'); // [title => id]
-				$md5TableFields = $this->table('md5'); // [md5 => id]
-				$tableLastBooster = $this->table('last_boosters'); // [id => booster]
-				$tableBoosters = $this->table('boosters'); // [id, booster]
-				$tableCustomFields = $this->table('custom_fields'); // [id, custom_fields]
-				
-				$dataToInsert = []; $dataToUpdate = []; $updateBoosters = [];
-				foreach ($importData as $k => $importRow) {
-					$buildRow = [];
-					foreach ($importRow as $name => $value) {
-						$name = mb_strtolower(trim(str_replace(['\n', '\r'], '', $name)));
-						if (array_key_exists($name, $constFields)) $buildRow[$constFields[$name]] = $value;
-						elseif (array_key_exists($name, $customFields)) $buildRow['custom_fields'][$customFields[$name]] = $value;
-					}
-					
-					$importFieldsMd5 = md5($buildRow['account_id'].$buildRow['server'].$buildRow['personage']);
-					
-					if (in_array($importFieldsMd5, array_keys($md5TableFields))) { // update
-						$booster = $buildRow['booster'];
-						unset($buildRow['account_id'], $buildRow['server'], $buildRow['personage'], $buildRow['booster']);
-						$rowId = $md5TableFields[$importFieldsMd5];
-						
-						if ($booster !== $tableLastBooster[$rowId]) $updateBoosters[$rowId] = $booster;
-						
-						$buildCustomFields = isset($buildRow['custom_fields']) ? json_encode(array_replace((array)$tableCustomFields[$rowId], $buildRow['custom_fields'])) : false;
-						
-						if ($buildCustomFields) {
-							$buildRow['id'] = $rowId;
-							$buildRow['custom_fields'] = $buildCustomFields;
-							$dataToUpdate[] = $buildRow;
-						} 
-						
-					} else { // insert
-						$date = time();
-						$booster = $buildRow['booster'];
-						$buildRow['custom_fields'] = $buildRow['custom_fields'] ? json_encode($buildRow['custom_fields']) : null;
-						$buildRow['booster'] = json_encode([$date => $booster]);
-						$dataToInsert[] = $buildRow;
-					} 
-				}
-				
-				
-				if ($dataToInsert) $this->db->insert_batch($this->dataTable, $dataToInsert);
-				if ($dataToUpdate) $this->db->update_batch($this->dataTable, $dataToUpdate, 'id');
-				if ($updateBoosters) {
-					$date = time();
-					$boostersToUpdate = [];
-					foreach ($updateBoosters as $id => $booster) {
-						$tableBoosters[$id][$date] = $booster;
-						$boostersToUpdate[] = [
-							'id' 		=> $id,
-							'booster'	=> json_encode($tableBoosters[$id])
-						];
-					}
-					
-					if ($boostersToUpdate) $this->db->update_batch($this->dataTable, $boostersToUpdate, 'id');
-				}
-							
-				return true;
-				break;
-			
-			case 'md5':
-				$this->db->select('id, md5(CONCAT(`account_id`, `server`, `personage`)) AS md5');
-				if (!$fields = $this->_result($this->dataTable)) return false;
-				return setArrKeyFromField($fields, 'md5', 'id');
 				break;
 			
 			case 'boosters':
@@ -191,19 +209,6 @@ class Kpi_model extends MY_Model {
 				if (!$fields = $this->_result($this->dataTable)) return false;
 				foreach ($fields as $k => $row) $fields[$k]['booster'] = $row['booster'] ? json_decode($row['booster'], true) : null;
 				return setArrKeyFromField($fields, 'id', 'booster');
-				break;
-			
-			case 'last_boosters':
-				$this->db->select('id, booster');
-				if (!$fields = $this->_result($this->dataTable)) return false;
-				
-				$result = [];
-				foreach ($fields as $row) {
-					$bustersRow = $row['booster'] ? json_decode($row['booster'], true) : null;
-					$lastDate = is_array($bustersRow) ? max(array_keys($bustersRow)) : null;
-					$result[$row['id']] = $bustersRow[$lastDate] ?? null;
-				}
-				return $result;
 				break;
 			
 			case 'custom_fields':
@@ -227,6 +232,72 @@ class Kpi_model extends MY_Model {
 	}
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	//---------------------------------------------------------------------------------------------------------
+	
+	
+	
+	
+	/**
+	 * Получить массив полей и их ID
+	 * @param 
+	 * @return 
+	 */
+	private function _getFieldsMap() {
+		$this->db->select('id, LOWER(title) AS title');
+		$this->db->where('choosed', 1);
+		if (!$fields = $this->_result($this->fieldsTable)) return false;
+		return setArrKeyFromField($fields, 'title', 'id');
+	}
+	
+	
+	
+	
+	
+	/**
+	 * Получить хэш данные из таблицы
+	 * @param 
+	 * @return 
+	 */
+	private function _getDataFromTable($hashArr = false) {
+		if (!$hashArr) return false;
+		$md5 = 'md5(CONCAT(`account_id`, `server`, `personage`))';
+		$this->db->select("id, $md5 AS hash, booster, _custom_fields_");
+		$this->db->where_in($md5, $hashArr);
+		if (!$result = $this->_result($this->dataTable)) return false;
+		foreach ($result as $k => $row) {
+			$result[$k]['_custom_fields_'] = json_decode($row['_custom_fields_'], true);
+			$result[$k]['booster'] = json_decode($row['booster'], true);
+		} 
+		return setArrKeyFromField($result, 'hash');
+	}
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	 */
+	private function _getLastBoosters() {
+		$this->db->select('id, booster');
+		if (!$fields = $this->_result($this->dataTable)) return false;
+		
+		$result = [];
+		foreach ($fields as $row) {
+			$bustersRow = $row['booster'] ? json_decode($row['booster'], true) : null;
+			$lastDate = is_array($bustersRow) ? max(array_keys($bustersRow)) : null;
+			$result[$row['id']] = $bustersRow[$lastDate] ?? null;
+		}
+		return $result;
+	}
 	
 	
 }

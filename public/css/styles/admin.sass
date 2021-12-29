@@ -226,6 +226,22 @@ html
 	color: #dceaf5 !important
 	fill: #dceaf5 !important
 	
+	&_hovered:not(.lightblue_active)
+		&:hover
+			color: darken(#dceaf5, 7%) !important
+			fill: darken(#dceaf5, 7%) !important
+			cursor: pointer
+		
+		&:active
+			color: darken(#dceaf5, 15%) !important
+			fill: darken(#dceaf5, 15%) !important
+			cursor: pointer
+	
+	&_active
+		color: darken(#dceaf5, 25%) !important
+		fill: darken(#dceaf5, 25%) !important
+			
+	
 	&_bg
 		background-color: #dceaf5 !important
 
@@ -4226,6 +4242,22 @@ p
 	align-items: center
 	justify-content: space-between
 	
+	&_center
+		position: relative
+		justify-content: center
+		
+		.progressbar__progress
+			
+		
+		.progressbar__value
+			position: absolute
+			width: 100%
+			text-align: center
+			
+			strong
+				color: #3a6070 !important
+				text-shadow: 0px 0px 5px #fff, 0px 0px 5px #fff
+	
 	&__progress
 		flex: 0 1 100%
 		border: none
@@ -4257,6 +4289,7 @@ p
 		white-space: nowrap
 		margin-left: 10px
 		margin-right: 10px
+		
 		
 		strong
 			font-size: 12px

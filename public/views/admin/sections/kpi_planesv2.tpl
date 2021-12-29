@@ -1,8 +1,13 @@
 <div class="section" id="{{id}}">
 	<div class="section_title">
-		<div class="d-flex">
+		<div class="d-flex mr-auto">
 			<h2 class="mr3px">KPI планы</h2>
 			<sup class="grayblue fz14px">версия 2</sup>
+		</div>
+		
+		<div class="buttons notop mr30px">
+			<button id="" class="pay" title="Загрузить данные"><i class="fa fa-upload"></i></button>
+			<button id="" title="Структура таблицы"><i class="fa fa-columns"></i></button>
 		</div>
 		
 		<div class="buttons notop">
@@ -226,15 +231,17 @@ $(function() {
 				        		$('#kpiv2ImportFile').val('');
 				        		$('#kpiv2SetImportBtn').setAttrib('disabled');
 				        		kpiv2ImportWin.wait(false);
+				        	
 				        	} else {
-				        		notify('Файл успешно загружен!');
 				        		getDataTable(function() {
+				        			notify('Файл успешно загружен!');
 									kpiv2ImportWin.close();
+									//kpiv2ImportWin.wait(false);
 				        		});
 				        	}
 						},
 						error: function(e) {
-							//kpiv2ImportWin.wait(false);
+							kpiv2ImportWin.wait(false);
 							notify('Ошибка сохранения данных', 'error');
 							showError(e);
 						}
@@ -335,6 +342,8 @@ $(function() {
 					resolve();
 					if (callback && typeof callback === 'function') callback();
 					
+					$('#kpiv2Table').ddrTable({minHeight: '50px', maxHeight: 'calc(100vh - 224px)'});
+					
 					//------------- Присвоить звание
 					if (usersSetRankTooltip) usersSetRankTooltip.destroy();
 					usersSetRankTooltip = new jBox('Tooltip', {
@@ -350,14 +359,18 @@ $(function() {
 						  y: 'center'
 						},
 						onOpen: function() {
-							usersSetRankTooltip.setContent('<div class="d-flex w250px h200px align-items-center justify-content-center flex-column"><i class="fa fa-spinner fa-pulse fz22px"></i><p>Загрузка истории...</p></div>');
+							usersSetRankTooltip.setContent('<div class="d-flex w367px h110px align-items-center justify-content-center flex-column"><i class="fa fa-spinner fa-pulse fz22px"></i><p>Загрузка истории...</p></div>');
 							
 							let id = $(this.target).attr('openboostershistorybtn');
+							$(this.target).addClass('lightblue_active');
 							
 							getAjaxHtml('kpiv2/table/boosters_history', {id: id}, function(html) {
 								usersSetRankTooltip.setContent(html);
 								$('#boostersHistoryTable').ddrTable({minHeight: '50px', maxHeight: '300px'});
 							});
+						},
+						onClose: function() {
+							$(this.target).removeClass('lightblue_active');
 						}
 					});
 					
