@@ -5748,7 +5748,7 @@ p
 		+ .usersv2showlists__item
 			border-left: 1px solid #d0d6da
 		
-		input[type="checkbox"]
+		input[type="checkbox"], input[type="radio"]
 			display: none
 			
 			&:checked ~ label
@@ -6231,6 +6231,28 @@ p
 
 
 .kpiv2
+	position: relative
+	
+	&__waitblock
+		position: absolute
+		top: 0
+		left: 0
+		bottom: 0
+		right: 0
+		display: flex
+		align-items: center
+		justify-content: center
+		background-color: rgba(#fff, 0.6)
+		min-height: 50vh
+		opacity: 0
+		pointer-events: none
+		z-index: 1200
+		transition: opacity 0.16s
+		
+		&_visible
+			opacity: 1
+			pointer-events: auto
+	
 	&_loading
 		position: absolute !important
 		top: 0
@@ -6338,4 +6360,46 @@ p
 					
 				i.remove
 					display: none
+	
+	
+	
+	
+	
+	
+.kpiv2list
+	border: 1px solid #cfd3d7
+	height: calc(100vh - 200px)
+	+scrollbar(#cfd3d7, #6d9fbf, 6px)
+	overflow-y: scroll
+	
+	&__item
+		cursor: pointer
+		border: none
+		
+		& + .kpiv2list__item
+			border-top: 1px solid #cfd3d7
+		
+		&_visible
+			background-color: #b0cfe3
+			
+			.kpiv2list__data
+				display: block
+	
+	&__title
+		font-size: 20px
+		line-height: 20px
+		padding: 5px 10px
+		margin: 0
+		
+	
+	&__data
+		margin-top: 10px
+		display: none
+		
+		
+			
+				
+			
+		
+	
 		

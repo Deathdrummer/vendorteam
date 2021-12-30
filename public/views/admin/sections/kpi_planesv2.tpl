@@ -5,10 +5,19 @@
 			<sup class="grayblue fz14px">версия 2</sup>
 		</div>
 		
-		<div class="buttons notop mr30px">
-			<button id="" class="pay" title="Загрузить данные"><i class="fa fa-upload"></i></button>
-			<button id="" title="Структура таблицы"><i class="fa fa-columns"></i></button>
+		
+		<div class="usersv2showlists mr40px" plannerpanel id="plannerShowLists">
+			<div class="usersv2showlists__item" title="Отобразить таблицей">
+				<input type="radio" name="kpiv2ListType" id="usersv2showDataTable" kpiv2datatype="table">
+				<label for="usersv2showDataTable"><i class="fa fa-table fz16px"></i></label>
+			</div>
+			
+			<div class="usersv2showlists__item" title="Отобразить списком">
+				<input type="radio" name="kpiv2ListType" id="usersv2showDataList" kpiv2datatype="list">
+				<label for="usersv2showDataList"><i class="fa fa-list fz16px"></i></label>
+			</div>
 		</div>
+		
 		
 		<div class="buttons notop">
 			<button id="kpiv2ImportBtn" class="pay" title="Загрузить данные"><i class="fa fa-upload"></i></button>
@@ -17,9 +26,15 @@
 	</div>
 	
 	
-	
-	<div id="kpiv2TableData"></div>
-	
+	<div class="kpiv2">
+		<div class="kpiv2__waitblock" id="kpiv2WaitBlock">
+			<div class="text-center">
+				<i class="fa fa-spinner fa-pulse fz30px fa-fw fontcolor"></i>
+				<p class="fz14px fontcolor">Загрузка...</p>
+			</div>
+		</div>
+		<div id="kpiv2TableData"></div>
+	</div>
 </div>
 
 
@@ -29,6 +44,25 @@ $(function() {
 	
 	
 	getDataTable();
+	
+	
+	let showType = ddrStore('kpiv2:showtype') || 'table';
+	$('[kpiv2datatype="'+showType+'"]').setAttrib('checked');
+	
+	
+	
+	
+	//-------------------- Тип отображения данных
+	$('[kpiv2datatype]').on('change', function() {
+		let type = $(this).attr('kpiv2datatype');
+		ddrStore('kpiv2:showtype', type);
+		getDataTable();
+	});
+	
+	
+	
+	
+	
 	
 	//-------------------- Структура таблицы
 	$('#kpiv2StruсtureBtn').on(tapEvent, function() {
@@ -268,6 +302,7 @@ $(function() {
 	
 	
 	
+	
 	//-----------------------------------------------------------------------------------------------------------------
 	
 	
@@ -335,14 +370,31 @@ $(function() {
 	
 	let usersSetRankTooltip;
 	function getDataTable(callback) {
+		$('#kpiv2WaitBlock').addClass('kpiv2__waitblock_visible');
+		let showType = ddrStore('kpiv2:showtype');
 		return new Promise(function(resolve, reject) {
 			try {
-				getAjaxHtml('kpiv2/table', function(html) {
+				getAjaxHtml('kpiv2/data', {show_type: showType}, function(html) {
 					$('#kpiv2TableData').html(html);
 					resolve();
 					if (callback && typeof callback === 'function') callback();
 					
+					$('#kpiv2WaitBlock').removeClass('kpiv2__waitblock_visible');
+					
 					$('#kpiv2Table').ddrTable({minHeight: '50px', maxHeight: 'calc(100vh - 224px)'});
+					
+					
+					if (showType == 'list') {
+						$('#kpiv2List').on(tapEvent, '[kpiv2openlistbtn]', function() {
+							if ($(this).parent().hasClass('kpiv2list__item_visible')) {
+								$(this).parent().removeClass('kpiv2list__item_visible');
+							} else {
+								$('#kpiv2List').find('[kpiv2openlistbtn]').parent().removeClass('kpiv2list__item_visible');
+								$(this).parent().addClass('kpiv2list__item_visible');
+							}
+						});
+					}
+					
 					
 					//------------- Присвоить звание
 					if (usersSetRankTooltip) usersSetRankTooltip.destroy();
@@ -359,12 +411,13 @@ $(function() {
 						  y: 'center'
 						},
 						onOpen: function() {
+							$('#kpiv2TableData').find('[openboostershistorybtn]').removeClass('lightblue_active');
 							usersSetRankTooltip.setContent('<div class="d-flex w367px h110px align-items-center justify-content-center flex-column"><i class="fa fa-spinner fa-pulse fz22px"></i><p>Загрузка истории...</p></div>');
 							
 							let id = $(this.target).attr('openboostershistorybtn');
 							$(this.target).addClass('lightblue_active');
 							
-							getAjaxHtml('kpiv2/table/boosters_history', {id: id}, function(html) {
+							getAjaxHtml('kpiv2/data/boosters_history', {id: id}, function(html) {
 								usersSetRankTooltip.setContent(html);
 								$('#boostersHistoryTable').ddrTable({minHeight: '50px', maxHeight: '300px'});
 							});

@@ -4,7 +4,7 @@
 			<td class="w50px" title="ID Аккаунта"><strong>ID</strong></td>
 			<td class="w130px"><strong>Сервер</strong></td>
 			<td class="w130px"><strong>Персонаж</strong></td>
-			<td class="w160px"><strong>Бустер</strong></td>
+			<td class="w170px"><strong>Бустер</strong></td>
 			{% if fields %}
 				{% for fId, field in fields %}
 					<td class="w{{field.width}}px" title="{{field.title}}"><strong class="d-block text-overflow w{{field.width - 10}}px{% if field.center %} text-center{% endif %}">{{field.title}}</strong></td>
@@ -17,13 +17,13 @@
 		{% if data %}
 			{% for row in data %}
 				<tr>
-					<td><strong>{{row['account_id']}}</strong></td>
-					<td>{{row['server']}}</td>
-					<td>{{row['personage']}}</td>
+					<td><strong class="fz14px">{{row['account_id']}}</strong></td>
+					<td class="fz13px">{{row['server']}}</td>
+					<td class="fz13px">{{row['personage']}}</td>
 					<td>
 						<div class="row gutters-4 align-items-center justify-content-between">
 							<div class="col">
-								<span>{{row['booster']}}</span>
+								<span class="fz13px">{{row['booster']}}</span>
 							</div>
 							<div class="col-auto">
 								<i class="fa fa-bars fz18px pointer lightblue lightblue_hovered" openboostershistorybtn="{{row['id']}}"></i>

@@ -109,18 +109,18 @@ class Kpiv2 extends MY_Controller {
 	 * @param 
 	 * @return 
 	*/
-	public function table($action = false) {
+	public function data($action = false) {
 		$post = bringTypes($this->input->post());
 		switch ($action) {
 			case 'boosters_history':
 				$data['boosters_history'] = $this->kpiv2->table('boosters_history', $post);
-				echo $this->twig->render($this->viewsPath.'table/boosters_history', $data);
+				echo $this->twig->render($this->viewsPath.'data/boosters_history', $data);
 				break;
 			
 			default:
 				$data['fields'] = $this->kpiv2->fields('get_choosed');
-				$data['data'] = $this->kpiv2->table('all');
-				echo $this->twig->render($this->viewsPath.'table/index', $data);
+				$data['data'] = $this->kpiv2->table('all', $post);
+				echo $this->twig->render($this->viewsPath.'data/'.($post['show_type'] ?? 'table'), $data);
 				break;
 		}
 		

@@ -198,9 +198,12 @@ class Kpi_model extends MY_Model {
 					$lastDate = is_array($bustersRow) ? max(array_keys($bustersRow)) : null;
 					$row['booster'] = $bustersRow[$lastDate] ?? null;
 					
-					$data[] = $customFields ? array_replace($row, $customFields) : $row;
+					if ($showType == 'list') {
+						$data[$row['account_id']][] = $customFields ? array_replace($row, $customFields) : $row;
+					} else {
+						$data[] = $customFields ? array_replace($row, $customFields) : $row;
+					}
 				}
-				
 				return $data;
 				break;
 			
