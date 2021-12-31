@@ -88,6 +88,11 @@ class Kpiv2 extends MY_Controller {
 				echo '1';
 				break;
 			
+			case 'to_find':
+				$data['fields'] = $this->kpiv2->fields('to_find');
+				echo $this->twig->render($this->viewsPath.'fields/select', $data);
+				break;
+			
 			
 			default:
 				echo $this->twig->render($this->viewsPath.'fields/form');
@@ -113,13 +118,13 @@ class Kpiv2 extends MY_Controller {
 		$post = bringTypes($this->input->post());
 		switch ($action) {
 			case 'boosters_history':
-				$data['boosters_history'] = $this->kpiv2->table('boosters_history', $post);
+				$data['boosters_history'] = $this->kpiv2->data('boosters_history', $post);
 				echo $this->twig->render($this->viewsPath.'data/boosters_history', $data);
 				break;
 			
 			default:
 				$data['fields'] = $this->kpiv2->fields('get_choosed');
-				$data['data'] = $this->kpiv2->table('all', $post);
+				$data['data'] = $this->kpiv2->data('all', $post);
 				echo $this->twig->render($this->viewsPath.'data/'.($post['show_type'] ?? 'table'), $data);
 				break;
 		}

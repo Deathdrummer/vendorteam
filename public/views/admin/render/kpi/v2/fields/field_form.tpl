@@ -13,7 +13,7 @@
 			<div class="col-auto">
 				<p class="fz13px mb4px fontcolor">Ширина (px)</p>
 				<div class="field w90px">
-					<input type="number" showrows name="field_width" value="{{width}}" rules="empty::введите значение!|num" autocomplete="off" placeholder="">
+					<input type="number" showrows name="field_width" min="50" max="500" value="{{width}}" rules="empty::введите значение!|num" autocomplete="off" placeholder="">
 				</div>
 			</div>
 			<div class="col-auto text-right">

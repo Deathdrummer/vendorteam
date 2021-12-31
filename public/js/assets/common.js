@@ -59,6 +59,18 @@ jQuery(document).ready(function($) {
 		$(this).setAttrib('readonly');
 	});
 	
+	let changeInputTOutMinmax;
+	$('body').on('keyup', 'input[min], input[max]', function() {
+		clearTimeout(changeInputTOutMinmax);
+		let input = this,
+			minVal = parseInt($(input).attr('min')),
+			maxVal = parseInt($(input).attr('max')),
+			value = parseFloat($(input).val());
+		changeInputTOutMinmax = setTimeout(function() {
+			if (minVal && value < minVal) $(input).val(minVal);
+			else if (maxVal && value > maxVal) $(input).val(maxVal);
+		}, 1000);
+	});
 	
 	
 	$('body').on('change', 'input[type="checkbox"]', function() {
@@ -70,6 +82,13 @@ jQuery(document).ready(function($) {
 			$(this)[0].setAttribute('checked', '');
 		} 
 	});
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

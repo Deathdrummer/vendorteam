@@ -6,15 +6,31 @@
 		</div>
 		
 		
+		<div class="select w100px mr3px">
+			<select id="kpiv2SearchField" class="fz12px h32px" disabled>
+				<option disabled selected>Загрузка...</option>
+			</select>
+			<div class="select__caret"></div>
+		</div>
+		<div class="field w200px mr3px">
+			<input type="text" id="kpiv2SearchStr" class="h32px" placeholder="Поиск..." autocomplete="off" disabled>
+		</div>
+		<div class="buttons notop mr40px">
+			<button id="kpiv2SearchReset" class="remove" title="Сбросить" disabled><i class="fa fa-ban"></i></button>
+		</div>
+		
+		
+		
+		
 		<div class="usersv2showlists mr40px" plannerpanel id="plannerShowLists">
 			<div class="usersv2showlists__item" title="Отобразить таблицей">
-				<input type="radio" name="kpiv2ListType" id="usersv2showDataTable" kpiv2datatype="table">
-				<label for="usersv2showDataTable"><i class="fa fa-table fz16px"></i></label>
+				<input type="radio" name="kpiv2ListType" id="kpiv2showDataTable" kpiv2datatype="table">
+				<label for="kpiv2showDataTable"><i class="fa fa-table fz16px"></i></label>
 			</div>
 			
 			<div class="usersv2showlists__item" title="Отобразить списком">
-				<input type="radio" name="kpiv2ListType" id="usersv2showDataList" kpiv2datatype="list">
-				<label for="usersv2showDataList"><i class="fa fa-list fz16px"></i></label>
+				<input type="radio" name="kpiv2ListType" id="kpiv2showDataList" kpiv2datatype="list">
+				<label for="kpiv2showDataList"><i class="fa fa-list fz16px"></i></label>
 			</div>
 		</div>
 		
@@ -41,7 +57,10 @@
 
 <script type="text/javascript"><!--
 $(function() {
-	
+	let searchString,
+		searchField,
+		sortField = ddrStore('kpiv2:sortField') || null,
+		sortDir = ddrStore('kpiv2:sortDir') || null;
 	
 	getDataTable();
 	
@@ -58,6 +77,71 @@ $(function() {
 		ddrStore('kpiv2:showtype', type);
 		getDataTable();
 	});
+	
+	
+	//-------------------- Получить поля для поиска
+	getAjaxHtml('kpiv2/fields/to_find', function(html) {
+		$('#kpiv2SearchField').html(html).removeAttrib('disabled');
+		$('#kpiv2SearchStr').removeAttrib('disabled');
+		searchField = $('#kpiv2SearchField').val();
+	});
+	
+	
+	
+	
+	//-------------------- Поиск
+	let kpiv2SearchTOut;
+	$('#kpiv2SearchStr').on('keyup', function() {
+		clearTimeout(kpiv2SearchTOut);
+		kpiv2SearchTOut = setTimeout(function() {
+			$('#kpiv2SearchReset').removeAttrib('disabled');
+			let str = $('#kpiv2SearchStr').val(); 
+			if (str.length) searchString = str.trim();
+			getDataTable();
+		}, 500);
+	});
+	
+	$('#kpiv2SearchField').on('change', function() {
+		searchField = $('#kpiv2SearchField').val();
+		console.log(searchField);
+		if ($('#kpiv2SearchStr').val()) {
+			$('#kpiv2SearchReset').removeAttrib('disabled');
+			getDataTable();
+		} 
+	});
+	
+	$('#kpiv2SearchReset').on(tapEvent, function() {
+		$('#kpiv2SearchStr').val('');
+		searchString = null;
+		searchField = null;
+		//ddrStore('kpiv2:selected_statics', false);
+		//ddrStore('kpiv2:current_static', false);
+		getDataTable();
+		$('#kpiv2SearchReset').setAttrib('disabled');
+	});
+	
+	
+	
+	
+	
+	
+	
+	
+	//-------------------- Сортировка
+	$('#kpiv2TableData').on(tapEvent, '[kpiv2field]', function() {
+		let sField = $(this).attr('kpiv2field');
+		if (sField != sortField) {
+			sortField = sField;
+			sortDir = 'ASC';
+		} else {
+			sortDir = (sortDir == 'DESC') ? 'ASC' : 'DESC';
+		}
+		ddrStore('kpiv2:sortField', sortField);
+		ddrStore('kpiv2:sortDir', sortDir);
+		getDataTable();
+	});
+	
+	
 	
 	
 	
@@ -374,7 +458,7 @@ $(function() {
 		let showType = ddrStore('kpiv2:showtype');
 		return new Promise(function(resolve, reject) {
 			try {
-				getAjaxHtml('kpiv2/data', {show_type: showType}, function(html) {
+				getAjaxHtml('kpiv2/data', {show_type: showType, search_str: searchString, search_field: searchField, sort_field: sortField, sort_dir: sortDir}, function(html) {
 					$('#kpiv2TableData').html(html);
 					resolve();
 					if (callback && typeof callback === 'function') callback();
@@ -393,6 +477,8 @@ $(function() {
 								$(this).parent().addClass('kpiv2list__item_visible');
 							}
 						});
+					} else if (showType == 'table') {
+						$('[kpiv2field="'+sortField+'"]').addClass('sorttd_active');
 					}
 					
 					

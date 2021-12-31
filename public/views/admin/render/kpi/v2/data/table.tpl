@@ -1,13 +1,15 @@
 <table id="kpiv2Table">
 	<thead>
 		<tr>
-			<td class="w50px" title="ID Аккаунта"><strong>ID</strong></td>
-			<td class="w130px"><strong>Сервер</strong></td>
-			<td class="w130px"><strong>Персонаж</strong></td>
-			<td class="w170px"><strong>Бустер</strong></td>
+			<td class="w50px sorttd pointer" kpiv2field="account_id" title="ID Аккаунта"><strong>ID</strong></td>
+			<td class="w130px sorttd pointer" kpiv2field="server" title="Сервер"><strong>Сервер</strong></td>
+			<td class="w130px sorttd pointer" kpiv2field="personage" title="Персонаж"><strong>Персонаж</strong></td>
+			<td class="w170px sorttd pointer" kpiv2field="booster" title="Бустер"><strong>Бустер</strong></td>
 			{% if fields %}
 				{% for fId, field in fields %}
-					<td class="w{{field.width}}px" title="{{field.title}}"><strong class="d-block text-overflow w{{field.width - 10}}px{% if field.center %} text-center{% endif %}">{{field.title}}</strong></td>
+					<td class="w{{field.width}}px sorttd pointer{% if field.center %} text-center{% endif %}" kpiv2field="{{fId}}" title="{{field.title}}">
+						<strong class="d-block text-overflow w{{field.width - 20}}px">{{field.title}}</strong>
+					</td>
 				{% endfor %}
 			{% endif %}
 			<td class="p0"></td>

@@ -46,7 +46,6 @@
 														<i class="fa fa-ban fz16px red"></i>
 													{% endif %}
 													
-													
 												{% elseif field.type == 3 %} {#  #}
 													<div class="progressbar progressbar_center">
 														<progress class="progressbar__progress h26px" value="{{row[fId]|default(0)}}" max="100"></progress>

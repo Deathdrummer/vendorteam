@@ -5717,12 +5717,16 @@ p
 
 .sorttd
 	position: relative
-	padding-right: 10px !important
+	padding-right: 15px !important
 	
 	&::after
 		content: '\f0dc'
 		position: absolute
 		right: 3px
+		top: 0
+		height: 100%
+		display: flex
+		align-items: center
 		+font(fontAwesome)
 		font-size: 14px
 		color: #96a5b1

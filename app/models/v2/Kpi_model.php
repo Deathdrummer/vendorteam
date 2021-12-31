@@ -161,6 +161,21 @@ class Kpi_model extends MY_Model {
 				return true;
 				break;
 			
+			case 'to_find':
+				$fields = [
+					'account_id' 	=> 'ID аккаунта',
+					'server' 		=> 'Сервер',
+					'personage' 	=> 'Персонаж',
+					'booster' 		=> 'Бустер'
+				];
+				
+				if ($customFields = $this->fields('get_choosed')) {
+					foreach ($customFields as $id => $row) $fields[$id] = $row['title'];
+				}
+				
+				return $fields;
+				break;
+			
 			case 'remove':
 				$this->db->where('id', $id);
 				return $this->db->delete($this->fieldsTable);
@@ -181,14 +196,29 @@ class Kpi_model extends MY_Model {
 	 * @param 
 	 * @return 
 	*/
-	public function table($action = false) {
+	public function data($action = false) {
 		$args = func_get_args();
 		$action = isset($args[0]) ? $args[0] : false;
 		if (isset($args[1]) && is_array($args[1])) extract(snakeToCamelcase($args[1])); // keys to uppercase
 		
 		switch ($action) {
 			case 'all':
-				if (!$tableData = $this->_result($this->dataTable)) return false;
+				if (isset($searchStr) && isset($searchField)) {
+					
+					if ($searchField == 'booster') {
+						$this->db->where('booster REGEXP "([^\"])*'.$searchStr.'([^\"])*"');
+					} else if (is_numeric($searchField)) {
+						$this->db->where('JSON_EXTRACT(`_custom_fields_`, "$[0].\"'.$searchField.'\"") REGEXP \'^.'.$searchStr.'\'');
+					}
+				}
+				
+				if ($showType == 'table' && isset($sortField) && in_array($sortField, ['account_id', 'server', 'personage']) ) {
+					$this->db->order_by($sortField, $sortDir);
+				}
+				
+			
+				if (!$tableData = $this->_result($this->dataTable)) {toLog($this->db->last_query()); return false;}
+				
 				$data = [];
 				foreach ($tableData as $row) {
 					$customFields = $row['_custom_fields_'] ? json_decode($row['_custom_fields_'], true) : [];
@@ -204,6 +234,11 @@ class Kpi_model extends MY_Model {
 						$data[] = $customFields ? array_replace($row, $customFields) : $row;
 					}
 				}
+				
+				if ($showType == 'table' && isset($sortField) && !in_array($sortField, ['account_id', 'server', 'personage']) ) {
+					return arrSortByField($data, $sortField, $sortDir);
+				}
+				
 				return $data;
 				break;
 			

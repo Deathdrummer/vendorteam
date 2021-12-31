@@ -747,9 +747,11 @@ if ( ! function_exists('arrSortByField')) {
 		if(empty($array) || is_null($field)) {if(config_item('log_helper')) toLog('Ошибка! arrSortByField ошибка входящих данных'); return false;}
 		if(config_item('log_helper')) toLog('Сортировка по полю '.$field.' от '.(strtolower($sort) == 'asc' ? 'а-я' : 'я-а'));
 		uasort($array, function($a, $b) use($field, $sort) {
-			if ($a[$field] == $b[$field]) return 0;
-			if(strtolower($sort) == 'asc') return ($a[$field] < $b[$field]) ? -1 : 1;
-			if(strtolower($sort) == 'desc') return ($a[$field] < $b[$field]) ? 1 : -1;
+			$aField = $a[$field] ?? false;
+			$bField = $b[$field] ?? false;
+			if ($aField == $bField) return 0;
+			if(strtolower($sort) == 'asc') return ($aField < $bField) ? -1 : 1;
+			if(strtolower($sort) == 'desc') return ($aField < $bField) ? 1 : -1;
 		});
 		if($keepKeys) return $array;
 		return array_values($array);
