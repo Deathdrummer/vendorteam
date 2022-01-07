@@ -1,5 +1,5 @@
 <tr class="new">
-	<td>-</td>
+	{# <td>-</td> #}
 	<td>
 		<div class="text">
 			<input type="text" name="game_id">
