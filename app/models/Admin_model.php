@@ -2043,17 +2043,19 @@ class Admin_model extends My_Model {
 		if ($this->db->delete('personages_game_ids')) {
 			$this->db->select('id');
 			$this->db->where('game_id', $id);
-			if (!$personagesToRemove = $this->_result('users_personages')) return false;
-			$personagesToRemove = array_column($personagesToRemove, 'id');
-			
-			$this->kpi->removePersonages($personagesToRemove); // удаление персонажей из KPI
-			
-			$this->db->where_in('id', $personagesToRemove);
-			if ($removePersonages) {
-				if ($this->db->delete('users_personages')) return true;
-			} else {
-				if ($this->db->update('users_personages', ['game_id' => null])) return true;
+			if ($personagesToRemove = $this->_result('users_personages')) {
+				$personagesToRemove = array_column($personagesToRemove, 'id');
+				
+				$this->kpi->removePersonages($personagesToRemove); // удаление персонажей из KPI
+				
+				$this->db->where_in('id', $personagesToRemove);
+				if ($removePersonages) {
+					if ($this->db->delete('users_personages')) return true;
+				} else {
+					if ($this->db->update('users_personages', ['game_id' => null])) return true;
+				}
 			}
+			return true;
 		} 
 		return false;
 	}
