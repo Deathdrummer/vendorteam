@@ -26,7 +26,7 @@
 						</div>
 					</td>
 					<td class="text-center">
-						<div class="popup__checkbox">
+						<div class="checkblock">
 							<input choosestatictodeposit type="checkbox" id="staticChoosed{{id}}" checked>
 							<label for="staticChoosed{{id}}"></label>
 						</div>
