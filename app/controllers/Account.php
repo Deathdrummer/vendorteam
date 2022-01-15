@@ -1431,6 +1431,30 @@ class Account extends MY_Controller {
 	
 	
 	
+	
+	/**
+	 * @param 
+	 * @return 
+	 */
+	public function my_account() {
+		$params['booster'] = $this->userData['nickname'];
+		$params['statics'] = array_keys($this->userData['statics']);
+		$this->load->model(['v2/kpi_model' => 'kpiv2']);
+		$data['fields'] = $this->kpiv2->fields('get_choosed');
+		$data['data'] = $this->kpiv2->data('toUser', $params);
+		$data['statics'] = $this->kpiv2->data('statics');
+		echo $this->twig->render('views/admin/render/kpi/v2/data/to_user', $data);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	/**
 	 * @param 
 	 * @return 

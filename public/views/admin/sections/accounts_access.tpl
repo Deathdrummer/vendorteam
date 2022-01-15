@@ -32,6 +32,7 @@
 									<div><label for="nav{{id}}_9"><input type="checkbox"{% if accounts_access[id]['access']['nav']['paymentorders'] %} checked{% endif %} name="accounts_access[{{id}}][access][nav][paymentorders]" value="1" id="nav{{id}}_9"> Мои заявки</label></div>
 									<div><label for="nav{{id}}_10"><input type="checkbox"{% if accounts_access[id]['access']['nav']['visitsrate'] %} checked{% endif %} name="accounts_access[{{id}}][access][nav][visitsrate]" value="1" id="nav{{id}}_10"> Моя посещаемость</label></div>
 									<div><label for="nav{{id}}_11"><input type="checkbox"{% if accounts_access[id]['access']['nav']['kpi'] %} checked{% endif %} name="accounts_access[{{id}}][access][nav][kpi]" value="1" id="nav{{id}}_11"> Мой KPI план</label></div>
+									<div><label for="nav{{id}}_12"><input type="checkbox"{% if accounts_access[id]['access']['nav']['myaccount'] %} checked{% endif %} name="accounts_access[{{id}}][access][nav][myaccount]" value="1" id="nav{{id}}_12"> Мой аккаунт</label></div>
 								</div>
 								
 								<div class="col-auto">

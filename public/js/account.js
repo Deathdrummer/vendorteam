@@ -2574,6 +2574,37 @@ $(document).ready(function() {
 	
 	
 	
+	//--------------------------------------------------- Мой аккаунт
+	$('[myaccount]').on(tapEvent, function() {
+		popUp({
+			title: 'Мой аккаунт|4',
+			width: 1200,
+			closeButton: 'Закрыть'
+		}, function(myAccountWin) {
+			let userId = getCookie('id', true);
+			myAccountWin.setData('account/my_account', {user_id: userId}, function(_, stat) {
+				if (stat) {
+					ddrInitTabs('#myAccountData');
+				} else {
+					myAccountWin.setData('<p class="empty text-center mt40px">Нет данных</p>', false);
+				}
+			});
+		});
+	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

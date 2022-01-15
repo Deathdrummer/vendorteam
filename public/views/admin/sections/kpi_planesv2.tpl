@@ -171,7 +171,6 @@ $(function() {
 	
 	$('#kpiv2SearchField').on('change', function() {
 		searchField = $('#kpiv2SearchField').val();
-		console.log(searchField);
 		if ($('#kpiv2SearchStr').val()) {
 			$('#kpiv2SearchReset').removeAttrib('disabled');
 			getDataTable();
@@ -922,20 +921,6 @@ $(function() {
 							notify('Ошибка сохранения отчета', 'error');
 						}
 					});
-					
-					
-					/*$.post('/kpiv2/report/save', {title: $(titleInp).val(), period_id: kpiv2PeriodId}, function(response) {
-						if (response) {
-							notify('Отчет успешно сохранен!');
-							kpiv2SaveReportWin.close();
-						} else {
-							notify('Ошибка! Не удалось сохранить отчет!', 'error');
-							kpiv2SaveReportWin.wait(false);
-						}
-					}).fail(function(e) {
-						showError(e);
-						notify('Системная ошибка!', 'error');
-					});*/
 				});
 				
 			});
@@ -978,21 +963,6 @@ $(function() {
 			});
 		});
 	});
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	

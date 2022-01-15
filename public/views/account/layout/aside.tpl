@@ -155,6 +155,7 @@
 					{% if not access or access.nav.paymentorders %}<li paymentorders><svg><use xlink:href="#weekend"></use></svg><span>Мои заявки</span></li>{% endif %}
 					{% if not access or access.nav.visitsrate %}<li visitsrate><svg><use xlink:href="#weekend"></use></svg><span>Моя посещаемость</span></li>{% endif %}
 					{% if not access or access.nav.kpi %}<li mykpiplan><svg><use xlink:href="#weekend"></use></svg><span>Мой KPI план</span></li>{% endif %}
+					{% if not access or access.nav.myaccount %}<li myaccount><svg><use xlink:href="#weekend"></use></svg><span>Мой аккаунт</span></li>{% endif %}
 				</ul>	
 			{% endif %}
 		</div>

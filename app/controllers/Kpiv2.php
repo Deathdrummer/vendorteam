@@ -344,7 +344,7 @@ class Kpiv2 extends MY_Controller {
 				$data['boosters_history'] = $this->kpiv2->data('boosters_history', $post);
 				echo $this->twig->render($this->viewsPath.'data/boosters_history', $data);
 				break;
-			
+				
 			default:
 				$data['fields'] = $this->kpiv2->fields('get_choosed');
 				$data['data'] = $this->kpiv2->data('all', $post);

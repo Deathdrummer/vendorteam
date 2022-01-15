@@ -500,9 +500,10 @@ class Kpi_model extends MY_Model {
 					}
 				}
 				
-				
 				if (isset($selectedStatics)) {
-					array_splice($selectedStatics, array_search('nostatic', $selectedStatics), 1, 0);
+					if (($noStaticIndex = array_search('nostatic', $selectedStatics)) !== false) {
+						array_splice($selectedStatics, $noStaticIndex, 1, 0);
+					}
 					$this->db->where_in('static', $selectedStatics);
 				} 
 				
@@ -514,7 +515,8 @@ class Kpi_model extends MY_Model {
 				}
 				
 			
-				if (!$tableData = $this->_result($this->dataTable)) {toLog($this->db->last_query()); return false;}
+				if (!$tableData = $this->_result($this->dataTable)) return false;
+				
 				
 				$data = [];
 				foreach ($tableData as $row) {
@@ -555,6 +557,33 @@ class Kpi_model extends MY_Model {
 				}
 				ksort($data);
 				return $data;
+				break;
+			
+			case 'toUser':
+				$this->db->where('booster REGEXP "([^\"])*'.$booster.'([^\"])*"');
+				$this->db->where_in('static', $statics);
+				if (!$tableData = $this->_result($this->dataTable)) return false;
+				
+				$data = [];
+				foreach ($tableData as $row) {
+					$customFields = $row['_custom_fields_'] ? json_decode($row['_custom_fields_'], true) : [];
+					unset($row['_custom_fields_']);
+					
+					$bustersRow = $row['booster'] ? json_decode($row['booster'], true) : null;
+					$lastDate = is_array($bustersRow) ? max(array_keys($bustersRow)) : null;
+					$row['booster'] = $bustersRow[$lastDate] ?? null;
+					 
+					$data[] = $customFields ? array_replace($row, $customFields) : $row;
+				}
+				
+				
+				$staticsData = [];
+				foreach ($data as $row) {
+					$st = arrTakeItem($row, 'static') ?: 0;
+					$staticsData[$st][] = $row;
+				}
+				ksort($staticsData);
+				return $staticsData;
 				break;
 			
 			case 'statics':
