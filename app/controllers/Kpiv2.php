@@ -110,6 +110,229 @@ class Kpiv2 extends MY_Controller {
 	
 	
 	
+	
+	/**
+	 * KPI периоды
+	 * @param 
+	 * @return 
+	*/
+	public function periods($action = false) {
+		$post = bringTypes($this->input->post());
+		if (!$action) return false;
+		
+		switch ($action) {
+			case 'get':
+			
+				//$this->kpiv2->periods('get');
+			
+				/*$this->load->model(['admin_model' => 'admin', 'reports_model' => 'reports']);
+				$data['statics'] = $this->admin->getStatics(true);
+				$data['reports_periods'] = $this->reports->getReportsPeriods();
+				$data['periods'] = $this->kpiv2->getPeriods();
+				$data['type'] = $post['type'];
+				$data['attr'] = isset($post['attr']) ? $post['attr'] : 'kpiopenform';
+				echo $this->twig->render($this->viewsPath.'periods/list.tpl', $data);*/
+				break;
+			
+			case 'new':
+				$this->load->model(['reports_model' => 'reports', 'admin_model' => 'admin']);
+				$data['periods'] = $this->reports->getReportsPeriods();
+				$data['statics'] = $this->admin->getStatics();
+				echo $this->twig->render($this->viewsPath.'periods/form.tpl', $data);
+				break;
+			
+			case 'add':
+				echo jsonResponse($this->kpiv2->periods('add', $post));
+				break;
+			
+			case 'activate_period':
+				$post = bringTypes($this->input->post());
+				if (!$this->kpiv2->activatePeriod($post['period_id'], $post['stat'])) exit('0');
+				echo '1';
+				break;
+			
+			case 'publish_period':
+				$post = bringTypes($this->input->post());
+				if (!$this->kpiv2->publishPeriod($post['period_id'], $post['stat'])) exit('0');
+				echo '1';
+				break;
+				
+			case 'add_custom_field':
+				$data['custom_tasks'] = $this->kpiv2->getCustomTasks();
+				echo $this->twig->render($this->viewsPath.'render/kpi/custom_fields/item.tpl', $data);
+				break;
+			
+			case 'remove_period':
+				if (!$this->kpiv2->removeKpiPeriod($post['period_id'])) exit('');
+				echo '1';
+				break;
+				
+			
+			
+			
+			default: break;
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Суммы выплат по званиям и статикам
+	 * @param 
+	 * @return 
+	*/
+	public function amounts($action = false) {
+		$post = bringTypes($this->input->post());
+		if (!$action) return false;
+		
+		switch ($action) {
+			case 'get_form':
+				$this->load->model(['admin_model' => 'admin']);
+				$ranksData = $this->admin->getRanks(true, false);
+				
+				$data['ranks'] = setArrKeyfromField($ranksData, 'id', 'name');
+				$data['statics'] = $this->admin->getStatics(true);
+				$data['amounts'] = $this->kpiv2->amounts('get');
+				
+				echo $this->twig->render($this->viewsPath.'amounts/form.tpl', $data);
+				break;
+			
+			case 'set_amount':
+				echo jsonResponse($this->kpiv2->amounts('set', $post));
+				break;
+			
+			case 'calc_summ':
+				echo $this->kpiv2->amounts('calcSumm', $post);
+				break;
+			
+			case 'calc_progress':
+				echo $this->kpiv2->amounts('calcProgress', $post);
+				break;
+			
+			default: break;
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function import_progress($action = false) {
+		$post = bringTypes($this->input->post());
+		$importExcelFile = bringTypes($this->input->files('file')) ?? false;
+		switch ($action) {
+			case 'form':
+				$this->load->model(['admin_model' => 'admin']);
+				$data['periods'] = $this->kpiv2->periods('get', $post);
+				$data['statics'] = $this->admin->getStatics();
+				
+				echo $this->twig->render($this->viewsPath.'import_progress/form', $data);
+				break;
+			
+			case 'statics_koeffs':
+				$this->load->model(['admin_model' => 'admin']);
+				$data['statics'] = $this->admin->getStatics();
+				$data['koeffs'] = $this->kpiv2->periods('staticsKoeffs', $post);
+				echo $this->twig->render($this->viewsPath.'import_progress/statics_koeffs', $data);
+				break;
+			
+			default:
+				$post['import_excel_file'] = $importExcelFile;
+				$this->load->model(['admin_model' => 'admin']);
+				
+				$data['data'] = $this->kpiv2->importProgress($post);
+				$data['payout_type'] = $this->kpiv2->periods('payoutType', $post);
+				$data['statics'] = $this->kpiv2->data('statics', ['statics_ids' => array_keys($data['data'])]);
+				$data['amounts'] = $this->kpiv2->amounts('get'); // static_id rank_id payout_type => amount
+				$data['ranks'] = $this->admin->getRanks();
+				
+				echo $this->twig->render($this->viewsPath.'import_progress/data', $data);
+				break;
+		}
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function report($action = false) {
+		$post = bringTypes($this->input->post());
+		switch ($action) {
+			case 'get':
+				if (!$report = $this->kpiv2->report('get', $post)) exit(0);
+				$reportData = [];
+				foreach ($report as $row) {
+					$static = arrTakeItem($row, 'static_id');
+					$reportData[$static][] = $row;
+				}
+				
+				$data['report'] = $reportData;
+				$this->load->model(['admin_model' => 'admin']);
+				$data['statics'] = $this->admin->getStatics();
+				$data['ranks'] = $this->admin->getRanks();
+				echo $this->twig->render($this->viewsPath.'report/data', $data);
+				break;
+			
+			case 'save':
+				echo jsonResponse($this->kpiv2->report('save', $post));
+				break;
+			
+			case 'list':
+				$data['list'] =$this->kpiv2->report('list');
+				echo $this->twig->render($this->viewsPath.'report/list', $data);
+				break;
+			
+			case 'export':
+				
+				break;
+			
+			default:
+				echo $this->twig->render($this->viewsPath.'report/form');
+				break;
+		}
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	/**
 	 * @param 
 	 * @return 
@@ -125,11 +348,20 @@ class Kpiv2 extends MY_Controller {
 			default:
 				$data['fields'] = $this->kpiv2->fields('get_choosed');
 				$data['data'] = $this->kpiv2->data('all', $post);
+				$data['statics'] = $this->kpiv2->data('statics');
+				
 				echo $this->twig->render($this->viewsPath.'data/'.($post['show_type'] ?? 'table'), $data);
 				break;
 		}
 		
 	}
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

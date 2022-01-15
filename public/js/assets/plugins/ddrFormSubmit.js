@@ -93,8 +93,8 @@ $.fn.formSubmit = function(settings) {
 
 
 		if (n == undefined || n === false) return true;
-		if (isInt(v)) v = parseInt(v);
 		if (isFloat(v)) v = parseFloat(v);
+		if (isInt(v)) v = parseInt(v);
 		//if (isJson(v)) v = JSON.parse(v);
 		if (['file', 'radio'].indexOf(t) != -1 && v == null) return true;
 
