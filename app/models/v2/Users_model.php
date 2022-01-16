@@ -92,32 +92,48 @@ class Users_model extends MY_Model {
 				
 				if (isset($showLists)) {
 					$this->db->group_start();
-					foreach ($showLists as $item) {
-						switch ($item) {
-							case 'verify':
-								$this->db->or_where('u.verification', 1);
-								break;
-							
-							case 'new':
-								$this->db->or_where('u.verification', 0);
-								$this->db->where('u.deleted', 0);
-								break;
-							
-							case 'excluded':
-								$this->db->or_where('u.excluded', 1);
-								break;
-							
-							case 'frozen':
-								$this->db->or_where('u.frozen', 1);
-								break;
-							
-							case 'deleted':
-								$this->db->or_where('u.deleted', 1);
-								break;
-							
-							default: break;
-						}
+					
+					$showVerify = in_array('verify', $showLists);
+					$showNew = in_array('new', $showLists);
+					$showExcluded = in_array('excluded', $showLists);
+					$showFrozen = in_array('frozen', $showLists);
+					$showDeleted = in_array('deleted', $showLists);
+					
+					
+					if ($showVerify) {
+						$this->db->or_group_start();
+						$this->db->or_where('u.verification', 1);
+						$this->db->where('u.deleted', 0);
+						$this->db->where('u.frozen', 0);
+						$this->db->where('u.excluded', 0);
+						$this->db->group_end();
 					}
+					
+					if ($showNew) {
+						$this->db->or_group_start();
+						$this->db->where('u.verification', 0);
+						$this->db->where('u.deleted', 0);
+						$this->db->group_end();
+					}
+					
+					if ($showExcluded) {
+						$this->db->or_group_start();
+						$this->db->or_where('u.excluded', 1);
+						$this->db->group_end();
+					}
+					
+					if ($showFrozen) {
+						$this->db->or_group_start();
+						$this->db->or_where('u.frozen', 1);
+						$this->db->group_end();
+					}
+					
+					if ($showDeleted) {
+						$this->db->or_group_start();
+						$this->db->or_where('u.deleted', 1);
+						$this->db->group_end();
+					}
+					
 					$this->db->group_end();
 				} 
 				
