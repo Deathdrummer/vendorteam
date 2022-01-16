@@ -47,8 +47,8 @@ $(document).ready(function() {
 			wrapToClose: true,
 			winClass: 'account',
 			buttons: [
-				{id: 'resetPass', title: 'Сбросить пароль', class: 'link'},
-				{id: 'toReg', title: 'Регистрация', class: 'link'},
+				{id: 'resetPass', title: 'Сбросить пароль', class: 'popup__buttons_link'},
+				{id: 'toReg', title: 'Регистрация', class: 'popup__buttons_link'},
 				{id: 'getAuth', title: 'Войти'}
 			],
 		}, function(accountWin) {
