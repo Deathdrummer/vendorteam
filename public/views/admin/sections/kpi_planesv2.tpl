@@ -894,13 +894,11 @@ $(function() {
 				let titleInp
 				$('#kpiv2ReportTitle').on('input', function() {
 					titleInp = this;
-					
 					if ($(titleInp).val()) {
 						$('#kpiv2SetSaveReportBtn').removeAttrib('disabled');
 					} else {
 						$('#kpiv2SetSaveReportBtn').setAttrib('disabled');
 					}
-					
 				});
 				
 				
@@ -912,6 +910,7 @@ $(function() {
 						fields: {title: $(titleInp).val(), period_id: kpiv2PeriodId},
 						success: function() {
 							kpiv2SaveReportWin.close();
+							$('#kpiv2SaveReportBtn').setAttrib('disabled');
 							notify('Отчет успешно сохранен!');
 						},
 						complete: function() {

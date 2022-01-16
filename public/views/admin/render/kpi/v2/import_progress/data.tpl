@@ -17,7 +17,7 @@
 						<tr>
 							<td class="w250px"><strong>Бустер</strong></td>
 							<td class="w500px"><strong>Посещаемость</strong></td>
-							<td class="w500px"><strong>Прогресс</strong></td>
+							<td class="w500px"><strong>Прогресс выполнения плана</strong></td>
 							<td class="w120px"><strong>Сумма</strong></td>
 							<td class="p0"></td>
 						</tr>
@@ -38,10 +38,11 @@
 									<div class="progressbar progressbar_center">
 										<progress class="progressbar__progress h30px" value="{{row.koeff_percent|round(1)|default(0)}}" max="100"></progress>
 										<div class="progressbar__value">
-											<strong>{{row.koeff|default(0)}} ({{row.koeff_percent|round(1)|default(0)}} %)</strong>
+											<strong>{{row.koeff_user|default(0)}} из {{row.koeff_static|default(0)}} ({{row.koeff_percent|round(1)|default(0)}} %)</strong>
 										</div>
 									</div>
-									<input type="hidden" name="report[{{static}}][{{row.id}}][koeff]" value="{{row.koeff|default(0)}}">
+									<input type="hidden" name="report[{{static}}][{{row.id}}][koeff_user]" value="{{row.koeff_user|default(0)}}">
+									<input type="hidden" name="report[{{static}}][{{row.id}}][koeff_static]" value="{{row.koeff_static|default(0)}}">
 									<input type="hidden" name="report[{{static}}][{{row.id}}][koeff_percent]" value="{{row.koeff_percent|round(1)|default(0)}}">
 								</td>
 								<td>

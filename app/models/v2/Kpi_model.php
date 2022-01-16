@@ -453,9 +453,11 @@ class Kpi_model extends MY_Model {
 					if (isset($amountsData[$static]) && isset($amountsData[$static][$row['rank']])) {
 						$rawSumm = ($amountsData[$static][$row['rank']] / 100) * $row['progress'];
 						$koeffUser = $payReportKoeffs[$static][$row['id']] ?? 0;
-						$koeffFull = $periodStaticsKoeffs[$static] ?? $koeffUser;
-						$factor = $koeffUser ? ($koeffUser / $koeffFull) : 1;
+						$koeffStatic = $periodStaticsKoeffs[$static] ?? $koeffUser;
+						$factor = $koeffUser ? ($koeffUser / $koeffStatic) : 1;
 						
+						$row['koeff_user'] = $koeffUser;
+						$row['koeff_static'] = $koeffStatic;
 						$row['koeff'] = $koeffUser;
 						$row['koeff_percent'] = $factor * 100;
 						$row['summ'] = $rawSumm * $factor;
@@ -677,7 +679,8 @@ class Kpi_model extends MY_Model {
 						'booster_id'	=> $boosterId,
 						'static_id'		=> $staticId,
 						'progress'		=> $fields['progress'] ?: 0,
-						'koeff'			=> $fields['koeff'] ?: 0,
+						'koeff_user'	=> $fields['koeff_user'] ?: 0,
+						'koeff_static'	=> $fields['koeff_static'] ?: 0,
 						'koeff_percent' => $fields['koeff_percent'] ?: 0,
 						'summ'			=> $fields['summ'] ?: 0
 					];
