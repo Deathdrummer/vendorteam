@@ -728,30 +728,39 @@ class Kpi_model extends MY_Model {
 				break;
 			
 			case 'export':
-				/*$reportId = $this->uri->segment(4);
-				$report = $this->kpi->getReportInfo($reportId);
-				$periods = json_decode($report['periods'], true);
-				$periods = array_column($periods, 'id');
-				$data = $this->statistics('calc_statistics', ['periods' => $periods, 'export' => 1]);
+				$reportId = $this->uri->segment(4);
 				
-				$dataToExport = ''; $periodsStr = ''; $kpiPeriods = setArrKeyfromField($data['kpi_periods'], 'id');
-				foreach ($kpiPeriods as $period) $periodsStr .= ';'.$period['title'];
-				$dataToExport .= iconv('UTF-8', 'windows-1251', 'Участник;Статик;NDA;Платежные реквизиты'.$periodsStr.';Итого к выплате'."\r\n");
+				$this->db->where('report_id', $reportId);
+				if (!$result = $this->_result($this->kpiReportDataTable)) return false;
+				$boostersIds = array_column($result, 'booster_id');
+				$boostersData = $this->_getBoostersDataFromIds($boostersIds);
+				$reportData = setArrKeyFromField($result, 'booster_id', true);
+				
+				$mergeData = array_replace_recursive($reportData, $boostersData);
+				
+				$data = [];
+				foreach ($mergeData as $row) {
+					$static = arrTakeItem($row, 'static_id');
+					$data[$static][] = $row;
+				}
+				
+				$statics = $this->_getStatics(array_keys($data) ?? false);
 				
 				
-				foreach ($data['report'] as $staticId => $users) foreach ($users as $userId => $userData) {
-					$periodsRow = '';
+				$dataToExport = '';
+				
+				foreach ($data as $staticId => $boosters) {
+					$dataToExport .= iconv('UTF-8', 'windows-1251', 'Статик: '.$statics[$staticId]['name']."\r\n");
+					$dataToExport .= iconv('UTF-8', 'windows-1251', 'Бустер;Посещаемость;Прогресс;Сумма'."\r\n");
 					
-					foreach ($data['kpi_periods_ids'] as $periodId) {
-						$payOut = isset($userData['periods'][$periodId]) ? $userData['periods'][$periodId]['payout'] : '-';
-						$periodsRow .= ';'.$payOut;
+					foreach ($boosters as $b) {
+						$dataToExport .= iconv('UTF-8', 'windows-1251', $b['nickname'].';'.$b['koeff_percent'].'%;'.$b['progress'].'%;'.str_replace('.', ',', $b['summ']).'р.')."\r\n";
 					}
-					
-					$dataToExport .= iconv('UTF-8', 'windows-1251', $userData['nickname'].';'.$data['statics'][$staticId].';'.$userData['nda'].';'.$userData['payment'].$periodsRow.';'.str_replace('.', ',', $userData['payout_all']))."\r\n";
+					$dataToExport .= "\r\n";
 				}
 				
 				setHeadersToDownload('application/octet-stream', 'windows-1251');
-				echo $dataToExport;*/
+				echo $dataToExport;
 				break;
 		}
 	}

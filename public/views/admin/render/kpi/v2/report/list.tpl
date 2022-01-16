@@ -15,8 +15,8 @@
 					</td>
 					<td>
 						<div class="buttons">
-							<button class="small w32px" kpiv2buildreportbtn="{{row.id}}"><i class="fa fa-bar-chart"></i></button>
-							<button class="small w32px pay"><i class="fa fa-download"></i></button>
+							<button class="small w32px" kpiv2buildreportbtn="{{row.id}}" title="Сформировать отчет"><i class="fa fa-bar-chart"></i></button>
+							<a href="{{base_url('kpiv2/report/export/'~row.id)}}" class="button small w32px pay" download="{{row.title}}.csv" title="Экспорт отчета"><i class="fa fa-download"></i></a>
 						</div>
 					</td>
 				</tr>

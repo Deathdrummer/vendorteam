@@ -308,12 +308,12 @@ class Kpiv2 extends MY_Controller {
 				break;
 			
 			case 'list':
-				$data['list'] =$this->kpiv2->report('list');
+				$data['list'] = $this->kpiv2->report('list');
 				echo $this->twig->render($this->viewsPath.'report/list', $data);
 				break;
 			
 			case 'export':
-				
+				$this->kpiv2->report('export');
 				break;
 			
 			default:
