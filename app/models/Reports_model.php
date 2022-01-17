@@ -793,7 +793,6 @@ class Reports_model extends My_Model {
 			}
 			
 			if ($response) ksort($response);
-			toLog($response);
 			return $response;
 		}
 		
