@@ -2585,6 +2585,7 @@ $(document).ready(function() {
 			myAccountWin.setData('account/my_account', {user_id: userId}, function(_, stat) {
 				if (stat) {
 					ddrInitTabs('#myAccountData');
+					$('#myAccountData').find('.scroll').ddrScrollTable();
 				} else {
 					myAccountWin.setData('<p class="empty text-center mt40px">Нет данных</p>', false);
 				}

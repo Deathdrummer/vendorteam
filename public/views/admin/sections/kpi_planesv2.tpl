@@ -1072,11 +1072,9 @@ $(function() {
 					
 					
 					ddrInitTabs();
+					$('.scroll').ddrScrollTable();
 					
 					if (showType == 'list') {
-						$('[kpiv2list]').find('table').each(function() {
-							$(this).ddrTable({minHeight: '50px', maxHeight: 'calc(100vh - 360px)'});
-						});
 						$('#kpiv2TableData').off(tapEvent, '[kpiv2openlistbtn]').on(tapEvent, '[kpiv2openlistbtn]', function() {
 							if ($(this).parent().hasClass('kpiv2list__item_visible')) {
 								$(this).parent().removeClass('kpiv2list__item_visible');

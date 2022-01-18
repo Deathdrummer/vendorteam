@@ -55,6 +55,7 @@ class Kpi_model extends MY_Model {
 				if (!file_exists($importExcelFile['tmp_name'])) return false;
 				if (!$importData = json_decode(@file_get_contents($importExcelFile['tmp_name'] ?? []), true)) return false;
 				
+				
 				$customFields = $this->_getFieldsMap(); // [title => id] кастомные поля, созданные на сайте и их ID 
 				$tableLastBoosters = $this->_getLastBoosters(); // [id => booster]
 				$date = time();
@@ -62,6 +63,7 @@ class Kpi_model extends MY_Model {
 				
 				$importBuildedData = []; $boosters = [];
 				foreach ($importData as $row) {
+					if (!$row || !is_array($row)) continue;
 					$buildedRow = [];
 					foreach ($row as $field => $value) {
 						$field = mb_strtolower(trim(str_replace(['\n', '\r'], '', $field)));
@@ -81,7 +83,6 @@ class Kpi_model extends MY_Model {
 				
 				$boostersStatics = $this->_getBostersStatics($boosters);
 				
-				
 				$dataToInsert = false; $dataToUpdate = false;
 				if ($dataFromTable = $this->_getDataFromTable(array_keys($importBuildedData))) {
 					
@@ -97,7 +98,7 @@ class Kpi_model extends MY_Model {
 						if ($lastBooster && $lastBooster === $importedBooster) $row['booster'] = array_slice($row['booster'], 0, (count($row['booster']) - 1), true);
 						$newRow['booster'] = json_encode($row['booster']);
 						
-						$newRow['static'] = $boostersStatics[mb_strtolower($importedBooster)] ?? 0;
+						$newRow['static'] = $boostersStatics[mb_strtolower($importedBooster)]['static'] ?? 0;
 						
 						return $newRow;
 					}, $replacedData));
@@ -113,7 +114,7 @@ class Kpi_model extends MY_Model {
 					$row['_custom_fields_'] = json_encode($row['_custom_fields_']);
 					
 					$booster = mb_strtolower(reset($row['booster'])) ?? false;
-					$row['static'] = $boostersStatics[$booster] ?? 0;
+					$row['static'] = $boostersStatics[$booster]['static'] ?? 0;
 					
 					$row['booster'] = json_encode($row['booster']);
 					return $row;
