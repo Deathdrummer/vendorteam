@@ -63,7 +63,7 @@
 														name="report[{{static}}][{{row.id}}][progress]"
 														min="0"
 														value="{{row['progress']|default(0)}}"
-														kpiv2progressfield="{{static}}|{{row.rank}}|{{payout_type}}"
+														kpiv2progressfield="{{static}}|{{row.rank}}|{{payout_type}}|{{row.factor}}"
 														showrows>
 												</div>
 												<strong class="ml3px">%</strong>
@@ -78,7 +78,7 @@
 												type="text"
 												name="report[{{static}}][{{row.id}}][summ]"
 												value="{{row['summ']|default(0)}}"
-												kpiv2amountfield="{{static}}|{{row.rank}}|{{payout_type}}">
+												kpiv2amountfield="{{static}}|{{row.rank}}|{{payout_type}}|{{row.factor}}">
 										</div>
 										<small class="ml3px fz12px">₽</small>
 									</div>

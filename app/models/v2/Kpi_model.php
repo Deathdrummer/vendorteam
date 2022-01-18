@@ -368,17 +368,17 @@ class Kpi_model extends MY_Model {
 				break;
 			
 			case 'calcSumm':
-				$this->db->where(['static_id' => $static, 'rank_id' => $rank, 'payout_type' => $payoutType]);
-				if (($amount = $this->_row($this->kpiAmountsTable, 'amount')) === false) return 0;
-				return (($amount / 100) * $progress);
+				if (($amount = $this->_getAmount($static, $rank, $payoutType)) === 0) return $amount;
+				
+				return (($amount / 100) * $progress * $factor);
 				break;
 			
 			case 'calcProgress':
-				$this->db->where(['static_id' => $static, 'rank_id' => $rank, 'payout_type' => $payoutType]);
-				if (($amount = $this->_row($this->kpiAmountsTable, 'amount')) === false) return 0;
-				$onePercent = $amount ? $amount / 100 : 0;
+				if (($amount = $this->_getAmount($static, $rank, $payoutType)) === 0) return $amount;
+				
+				$onePercent = 100 / $amount;
 				if ($summ == 0 || $onePercent == 0) return 0;
-				return $summ / $onePercent;
+				return round(($summ * $onePercent) / $factor, 2);
 				break;
 			
 			
@@ -447,9 +447,9 @@ class Kpi_model extends MY_Model {
 				
 				if (!$mergeData = array_replace_recursive($importBuildedData, $boostersData, $boostersStatics)) return false;
 				
-				
 				$resultData = [];
 				foreach ($mergeData as $row) {
+					if (!isset($row['id']) || !isset($row['rank']) || !isset($row['progress'])) continue;
 					$static = arrTakeItem($row, 'static') ?? 0;
 					if (isset($amountsData[$static]) && isset($amountsData[$static][$row['rank']])) {
 						$rawSumm = ($amountsData[$static][$row['rank']] / 100) * $row['progress'];
@@ -461,10 +461,12 @@ class Kpi_model extends MY_Model {
 						$row['koeff_static'] = $koeffStatic;
 						$row['koeff'] = $koeffUser;
 						$row['koeff_percent'] = $factor * 100;
+						$row['factor'] = $factor;
 						$row['summ'] = $rawSumm * $factor;
 					}
 					$resultData[$static][] = $row;
 				}
+				
 				return $resultData;
 				break;
 		}
@@ -939,5 +941,19 @@ class Kpi_model extends MY_Model {
 		return arrRestructure($result, 'static_id user_id', 'koeff', true);
 	}
 	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	 */
+	private function _getAmount($static = false, $rank = false, $payoutType = false) {
+		if (!$static || !$rank || !$payoutType) return false;
+		$this->db->where(['static_id' => $static, 'rank_id' => $rank, 'payout_type' => $payoutType]);
+		if (($amount = $this->_row($this->kpiAmountsTable, 'amount')) === false) return 0;
+		return $amount;
+	}
+				
 	
 }

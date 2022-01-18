@@ -126,7 +126,7 @@ class Kpiv2 extends MY_Controller {
 				//$this->kpiv2->periods('get');
 			
 				/*$this->load->model(['admin_model' => 'admin', 'reports_model' => 'reports']);
-				$data['statics'] = $this->admin->getStatics(true);
+				$data['statics'] = $this->admin_model->getStatics(true);
 				$data['reports_periods'] = $this->reports->getReportsPeriods();
 				$data['periods'] = $this->kpiv2->getPeriods();
 				$data['type'] = $post['type'];
@@ -135,9 +135,9 @@ class Kpiv2 extends MY_Controller {
 				break;
 			
 			case 'new':
-				$this->load->model(['reports_model' => 'reports', 'admin_model' => 'admin']);
+				$this->load->model(['reports_model' => 'reports']);
 				$data['periods'] = $this->reports->getReportsPeriods();
-				$data['statics'] = $this->admin->getStatics();
+				$data['statics'] = $this->admin_model->getStatics();
 				echo $this->twig->render($this->viewsPath.'periods/form.tpl', $data);
 				break;
 			
@@ -197,11 +197,10 @@ class Kpiv2 extends MY_Controller {
 		
 		switch ($action) {
 			case 'get_form':
-				$this->load->model(['admin_model' => 'admin']);
-				$ranksData = $this->admin->getRanks(true, false);
+				$ranksData = $this->admin_model->getRanks(true, false);
 				
 				$data['ranks'] = setArrKeyfromField($ranksData, 'id', 'name');
-				$data['statics'] = $this->admin->getStatics(true);
+				$data['statics'] = $this->admin_model->getStatics(true);
 				$data['amounts'] = $this->kpiv2->amounts('get');
 				
 				echo $this->twig->render($this->viewsPath.'amounts/form.tpl', $data);
@@ -239,32 +238,36 @@ class Kpiv2 extends MY_Controller {
 	*/
 	public function import_progress($action = false) {
 		$post = bringTypes($this->input->post());
-		$importExcelFile = bringTypes($this->input->files('file')) ?? false;
 		switch ($action) {
 			case 'form':
-				$this->load->model(['admin_model' => 'admin']);
 				$data['periods'] = $this->kpiv2->periods('get', $post);
-				$data['statics'] = $this->admin->getStatics();
+				$data['statics'] = $this->admin_model->getStatics();
 				
 				echo $this->twig->render($this->viewsPath.'import_progress/form', $data);
 				break;
 			
 			case 'statics_koeffs':
-				$this->load->model(['admin_model' => 'admin']);
-				$data['statics'] = $this->admin->getStatics();
+				$data['statics'] = $this->admin_model->getStatics();
 				$data['koeffs'] = $this->kpiv2->periods('staticsKoeffs', $post);
 				echo $this->twig->render($this->viewsPath.'import_progress/statics_koeffs', $data);
 				break;
 			
 			default:
-				$post['import_excel_file'] = $importExcelFile;
-				$this->load->model(['admin_model' => 'admin']);
+				$importExcelFile = bringTypes($this->input->files('file')) ?? false;
+				if (!$post['period_id'] || !$post['statics_koeffs'] || !$importExcelFile) exit('0');
+				if ($importExcelFile['type'] !== 'application/json')  exit('-1');
+				if ($importExcelFile['error'] !== 0) exit('-1');
 				
-				$data['data'] = $this->kpiv2->importProgress($post);
+				$post['import_excel_file'] = $importExcelFile;
+				
+				if (!$progressData = $this->kpiv2->importProgress($post)) exit('-2');
+				
+				
+				$data['data'] = $progressData;
 				$data['payout_type'] = $this->kpiv2->periods('payoutType', $post);
 				$data['statics'] = $this->kpiv2->data('statics', ['statics_ids' => array_keys($data['data'])]);
 				$data['amounts'] = $this->kpiv2->amounts('get'); // static_id rank_id payout_type => amount
-				$data['ranks'] = $this->admin->getRanks();
+				$data['ranks'] = $this->admin_model->getRanks();
 				
 				echo $this->twig->render($this->viewsPath.'import_progress/data', $data);
 				break;
@@ -297,9 +300,8 @@ class Kpiv2 extends MY_Controller {
 				}
 				
 				$data['report'] = $reportData;
-				$this->load->model(['admin_model' => 'admin']);
-				$data['statics'] = $this->admin->getStatics();
-				$data['ranks'] = $this->admin->getRanks();
+				$data['statics'] = $this->admin_model->getStatics();
+				$data['ranks'] = $this->admin_model->getRanks();
 				echo $this->twig->render($this->viewsPath.'report/data', $data);
 				break;
 			

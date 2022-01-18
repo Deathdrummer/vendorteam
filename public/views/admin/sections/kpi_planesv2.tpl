@@ -665,8 +665,8 @@ $(function() {
 			width: 1100,
 		}, function(kpiv2AmountsWin) {
 			kpiv2AmountsWin.setData('kpiv2/amounts/get_form', function() {
-				$('#kpiAmountsForm').ddrTable({minHeight: '350px', maxHeight: 'calc(100vh - 200px)'});
 				$('#kpiAmountsForm').find('input[amountfield]').number(true, 2, '.', ' ');
+				$('#kpiAmountsForm').ddrTable({minHeight: '350px', maxHeight: 'calc(100vh - 200px)'});
 				
 				let changeAmountTOut;
 				$('[amountfield]').onChangeNumberInput(function(value, input) {
@@ -787,8 +787,16 @@ $(function() {
 				        contentType: false,
 				        type: 'POST',
 				        success: function(data) {
-				        	if (!data) {
-				        		notify('Ошибка загрузки файла', 'error');
+				        	if (isInt(data)) {
+				        		let stat = parseInt(data);
+				        		if (stat === 0) {
+				        			notify('Ошибка! Не удалось обработать данные!', 'error', 10);
+				        		} else if (stat === -1) {
+				        			notify('Ошибка загрузки файла!', 'error');
+				        		} else if (stat === -2) {
+				        			notify('Ошибка! В импортируемом файле отсутствуют обязательные поля!', 'error', 10);
+				        		}
+				        		
 				        		$('#kpiv2ImportProgressFile').val('');
 				        		$('#kpiv2SetImportProgressBtn').setAttrib('disabled');
 				        		kpiv2ImportProgressWin.wait(false);
@@ -802,9 +810,19 @@ $(function() {
 				        		
 				        		let progressfieldTOut;
 				        		$('#kpiv2Payments').find('input[kpiv2progressfield]').on('input', function() {
-				        			if (!ddrStore('kpiv2:relationfieldsps')) return false;
-				        			clearTimeout(progressfieldTOut);
 				        			let input = this;
+				        			if (!ddrStore('kpiv2:relationfieldsps')) {
+				        				let progress = parseFloat($(input).val()) || 0,
+					        				progressbar = $(input).closest('td').find('[kpiv2progressbar]'),
+					        				progressbarNum = $(input).closest('td').find('[kpiv2progressbarnum]');
+				        				
+				        				$(progressbar).val(progress);
+					        			$(progressbarNum).text(progress+' %');
+					        			$(input).addClass('changed');
+				        				return false;
+				        			}
+				        			clearTimeout(progressfieldTOut);
+				        			
 				        			progressfieldTOut = setTimeout(function() {
 				        				let progress = parseFloat($(input).val()) || 0,
 					        				d = $(input).attr('kpiv2progressfield').split('|'),
@@ -816,6 +834,7 @@ $(function() {
 					        				static: parseInt(d[0]),
 					        				rank: parseInt(d[1]),
 					        				payout_type: parseInt(d[2]),
+					        				factor: parseFloat(d[3]),
 					        				progress: progress
 					        			}, function(summ) {
 					        				$(summField).val(summ);
@@ -845,6 +864,7 @@ $(function() {
 					        				static: parseInt(d[0]),
 					        				rank: parseInt(d[1]),
 					        				payout_type: parseInt(d[2]),
+					        				factor: parseFloat(d[3]),
 					        				summ: summ
 					        			}, function(progress) {
 					        				$(progressField).val(progress);
