@@ -389,7 +389,7 @@ if (!function_exists('toLog')) {
 		}
 		
 		@file_put_contents(APPPATH.'/logs/log.lg', $fileData);  
-		if ($exit && $exit !== true) exit($exit);
+		if ($exit !== false && $exit !== true) exit($exit);
 		elseif ($exit === true) exit;
 	}
 }
