@@ -8,10 +8,12 @@ class Kpi_model extends MY_Model {
 	private $kpiAmountsTable	= 'kpiv2_amounts';
 	private $kpiReportsTable	= 'kpiv2_reports';
 	private $kpiReportDataTable	= 'kpiv2_report_data';
+	private $settingsTable		= 'kpiv2_settings';
 	private $raidsTable 		= 'raids';
 	private $raidsUsersTable	= 'raid_users';
 	private $usersTable			= 'users';
 	private $usersStaticsTable	= 'users_statics';
+	
 	private $fieldsMap = [
 		'id' 		=> 'account_id',
 		'бустер' 	=> 'booster',
@@ -20,16 +22,14 @@ class Kpi_model extends MY_Model {
 	];
 	
 	private $fieldsProgressMap = [
-		'бустер'	=> 'booster',
-		'%' 		=> 'progress',
+		'бустер'					=> 'booster',
+		'прогресс выполнения плана'	=> 'progress',
 	];
 	
 	
 	public function __construct() {
 		parent::__construct();
 	}
-	
-	
 	
 	
 	
@@ -47,19 +47,15 @@ class Kpi_model extends MY_Model {
 		if ((isset($args[1]) && is_array($args[1])) || (isset($args[0]) && is_array($args[0]))) extract(snakeToCamelcase($args[1] ?? $args[0] ?? null)); // keys to camelcase
 		
 		switch ($action) {
-			case 'init':
-				break;
-			
 			default:
 				if ($importExcelFile['error'] !== 0) exit('0');
-				if (!file_exists($importExcelFile['tmp_name'])) return false;
-				if (!$importData = json_decode(@file_get_contents($importExcelFile['tmp_name'] ?? []), true)) return false;
+				if (!file_exists($importExcelFile['tmp_name'])) return -1;
+				if (!$importData = json_decode(@file_get_contents($importExcelFile['tmp_name'] ?? []), true)) return -1;
 				
-				
+				$fieldsMap = $this->_setImportedFieldsNames($this->fieldsMap, $this->settings('get', ['param' => 'data_fields_account_id, data_fields_booster, data_fields_server, data_fields_personage']), 'data_fields_');
 				$customFields = $this->_getFieldsMap(); // [title => id] кастомные поля, созданные на сайте и их ID 
 				$tableLastBoosters = $this->_getLastBoosters(); // [id => booster]
 				$date = time();
-				
 				
 				$importBuildedData = []; $boosters = [];
 				foreach ($importData as $row) {
@@ -68,20 +64,24 @@ class Kpi_model extends MY_Model {
 					foreach ($row as $field => $value) {
 						$field = mb_strtolower(trim(str_replace(['\n', '\r'], '', $field)));
 						
-						if (array_key_exists($field, $this->fieldsMap)) {
-							$buildedRow[$this->fieldsMap[$field]] = $this->fieldsMap[$field] == 'booster' ? [$date => $value] : $value;
-							if ($this->fieldsMap[$field] == 'booster') $boosters[] = mb_strtolower($value);
+						if (array_key_exists($field, $fieldsMap)) {
+							$buildedRow[$fieldsMap[$field]] = $fieldsMap[$field] == 'booster' ? [$date => $value] : $value;
+							if ($fieldsMap[$field] == 'booster') $boosters[] = mb_strtolower($value);
 						} elseif ($customFields && array_key_exists($field, $customFields)) {
 							$buildedRow['_custom_fields_'][$customFields[$field]] = $value;
 						}
 					}
 					
+					if (!isset($buildedRow['account_id']) || !isset($buildedRow['server']) || !isset($buildedRow['personage']) || !isset($buildedRow['booster'])) continue;
 					$hash = md5($buildedRow['account_id'].$buildedRow['server'].$buildedRow['personage']);
 					$importBuildedData[$hash] = $buildedRow;
 				}
 				
+				if (!$importBuildedData) return -2;
 				
 				$boostersStatics = $this->_getBostersStatics($boosters);
+				
+				//toLog($boostersStatics);
 				
 				$dataToInsert = false; $dataToUpdate = false;
 				if ($dataFromTable = $this->_getDataFromTable(array_keys($importBuildedData))) {
@@ -89,18 +89,17 @@ class Kpi_model extends MY_Model {
 					$importedRowsToUpdate = array_intersect_key($importBuildedData, $dataFromTable);
 					$replacedData = array_replace_recursive($dataFromTable, $importedRowsToUpdate);
 					$dataToUpdate = array_values(array_map(function($row) use($boostersStatics) {
-						$newRow['id'] = $row['id'];
-						$newRow['_custom_fields_'] = json_encode($row['_custom_fields_']);
+						$updatedRow['id'] = $row['id'];
+						$updatedRow['_custom_fields_'] = json_encode($row['_custom_fields_']);
 						
 						$importedBooster = end($row['booster']) ?? false;
 						$lastBooster = prev($row['booster']) ?? false;
 						
 						if ($lastBooster && $lastBooster === $importedBooster) $row['booster'] = array_slice($row['booster'], 0, (count($row['booster']) - 1), true);
-						$newRow['booster'] = json_encode($row['booster']);
+						$updatedRow['booster'] = json_encode($row['booster']);
 						
-						$newRow['static'] = $boostersStatics[mb_strtolower($importedBooster)]['static'] ?? 0;
-						
-						return $newRow;
+						$updatedRow['static'] = $boostersStatics[mb_strtolower($importedBooster)]['static'] ?? 0;
+						return $updatedRow;
 					}, $replacedData));
 					
 					$dataToInsert = array_diff_key($importBuildedData, $dataFromTable);
@@ -123,7 +122,7 @@ class Kpi_model extends MY_Model {
 				
 				if ($dataToInsert) $this->db->insert_batch($this->dataTable, $dataToInsert);
 				if ($dataToUpdate) if ($dataToUpdate) $this->db->update_batch($this->dataTable, $dataToUpdate, 'id');
-				return true;
+				return 1;
 				break;
 		}
 	}
@@ -414,9 +413,9 @@ class Kpi_model extends MY_Model {
 		switch ($action) {
 			default:
 				
+				$fieldsProgressMap = $this->_setImportedFieldsNames($this->fieldsProgressMap, $this->settings('get', ['param' => 'payment_fields_booster, payment_fields_progress']), 'payment_fields_');
 				$PeymentReportPeriod = $this->periods('reportPeriod', ['period_id' => $periodId]);	 // ID платежного периода
 				// $periodId // ID KPI периода
-				
 				
 				if ($importExcelFile['error'] !== 0) exit('0');
 				if (!file_exists($importExcelFile['tmp_name'])) return false;
@@ -427,13 +426,16 @@ class Kpi_model extends MY_Model {
 					$buildedRow = [];
 					foreach ($row as $field => $value) {
 						$field = mb_strtolower(trim(str_replace(['\n', '\r'], '', $field)));
-						if (array_key_exists($field, $this->fieldsProgressMap)) {
-							$buildedRow[$this->fieldsProgressMap[$field]] = is_numeric($value) ? (float)$value : mb_strtolower($value);
-							if ($this->fieldsProgressMap[$field] == 'booster') $boosters[] = mb_strtolower($value);
+						if (array_key_exists($field, $fieldsProgressMap)) {
+							$buildedRow[$fieldsProgressMap[$field]] = is_numeric($value) ? (float)$value : mb_strtolower($value);
+							if ($fieldsProgressMap[$field] == 'booster') $boosters[] = mb_strtolower($value);
 						}
 					}
+					if (!array_key_exists('booster', $buildedRow)) continue;
 					$importBuildedData[$buildedRow['booster']] = $buildedRow;
 				}
+				
+				
 				
 				$boostersData = $this->_getBoostersDataFromNicknames($boosters);
 				$boostersStatics = $this->_getBostersStatics($boosters);
@@ -445,7 +447,7 @@ class Kpi_model extends MY_Model {
 				
 				$payReportKoeffs = $this->_getPaymentReportKoeffs($PeymentReportPeriod); // static user koeff
 				
-				if (!$mergeData = array_replace_recursive($importBuildedData, $boostersData, $boostersStatics)) return false;
+				if (!$mergeData = array_replace_recursive((array)$importBuildedData, (array)$boostersData, (array)$boostersStatics)) return false;
 				
 				$resultData = [];
 				foreach ($mergeData as $row) {
@@ -457,7 +459,7 @@ class Kpi_model extends MY_Model {
 						$koeffStatic = $periodStaticsKoeffs[$static] ?? $koeffUser;
 						$factor = $koeffUser ? ($koeffUser / $koeffStatic) : 1;
 						
-						$row['koeff_user'] = $koeffUser;
+						$row['koeff_user'] = round($koeffUser, 2);
 						$row['koeff_static'] = $koeffStatic;
 						$row['koeff'] = $koeffUser;
 						$row['koeff_percent'] = $factor * 100;
@@ -789,6 +791,57 @@ class Kpi_model extends MY_Model {
 	
 	
 	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function settings($action = false) {
+		$args = func_get_args();
+		$action = (isset($args[0]) && is_string($args[0])) ? $args[0] : false;
+		if ((isset($args[1]) && is_array($args[1])) || (isset($args[0]) && is_array($args[0]))) extract(snakeToCamelcase($args[1] ?? $args[0] ?? null)); // keys to camelcase
+		
+		switch ($action) {
+			case 'get':
+				if (!is_array($param)) $param = preg_split("/[\s,]+/", $param);
+				$this->db->select('param, value');
+				$this->db->where_in('param', $param);
+				if (!$result = $this->_result($this->settingsTable)) return false;
+				return setArrKeyFromField($result, 'param', 'value');
+				break;
+			
+			case 'set':
+				if (!isset($param)) return false;
+				$this->db->where('param', $param);
+				if ($this->db->count_all_results($this->settingsTable)) {
+					$this->db->where('param', $param);
+					if (is_null($value)) return $this->db->delete($this->settingsTable);
+					return $this->db->update($this->settingsTable, ['value' => $value ?? null]);
+				} elseif(!is_null($value)) {
+					return $this->db->insert($this->settingsTable, ['param' => $param, 'value' => $value ?? null]);
+				}
+				return true;
+				break;
+			
+			default:
+				break;
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -954,6 +1007,26 @@ class Kpi_model extends MY_Model {
 		if (($amount = $this->_row($this->kpiAmountsTable, 'amount')) === false) return 0;
 		return $amount;
 	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	 */
+	private function _setImportedFieldsNames($fieldsMap = false, $settingsFields = false, $removeSuff = '') {
+		if (!$settingsFields) return $fieldsMap;
+		$fieldsMap = array_flip($fieldsMap);
+		$sFields = [];
+		foreach ($settingsFields as $field => $value) if ($value) $sFields[str_replace($removeSuff, '', $field)] = mb_strtolower($value);
+		$resultData = array_replace_recursive($fieldsMap, $sFields);
+		return array_flip($resultData);
+	}
+	
+	
 				
 	
 }

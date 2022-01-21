@@ -41,6 +41,10 @@
 				<button id="kpiv2StruсtureBtn" title="Структура таблицы"><i class="fa fa-columns"></i></button>
 				<button id="kpiv2StaticsBtn" title="Статики"><i class="fa fa-bars"></i></button>
 			</div>
+			
+			<div class="buttons notop ml40px">
+				<button id="kpiv2DataSettings" class="alt2" title="Настройки"><i class="fa fa-sliders"></i></button>
+			</div>
 		</div>
 		
 		<div class="d-flex" hidden kpiv2toppanel="kpiv2_payments">
@@ -65,13 +69,16 @@
 			</div>
 			
 			
-			
 			<div class="buttons notop">
 				<button id="kpiv2PeriodsButton" class="alt2" title="Создать период"><i class="fa fa-list-alt"></i></button>
 				<button id="kpiv2ImportProgressBtn" class="alt2" title="Загрузить данные"><i class="fa fa-upload"></i></button>
 				<button id="kpiv2SaveReportBtn" class="alt ml30px" title="Сохранить отчет" disabled><i class="fa fa-save"></i></button>
 				<button id="kpiv2ReportsList" class="alt" title="Сохраненные отчеты"><i class="fa fa-bars"></i></button>
 				<button id="kpiv2AmountsBtn" class="pay ml30px" title="Задать суммы выплат"><i class="fa fa-money"></i></button>
+			</div>
+			
+			<div class="buttons notop ml40px">
+				<button id="kpiv2PaymentsSettings" class="alt2" title="Настройки"><i class="fa fa-sliders"></i></button>
 			</div>
 		</div>
 	</div>
@@ -481,15 +488,20 @@ $(function() {
 				        contentType: false,
 				        type: 'POST',
 				        success: function(response) {
-				        	if (!response) {
+				        	if (response == -1) {
 				        		notify('Ошибка загрузки файла', 'error');
 				        		$('#kpiv2ImportFile').val('');
 				        		$('#kpiv2SetImportBtn').setAttrib('disabled');
 				        		kpiv2ImportWin.wait(false);
 				        	
-				        	} else {
+				        	} else if (response == -2) {
+				        		notify('Файл успешно загружен, но новых данных нет', 'info', 10);
+				        		$('#kpiv2ImportFile').val('');
+				        		$('#kpiv2SetImportBtn').setAttrib('disabled');
+				        		kpiv2ImportWin.close();
+				        	} else if (response == 1) {
 				        		getDataTable(function() {
-				        			notify('Файл успешно загружен!');
+				        			notify('Данные успешно импортированы!');
 									kpiv2ImportWin.close();
 									//kpiv2ImportWin.wait(false);
 				        		});
@@ -507,6 +519,82 @@ $(function() {
 			});
 		});
 	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	$('#kpiv2DataSettings').on(tapEvent, function() {
+		popUp({
+			title: 'Настройки полей «Сводная таблица»|4',
+			width: 500,
+			buttons: false,
+			closePos: 'left',
+			closeButton: 'Закрыть'
+		}, function(kpiv2PaymentsSettingsWin) {
+			let setSettingTOut;
+			kpiv2PaymentsSettingsWin.setData('kpiv2/settings/data_fields', function() {
+				$('[kpiv2setting]').on('input', function() {
+					const input = this;
+					clearTimeout(setSettingTOut);
+					setSettingTOut = setTimeout(function() {
+						let param = $(input).attr('kpiv2setting'),
+							value = $(input).val();
+						$.post('/kpiv2/settings/set', {param: param, value: value}, function() {
+							$(input).addClass('changed');
+						}).fail(function(e) {
+							showError(e);
+							notify('Системная ошибка!', 'error');
+						});
+					}, 500);
+				});
+				
+			});
+		});
+	});
+	
+	
+	
+	
+	
+	
+	
+	
+	$('#kpiv2PaymentsSettings').on(tapEvent, function() {
+		popUp({
+			title: 'Настройки полей «Платежные реквизиты»|4',
+			width: 500,
+			buttons: false,
+			closePos: 'left',
+			closeButton: 'Закрыть'
+		}, function(kpiv2PaymentsSettingsWin) {
+			let setSettingTOut;
+			kpiv2PaymentsSettingsWin.setData('kpiv2/settings/payment_fields', function() {
+				$('[kpiv2setting]').on('input', function() {
+					const input = this;
+					clearTimeout(setSettingTOut);
+					setSettingTOut = setTimeout(function() {
+						let param = $(input).attr('kpiv2setting'),
+							value = $(input).val();
+						$.post('/kpiv2/settings/set', {param: param, value: value}, function() {
+							$(input).addClass('changed');
+						}).fail(function(e) {
+							showError(e);
+							notify('Системная ошибка!', 'error');
+						});
+					}, 500);
+				});
+				
+			});
+		});
+	});
+	
+	
+	
 	
 	
 	
@@ -794,7 +882,7 @@ $(function() {
 				        		} else if (stat === -1) {
 				        			notify('Ошибка загрузки файла!', 'error');
 				        		} else if (stat === -2) {
-				        			notify('Ошибка! В импортируемом файле отсутствуют обязательные поля!', 'error', 10);
+				        			notify('Ошибка! В импортируемом файле отсутствуют или имеют иное название обязательные поля!', 'error', 10);
 				        		}
 				        		
 				        		$('#kpiv2ImportProgressFile').val('');

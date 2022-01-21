@@ -28,7 +28,7 @@ class Kpiv2 extends MY_Controller {
 				break;
 			
 			default:
-				echo jsonResponse($this->kpiv2->import(['import_excel_file' => $importExcelFile]));
+				echo $this->kpiv2->import(['import_excel_file' => $importExcelFile]);
 				break;
 		}
 		
@@ -92,10 +92,46 @@ class Kpiv2 extends MY_Controller {
 				$data['fields'] = $this->kpiv2->fields('to_find');
 				echo $this->twig->render($this->viewsPath.'fields/select', $data);
 				break;
-			
+				
 			
 			default:
 				echo $this->twig->render($this->viewsPath.'fields/form');
+				break;
+		}
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function settings($action = false) {
+		$post = bringTypes($this->input->post());
+		switch ($action) {
+			case 'set':
+				$this->kpiv2->settings('set', $post);
+				break;
+			
+			case 'data_fields':
+				$data = $this->kpiv2->settings('get', ['param' => 'data_fields_account_id, data_fields_booster, data_fields_server, data_fields_personage']);
+				echo $this->twig->render($this->viewsPath.'settings/data_fields_form.tpl', (array)$data);
+				break;
+			
+			case 'payment_fields':
+				$data = $this->kpiv2->settings('get', ['param' => 'payment_fields_booster, payment_fields_progress']);
+				echo $this->twig->render($this->viewsPath.'settings/payment_fields_form.tpl', (array)$data);
+				break;
+			
+			default:
+				
 				break;
 		}
 		
