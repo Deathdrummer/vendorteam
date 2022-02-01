@@ -4,9 +4,9 @@ class Kpiv2 extends MY_Controller {
 	
 	private $viewsPath = 'views/admin/render/kpi/v2/';
 	
+	
 	public function __construct() {
-		parent::__construct();
-		
+		parent::__construct(['directAccess' => [['function' => 'report', 'action' => 'export']], 'base' => 'admin#kpi_planesv2']);
 		$this->load->model('v2/kpi_model', 'kpiv2');
 	}
 	

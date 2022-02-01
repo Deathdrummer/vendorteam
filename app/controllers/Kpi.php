@@ -5,8 +5,7 @@ class Kpi extends MY_Controller {
 	public $viewsPath = 'views/admin/';
 	
 	public function __construct() {
-		parent::__construct();
-		if ($this->uri->uri_string != 'kpi/clear' && $this->uri->segment(3) != 'export' && !$this->input->is_ajax_request()) return false;
+		parent::__construct(['directAccess' => [['function' => 'clear'], ['function' => 'statistics', 'action' => 'export']], 'base' => 'admin#kpi_planes']);
 		$this->load->model('kpi_model', 'kpi');
 	}
 	
