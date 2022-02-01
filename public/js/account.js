@@ -588,7 +588,6 @@ $(document).ready(function() {
 	
 	$('#primarySlidesnav').find('li').on(tapEvent, function() {
 		var thisIndex = $(this).index();
-		console.log(thisIndex);
 		$('#accountStatics').slick('slickGoTo', thisIndex);
 	});
 	
@@ -1759,7 +1758,6 @@ $(document).ready(function() {
 	
 	
 	function getOfftimeDates(st, hWeeks) {
-		console.log(st, hWeeks);
 		$.post('/offtime/get_offtime_dates', {static: st, history: hWeeks}, function(html) {
 			if (!hWeeks) offtimeWin.setWidth(1330);
 			offtimeWin.setData(html, false);
@@ -1865,7 +1863,6 @@ $(document).ready(function() {
 	$('body').off(tapEvent, '[statictovacation]').on(tapEvent, '[statictovacation]', function() {
 		vacationWin.wait();
 		currentStatic = $(this).attr('statictovacation');
-		console.log(currentStatic, datesShift);
 		getVacationDates(currentStatic, datesShift);
 	});
 	
