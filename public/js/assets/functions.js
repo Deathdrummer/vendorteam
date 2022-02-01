@@ -185,6 +185,32 @@ hashChange = function(callback) {
 
 
 
+cyrillicEncode = function(str) {
+	if (!str) return false;
+    $.each(cyrillicChars, function(char, code) {
+    	str = str.replaceAll(char, code);
+    });
+    return str;
+}
+
+
+cyrillicDecode = function(str) {
+	if (!str) return false;
+    $.each(cyrillicChars, function(char, code) {
+    	str = str.replaceAll(code, char);
+    });
+    return str;
+}
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1209,6 +1235,8 @@ ddrInitTabs = function(container) {
 			});
 		}	
 	}
+	
+	return hashData;
 };
 
 

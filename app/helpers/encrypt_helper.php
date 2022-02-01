@@ -28,3 +28,39 @@ if (!function_exists('decrypt')) {
         return $str;
     }
 }
+
+
+
+
+
+if (!function_exists('cyrillicEncode')) {
+    /**
+     * Закодировать имена директорий и файлов
+     * @param строка
+     * @return закодированная строка
+    */
+    function cyrillicEncode($str = false) {
+        if (!$str) return false;   
+        $map = config_item('map');
+        $search = array_keys($map);
+        $replace = array_values($map);
+        return str_replace($search, $replace, (trim($str)));
+    }
+}
+
+
+
+if (!function_exists('cyrillicDecode')) {
+    /**
+     * Раскодировать имена директорий и файлов
+     * @param строка
+     * @return раскодированная строка
+    */
+    function cyrillicDecode($str = false) {
+        if (!$str) return false;   
+        $map = config_item('map');
+        $search = array_values($map);
+        $replace = array_keys($map);
+        return str_replace($search, $replace, $str);
+    }
+}

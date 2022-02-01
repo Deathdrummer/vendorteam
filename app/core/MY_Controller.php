@@ -29,8 +29,28 @@ class MY_Controller extends CI_Controller {
 	
 	
 	
-	public function __construct() {
+	public function __construct($options = []) {
 		parent::__construct();
+		
+		// Предоставить прямой доступ (по ссылке) указанным функциям и экшенам
+		// В любом контроллере прописать: parent::__construct(['directAccess' => ['function' => '...', 'action' => '...']]);
+		if (isset($options['directAccess'])) {
+			$directAccess = false;
+			$da = [];
+			foreach ($options['directAccess'] as $row) $da[] = str_replace('//', '/', (($row['function'] ?? '').'/').('/'.($row['action'] ?? '')));
+			
+			$func = $this->uri->segment(2) ?: null;
+			$action = $this->uri->segment(3) ?: null;
+			$funcAction = ($func && $action) ? $func.'/'.$action : null;
+			
+			if (($func && in_array($func.'/', $da)) || ($funcAction && in_array($funcAction, $da))) $directAccess = true;
+			
+			
+			if ($directAccess === false && !$this->input->is_ajax_request()) redirect(isset($options['base']) ? $options['base'] : '');
+		}
+		
+		
+		
 		$this->load->model('admin_model');
 		$constData = $this->admin_model->getSettings('constants');
 		foreach ($constData as $variant => $data) {
@@ -153,7 +173,8 @@ class MY_Controller extends CI_Controller {
 						'kpiAmountsButton' 				=> 'Задать суммы выплат',
 					],
 				],
-				'kpi_planesv2'	=> 'KPI планы (версия 2)',
+				'kpi_planesv2'			=> 'KPI планы (версия 2)',
+				'coefficients'			=> 'Коэффициенты',
 				'statistics_amounts'	=> 'Статистика (доходы)',
 				'statistics'			=> 'Статистика (участники)',
 				'statistics_settings'	=> 'Статистика (настройки)',
@@ -484,6 +505,11 @@ class MY_Controller extends CI_Controller {
 			return decrypt($str);
 		});
 		
+		
+		$this->twig->addFilter('cyrillicDecode', function($str = false) {
+			if (!$str) return false;
+			return cyrillicDecode($str);
+		});
 		
 	}
 	
