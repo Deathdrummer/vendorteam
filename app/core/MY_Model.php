@@ -324,4 +324,11 @@ class MY_Model extends CI_Model {
 	
 	
 	// Поиск в JSON строке: $this->db->where("JSON_CONTAINS(booster, '{\"1640777809\": \"Эльтара\"}')");
+	
+	
+	
+	
+	// выборка
+	// SELECT ... EXISTS (SELECT 1 FROM resign r WHERE r.user_id = u.id ) AS field_name'
+	
 }
