@@ -157,6 +157,7 @@ $(document).ready(function() {
 			hash = location.hash.split('.');
 		history = dir == '+' ? history+1 : history-1;
 		
+		$('#offtimeDataContent').setWaitToBlock('Загрузка...', 'h200px');
 		getAjaxHtml('offtime/get_offtime_history', {history: history}, function(html) {
 			$('#offtimeDataContent').html(html);
 			
