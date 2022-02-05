@@ -243,6 +243,7 @@ jQuery(document).ready(function($) {
 			returnOnlyChoosedUsers: false, // вернуть только выбранных в окне участников или вместе с choosedUsers
 			onChoose: false, // возвращает выбранных участников
 			closeToChoose: false, // Закрыть после выбора участников
+			waitToChoose: false, // Иконка загрузки сразу после выбора участника
 			closePos: 'left', // положение кнопки "Закрыть"
 			popup: false // если менеджер вызывается из окна
 		}, params),
@@ -414,14 +415,15 @@ jQuery(document).ready(function($) {
 						manageButtons();
 						
 					} else {
+						if (ops.waitToChoose) usersManagerWin.wait();
 						if (ops.returnFields) {
 							getUsersFull([{static: static, user: user}], ops.returnFields, function(usersData) {
 								ops.onChoose(usersData, usersManagerWin);
 								if (ops.closeToChoose) usersManagerWin.close();
-								else usersManagerWin.wait(false);
+								else if (!ops.waitToChoose) usersManagerWin.wait(false);
 							}, function() {
 								notify('usersManager - ошибка! getUsersFull fail');
-								usersManagerWin.wait(false);
+								if (!ops.waitToChoose) usersManagerWin.wait(false);
 							});
 						} else {
 							ops.onChoose({static: static, user: user}, usersManagerWin);

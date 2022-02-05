@@ -25,7 +25,7 @@ class Coefficients extends MY_Controller {
 	 * @param 
 	 * @return 
 	*/
-	public function data($action = false) {
+	public function period($action = false) {
 		$post = bringTypes($this->input->post());
 		switch ($action) {
 			case 'statics':
@@ -34,13 +34,14 @@ class Coefficients extends MY_Controller {
 				break;
 			
 			case 'periods':
-				$data['periods'] = $this->coefficients->data('periods');
+				$data['periods'] = $this->coefficients->period('periods');
+				$data = array_replace_recursive($post, $data);
 				echo $this->twig->render($this->viewsPath.'periods.tpl', $data);
 				break;
 			
 			
 			default:
-				$coefficients = $this->coefficients->data($post);
+				$coefficients = $this->coefficients->period($post);
 				
 				$data = [
 					'compounds_data' 	=> $coefficients['compounds_data'],
@@ -48,12 +49,54 @@ class Coefficients extends MY_Controller {
 					'raids_types' 		=> $this->admin_model->getRaidsTypes()
 				];
 				
-				setAjaxHeader('period_name', $coefficients['period_name']);
+				setAjaxHeader('period_name', cyrillicEncode($coefficients['period_name']));
 				echo $this->twig->render($this->viewsPath.'data.tpl', $data);
 				break;
 		}
 		
 	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function user($action = false) {
+		$post = bringTypes($this->input->post());
+		switch ($action) {
+			default:
+				toLog($post);
+				$params['user_id'] = arrTakeItem($post, 'user_id');
+				$params['periods'] = arrTakeItem($post, 'periods');
+				
+				if (!is_file('public/images/users/mini/'.$post['avatar'])) $post['avatar'] = 'public/images/user_mini.jpg';
+				else $post['avatar'] = 'public/images/users/mini/'.$post['avatar'];
+				
+				$post['nickname'] = cyrillicEncode($post['nickname']);
+				setAjaxHeader($post);
+				
+				$data['compounds'] = $this->coefficients->user($params);
+				$data['raids_types'] = $this->admin_model->getRaidsTypes();
+				$data['statics'] = $this->admin_model->getStatics();
+				$data['periods_names'] = $this->coefficients->getPeriodsNames(false, 'DESC');
+				
+				echo $this->twig->render($this->viewsPath.'user.tpl', $data);
+				break;
+		}
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

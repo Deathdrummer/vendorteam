@@ -11,11 +11,14 @@ class Coefficients_model extends MY_Model {
 	}
 	
 	
+	
+	
+	
 	/**
 	 * @param 
 	 * @return 
 	*/
-	public function data($action = false) {
+	public function period($action = false) {
 		$args = func_get_args();
 		$action = (isset($args[0]) && is_string($args[0])) ? $args[0] : false;
 		if ((isset($args[1]) && is_array($args[1])) || (isset($args[0]) && is_array($args[0]))) extract(snakeToCamelcase($args[1] ?? $args[0] ?? null)); // keys to camelcase
@@ -92,6 +95,82 @@ class Coefficients_model extends MY_Model {
 	
 	
 	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function user($action = false) {
+		$args = func_get_args();
+		$action = (isset($args[0]) && is_string($args[0])) ? $args[0] : false;
+		if ((isset($args[1]) && is_array($args[1])) || (isset($args[0]) && is_array($args[0]))) extract(snakeToCamelcase($args[1] ?? $args[0] ?? null)); // keys to camelcase
+		
+		switch ($action) {
+			default:
+				$this->db->select('cd.period_id, cd.user_id, cd.static_id, cd.persones_count, cd.effectiveness, cd.fine');
+				$this->db->where('cd.user_id', $userId);
+				if ($periods) $this->db->where_in('cd.period_id', $periods);
+				$this->db->order_by('cd.period_id', 'DESC');
+				if (!$queryCd = $this->_result('compounds_data cd')) return false;
+				
+				$compoundsData = [];
+				foreach ($queryCd as $row) {
+					$rowPeriodId = arrTakeItem($row, 'period_id');
+					$rowStaticId = arrTakeItem($row, 'static_id');
+					$compoundsData[$rowStaticId][$rowPeriodId] = $row;
+				}
+				
+				$this->db->select('ru.id, r.period_id, r.static_id, r.id AS raid_id, r.date, ru.rate, r.type');
+				$this->db->where(['ru.user_id' => $userId, 'r.is_key' => 0]);
+				if ($periods) $this->db->where_in('r.period_id', $periods);
+				$this->db->join('raid_users ru', 'ru.raid_id = r.id');
+				if (!$queryR = $this->_result('raids r')) return false;
+				
+				$raids = []; $allRaidsCount = 0;
+				foreach ($queryR as $item) {
+					if (!isset($raids[$item['static_id']][$item['period_id']]['summ_coeffs'])) $raids[$item['static_id']][$item['period_id']]['summ_coeffs'] = $item['rate'] ?: 0;
+					else $raids[$item['static_id']][$item['period_id']]['summ_coeffs'] += $item['rate'] ?: 0;
+					$raids[$item['static_id']][$item['period_id']]['raids'][$item['raid_id']] = $item;
+					$allRaidsCount += 1;
+				}
+				
+				
+				$periodsData = array_replace_recursive($compoundsData, $raids);
+				
+				return ['data' => $periodsData, 'raids_count' => $allRaidsCount];
+				break;
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	 */
+	public function getPeriodsNames($periodsIds = false, $order = 'ASC') {
+		if ($periodsIds) $this->db->where_in('id', $periodsIds);
+		$this->db->select('id, name AS period_name');
+		$this->db->order_by('id', $order);
+		if (!$periodsNames = $this->_result('reports_periods')) return false;
+		return setArrKeyFromField($periodsNames, 'id');
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -124,6 +203,7 @@ class Coefficients_model extends MY_Model {
 		if (!$periodName = $this->_row('reports_periods', 'name')) return false;
 		return $periodName;
 	}
+	
 	
 	
 	

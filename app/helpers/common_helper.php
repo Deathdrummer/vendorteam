@@ -637,7 +637,7 @@ if (!function_exists('setAjaxHeader')) {
 		} else {
 			if (!$value) return false;
 			if (is_array($value)) $value = json_encode($value);
-			elseif (is_string($value)) $value = cyrillicEncode($value);
+			//elseif (is_string($value)) $value = cyrillicEncode($value);
 			header($preffix.$keyOrArr.': '.$value);
 		}
 	}

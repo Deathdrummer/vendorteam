@@ -18,7 +18,7 @@
 												{% if user.is_resign %}<div class="resign__icon" title="Увольняется"></div>{% endif %}
 												<img src="{{base_url('public/images/users/mini/'~user.avatar)|no_file('public/images/user_mini.jpg')}}" alt="" class="avatar w40px h40px">
 											</div>
-											<p class="ml4px">{{user.nickname}}</p>
+											<strong class="fz14px ml4px foreground">{{user.nickname}}</strong>
 										</div>
 									</td>
 								</tr>
@@ -83,7 +83,7 @@
 							{% for id, user in compounds_data|sortusers %}
 								<tr{% if user.color %} style="background-color: {{user.color}}"{% endif %}>
 									<td class="text-center">
-										{{user.rate_summ|default(0)}}
+										<strong class="foreground">{{user.rate_summ|default(0)}}</strong>
 									</td>
 									<td class="text-center">
 										<div class="field w60px">
