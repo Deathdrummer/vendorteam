@@ -26,8 +26,21 @@ class Coefficients_model extends MY_Model {
 		switch ($action) {
 			case 'periods':
 				$this->db->order_by('id', 'DESC');
+				
 				if (!$periods = $this->_result('reports_periods')) return false;
-				return $periods;
+				$data['periods'] = $periods;
+				
+				if (isset($showstatics)) {
+					$data['statics'] = $this->admin_model->getStatics();
+				}
+				
+				return $data;
+				break;
+			
+			case 'statics':
+				$allStatics = $this->admin_model->getStatics();
+				$choosedStatics = $selectedStatics ?? $this->_getDefaultStatics();
+				return arrGetByKeys($choosedStatics, $allStatics);
 				break;
 			
 			default:
@@ -205,6 +218,21 @@ class Coefficients_model extends MY_Model {
 	}
 	
 	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	 */
+	private function _getDefaultStatics() {
+		$this->db->select('id');
+		$this->db->where('group', 1);
+		if (!$result = $this->_result('statics')) return false;
+		return array_column($result, 'id');
+	}
 	
 	
 }

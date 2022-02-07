@@ -24,26 +24,11 @@
 <script type="text/javascript"><!--
 $(function() {
 	let periodId = ddrStore('coefficients:periodId'),
+		selectedStatics = ddrStore('coefficients:selectedStatics'),
 		staticId = false;
 	
-
-	getAjaxHtml('coefficients/period/statics', function(html, stat) {
-		if (stat) $('#coefficientsStatics').html(html);
-		else $('#coefficientsStatics').html('<p class="empty fz14px pl5px">Нет статиков</p>');
-		
-		let hashData = location.hash.substr(1, location.hash.length).split('.'),
-			d = /coefficientsStatic_/.test(hashData[1]) ? hashData[1].split('_') : $('#coefficientsStatics').find('li:first').attr('id').split('_');
-		
-		staticId = d[1];
-		
-		$('#coefficientsPeriod[hidden]').removeAttrib('hidden');
-		$('#coefficientsUserCard').setAttrib('hidden');
-		$('#coefficientsUserCard').html('');
-		$('#coefficientsUser:not([hidden])').setAttrib('hidden');
-		
-		getData();
-	});
 	
+	getStaticsTabs(true);
 	
 	$('#coefficientsStatics').on(tapEvent, 'li', function() {
 		let d = $(this).attr('id').split('_');
@@ -61,26 +46,71 @@ $(function() {
 	
 	$('#coefficientsPeriodsBtn').on(tapEvent, function() {
 		popUp({
-			title: 'Периоды',
-			width: 500,
+			title: 'Коэффициенты всех участников|4',
+			width: 1000,
+			buttons: [{id: 'coefficientsPeriodsSetBtn', title: 'Показать'}],
 			closeButton: 'Закрыть'
 		}, function(coefficientsPeriodsWin) {
-			coefficientsPeriodsWin.setData('coefficients/period/periods', function() {
+			coefficientsPeriodsWin.setData('coefficients/period/periods', {showstatics: 1}, function() {
 				$('#coefficientsPeriods').ddrTable({minHeight: '50px', maxHeight: '70vh'});
 				
-				$('[coefficientschooseperiod]').on(tapEvent, function() {
-					periodId = $(this).attr('coefficientschooseperiod');
-					ddrStore('coefficients:periodId', periodId);
+				$('#coeffsStaticsGroups').find('[coeffsgroupbtn]').on(tapEvent, function() {
+					let group = $(this).attr('coeffsgroupbtn');
 					
-					$('#coefficientsUserCard').setAttrib('hidden');
-					$('#coefficientsUserCard').html('');
+					$('#coeffsStaticsGroups').find('button').removeClass('active');
+					$(this).addClass('active');
 					
-					$('#coefficientsPeriod[hidden]').removeAttrib('hidden');
-					$('#coefficientsUser:not([hidden])').setAttrib('hidden');
+					$('#coeffsStaticsList').find('[coeffsstaticgroup]').each(function() {
+						if (group == 'all') $(this).setAttrib('checked');
+						else if (group == 'none') $(this).removeAttrib('checked');
+						else {
+							if ($(this).attr('coeffsstaticgroup') == group) $(this).setAttrib('checked');
+							else $(this).removeAttrib('checked');
+						}
+					});
 					
-					coefficientsPeriodsWin.close();
-					getData();
+					setChoosedStaticsIds();
 				});
+				
+				
+				$('#coeffsStaticsList').find('[coeffsstatic]').on('change', function() {
+					setChoosedStaticsIds();
+				});
+				
+				
+				function setChoosedStaticsIds() {
+					let sStatics = [];
+					$('#coeffsStaticsList').find('[coeffsstatic]:checked').each(function() {
+						let stId = $(this).attr('coeffsstatic');
+						sStatics.push(isInt(stId) ? parseInt(stId) : stId);
+					});
+					ddrStore('coefficients:selectedStatics', sStatics);
+					selectedStatics = sStatics;
+				}
+				
+				
+				
+				
+				$('#coefficientsPeriodsSetBtn').on(tapEvent, function() {
+					let checkedPeriod = $('#coefficientsPeriods').find('[coefficientschooseperiod]:checked');
+					if (!checkedPeriod.length)  {
+						notify('Необходимо выбрать период!', 'error');
+					} else {
+						periodId = checkedPeriod.val();
+						ddrStore('coefficients:periodId', periodId);
+						
+						$('#coefficientsUserCard').setAttrib('hidden');
+						$('#coefficientsUserCard').html('');
+						
+						$('#coefficientsPeriod[hidden]').removeAttrib('hidden');
+						$('#coefficientsUser:not([hidden])').setAttrib('hidden');
+						
+						
+						coefficientsPeriodsWin.close();
+						getStaticsTabs();
+					}	
+				});
+				
 			});
 		});
 	});
@@ -92,7 +122,7 @@ $(function() {
 	
 	$('#coefficientsUsersBtn').on(tapEvent, function() {
 		usersManager({
-			title: 'Выбрать участника',
+			title: 'Коэффициенты участника|4',
 			chooseType: 'single', // multiple Тип выборки одиночный или множественный
 			returnFields: 'id, nickname, avatar',
 			waitToChoose: true,
@@ -123,12 +153,14 @@ $(function() {
 						$('#coefficientsPeriods').find('[coefficientschooseperiod]:not(:checked)').each(function() {
 							$(this).setAttrib('checked');
 						});
+						$('#coeffsPeridosUserChooseBtn').removeAttrib('disabled');
 					});
 					
 					$('#coeffsPeriodsUncheckallBtn').on(tapEvent, function() {
 						$('#coefficientsPeriods').find('[coefficientschooseperiod]:checked').each(function() {
 							$(this).removeAttrib('checked');
 						});
+						$('#coeffsPeridosUserChooseBtn').setAttrib('disabled');
 					});
 					
 					
@@ -229,18 +261,58 @@ $(function() {
 	
 
 
+	//---------------------------------------------------------------------------------------------------------
+
+
+
+
+
+	function getStaticsTabs(init = false) {
+		getAjaxHtml('coefficients/period/statics_tabs', {selected_statics: selectedStatics}, function(html, stat) {
+			if (stat) $('#coefficientsStatics').html(html);
+			else $('#coefficientsStatics').html('<p class="empty fz14px pl5px">Нет статиков</p>');
+			
+			let hashData = location.hash.substr(1, location.hash.length).split('.'),
+				d = /coefficientsStatic_/.test(hashData[1]) ? hashData[1].split('_') : $('#coefficientsStatics').find('li:first').attr('id').split('_'),
+				hasInTabs = $('#coefficientsStatics').find('li#coefficientsStatic_'+d[1]).length;
+			
+			if ((init && hasInTabs) || hasInTabs) {
+				staticId = d[1];
+			} else {
+				let firstTab = $('#coefficientsStatics').find('li:first').attr('id').split('_');
+				staticId = firstTab[1];
+			}
+			
+			$('#coefficientsPeriod[hidden]').removeAttrib('hidden');
+			$('#coefficientsUserCard').setAttrib('hidden');
+			$('#coefficientsUserCard').html('');
+			$('#coefficientsUser:not([hidden])').setAttrib('hidden');
+			
+			getData();
+		});
+	}
+	
+	
+	
+	
+	
+
+
+
+
 
 
 	function getData() {
 		$('#coefficientsBlock').setWaitToBlock('Загрузка...', 'h200px');
 		
 		$('#coefficientsStatics').find('li#coefficientsStatic_'+staticId).addClass('active');
+		$('#coefficientsPeriodName:not([hidden])').setAttrib('hidden');
 		
 		getAjaxHtml('coefficients/period', {period_id: periodId, static_id: staticId}, function(html, stat, headers) {
 			$('#coefficientsBlock').html(html);
 			$('.scroll').ddrScrollTable();
 			$('#coefficientsPeriodName[hidden]').removeAttrib('hidden');
-			$('#coefficientsPeriodName').text(cyrillicDecode(headers.period_name));
+			if (headers.period_name) $('#coefficientsPeriodName').text(cyrillicDecode(headers.period_name));
 			
 			let editRaidKoeffTOut;
 			$('#koeffsData').find('[editkoeff]').onChangeNumberInput(function(value, input) {

@@ -28,14 +28,15 @@ class Coefficients extends MY_Controller {
 	public function period($action = false) {
 		$post = bringTypes($this->input->post());
 		switch ($action) {
-			case 'statics':
-				$data['statics'] = $this->admin_model->getStatics();
-				echo $this->twig->render($this->viewsPath.'statics.tpl', $data);
+			case 'statics_tabs':
+				$data['statics'] = $this->coefficients->period('statics', $post);
+				echo $this->twig->render($this->viewsPath.'statics_tabs.tpl', $data);
 				break;
 			
 			case 'periods':
-				$data['periods'] = $this->coefficients->period('periods');
-				$data = array_replace_recursive($post, $data);
+				$data = $this->coefficients->period('periods', $post);
+				
+				$data = array_replace_recursive((array)$post, $data);
 				echo $this->twig->render($this->viewsPath.'periods.tpl', $data);
 				break;
 			

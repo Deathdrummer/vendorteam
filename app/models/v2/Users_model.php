@@ -322,7 +322,7 @@ class Users_model extends MY_Model {
 				$statics['nostatic'] = ['name' => 'Без статика'];
 				if (!isset($selectedStatics)) return $statics;
 				$selectedStaticsArr = array_fill_keys($selectedStatics, ['checked' => 1]);
-				return array_replace_recursive($statics, $selectedStaticsArr);	
+				return array_replace_recursive($statics, $selectedStaticsArr);
 				break;
 			
 			case 'tabs':
