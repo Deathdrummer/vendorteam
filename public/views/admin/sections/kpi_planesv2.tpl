@@ -444,9 +444,8 @@ $(function() {
 	//-------------------- Импорт из файла
 	$('#kpiv2ImportBtn').on(tapEvent, function() {
 		popUp({
-			title: 'Загрузить данные',
+			title: 'Загрузить данные из файла|4',
 			width: 500,
-			html: '',
 			buttons: [{id: 'kpiv2SetImportBtn', title: 'Загрузить', disabled: 1}],
 			closePos: 'left',
 			closeButton: 'Отмена'
@@ -454,6 +453,7 @@ $(function() {
 			kpiv2ImportWin.setData('kpiv2/import/form', function() {
 				
 				$('#kpiv2ImportFile').chooseInputFile(function(data) {
+					kpiv2ImportWin.wait(false);
 					if (data.ext !== 'json') {
 						kpiv2ImportWin.dialog('Необходимо загрузить в формате JSON!', null, 'Закрыть', function() {
 							kpiv2ImportWin.dialog(false);
@@ -465,6 +465,7 @@ $(function() {
 				
 				
 				$("#kpiv2ImportFile").on('input', function() {
+					kpiv2ImportWin.wait();
 					let inpFile = $("#kpiv2ImportFile");
 				    if (inpFile.prop('files').length === 0) $('#kpiv2SetImportBtn').setAttrib('disabled');
 				});
