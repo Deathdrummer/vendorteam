@@ -70,7 +70,6 @@ class Coefficients extends MY_Controller {
 		$post = bringTypes($this->input->post());
 		switch ($action) {
 			default:
-				toLog($post);
 				$params['user_id'] = arrTakeItem($post, 'user_id');
 				$params['periods'] = arrTakeItem($post, 'periods');
 				
