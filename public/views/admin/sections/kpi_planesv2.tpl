@@ -455,6 +455,7 @@ $(function() {
 				$('#kpiv2ImportFile').chooseInputFile(function(data) {
 					kpiv2ImportWin.wait(false);
 					if (data.ext !== 'json') {
+						$("#kpiv2ImportFile").val('');
 						kpiv2ImportWin.dialog('Необходимо загрузить в формате JSON!', null, 'Закрыть', function() {
 							kpiv2ImportWin.dialog(false);
 						});
