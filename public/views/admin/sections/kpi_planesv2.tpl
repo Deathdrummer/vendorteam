@@ -452,8 +452,16 @@ $(function() {
 		}, function(kpiv2ImportWin) {
 			kpiv2ImportWin.setData('kpiv2/import/form', function() {
 				
+				$("#kpiv2ImportFile").on('input', function() {
+					let inpFile = $("#kpiv2ImportFile");
+				    if (inpFile.prop('files').length === 0) {
+				    	$('#kpiv2SetImportBtn').setAttrib('disabled');
+				    } else {
+				    	kpiv2ImportWin.wait();
+				    }
+				});
+				
 				$('#kpiv2ImportFile').chooseInputFile(function(data) {
-					kpiv2ImportWin.wait(false);
 					if (data.ext !== 'json') {
 						$("#kpiv2ImportFile").val('');
 						kpiv2ImportWin.dialog('Необходимо загрузить в формате JSON!', null, 'Закрыть', function() {
@@ -462,13 +470,7 @@ $(function() {
 					} else {
 						$('#kpiv2SetImportBtn').removeAttrib('disabled');
 					}
-				});
-				
-				
-				$("#kpiv2ImportFile").on('input', function() {
-					kpiv2ImportWin.wait();
-					let inpFile = $("#kpiv2ImportFile");
-				    if (inpFile.prop('files').length === 0) $('#kpiv2SetImportBtn').setAttrib('disabled');
+					kpiv2ImportWin.wait(false);
 				});
 				
 				
