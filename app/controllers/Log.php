@@ -11,7 +11,7 @@ class Log extends MY_Controller {
 		echo 	'<button style="height: 40px; padding-left: 30px;padding-right: 30px;margin-right: 10px;cursor: pointer;" onclick="location.reload();">Перезагрузить</button>';
 		echo 	'<form action="log/clear" style="display: inline"><input type="submit" style="height: 40px; padding-left: 30px;padding-right: 30px;cursor: pointer;" value="Очистить" /></form>';
 		echo '</div>';
-		echo '<style>body {background:#efefef;} pre {height: calc(100% - 75px);} #logButtonsBlock {transition: opacity 0.16s;} #logButtonsBlock:hover {opacity: 1!important;}</style>';
+		echo '<style>body {background:#efefef;} pre {height: calc(100% - 75px); font-family: Fira Code, Roboto;} #logButtonsBlock {transition: opacity 0.16s;} #logButtonsBlock:hover {opacity: 1!important;}</style>';
 		
 		
 		$myLog = @file_get_contents(APPPATH.'/logs/log.lg');
