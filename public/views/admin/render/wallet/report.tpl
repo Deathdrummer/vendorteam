@@ -18,7 +18,7 @@
 							<td class="w150px">В резерв</td>
 							<td class="p0"></td>
 							<td class="w122px" title="Распределить средства">Распределение</td>
-							<td class="w60px" title="Посмотреть историю баланса">История</td>
+							<td class="w60px" title="Посмотреть историю баланса">Истор.</td>
 							<td class="w60px center">
 								<i walletselectstatic="1" class="fa fa-2x fa-check-square"></i>
 							</td>

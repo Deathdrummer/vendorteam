@@ -313,6 +313,10 @@ html
 .textarea, .popup__textarea
 	+textarea()
 	
+	&.noheight
+		textarea
+			min-height: auto !important
+	
 	&.changed
 		box-shadow: 0 0 0 2px #78e878
 	
@@ -594,6 +598,11 @@ i.icon
 				button
 					border: none
 					position: relative
+					display: inline-block
+				
+					&:not(:last-child)
+						margin-right: 10px
+					
 					
 					i
 						font-size: inherit
@@ -615,7 +624,6 @@ i.icon
 		.buttons
 			margin-top: 0.8rem
 			font-size: 0
-			word-spacing: 0.8rem
 			text-align: left
 			
 			&.inline
@@ -633,6 +641,9 @@ i.icon
 			button, .button
 				display: inline-block
 				+btn()
+				
+				&:not(:last-child)
+					margin-right: 10px
 				
 				&.verysmall
 					height: 24px
@@ -1498,7 +1509,6 @@ table:not(.clear):not(.ui-datepicker-calendar)
 				
 				.buttons
 					margin-top: 0 !important
-					word-spacing: 4px !important
 					display: block
 					justify-content: flex-end
 					white-space: nowrap
@@ -1512,6 +1522,8 @@ table:not(.clear):not(.ui-datepicker-calendar)
 					button, .button
 						display: inline-block
 						+btn((padding-left: 15px, padding-right: 15px), (noselect))
+						&:not(:last-child)
+						margin-right: 4px
 						//box-shadow: 0 0 0 1px #d0d0d0 inset
 						
 						&.small
@@ -2088,6 +2100,10 @@ table:not(.clear):not(.ui-datepicker-calendar)
 		success
 			h1
 				color: #fff
+		
+		
+		button.simplebutton
+			+btn()
 				
 		
 	&__footer
@@ -2170,6 +2186,8 @@ table:not(.clear):not(.ui-datepicker-calendar)
 	
 	
 	&__dialog
+		display: flex
+		flex-direction: column
 		background-color: #303e4ac0
 		z-index: 1011
 		

@@ -4,6 +4,7 @@ class Reports extends MY_Controller {
 	
 	
 	private $walletReportToLog = false;
+	private $viewsPath = 'views/admin/render/reports/';
 	
 	public function __construct() {
 		parent::__construct();
@@ -1413,6 +1414,43 @@ class Reports extends MY_Controller {
 		}
 	}
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function importpaymentrequests($action = false) {
+		$post = bringTypes($this->input->post());
+		$importedFile = bringTypes($this->input->files('file')) ?? false;
+		switch ($action) {
+			case 'submit':
+				echo jsonResponse($this->reports_model->importPaymentRequests('insertData', $post));
+				break;
+			
+			default:
+				$response = $this->reports_model->importPaymentRequests(['imported_file' => $importedFile]);
+				if (is_numeric($response)) exit($response);
+				$data['statics'] = $this->admin_model->getStatics();
+				$data['ranks'] = $this->admin_model->getRanks();
+				$data['import_data'] = $response;
+				echo $this->twig->render($this->viewsPath.'imported_data_form.tpl', $data);
+				break;
+		}
+		
+	}
 	
 	
 		

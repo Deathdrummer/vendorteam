@@ -2126,4 +2126,133 @@ class Reports_model extends My_Model {
 	
 	
 	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function importPaymentRequests($action = false) {
+		$args = func_get_args();
+		$action = (isset($args[0]) && is_string($args[0])) ? $args[0] : false;
+		if ((isset($args[1]) && is_array($args[1])) || (isset($args[0]) && is_array($args[0]))) extract(snakeToCamelcase($args[1] ?? $args[0] ?? null)); // keys to camelcase
+		
+		switch ($action) {
+			case 'insertData': // Занесение данных
+			
+				$orders = []; $toWalletData = []; $date = time();
+				foreach ($importedOrders as $userId => $user) {
+					$orders[] = [
+						'user_id'		=> $user['user_id'],
+						'nickname' 		=> $user['nickname'],
+						'avatar' 		=> $user['avatar'],
+						'payment' 		=> $user['payment'],
+						'static' 		=> $user['static'],
+						'order' 		=> $user['order'],
+						'summ' 			=> $user['summ'],
+						'to_deposit' 	=> 0,
+						'comment' 		=> $user['comment'],
+						'date'			=> $date
+					];
+					
+					if (!isset($toWalletData[$userId])) {
+						$toWalletData[$userId]['amount'] = (float)$user['summ'];
+						$toWalletData[$userId]['to_deposit'] = 0;
+					} else {
+						$toWalletData[$userId]['amount'] += (float)$user['summ'];
+						$toWalletData[$userId]['to_deposit'] += (float)$user['to_deposit'];
+					}
+				}
+				
+				$this->load->model('wallet_model');
+				$this->wallet_model->setToWallet($toWalletData, 5, 'Заявки на оплату из файла импорта', '+');
+				
+				if (!$this->reports_model->insertUsersOrders($orders)) exit('0');
+				$this->adminaction->setAdminAction(5, ['type' => 'addictpay_orders', 'order' => 'Заявки на оплату из файла импорта', 'users' => $orders]);
+				return 1;
+				break;
+			
+			
+			default:
+				if (!$importedFile) return false;
+		
+				$fieldsMap = [
+					'бустер'			=> 'booster',
+					'сумма'				=> 'summ',
+					'номер заказа'		=> 'order',
+					'комментарий'		=> 'comment'
+				];
+				
+				if ($importedFile['error'] !== 0) return 0;
+				if (!file_exists($importedFile['tmp_name'])) return -1;
+				if (!$importData = json_decode(@file_get_contents($importedFile['tmp_name'] ?? []), true)) return -1;
+				
+				$importBuildedData = []; $boostersNames = [];
+				foreach ($importData as $row) {
+					if (!$row || !is_array($row)) continue;
+					$buildedRow = [];
+					foreach ($row as $field => $value) {
+						$field = mb_strtolower(trim(str_replace(['\n', '\r'], '', $field)));
+						
+						if (array_key_exists($field, $fieldsMap)) {
+							$buildedRow[$fieldsMap[$field]] = $value;
+							if ($fieldsMap[$field] == 'booster') $boostersNames[] = mb_strtolower($value);
+						}
+					}
+					
+					if (!isset($buildedRow['booster']) || !isset($buildedRow['summ'])) continue;
+					$importBuildedData[mb_strtolower($buildedRow['booster'])] = $buildedRow;
+				}
+				
+				
+				$boostersData = $this->_getBoostersDataFromNicknames($boostersNames);
+				if (!$mergeData = array_values(array_replace_recursive($boostersData, $importBuildedData))) return -1;
+				
+				
+				$groupingStaticsData = [];
+				foreach ($mergeData as $row) {
+					$staticId = arrTakeItem($row, 'static_id');
+					$groupingStaticsData[$staticId][] = $row;
+				}
+				return $groupingStaticsData;
+				break;
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//----------------------------------------------------------------
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	 */
+	private function _getBoostersDataFromNicknames($boostersNicknames = false) {
+		if (!$boostersNicknames) return false;
+		$this->db->select('u.id, LOWER(u.nickname) AS nickname, u.avatar, u.rank, us.static_id, u.payment');
+		$this->db->join('users_statics us', 'u.id = us.user_id', 'LEFT OUTER');
+		$this->db->where('us.main', 1);
+		$this->db->where_in('LOWER(u.nickname)', array_unique($boostersNicknames));
+		if (!$boostersData = $this->_result('users u')) return false;
+		return setArrKeyFromField($boostersData, 'nickname');
+	}
+	
+	
 }

@@ -130,6 +130,7 @@
 							{% if permissions is not defined or id~'.paymentRequests.setSalaryBtn' in permissions %}<button id="setSalaryBtn" class="fieldheight ml-0" title="Рассчитать оклады"><i class="fa fa-calculator"></i><i class="fa fa-rub fz12px icon"></i></button>{% endif %}
 							{% if permissions is not defined or id~'.paymentRequests.addictPayBtn' in permissions %}<button id="addictPayBtn" class="fieldheight ml-0" title="Дополнительные выплаты"><i class="fa fa-rub"></i><i class="fa fa-plus fz12px icon"></i></button>{% endif %}
 							{% if permissions is not defined or id~'.paymentRequests.raidLidersPaysBtn' in permissions %}<button id="raidLidersPaysBtn" class="fieldheight ml-0" title="Выплаты рейд-лидерам"><i class="fa fa-rub"></i><svg class="icon w14px h12px"><use xlink:href="#crown"></use></svg></button>{% endif %}
+							{% if permissions is not defined or id~'.paymentRequests.importPaymentsBtn' in permissions %}<button id="importPaymentsBtn" class="fieldheight ml-0 alt" title="Импорт заявок из файла"><i class="fa fa-upload"></i></button>{% endif %}
 						</div>
 					</div>
 					
@@ -1822,6 +1823,174 @@ $(document).ready(function() {
 	
 	
 	
+	// --------------------------------------- Импорт заявок на оплату из файла
+	$('body').off(tapEvent, '#importPaymentsBtn').on(tapEvent, '#importPaymentsBtn', function() {
+		popUp({
+			title: 'Импорт заявок из файла|4',
+			width: 500,
+			html: '<input type="file" id="importPaymentsFile">',
+			buttons: [{id: 'importPaymentsSetImportBtn', title: 'Импорт'}],
+			disabledButtons: true,
+			closePos: 'left',
+			closeButton: 'Отмена'
+		}, function(importPaymentsWin) {
+			
+			$("#importPaymentsFile").on('input', function() {
+				let inpFile = $("#importPaymentsFile");
+			    if (inpFile.prop('files').length === 0) {
+			    	$('#importPaymentsSetImportBtn').setAttrib('disabled');
+			    } else {
+			    	importPaymentsWin.wait();
+			    }
+			});
+			
+			$('#importPaymentsFile').chooseInputFile(function(data) {
+				if (data.ext !== 'json') {
+					$("#importPaymentsFile").val('');
+					importPaymentsWin.dialog('Необходимо загрузить в формате JSON!', null, 'Закрыть', function() {
+						importPaymentsWin.dialog(false);
+					});
+				} else {
+					$('#importPaymentsSetImportBtn').removeAttrib('disabled');
+				}
+				importPaymentsWin.wait(false);
+			});
+			
+			
+			$('#importPaymentsSetImportBtn').on(tapEvent, function() {
+				importPaymentsWin.wait();
+				let inpFile = $("#importPaymentsFile"),
+			    	form = new FormData;
+			    
+			    if (inpFile.prop('files').length === 0) {
+			    	$('#importPaymentsSetImportBtn').setAttrib('disabled');
+			    	return false;
+			    } 
+			    
+			    form.append('file', inpFile.prop('files')[0]);
+			    $.ajax({
+			        url: '/reports/importpaymentrequests',
+			        dataType: 'html',
+			        data: form,
+			        processData: false,
+			        contentType: false,
+			        type: 'POST',
+			        success: function(response) {
+			        	if (response == -1) {
+			        		notify('Ошибка загрузки файла', 'error');
+			        		$('#importPaymentsFile').val('');
+			        		$('#importPaymentsSetImportBtn').setAttrib('disabled');
+			        		importPaymentsWin.wait(false);
+			        	
+			        	} else if (response == -2) {
+			        		notify('Файл успешно загружен, но новых данных нет', 'info', 10);
+			        		$('#importPaymentsFile').val('');
+			        		$('#importPaymentsSetImportBtn').setAttrib('disabled');
+			        		importPaymentsWin.close();
+			        		
+			        	} else if (!isInt(response)) {
+			        		importPaymentsWin.setButtons([{id: 'importPaymentsSetOrderDataBtn', title: 'Добавить заявки'}], 'Отмена');
+			        		importPaymentsWin.setWidth(1200, function() {
+								importPaymentsWin.setData(response, false, function() {
+									importPaymentsWin.wait(false);
+									
+									$('#importPaymentRequestsContainer').find('.tabstitles').children('li:first').addClass('active');
+									$('#importPaymentRequestsContent').children('div[tabid]:first').addClass('visible');
+									
+									
+									$('#importPaymentRequestsContent').find('[importedorderssumm]').number(true, 2, '.', ' ');
+									$('#importPaymentRequestsContent').find('table.visible').ddrTable({minHeight: '50px', maxHeight: '300px'});
+								
+								
+									$('#importPaymentRequestsMassOrder').on(tapEvent, function() {
+										let h = '<h3 class="fz16px mb10px">Общий номер заказа</h3>\
+												<div class="field w200px">\
+													<input type="text" id="importPaymentRequestsMassOrderField" placeholder="Введите номер заказа" autocomplete="off">\
+												</div>';
+										importPaymentsWin.dialog(h, 'Применить', 'Отмена', function() {
+											let massOrderValue = $('#importPaymentRequestsMassOrderField').val();
+											$('#importPaymentRequestsContent').find('[importedordersorder]').val(massOrderValue);
+											importPaymentsWin.dialog(false);
+										});
+									});
+									
+									$('#importPaymentRequestsMassComment').on(tapEvent, function() {
+										let h = '<h3 class="fz16px mb10px">Общий комментарий</h3>\
+												<div class="textarea noheight">\
+													<textarea class="w380px" id="importPaymentRequestsMassCommentField" rows="3" placeholder="Введите коментарий"></textarea>\
+												</div>';
+										importPaymentsWin.dialog(h, 'Применить', 'Отмена', function() {
+											let massCommentValue = $('#importPaymentRequestsMassCommentField').val();
+											$('#importPaymentRequestsContent').find('[importedorderscomment]').val(massCommentValue);
+											importPaymentsWin.dialog(false);
+										});
+									});
+									
+									
+									
+									$('#importPaymentsSetOrderDataBtn').on(tapEvent, function() {
+										$('#importPaymentRequestsContent').formSubmit({
+											url: 'reports/importpaymentrequests/submit',
+											before: function() {
+												importPaymentsWin.wait();
+											},
+											success: function() {
+												renderSection({field: getSortField(), order: getSortOrder()});
+												importPaymentsWin.close();
+											},
+											formError: function() {
+												notify('Проверьте форму на ошибки!', 'error');
+											},
+											complete: function() {
+												importPaymentsWin.wait(false);
+											}
+										});
+									});
+									
+									
+									$('#importPaymentRequestsContent').find('[importedordersremoverow]').on(tapEvent, function() {
+										let thisRow = $(this).closest('tr');
+										importPaymentsWin.dialog('<p class="dialog">Вы дейстительно хотите удалить запись?</p>', 'Удалить', 'Отмена', function() {
+											
+											if ($(thisRow).siblings('tr').length) {
+												$(thisRow).remove();
+												$(thisRow).closest('table').ddrTable({minHeight: '50px', maxHeight: '300px'});
+											} else {
+												$(thisRow).closest('table').replaceWith('<p class="empty center fz14px">Нет данных</p>');
+											}
+											
+											importPaymentsWin.dialog(false);
+										});
+									});
+									
+									
+								}); //-----------
+			        		});
+				        		
+			        	}
+					},
+					error: function(e) {
+						importPaymentsWin.wait(false);
+						notify('Ошибка сохранения данных', 'error');
+						showError(e);
+					}
+			    });
+			});
+			
+			
+			
+		});
+	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -2187,29 +2356,28 @@ $(document).ready(function() {
 	
 	//---------- Getter
 	function getSortField() {
-		return lscache.get('paymentRequestSortField') || 'nickname';
+		return ddrStore('paymentRequestSortField') || 'date';
 	}
 	function getSortOrder() {
-		return lscache.get('paymentRequestSortOrder') || 'ASC';
+		return ddrStore('paymentRequestSortOrder') || 'DESC';
 	}
-	
 	
 	
 	//---------- Setter
 	function setSortField(value) {
 		if (!value) return false;
-		lscache.set('paymentRequestSortField', value);
+		ddrStore('paymentRequestSortField', value);
 	}
 	function setSortOrder(value) {
-		if (value) lscache.set('paymentRequestSortOrder', value);
+		if (value) ddrStore('paymentRequestSortOrder', value);
 		else {
-			var order = lscache.get('paymentRequestSortOrder');
+			var order = ddrStore('paymentRequestSortOrder');
 			if (!order) {
-				lscache.set('paymentRequestSortOrder', 'ASC');
+				ddrStore('paymentRequestSortOrder', 'ASC');
 			} else if (order == 'ASC') {
-				lscache.set('paymentRequestSortOrder', 'DESC');
+				ddrStore('paymentRequestSortOrder', 'DESC');
 			} else if (order == 'DESC') {
-				lscache.set('paymentRequestSortOrder', 'ASC');
+				ddrStore('paymentRequestSortOrder', 'ASC');
 			}
 		}
 	}

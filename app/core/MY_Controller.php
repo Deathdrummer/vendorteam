@@ -147,6 +147,7 @@ class MY_Controller extends CI_Controller {
 								'setSalaryBtn' 					=> 'Рассчитать оклады',
 								'addictPayBtn' 					=> 'Дополнительные выплаты',
 								'raidLidersPaysBtn' 			=> 'Выплаты рейд-лидерам',
+								'importPaymentsBtn' 			=> 'Импорт заявок из файла',
 								'setSummmToPayRaidLidersBtn' 	=> 'Таблица с суммами выплат РЛ',
 							],
 						],

@@ -132,7 +132,7 @@ $(function() {
 				
 				
 				coeffsUserMngrWin.setData('coefficients/period/periods', {multiple: 1}, function() {
-					coeffsUserMngrWin.setTitle('Выбрать период');
+					//coeffsUserMngrWin.setTitle('Выбрать период');
 					coeffsUserMngrWin.setButtons([{id: 'coeffsPeridosUserChooseBtn', title: 'Показать', disabled: 1}], 'Закрыть');
 					coeffsUserMngrWin.setWidth(500, function() {
 						$('#coefficientsPeriods').ddrTable({minHeight: '50px', maxHeight: '70vh'});
