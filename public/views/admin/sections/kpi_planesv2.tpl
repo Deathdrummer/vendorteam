@@ -136,13 +136,11 @@ $(function() {
 	
 	
 	
-	
-	getDataTable();
-	
-	
 	let showType = ddrStore('kpiv2:showtype') || 'table';
 	$('[kpiv2datatype="'+showType+'"]').setAttrib('checked');
 	
+	
+	getDataTable();
 	
 	
 	
@@ -150,6 +148,7 @@ $(function() {
 	$('[kpiv2datatype]').on('change', function() {
 		let type = $(this).attr('kpiv2datatype');
 		ddrStore('kpiv2:showtype', type);
+		showType = type;
 		getDataTable();
 	});
 	
@@ -1165,7 +1164,7 @@ $(function() {
 	let usersSetRankTooltip;
 	function getDataTable(callback) {
 		$('#kpiv2WaitBlock').addClass('kpiv2__waitblock_visible');
-		let showType = ddrStore('kpiv2:showtype');
+		
 		return new Promise(function(resolve, reject) {
 			try {
 				getAjaxHtml('kpiv2/data', {
