@@ -1,4 +1,4 @@
-/gulp/*
+/gulp/node_modules
 /production/*
 /public/js/plugins.min.js
 /public/css/*.min.css

@@ -1,7 +1,7 @@
 <div class="d-flex align-items-end wallet__title">
 	<span class="wallet__label">Текущий баланс:</span>
-	<span class="wallet__balance">{{balance|number_format(1, '.', ' ')}}</span>
-	<small class="wallet__postfix">₽</small>
+	{# <small class="wallet__postfix">{{balance}}</small> #}
+	<span class="wallet__balance">{{balance|currency('wallet__postfix')|raw}}</span>
 </div>
 
 {% if history %}
@@ -28,9 +28,9 @@
 							<td><p class="fz12px">{{item.title}}</p></td>
 						{% endif %}
 						<td><small class="fz12px">{{item.date|d}} в {{item.date|t}}</small></td>
-						<td>{{item.summ|number_format(1, '.', ' ')}} <small class="wallet__postfix">₽</small></td>
-						<td>{{item.deposit|number_format(1, '.', ' ')}} <small class="wallet__postfix">₽</small></td>
-						<td>{{item.current_balance|number_format(1, '.', ' ')}} <small class="wallet__postfix">₽</small></td>
+						<td>{{item.summ|currency('wallet__postfix')|raw}}</td>
+						<td>{{item.deposit|currency('wallet__postfix')|raw}}</td>
+						<td>{{item.current_balance|currency('wallet__postfix')|raw}}</td>
 						<td class="center" title="{% if item.transfer == '+' %}Пополнение{% else %}Выплата{% endif %}"><strong>{{item.transfer}}</strong></td>
 					</tr>
 				{% endfor %}

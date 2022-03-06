@@ -54,6 +54,14 @@
 			</fieldset>
 			
 			<fieldset>
+				<legend>Валюта</legend>
+				
+				{% include form~'field.tpl' with {'label': 'Символ валюты', 'name': 'currency', 'class': 'w10'} %}
+				{% include form~'radio.tpl' with {'label': 'Позиция символа', 'name': 'currency_pos', 'data': {'Перед': 'before', 'После': 'after'}} %}
+				
+			</fieldset>
+			
+			<fieldset>
 				<legend>Элементы главной страницы</legend>
 				
 				

@@ -66,9 +66,9 @@
 			{% if rank.next_rank is defined and rank.next_rank is not empty and rank.rank_name is not empty %}
 				<li><span title="Следующее звание">След. зв.:</span> <strong>{{rank.next_rank.next_rank}}</strong> <sup>({{rank.next_rank.count_days}} дн.)</sup></li>
 			{% endif %}
-			<li><span>Мой резерв:</span> <strong>{{deposit|number_format(2, '.', ' ')}} руб.</strong></li>
+			<li><span>Мой резерв:</span> <strong>{{deposit|number_format(2, '.', ' ')|currency}}</strong></li>
 			
-			<li walletbalance class="pointer"><span>Мой баланс:</span> <strong>{{balance|number_format(2, '.', ' ')}} руб.</strong> <sup>NDA {% if nda %}<i class="fa fa-check"></i>{% else %}<i class="fa fa-ban"></i>{% endif %}</sup></li>
+			<li walletbalance class="pointer"><span>Мой баланс:</span> <strong>{{balance|number_format(2, '.', ' ')|currency}}</strong> <sup>NDA {% if nda %}<i class="fa fa-check"></i>{% else %}<i class="fa fa-ban"></i>{% endif %}</sup></li>
 			
 			<li><span title="Активный период">Период:</span> <strong class="fz14px">{{active_period|default('не указан')}}</strong></li>
 			
