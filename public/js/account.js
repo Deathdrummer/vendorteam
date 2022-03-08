@@ -2609,7 +2609,7 @@ $(document).ready(function() {
 	$('[walletbalance]').on(tapEvent, function() {
 		popUp({
 			title: 'Мой баланс|4',
-			width: 1000,
+			width: 1200,
 			closeButton: 'Закрыть',
 		}, function(walletBalanceWin) {
 			walletBalanceWin.wait();

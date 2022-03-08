@@ -261,8 +261,29 @@ function DdrPopUp(settings, callback) {
 				});
 			} else if (url) {
 				_popupWait();
-				$.post(url, params, function(html) {
+				$.post(url, params, function(html, stat, xhr) {
 					html = html.trim();
+					
+					let headersData = xhr.getAllResponseHeaders(),
+						headers = {};
+						
+					headersData = headersData.split("\n");
+					headersData.forEach(function (header) {
+						header = header.split(": ");
+						let key = header.shift();
+						if (key.length == 0) return;
+						if (!/ddr-/.test(key)) return;
+						key = key.replace('ddr-', '');
+						key = key.toLowerCase(); 
+						val = header[0].replace("\r", '');
+						if (isInt(val)) val = parseInt(val);
+						if (isJson(val)) val = JSON.parse(val);
+						headers[key] = val;
+					});
+					
+					
+					
+					
 					if (width) $(ddrPopupSelector).find('[ddrpopupwin]').width(width);
 					$(ddrPopupSelector).find('[ddrpopupcontent]').html(html);
 					//if (o.disabledButtons) $(ddrPopupSelector).find('.ddrpopup__buttons_main').removeAttrib('disabled');
@@ -270,9 +291,9 @@ function DdrPopUp(settings, callback) {
 					_setScripts();
 
 					$('[ddrpopupcontent]').ready(function() {
-						var stat = !!html
-						if (stat && callback && typeof callback == 'function') callback(html, stat);
-						else if (callback && typeof callback == 'function') callback('<p class="empty center">'+language[o.lang]['noData']+'</p>', stat);
+						var stat = !!html;
+						if (stat && callback && typeof callback == 'function') callback(html, stat, headers);
+						else if (callback && typeof callback == 'function') callback('<p class="empty center">'+language[o.lang]['noData']+'</p>', stat, headers);
 						$(document).trigger('popup:load');
 					});
 				}, 'html').fail(function(e) {

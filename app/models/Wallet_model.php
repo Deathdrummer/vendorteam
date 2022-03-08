@@ -7,6 +7,8 @@ class Wallet_model extends MY_Model {
 	private $walletAmountsTable = 'wallet_amounts';
 	private $walletReportsTable = 'wallet_reports';
 	private $walletReportsDataTable = 'wallet_reports_data';
+	private $walletCurrencyTable = 'wallet_currency';
+	
 	private $types = [
 		-2 => 'Корректировка',
 		-1 => 'Отмена выплаты',
@@ -31,9 +33,10 @@ class Wallet_model extends MY_Model {
 	 * @param платежные данные [user_id => summ]
 	 * @param тип (откуда приход)
 	 * @param название отчета или заявки на оплату
+	 * @param + Приход \ - уход \ false без изменения саммы в балансе
 	 * @return bool
 	*/
-	public function setToWallet($items = false, $type = false, $title = false, $transfer = '+') {
+	public function setToWallet($items = false, $type = false, $title = false, $transfer = '+', $currency = null) {
 		if (!$items || $type === false || !$title) return false;
 		if (!$titleId = $this->_addTitle($title)) return false;
 		
@@ -50,6 +53,7 @@ class Wallet_model extends MY_Model {
 				'summ'		=> $summ,
 				'deposit'	=> $deposit,
 				'transfer'	=> $transfer,
+				'currency'	=> $currency,
 				'date'		=> $date,
 			];
 			
@@ -64,7 +68,7 @@ class Wallet_model extends MY_Model {
 		
 		
 		$this->_addToHistory($toHistoryData); // Добавить записи в историю
-		$this->_addToAmounts($toAmountsData, $transfer); // Прибавить \ отнять суммы у участников
+		if ($transfer !== false) $this->_addToAmounts($toAmountsData, $transfer); // Прибавить \ отнять суммы у участников
 		
 		return true;
 	}
@@ -155,11 +159,11 @@ class Wallet_model extends MY_Model {
 	
 	
 	/**
-	 * Сохранить отчет
+	 * Сохранить название отчета и вернуть ID
 	 * @param Название отчета
 	 * @return ID сохраненного отчета
 	*/
-	public function saveWalletReport($reportTitle = false) {
+	public function saveWalletReportTitle($reportTitle = false) {
 		if (!$reportTitle) return -1;
 		$this->db->where('title', $reportTitle);
 		if ($this->db->count_all_results($this->walletReportsTable) > 0) return -2;
@@ -206,7 +210,7 @@ class Wallet_model extends MY_Model {
 	*/
 	public function getReportData($reportId = false) {
 		if (!$reportId) return false;
-		$this->db->select('user_id, static_id, summ, to_deposit');
+		$this->db->select('user_id, static_id, wallet, deposit, summ, to_deposit');
 		$this->db->where('report_id', $reportId);
 		if (!$data = $this->_result($this->walletReportsDataTable)) return false;
 		$data = setArrKeyFromField($data, 'user_id');
@@ -228,8 +232,85 @@ class Wallet_model extends MY_Model {
 			
 			$dataToReport[$static][$userId] = $item;
 		}
+		
+		setAjaxHeader('paid', $this->isPaidReport($reportId));
 		return $dataToReport;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Есть ли невыплаченные отчеты
+	 * @param 
+	 * @return 
+	 */
+	public function hasNoPayReports() {
+		$this->db->where('paid', 0);
+		return !!$this->db->count_all_results($this->walletReportsTable);
+	}
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	 */
+	public function isPaidReport($reportId = false) {
+		if (!$reportId) return false;
+		$this->db->where('id', $reportId);
+		$isPaid = $this->_row($this->walletReportsTable, 'paid');
+		return (int)$isPaid;
+	}
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	 */
+	public function setPaidReport($reportId = false, $stat = 1) {
+		if (!$reportId) return false;
+		$this->db->where('id', $reportId);
+		if (!$this->db->update($this->walletReportsTable, ['paid' => (int)$stat])) return false;
+		return true;
+	}
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	 */
+	public function getWalletReportCurrency($reportId = false) {
+		if (!$reportId) return false;
+		$this->db->where('id', $reportId);
+		$isPaid = $this->_row($this->walletReportsTable, 'currency');
+		return (float)$isPaid;
+	}
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	 */
+	public function setWalletReportCurrency($reportId = false, $currency = false) {
+		if (!$reportId || !$currency) return false;
+		$this->db->where('id', $reportId);
+		if (!$this->db->update($this->walletReportsTable, ['currency' => (float)$currency])) return false;
+		return true;
+	}
+	
+	
+	
 	
 	
 	
@@ -249,7 +330,9 @@ class Wallet_model extends MY_Model {
 		$this->db->where('wh.user_id', $userId);
 		//$this->db->order_by('wh.id', 'DESC');
 		if (!$userHistory = $this->_result($this->walletHistoryTable.' wh')) return false;
-
+		
+		toLog($userHistory);
+		
 		$userGlobalSumm = 0;
 		foreach ($userHistory as $k => $item) {
 			$totalSumm = (float)$item['summ'] + (float)$item['deposit'];

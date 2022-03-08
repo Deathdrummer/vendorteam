@@ -43,6 +43,8 @@
 								<td>{% if user['wallet_balance'] %}{{user['wallet_balance']|number_format(1, '.', ' ')}} <small>₽</small>{% else %}0 <small>₽</small>{% endif %}</td>
 								<td>{% if user['deposit'] %}{{user['deposit']|number_format(1, '.', ' ')}} <small>₽</small>{% else %}0 <small>₽</small>{% endif %}</td>
 								<td>
+									<input type="hidden" wallet value="{{user['wallet_balance']}}">
+									<input type="hidden" deposit value="{{user['deposit']}}">
 									{% if user['wallet_balance'] != 0 %}
 										<div class="d-flex align-items-end">
 											<div class="field mr-1">

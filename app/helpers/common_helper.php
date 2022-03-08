@@ -627,7 +627,7 @@ if (!function_exists('setAjaxHeader')) {
 	 * @param значение
 	 * @return 
 	*/
-	function setAjaxHeader($keyOrArr = false, $value = false, $preffix = 'ddr-') {
+	function setAjaxHeader($keyOrArr = false, $value = null, $preffix = 'ddr-') {
 		if (!$keyOrArr) return false;
 		if (is_array($keyOrArr)) {
 			foreach ($keyOrArr as $k => $val) {
@@ -635,7 +635,7 @@ if (!function_exists('setAjaxHeader')) {
 				header($preffix.$k.': '.$val);
 			}
 		} else {
-			if (!$value) return false;
+			if (is_null($value)) return false;
 			if (is_array($value)) $value = json_encode($value);
 			//elseif (is_string($value)) $value = cyrillicEncode($value);
 			header($preffix.$keyOrArr.': '.$value);

@@ -198,13 +198,9 @@
 									<td class="w200px">
 										<div class="d-flex align-items-center">
 											<div class="mr-1">
-												{% if item.static_icon %}
-													<img style="width: 26px" src="{{base_url('public/filemanager/'~item.static_icon)}}" alt="">
-												{% else %}
-													<img style="width: 26px" src="{{base_url('public/images/deleted_mini.jpg')}}" alt="">
-												{% endif %}
+												<img class="avatar w28px h28px" src="{{base_url('public/filemanager/'~item.static_icon)|no_file('public/images/deleted_mini.jpg')}}" alt="{{item.static_name}}">
 											</div>
-											<div>{{item.static_name}}</div>
+											<p class="w12px">{{item.static_name}}</p>
 										</div>
 									</td>
 									<td>{{item.payment}}</td>
@@ -270,7 +266,7 @@
 			<fieldset>
 				<legend>Выплата баланса</legend>
 				
-				<div class="item inline">
+				<div class="item">
 					<div class="d-flex">
 						<div class="buttons notop">
 							<button id="buildWalletPayments" class="fieldheight" title="Сформировать платежные данные"><i class="fa fa-bar-chart"></i></button>
@@ -280,6 +276,19 @@
 						<div class="ml30px">
 							<h3 class="mb-0" id="savedReportTitle"></h3>
 							<p id="savedReportDate"></p>
+						</div>
+						
+						<div id="walletPayoutPanel" class="ml-auto d-flex align-items-end" hidden>
+							<div class="ml-auto mr10px">
+								<p class="fontcolor fz14px mb8px">Курс доллара</p>
+								<div class="field w100px">
+									<input type="text" id="walletCurrencyField" value="0.00">
+								</div>
+							</div>
+							
+							<div class="buttons notop">
+								<button id="walletPayoutBtn" class="fieldheight pay" title="Выплатить"><i class="fa fa-rouble"></i></button>
+							</div>
 						</div>
 					</div>
 						
@@ -3102,6 +3111,9 @@ $(document).ready(function() {
 			});
 			
 			$('#buildWPData').on(tapEvent, function() {
+				$('#walletPayoutBtn').removeAttrib('walletcurrentreport');
+				$('#walletPayoutPanel').setAttrib('hidden');
+				
 				let walletParamStatics = $('#walletParamsForm').find('[walletparamstatics]:checked'),
 					walletParamRanks = $('#walletParamsForm').find('[walletparamranks]:checked'),
 					walletParamRoles = $('#walletParamsForm').find('[walletparamroles]:checked'),
@@ -3134,7 +3146,7 @@ $(document).ready(function() {
 				
 				
 				if (paramsStat) {
-					(function setPayout() {
+					(function setPayout(enableSaveWalletBtn) {
 						buildWPDataWin.wait();
 						getAjaxHtml('reports/wallet/build_payments', params, function(html, stat) {
 							if (!stat) notify('Нет данных для формирования списка!', 'info');
@@ -3145,7 +3157,7 @@ $(document).ready(function() {
 							buildWPDataWin.close();
 							ddrInitTabs();
 							
-							$('#saveWalletOrder').removeAttrib('disabled');
+							if (enableSaveWalletBtn) $('#saveWalletOrder').removeAttrib('disabled');
 							$('#walletReport').find('[walletpayout], [wallettodeposit]').number(true, 1, '.', ' ');
 							
 							
@@ -3277,6 +3289,7 @@ $(document).ready(function() {
 								popUp({
 									title: 'История выплат',
 									width: 1000,
+									closePos: 'left',
 									closeButton: 'Закрыть',
 								}, function(walletHistoryWin) {
 									walletHistoryWin.wait();
@@ -3290,85 +3303,94 @@ $(document).ready(function() {
 							
 							
 							
-							// Сохранить отчет и выплатить суммы
+							// Сохранить отчет без выплат
 							$('#saveWalletOrder').off(tapEvent).on(tapEvent, function() {
 								popUp({
-									title: 'Отчет по выплатам',
+									title: 'Сохранить отчет по выплатам|4',
 								    width: 400,
-								    buttons: [{id: 'saveAndPayout', title: 'Сохранить и выплатить'}],
-								    closeButton: false,
-								}, function(saveAndPayoutWin) {
-									saveAndPayoutWin.wait();
-									getAjaxHtml('reports/wallet/get_save_blank', function(html) {
-										saveAndPayoutWin.setData(html, false);
-									}, function() {
-										saveAndPayoutWin.wait(false);
-									});
-									
-									// Сохранить и выплатить
-									$('#saveAndPayout').on(tapEvent, function() {
-										let reportTitleInp = $('#walletReportTitle');
-										
-										if (reportTitleInp.val() == '') {
-											notify('Необходимо ввести название отчета', 'info');
-											$(reportTitleInp).addClass('error');
-										
-										} else {
-											let payData = [],
-												rows = $('#walletReport').find('[walletuserrow]');
-												
-											if (rows.length) {
-												saveAndPayoutWin.wait();
-												$(rows).each(function() {
-													let thisRow = this;
-													if ($(thisRow).find('[walletcheckeduser]').is(':checked') == false) return true;
-													let d = $(thisRow).attr('walletuserrow').split('|'),
-														staticId = d[0],
-														userId = d[1],
-														payout = parseFloat($(thisRow).find('[walletpayout]').val()).toFixed(1),
-														toDeposit = parseFloat($(thisRow).find('[wallettodeposit]').val()).toFixed(1);
-														
-													payData.push({
-														user_id: userId,
-														static_id: staticId,
-														payout: payout,
-														to_deposit: toDeposit
-													});
-												});
-												
-												
-												if (payData) {
-													$.post('/reports/wallet/set_payout', {paydata: payData, title: reportTitleInp.val()}, function(response) {
-														if (response) {
-															saveAndPayoutWin.close();
-															setPayout();
-														} else {
-															notify('Ошибка сохранения данных!', 'error');
-															saveAndPayoutWin.wait(false);
-														}
-													}).fail(function(e) {
-														notify('Системная ошибка!', 'error');
-														saveAndPayoutWin.wait(false);
-														showError(e);
-													});
-												} else {
-													notify('Нет данных для сохранения отчета и совершения выплат', 'info');
-													saveAndPayoutWin.close();
-												}
-												
-											} else {
-												notify('Не выбрано ни одного участника', 'info');
-											}
+								    closePos: 'left',
+								    closeButton: 'Закрыть',
+								}, function(walletReportSaveWin) {
+									walletReportSaveWin.setData('reports/wallet/get_save_blank', (html, stat) => {
+										if (!stat) {
+											walletReportSaveWin.setData('<p class="red fz16px center">Нельзя сохранить текущий отчет, так как есть еще не выплаченный отчет</p>', false);
+											return false;
 										}
+										
+										walletReportSaveWin.setData(html, false);
+										walletReportSaveWin.setButtons([{id: 'walletReportSave', title: 'Сохранить'}], 'Отмена');
+										
+										
+										// Сохранить БЕЗ выплаты
+										$('#walletReportSave').on(tapEvent, function() {
+											let reportTitleInp = $('#walletReportTitle');
 											
-									});
-														
+											if (reportTitleInp.val() == '') {
+												notify('Необходимо ввести название отчета', 'info');
+												$(reportTitleInp).addClass('error');
+											
+											} else {
+												let payData = [],
+													rows = $('#walletReport').find('[walletuserrow]');
+													
+												if (rows.length) {
+													walletReportSaveWin.wait();
+													$(rows).each(function() {
+														let thisRow = this;
+														if ($(thisRow).find('[walletcheckeduser]').is(':checked') == false) return true;
+														let d = $(thisRow).attr('walletuserrow').split('|'),
+															staticId = d[0],
+															userId = d[1],
+															wallet = parseFloat($(thisRow).find('[wallet]').val()).toFixed(1),
+															deposit = parseFloat($(thisRow).find('[deposit]').val()).toFixed(1),
+															payout = parseFloat($(thisRow).find('[walletpayout]').val()).toFixed(1),
+															toDeposit = parseFloat($(thisRow).find('[wallettodeposit]').val()).toFixed(1);
+															
+														payData.push({
+															user_id: userId,
+															static_id: staticId,
+															wallet: wallet,
+															deposit: deposit,
+															payout: payout,
+															to_deposit: toDeposit
+														});
+													});
+													
+													if (payData) {
+														$.post('/reports/wallet/save_report', {paydata: payData, title: reportTitleInp.val()}, function(response) { // old method: set_payout
+															if (response) {
+																$('#saveWalletOrder').setAttrib('disabled');
+																notify('Данные успешно сохранены!');
+																walletReportSaveWin.close();
+																setPayout();
+															} else {
+																notify('Ошибка сохранения данных!', 'error');
+																walletReportSaveWin.wait(false);
+															}
+														}).fail(function(e) {
+															notify('Системная ошибка!', 'error');
+															walletReportSaveWin.wait(false);
+															showError(e);
+														});
+													} else {
+														notify('Нет данных для сохранения отчета', 'info');
+														walletReportSaveWin.close();
+													}
+													
+												} else {
+													notify('Не выбрано ни одного участника', 'info');
+												}
+											}
+												
+										});
+											 
+									});				
 								});
 								
-							});
-							
-						}, function() {});
-					})();
+							}); //------
+						
+						});
+					})(true);
 				}
 			});
 		});
@@ -3380,10 +3402,14 @@ $(document).ready(function() {
 	
 	
 	
+	
+	
+	
+	
 	// открыть список сохраненных отчетов по оплатам
 	$('#getWalletReportsList').on(tapEvent, function() {
 		popUp({
-			title: 'Сохраненные отчеты',
+			title: 'Сохраненные отчеты|4',
 		    width: 500,
 		    closeButton: 'Закрыть'
 		}, function(reportsListWin) {
@@ -3397,11 +3423,24 @@ $(document).ready(function() {
 					reportsListWin.wait();
 					let reportId = $(this).attr('buildsavedreport'),
 						reportTitle = $(this).closest('tr').find('[reporttitle]').text(),
-						reportDate = $(this).closest('tr').find('[reportdate]').text();
+						reportDate = $(this).closest('tr').find('[reportdate]').text(),
+						currency = parseFloat($('#walletCurrencyField').val()) || ddrStore('wallet:currency');
+					
 						
-					getAjaxHtml('reports/wallet/get_saved_report', {report_id: reportId}, function(html) {
+					getAjaxHtml('reports/wallet/get_saved_report', {report_id: reportId}, function(html, stat, {paid}) {
 						$('#walletReport').html(html);
 						ddrInitTabs();
+						
+						if (!paid) {
+							let savedCurrency = ddrStore('wallet:currency');
+							$('#walletCurrencyField').number(true, 2, '.', ' ').val(savedCurrency);
+							$('#walletPayoutPanel').removeAttrib('hidden');
+							$('#walletPayoutBtn').setAttrib('walletcurrentreport', reportId+'|'+reportTitle+'|'+reportDate);
+							calcCurrency(currency);
+						} else $('#walletPayoutPanel').setAttrib('hidden');
+						
+						
+						
 						reportsListWin.close();
 						$('#savedReportTitle').text(reportTitle);
 						$('#savedReportDate').text('от '+reportDate);
@@ -3416,6 +3455,87 @@ $(document).ready(function() {
 			});
 		});
 	});
+	
+	
+	
+	
+	
+	
+	
+	let changeCurrencyTOut;
+	$('#walletCurrencyField').on('input', function() {
+		let inpData = this;
+		clearTimeout(changeCurrencyTOut);
+		changeCurrencyTOut = setTimeout(() => {
+			let currency = parseFloat($(inpData).val());
+			ddrStore('wallet:currency', currency);
+			calcCurrency(currency);
+		}, 300);
+	});
+	
+	
+	
+	
+	function calcCurrency(currency) {
+		$('#walletReport').find('[walletuserrow]').each((k, row) => {
+			let p = $(row).find('[walletreportpayout]').attr('walletreportpayout'),
+				d = $(row).find('[walletreporttodeposit]').attr('walletreporttodeposit');
+			
+			$(row).find('[walletreportpayoutconverted]').text($.number(parseFloat(p) * currency, 1, ',', ' '));
+			$(row).find('[walletreporttodepositconverted]').text($.number(parseFloat(d) * currency, 1, ',', ' '));
+		});
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	$('#walletPayoutBtn').on(tapEvent, function() {
+		let d = $(this).attr('walletcurrentreport').split('|'),
+			reportId = parseInt(d[0]),
+			reportTitle = d[1],
+			reportDate = d[2],
+			currency = parseFloat($('#walletCurrencyField').val());
+		
+		popUp({
+			title: 'Выплата баланса по отчету|4',
+			width: 400,
+			html: '<p class="fz16px center darkblue">отчет: <strong>'+reportTitle+'</strong></p><p class="fz14px fontcolor">от '+reportDate+'</p>',
+			buttons: [{id: 'walletSetPayoutBtn', title: 'Выплатить'}],
+			closePos: 'left', 
+			closeButton: 'Отмена',
+			contentToCenter: true
+		}, function(walletPayoutWin) {
+			$('#walletSetPayoutBtn').on(tapEvent, function() {
+				walletPayoutWin.wait();
+				getAjaxJson('reports/wallet/set_payout', {report_id: reportId, title: reportTitle, currency: currency}, function(response) {
+					if (response) {
+						notify('Выплаты успешно выполены!');
+						walletPayoutWin.close();
+					} else {
+						notify('Ошибка! Выплаты не выполены!', 'error');
+						walletPayoutWin.wait(false);
+					}
+				});
+			});
+		});
+	});
+							
+							
+							
+							
+	
+	
+	
+	
 	
 	
 	

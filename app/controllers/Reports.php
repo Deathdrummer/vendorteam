@@ -1195,13 +1195,15 @@ class Reports extends MY_Controller {
 				break;
 			
 			case 'get_save_blank':
+				$hasNoPayReports = $this->wallet->hasNoPayReports();
+				if ($hasNoPayReports) exit('');
 				echo $this->twig->render('views/admin/render/wallet/save_blank.tpl');
 				break;
 			
-			case 'set_payout': // выплатить суммы и сохранить отчет
+			case 'save_report':
 				if (!isset($postData['paydata']) || !$postData['paydata']) exit('-1');
 				if (!$postData['title']) exit('-2');
-				if (($reportId = $this->wallet->saveWalletReport($postData['title'])) < 0) exit((string)$reportId);
+				if (($reportId = $this->wallet->saveWalletReportTitle($postData['title'])) < 0) exit((string)$reportId);
 				
 				$usersIds = array_column($postData['paydata'], 'user_id');
 				if ($usersIds) {
@@ -1209,11 +1211,44 @@ class Reports extends MY_Controller {
 					$usersStatics = $this->users->getUsers(['where_in' => ['field' => 'u.id', 'values' => $usersIds], 'where' => ['us.main' => 1], 'fields' => 'static']);
 				}
 				
-				$amountsData = []; $toDepositdata = []; $toReportData = [];
+				$toReportData = [];
 				foreach ($postData['paydata'] as $payUser) {
+					$wallet = (float)$payUser['wallet'];
+					$deposit = (float)$payUser['deposit'];
 					$amountSumm = (float)$payUser['payout'];
 					$depositSumm = (float)$payUser['to_deposit'];
 					$userId = (int)$payUser['user_id'];
+					
+					
+					$toReportData[] = [
+						'report_id'		=> $reportId,
+						'user_id'		=> $userId,
+						'static_id'		=> isset($usersStatics[$userId]) ? $usersStatics[$userId] : 0,
+						'wallet'		=> $wallet,
+						'deposit'		=> $deposit,
+						'summ'			=> $amountSumm,
+						'to_deposit'	=> $depositSumm,
+					];
+				}
+				
+				
+				// Отправить данные в сохраненный отчет
+				if ($toReportData) $this->wallet->saveWalletReportData($toReportData);
+				
+				echo '1';
+				break;
+				
+			case 'set_payout': // выплатить суммы и сохранить отчет
+				$reportId = (int)$postData['report_id'];
+				$paydata = $this->wallet->getReportData($postData['report_id']); // Получить данные из сохраненного очета
+				
+				
+				$amountsData = []; $toDepositdata = []; $toReportData = [];
+				foreach ($paydata as $staticId => $users) foreach ($users as $userId => $payUser) {
+					$amountSumm = (float)$payUser['summ'];
+					$depositSumm = (float)$payUser['to_deposit'];
+					//$amountCurrencySumm = (float)$payUser['summ'] * (float)$postData['currency'];
+					//$depositCurrencySumm = (float)$payUser['to_deposit'] * (float)$postData['currency'];
 					
 					if ($amountSumm > 0) {
 						$amountsData[$userId] = [
@@ -1227,7 +1262,7 @@ class Reports extends MY_Controller {
 					$toReportData[] = [
 						'report_id'		=> $reportId,
 						'user_id'		=> $userId,
-						'static_id'		=> isset($usersStatics[$userId]) ? $usersStatics[$userId] : 0,
+						'static_id'		=> $staticId ?: 0,
 						'summ'			=> $amountSumm,
 						'to_deposit'	=> $depositSumm,
 					];
@@ -1249,7 +1284,7 @@ class Reports extends MY_Controller {
 				}
 					
 				// отправить выплаты в историю
-				if ($amountsData) $this->wallet->setToWallet($amountsData, null, $postData['title'], '-');
+				if ($amountsData) $this->wallet->setToWallet($amountsData, null, $postData['title'], '-', (float)$postData['currency']);
 				
 				if ($this->walletReportToLog) {
 					toLog('--------- Списание баланса -----------');
@@ -1259,6 +1294,12 @@ class Reports extends MY_Controller {
 					
 				// отправить в резерв
 				if ($toDepositdata) $this->wallet->updateUsersDeposit($toDepositdata);
+				
+				// Сохранить курс для текущего отчета
+				$this->wallet->setWalletReportCurrency($reportId, (float)$postData['currency']);
+				
+				// Установить статус отчета "Выплачен"
+				$this->wallet->setPaidReport($reportId);
 				
 				echo '1';
 				break;
@@ -1289,6 +1330,12 @@ class Reports extends MY_Controller {
 					
 					setHeadersToDownload('application/octet-stream', 'windows-1251');
 					exit($dataToExport);
+				}
+				
+				$isPaid = $this->wallet->isPaidReport($postData['report_id']);
+				if ($isPaid) {
+					$data['report_currency'] = $this->wallet->getWalletReportCurrency($postData['report_id']);
+					$data['paid'] = 1;
 				}
 				
 				$data['report'] = $report;
