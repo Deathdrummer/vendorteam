@@ -816,7 +816,7 @@ getAjaxHtml = function() {
 			showError(e);
 		}
 	});
-}
+};
 
 
 
@@ -863,9 +863,8 @@ getAjaxJson = function() {
 			notify('Системная ошибка!', 'error');
 			showError(e);
 		}	
-	});	
-		
-}
+	});		
+};
 
 
 
