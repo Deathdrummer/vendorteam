@@ -58,14 +58,15 @@ class Users_model extends MY_Model {
 	
 	
 	
+	
 	/**
 	 * @param 
 	 * @return 
 	*/
 	public function list($action = false) {
 		$args = func_get_args();
-		$action = isset($args[0]) ? $args[0] : false;
-		if (isset($args[1])) extract(snakeToCamelcase($args[1])); // keys to uppercase
+		$action = (isset($args[0]) && is_string($args[0])) ? $args[0] : false;
+		if ((isset($args[1]) && is_array($args[1])) || (isset($args[0]) && is_array($args[0]))) extract(snakeToCamelcase($args[1] ?? $args[0] ?? null)); // keys to camelcase
 		
 		switch ($action) {
 			case 'all':
@@ -145,7 +146,7 @@ class Users_model extends MY_Model {
 				//toLog($this->db->last_query());
 				
 				// Если в списке полей есть звание - загрузить модель 
-				if (in_array('rank', $fields)) $this->load->model('account_model', 'account');
+				if (isset($fields) && in_array('rank', $fields)) $this->load->model('account_model', 'account');
 				
 				if (isset($fields)) {
 					$result['items'] = array_map(function($row) use ($fields) {

@@ -710,7 +710,7 @@ $(function() {
 			theadCols += '<td class="w50px center" title="Статики"><strong>Стат</strong></td>';
 			theadCols += '<td class="w50px center" title="Классы"><strong>Клс</strong></td>';
 			theadCols += '<td class="w50px center" title="Персонажи"><strong>Перс</strong></td>';
-			theadCols += '<td class="'+(isMainAdmin ? 'w150px' : 'w116px')+'"><strong>Опции</strong></td>';
+			theadCols += '<td class="'+(isMainAdmin ? 'w170px' : 'w116px')+'"><strong>Опции</strong></td>';
 			$('#usersTableThead').html(theadCols);
 			
 			
