@@ -1491,6 +1491,7 @@ class Reports extends MY_Controller {
 				$response = $this->reports_model->importPaymentRequests(['imported_file' => $importedFile]);
 				if (is_numeric($response)) exit($response);
 				$data['statics'] = $this->admin_model->getStatics();
+				$data['statics']['not_exist']['name'] = 'Нет в базе';
 				$data['ranks'] = $this->admin_model->getRanks();
 				$data['import_data'] = $response;
 				echo $this->twig->render($this->viewsPath.'imported_data_form.tpl', $data);

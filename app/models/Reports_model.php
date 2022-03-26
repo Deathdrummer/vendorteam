@@ -1813,7 +1813,7 @@ class Reports_model extends My_Model {
 		
 		$this->db->where('id', $id);
 		if (!$this->db->delete('users_orders')) return false;
-		$this->adminaction->setAdminAction(5, ['type' =>'remove', 'user_id' => $requestData['user_id'], 'order' => $requestData['order'], 'users' => $orders]);
+		$this->adminaction->setAdminAction(5, ['type' =>'remove', 'user_id' => $requestData['user_id'], 'order' => $requestData['order']]);
 		return true;
 	}
 	
@@ -2197,7 +2197,6 @@ class Reports_model extends My_Model {
 					$buildedRow = [];
 					foreach ($row as $field => $value) {
 						$field = mb_strtolower(trim(str_replace(['\n', '\r'], '', $field)));
-						
 						if (array_key_exists($field, $fieldsMap)) {
 							$buildedRow[$fieldsMap[$field]] = $value;
 							if ($fieldsMap[$field] == 'booster') $boostersNames[] = mb_strtolower($value);
@@ -2208,16 +2207,19 @@ class Reports_model extends My_Model {
 					$importBuildedData[mb_strtolower($buildedRow['booster'])] = $buildedRow;
 				}
 				
-				
 				$boostersData = $this->_getBoostersDataFromNicknames($boostersNames);
 				if (!$mergeData = array_values(array_replace_recursive($boostersData, $importBuildedData))) return -1;
 				
-				
 				$groupingStaticsData = [];
 				foreach ($mergeData as $row) {
-					$staticId = arrTakeItem($row, 'static_id');
-					$groupingStaticsData[$staticId][] = $row;
+					if (!isset($row['id'])) {
+						$groupingStaticsData['not_exist'][] = $row;
+					} else {
+						$staticId = arrTakeItem($row, 'static_id') ?: 0;
+						$groupingStaticsData[$staticId][] = $row;
+					}
 				}
+				
 				return $groupingStaticsData;
 				break;
 		}

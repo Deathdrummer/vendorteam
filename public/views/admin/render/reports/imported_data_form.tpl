@@ -31,47 +31,66 @@
 						</thead>
 						<tbody>
 							{% for row in items %}
-								<tr>
-									<td>
-										<input type="hidden" name="imported_orders[{{row.id}}][user_id]" value="{{row.id}}">
-										<input type="hidden" name="imported_orders[{{row.id}}][nickname]" value="{{row.booster}}">
-										<input type="hidden" name="imported_orders[{{row.id}}][avatar]" value="{{row.avatar}}">
-										<input type="hidden" name="imported_orders[{{row.id}}][payment]" value="{{row.payment}}">
-										<input type="hidden" name="imported_orders[{{row.id}}][static]" value="{{staticId}}">
-										
-										<div class="d-flex align-items-center">
-											<img src="{{base_url('public/images/users/mini/'~row.avatar)|no_file('public/images/user_mini.jpg')}}" alt="" class="avatar w40px h40px">
-											<div class="ml3px">
-												<strong class="fz14px d-block">{{row.booster}}</strong>
-												<p class="fz12px mt4px grayblue">{{ranks[row.rank]['name']}}</p>
+								{% if staticId != 'not_exist' %}
+									<tr>
+										<td>
+											<input type="hidden" name="imported_orders[{{row.id}}][user_id]" value="{{row.id}}">
+											<input type="hidden" name="imported_orders[{{row.id}}][nickname]" value="{{row.booster}}">
+											<input type="hidden" name="imported_orders[{{row.id}}][avatar]" value="{{row.avatar}}">
+											<input type="hidden" name="imported_orders[{{row.id}}][payment]" value="{{row.payment}}">
+											<input type="hidden" name="imported_orders[{{row.id}}][static]" value="{{staticId}}">
+											
+											<div class="d-flex align-items-center">
+												<img src="{{base_url('public/images/users/mini/'~row.avatar)|no_file('public/images/user_mini.jpg')}}" alt="" class="avatar w40px h40px">
+												<div class="ml3px">
+													<strong class="fz14px d-block">{{row.booster}}</strong>
+													<p class="fz12px mt4px grayblue">{{ranks[row.rank]['name']}}</p>
+												</div>
 											</div>
-										</div>
-									</td>
-									<td><p class="fz14px">{{row.payment}}</p></td>
-									<td>
-										<div class="field">
-											<input type="text" name="imported_orders[{{row.id}}][order]" importedordersorder value="{{row.order}}">
-										</div>
-									</td>
-									<td>
-										<div class="d-flex align-items-end">
-											<div class="field w100px">
-												<input type="text" name="imported_orders[{{row.id}}][summ]" importedorderssumm value="{{row.summ}}">
+										</td>
+										<td><p class="fz14px">{{row.payment}}</p></td>
+										<td>
+											<div class="field">
+												<input type="text" name="imported_orders[{{row.id}}][order]" importedordersorder value="{{row.order}}">
 											</div>
-											<strong class="fz13px ml3px pb2px">₽</strong>
-										</div>
-									</td>
-									<td>
-										<div class="textarea">
-											<textarea name="imported_orders[{{row.id}}][comment]" importedorderscomment rows="3">{{row.comment}}</textarea>
-										</div>
-									</td>
-									<td class="center">
-										<div class="buttons notop inline">
-											<button class="small remove w30px" importedordersremoverow title="Удалить запись"><i class="fa fa-trash"></i></button>
-										</div>
-									</td>
-								</tr>
+										</td>
+										<td>
+											<div class="d-flex align-items-end">
+												<div class="field w100px">
+													<input type="text" name="imported_orders[{{row.id}}][summ]" importedorderssumm value="{{row.summ}}">
+												</div>
+												<strong class="fz13px ml3px pb2px">₽</strong>
+											</div>
+										</td>
+										<td>
+											<div class="textarea">
+												<textarea name="imported_orders[{{row.id}}][comment]" importedorderscomment rows="3">{{row.comment}}</textarea>
+											</div>
+										</td>
+										<td class="center">
+											<div class="buttons notop inline">
+												<button class="small remove w30px" importedordersremoverow title="Удалить запись"><i class="fa fa-trash"></i></button>
+											</div>
+										</td>
+									</tr>
+								{% else %}
+									<tr>
+										<td>
+											<div class="d-flex align-items-center">
+												<img src="{{base_url('public/images/deleted_mini.jpg')}}" alt="Отсутствует в базе" class="avatar w40px h40px">
+												<div class="ml3px">
+													<strong class="fz14px d-block">{{row.booster}}</strong>
+													<p class="fz12px mt4px red">Отсутствует в базе</p>
+												</div>
+											</div>
+										</td>
+										<td><p class="fz14px">-</p></td>
+										<td><p class="fz14px">-</p></td>
+										<td><p class="fz14px">-</p></td>
+										<td><p class="fz14px">-</p></td>
+										<td class="center"><p class="fz14px">-</p></td>
+									</tr>
+								{% endif %}
 							{% endfor %}
 						</tbody>
 					</table>
