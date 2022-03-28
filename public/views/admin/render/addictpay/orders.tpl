@@ -47,7 +47,7 @@
 					</tbody>
 					<tfoot>
 						<tr>
-							<td colspan="7" class="right">Общая сумма: <strong totalsumm>{{totals[stId]|number_format(2, '.', ' ')}} ₽</strong></td>
+							<td colspan="7" class="right">Общая сумма: <strong totalsumm>{{currency(totals[stId])}}</strong></td>
 						</tr>
 					</tfoot>
 				</table>	

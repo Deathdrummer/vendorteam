@@ -3,7 +3,7 @@
 		<div class="avatar mr-3" style="background-image: url('{{base_url('public/filemanager/thumbs/'~static.icon)}}')"></div>
 		<span>{{static_name}}</span>
 	</div>
-	<span>Общий бюджет: <strong>{{cash|number_format(2, '.', ' ')}} <small>₽</small></strong></span>
+	<span>Общий бюджет: <strong>{{currency(cash, '<small>₽</small>')}}</strong></span>
 </div>	
 
 <table>
@@ -25,7 +25,7 @@
 						</div>
 					</td>
 					<td>{{user.pay_method}}</td>
-					<td>{{user.payment|number_format(2, '.', ' ')}} <small>₽</small></td>
+					<td>{{currency(user.payment, '<small>₽</small>')}}</td>
 				</tr>
 			{% endfor %}
 		{% else %}

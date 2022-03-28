@@ -17,7 +17,7 @@
 						<div class="row">
 							<div class="col-auto">
 								<label for="paymentRequestSumm">Сумма</label>
-								<input type="text" class="number" value="0" id="paymentRequestSumm" autocomplete="off"/> <span>руб.</span>
+								<input type="text" class="number" value="0" id="paymentRequestSumm" autocomplete="off"/> <span>{{currency}}</span>
 							</div>
 							{#<div class="col">
 								<label>Удержать в резерв</label>
@@ -72,7 +72,7 @@
 						<div class="row align-items-end">
 							<div class="col-auto">
 								<label for="paymentRequestSumm">Сумма</label>
-								<input type="text" class="number" value="0" id="paymentRequestSumm" autocomplete="off"/> <span>руб.</span>
+								<input type="text" class="number" value="0" id="paymentRequestSumm" autocomplete="off"/> <span>{{currency}}</span>
 							</div>
 							{#<div class="col-auto">
 								<label>Удержать в резерв</label>

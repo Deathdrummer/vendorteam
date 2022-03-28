@@ -72,7 +72,7 @@
 																<div class="number short">
 																	<input type="number" class="user_statistics_cash wpx50" value="{{user.statistics_cash}}" placeholder="Не задан">
 																</div>
-																<small>руб.</small>
+																<small>{{currency}}</small>
 															</td>
 															<td class="nowidth w100px">
 																<div class="number short">
@@ -82,7 +82,7 @@
 															</td>
 															<td class="w170px">
 																{% if user.pay %}
-																	<p>{{user.pay|number_format(2, '.', ' ')}} руб.</p>
+																	<p>{{currency(user.pay)}}</p>
 																{% else %}
 																	<p class="empty">Нет данных</p>
 																{% endif %}

@@ -82,7 +82,7 @@
 											</td>
 											<td>{{item.payment}}</td>
 											<td>{{item.order}}</td>
-											<td class="nowrap">{{item.summ|number_format(2, '.', ' ')}} <small>руб.</small></td>
+											<td class="nowrap">{{currency(item.summ, '<small>$</small>')}}</td>
 											<td><small>{{item.comment}}</small></td>
 											<td class="nowrap">{{item.date|d}} {{item.date|t}}</td>
 											<td class="center">

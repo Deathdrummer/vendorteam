@@ -40,8 +40,8 @@
 										<p>{{user['nickname']}}</p>
 									</div>
 								</td>
-								<td>{% if user['wallet_balance'] %}{{user['wallet_balance']|number_format(1, '.', ' ')}} <small>₽</small>{% else %}0 <small>₽</small>{% endif %}</td>
-								<td>{% if user['deposit'] %}{{user['deposit']|number_format(1, '.', ' ')}} <small>₽</small>{% else %}0 <small>₽</small>{% endif %}</td>
+								<td>{% if user['wallet_balance'] %}{{currency(user['wallet_balance'], '<small>₽</small>')}}{% else %}0 <small>₽</small>{% endif %}</td>
+								<td>{% if user['deposit'] %}{{currency(user['deposit'], '<small>₽</small>')}}{% else %}0 <small>₽</small>{% endif %}</td>
 								<td>
 									<input type="hidden" wallet value="{{user['wallet_balance']}}">
 									<input type="hidden" deposit value="{{user['deposit']}}">
@@ -50,7 +50,7 @@
 											<div class="field mr-1">
 												<input type="text" walletpayout value="{{user['payout']}}">
 											</div>
-											<small>₽</small>
+											<small>{{currency}}</small>
 										</div>
 									{% else %}
 										<span>-</span>
@@ -62,7 +62,7 @@
 											<div class="field mr-1">
 												<input type="text" wallettodeposit value="{{user['to_deposit']}}">
 											</div>
-											<small>₽</small>
+											<small>{{currency}}</small>
 										</div>
 									{% else %}
 										<span>-</span>

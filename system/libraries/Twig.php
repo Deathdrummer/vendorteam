@@ -24,14 +24,29 @@ class CI_Twig {
 	/**
 	 * @var array Functions to add to Twig
 	 */
-	private $functions_asis = ['base_url', 'site_url', 'getHoursMinutes', 'time', 'date', 'rand', 'substr', 'file_exists', 'md5'];
+	private $functions_asis = [
+		'base_url',
+		'site_url',
+		'getHoursMinutes',
+		'time',
+		'date',
+		'rand',
+		'substr',
+		'file_exists',
+		'md5'
+	];
 
 	/**
 	 * @var array Functions with `is_safe` option
 	 * @see http://twig.sensiolabs.org/doc/advanced.html#automatic-escaping
 	 */
 	private $functions_safe = [
-		'form_open', 'form_close', 'form_error', 'form_hidden', 'set_value',
+		'form_open',
+		'form_close',
+		'form_error',
+		'form_hidden',
+		'set_value',
+		'currency'
 //		'form_open_multipart', 'form_upload', 'form_submit', 'form_dropdown',
 //		'set_radio', 'set_select', 'set_checkbox',
 	];

@@ -26,7 +26,7 @@
 								{% for userId, userData in users %}
 									<tr>
 										<td>{{userData.nickname}}</td>
-										<td class="nowrap">{{userData.deposit|number_format(2, '.', ' ')}} ₽</td>
+										<td class="nowrap">{{currency(userData.deposit)}}</td>
 									</tr>
 								{% endfor %}
 							</tbody>
@@ -47,7 +47,7 @@
 								{% for userId, userData in users %}
 									<tr>
 										{% for patternSumm in userData.patterns %}
-											<td class="w150 nowrap">{{patternSumm|number_format(2, '.', ' ')}} ₽</td>
+											<td class="w150 nowrap">{{currency(patternSumm)}}</td>
 										{% endfor %}
 										<td class="p0"></td>
 									</tr>
@@ -71,10 +71,10 @@
 							<tbody>
 								{% for userId, userData in users %}
 									<tr>
-										<td class="nowrap w15">{{userData.full|number_format(2, '.', ' ')}} ₽</td>
-										<td class="nowrap w15">{{userData.payout|number_format(2, '.', ' ')}} ₽</td>
-										<td class="nowrap w15">{{userData.profit|number_format(2, '.', ' ')}} ₽</td>
-										<td class="nowrap w15">{{userData.debit|number_format(2, '.', ' ')}} ₽</td>
+										<td class="nowrap w15">{{currency(userData.full)}}</td>
+										<td class="nowrap w15">{{currency(userData.payout)}}</td>
+										<td class="nowrap w15">{{currency(userData.profit)}}</td>
+										<td class="nowrap w15">{{currency(userData.debit)}}</td>
 										<td>{{userData.pay_method}}</td>
 										<td class="square_block">
 											{% if userData.final_payment != 0 %}

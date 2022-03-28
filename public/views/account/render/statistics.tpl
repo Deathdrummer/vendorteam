@@ -35,7 +35,7 @@
 								</td>
 								<td>
 									{% if statistics[row]['pay'] %}
-										{{statistics[row]['pay']|number_format(2, '.', ' ')}} руб.
+										{{currency(statistics[row]['pay'])}}
 									{% else %}
 										<p class="empty">Нет данных</p>
 									{% endif %}	

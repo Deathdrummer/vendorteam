@@ -59,7 +59,7 @@
 												<div class="field w100px">
 													<input type="text" name="imported_orders[{{row.id}}][summ]" importedorderssumm value="{{row.summ}}">
 												</div>
-												<strong class="fz13px ml3px pb2px">₽</strong>
+												<strong class="fz13px ml3px pb2px">{{currency}}</strong>
 											</div>
 										</td>
 										<td>

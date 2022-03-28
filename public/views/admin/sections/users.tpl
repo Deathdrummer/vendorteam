@@ -311,7 +311,7 @@
 			{% if permissions is not defined or id~'.depositUsers' in permissions %}
 			<div tabid="depositUsers">
 
-				<h4 class="mb-2">Общий Резерв: <strong>{{deposit['global']|number_format(2, '.', ' ')}}</strong> руб.</h4>
+				<h4 class="mb-2">Общий Резерв: <strong>{{currency(deposit['global'])}}</strong></h4>
 				
 				<div class="row">
 					<div class="col-6">
@@ -340,7 +340,7 @@
 										<tr class="h50px">
 											<td colspan="2"><h4>{% if stId == 0 %}Статик не задан{% else %}{{statics[stId]['name']|default('Статик удален')}}{% endif %}</h4></td>
 											<td class="w250px"></td>
-											<td class="w150px"><h4>{{deposit|number_format(2, '.', ' ')}} руб.</h4></td>
+											<td class="w150px"><h4>{{currency(deposit)}}</h4></td>
 										</tr>
 									</thead>
 									<tbody hidden deposituserslist>
@@ -367,7 +367,7 @@
 														<input type="hidden" class="deposit_user_id" value="{{user.id}}">
 														<input type="number" class="deposit_user_deposit" originval="{{user.deposit|default(0)}}" value="{{user.deposit|default(0)}}">
 													</div>
-													<span>руб.</span>
+													<span>{{currency}}</span>
 												</td>
 											</tr>
 										{% endfor %}
@@ -399,7 +399,7 @@
 											<td class="nopadding"><div class="avatar" style="background-image: url('{{base_url('public/images/users/mini/'~item.avatar)|no_file('public/images/user_mini.jpg')}}')"></div></td>
 											<td>{{item.nickname}}</td>
 											<td>{{item.reason}}</td>
-											<td>{{item.summ|number_format(2, '.', ' ')}} ₽</td>
+											<td>{{currency(item.summ)}}</td>
 											<td>{{item.date|d}}</td>
 											<td>{{item.stat}}</td>
 										</tr>	
@@ -430,7 +430,7 @@
 						{% for stId, deposit in deposit['statics'] %}
 						<tr>
 							<td>{{statics[stId]['name']|default('Статик не задан')}}</td>
-							<td>{{deposit|number_format(2, '.', ' ')}} руб.</td>
+							<td>{{currency(deposit)}}</td>
 						</tr>
 						{% endfor %}
 					</tbody>
@@ -449,7 +449,7 @@
 						
 						<div class="d-flex align-items-center justify-content-between h46px">
 							<h3 class="mb-0 mr-auto">Список</h3>
-							<h4 class="mr-4 mt2px">Общий баланс: <strong>{{balance.total|number_format(2, '.', ' ')}}</strong> ₽</h4>
+							<h4 class="mr-4 mt2px">Общий баланс: <strong>{{currency(balance.total)}}</strong></h4>
 							<div class="buttons mb10px">
 								<button class="small" id="resetBalance"{% if balance.total == 0 %} disabled{% endif %}>Списать баланс</button>
 							</div>
@@ -485,9 +485,9 @@
 											</td>
 											<td>
 												{% if item.reset %}
-													<strike title="Списано" style="color: #afafaf;"><strong>{{item.summ|number_format(2, '.', ' ')}}</strong> <small>₽</small></strike>
+													<strike title="Списано" style="color: #afafaf;"><strong>{{currency(item.summ, '<small>₽</small>')}}</strong></strike>
 												{% else %}
-													<strong style="color: #5db553;">{{item.summ|number_format(2, '.', ' ')}}</strong> <small>₽</small>
+													<strong style="color: #5db553;">{{currency(item.summ, '<small>₽</small>')}}</strong> 
 												{% endif %}
 											</td>
 										</tr>
@@ -514,7 +514,7 @@
 									{% for item in balance_history %}
 										<tr>
 											<td>{{item.date|d}} в {{item.date|t}}</td>
-											<td><strong>{{item.summ|number_format(2, '.', ' ')}}</strong> <small>₽</small></td>
+											<td><strong>{{currency(item.summ, '<small>₽</small>')}}</strong></td>
 										</tr>
 									{% endfor %}
 								{% else %}

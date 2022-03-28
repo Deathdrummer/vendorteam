@@ -28,25 +28,25 @@
 										<p>{{user.nickname}}</p>
 									</div>
 								</td>
-								<td>{{user.wallet|currency(true, 1)}}</td>
-								<td>{{user.deposit|currency(true, 1)}}</td>
+								<td>{{currency(user.wallet)}}</td>
+								<td>{{currency(user.deposit)}}</td>
 								<td>
 									<div class="d-flex justify-content-between">
-										<span walletreportpayout="{{user.summ}}">{{user.summ|currency(true, 1)}}</span>
+										<span walletreportpayout="{{user.summ}}">{{currency(user.summ, '<small>$</small>')}}</span>
 										{% if paid %}
-											<div><span class="fontcolor">{{(user.summ * report_currency)|number_format(1, ',', ' ')}}</span> <small>₽</small></div>
+											<div><span class="fontcolor">{{currency(user.summ * report_currency, '<small>$</small>')}}</span></div>
 										{% else %}
-											<div><span class="fontcolor" walletreportpayoutconverted>0.00</span> <small>₽</small></div>
+											<div><span class="fontcolor" walletreportpayoutconverted>0.00</span> <small>{{currency}}</small></div>
 										{% endif %}
 									</div>
 								</td>
 								<td>
 									<div class="d-flex justify-content-between">
-										<span walletreporttodeposit="{{user.to_deposit}}">{{user.to_deposit|currency(true, 1)}}</span>
+										<span walletreporttodeposit="{{user.to_deposit}}">{{currency(user.to_deposit, '<small>$</small>')}}</span>
 										{% if paid %}
-											<div><span class="fontcolor">{{(user.to_deposit * report_currency)|number_format(1, ',', ' ')}}</span> <small>₽</small></div>
+											<div><span class="fontcolor">{{currency(user.to_deposit * report_currency, '<small>$</small>')}}</span></div>
 										{% else %}
-											<div><span class="fontcolor" walletreporttodepositconverted>0.00</span> <small>₽</small></div>
+											<div><span class="fontcolor" walletreporttodepositconverted>0.00</span> <small>{{currency}}</small></div>
 										{% endif %}
 									</div>
 								</td>

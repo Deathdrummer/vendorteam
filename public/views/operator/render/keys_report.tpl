@@ -114,7 +114,7 @@
 								{% for userId, userData in static.users %}
 									<tr>
 										<td colspan="2" class="nowidth center">{{userData.koeff_summ}}</td>
-										<td class="nowidth"><span class="nowrap">{{userData.payment|number_format(2, '.', ' ')}} ₽</span></td>
+										<td class="nowidth"><span class="nowrap">{{currency(userData.payment)}}</span></td>
 										{% if pattern_id and not to_user and 7 in access %}
 											<td class="square_block">
 												{% if userData.payment != 0 %}
@@ -134,7 +134,7 @@
 								<tr>
 									<td class="right">Сумма коэффициентов периода:</td>
 									<td><strong>{{static.period_koeff_summ|round(3)}}</strong></td>
-									<td class="right"><span class="nowrap right">Бюджет:</span> <strong class="nowrap">{{static.cash|number_format(2, '.', ' ')}} ₽</strong></td>
+									<td class="right"><span class="nowrap right">Бюджет:</span> <strong class="nowrap">{{currency(static.cash)}}</strong></td>
 									{% if pattern_id and not to_user and 7 in access %}<td></td>{% endif %}
 								</tr>
 							</tbody>

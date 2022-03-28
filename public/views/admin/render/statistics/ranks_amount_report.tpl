@@ -46,7 +46,7 @@
 										{% for timepoint in reports_titles %}
 											<td class="h52px">
 												{% if report[static][rId][timepoint] %}
-													<p>{{report[static][rId][timepoint]|number_format(2, '.', ' ')}} ₽</p>
+													<p>{{currency(report[static][rId][timepoint])}}</p>
 												{% else %}
 													-
 												{% endif %}
@@ -70,13 +70,13 @@
 								{% for rId, timepoints in ranksData|sort %}
 									<tr>
 										<td class="h52px">
-											{% if totals[static][rId]['median'] %}<strong>{{totals[static][rId]['median']|number_format(2, '.', ' ')}} ₽</strong>{% else %}-{% endif %}
+											{% if totals[static][rId]['median'] %}<strong>{{currency(totals[static][rId]['median'])}}</strong>{% else %}-{% endif %}
 										</td>
 										<td class="h52px">
-											{% if totals[static][rId]['avg'] %}<strong>{{totals[static][rId]['avg']|number_format(2, '.', ' ')}} ₽</strong>{% else %}-{% endif %}
+											{% if totals[static][rId]['avg'] %}<strong>{{currency(totals[static][rId]['avg'])}}</strong>{% else %}-{% endif %}
 										</td>
 										<td class="h52px">
-											{% if totals[static][rId]['summ'] %}<strong>{{totals[static][rId]['summ']|number_format(2, '.', ' ')}} ₽</strong>{% else %}-{% endif %}
+											{% if totals[static][rId]['summ'] %}<strong>{{currency(totals[static][rId]['summ'])}}</strong>{% else %}-{% endif %}
 										</td>
 									</tr>
 								{% endfor %}

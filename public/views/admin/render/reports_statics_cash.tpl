@@ -21,7 +21,7 @@
 								</div>
 							</div>
 							<div class="col-auto">
-								<span>руб.</span>
+								<span>{{currency}}</span>
 							</div>
 						</div>
 					</td>

@@ -265,6 +265,8 @@
 		</div>
 	</main>
 	
+	<input type="hidden" id="hiddenInputCurrency" value="{{currency}}">
+	
 	<script src="{{base_url('public/js/plugins.min.js')}}"></script>
 	<script src="{{base_url('public/js/assets/functions.js')}}"></script>
 	<script src="{{base_url('public/js/assets/common.js')}}"></script>

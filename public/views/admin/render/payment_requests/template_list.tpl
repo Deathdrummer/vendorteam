@@ -29,7 +29,7 @@
 				<thead>
 					<tr>
 						<td class="w140px">Участник</td>
-						<td>Сумма (руб.)</td>
+						<td>Сумма ({{currency}})</td>
 						<td class="w58px">Удал.</td>
 					</tr>
 				</thead>

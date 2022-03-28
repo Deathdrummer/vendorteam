@@ -71,7 +71,7 @@ class Admin_model extends My_Model {
 		
 		$insertNewFields = [];
 		foreach ($newFields as $param => $value) {
-			if ($value == '') continue;
+			if ($value === '') continue;
 			$insertNewFields[] = [
 				'param' => $param,
 				'value' => $value,
@@ -95,7 +95,7 @@ class Admin_model extends My_Model {
 		
 		$updateNewFields = [];
 		foreach ($updateFields as $param => $value) {
-			if ($value == '') continue;
+			if ($value === '') continue;
 			$updateNewFields[] = [
 				'param' => $param,
 				'value' => $value,
@@ -127,7 +127,7 @@ class Admin_model extends My_Model {
 	 * @param одна или несколько настроек в массиве
 	 * @return 
 	 */
-	public function getSettings($setting = null) {
+	public function getSettings($setting = null, $removePreffix = false) {
 		if (!is_null($setting) && is_array($setting)) {
 			foreach ($setting as $k => $param) {
 				if (substr($param, -8) != '_setting') $setting[$k] = $param.'_setting';
@@ -146,10 +146,11 @@ class Admin_model extends My_Model {
 		
 		$settingsData = [];
 		foreach ($result as $k => $item) {
+			$param = $removePreffix ? str_replace('_setting', '', $item['param']) : $item['param'];
 			if ($item['json'] && isJson($item['value'])) {
-				$settingsData[$item['param']] = json_decode($item['value'], true);
+				$settingsData[$param] = json_decode($item['value'], true);
 			} else {
-				$settingsData[$item['param']] = $item['value'];
+				$settingsData[$param] = $item['value'];
 			}
 		}
 		if (!is_null($setting) && !is_array($setting) && isset($settingsData[$setting])) return $settingsData[$setting];

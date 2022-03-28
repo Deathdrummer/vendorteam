@@ -73,6 +73,7 @@
 		<p>© <a href="https://shopdevelop.ru" target="_blank" title="Перейти на сайт shopdevelop.ru">ShopDevelop</a> 2011 - {{date}} г.</p>
 	</footer>
 	
+	<input type="hidden" id="hiddenInputCurrency" value="{{currency}}">
 	
 	{# Оформление коды summernote #}
 	<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/3.20.0/codemirror.css">

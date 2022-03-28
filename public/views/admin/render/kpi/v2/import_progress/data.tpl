@@ -80,7 +80,7 @@
 												value="{{row['summ']|default(0)}}"
 												kpiv2amountfield="{{static}}|{{row.rank}}|{{payout_type}}|{{row.factor}}">
 										</div>
-										<small class="ml3px fz12px">₽</small>
+										<small class="ml3px fz12px">{{currency}}</small>
 									</div>
 								</td>
 								<td></td>

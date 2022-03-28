@@ -70,6 +70,13 @@ class MY_Controller extends CI_Controller {
 		
 		
 		
+		//----------------------------------------------------------------  Глобальные переменные
+		$this->twig->addGlobal('currency', $this->admin_model->getSettings('currency') ?: '₽');
+		
+		
+		
+		
+		
 		//----------------------------------------------------------------  Разделы админ. панели
 		$this->adminSections = [
 			'Общее' => [
@@ -337,28 +344,12 @@ class MY_Controller extends CI_Controller {
 				'icon'	=> 'commenting-o'
 			]
 		];
-
-
-
-
+		
+		
+		
 		
 		
 		//--------------------------------------------------------------------------- Twig фильтры
-		$this->twig->addFilter('currency', function($summ = false, $withSumm = true, $countAfterDot = 0) {
-			if ($summ === false) $summ = 0;
-			$currency = $this->admin_model->getSettings('currency') ?: '₽';
-			$currencyPos = $this->admin_model->getSettings('currency_pos') ?: 'after';
-			
-			if ($withSumm) {
-				$currency = !is_bool($withSumm) ? '<small class="'.$withSumm.'">'.$currency.'</small>' : $currency;
-				if ($currencyPos == 'before') return $currency.' '.number_format((float)$summ, $countAfterDot, ',', ' ');
-				elseif ($currencyPos == 'after') return number_format((float)$summ, $countAfterDot, '.', ' ').' '.$currency;
-			}
-			
-			return $currency;
-		});
-		
-		
 		$this->twig->addFilter('d', function($date = null, $isShort = false) {
 			if (is_null($date)) return false;
 			if (!is_numeric($date)) $date = strtotime($date);

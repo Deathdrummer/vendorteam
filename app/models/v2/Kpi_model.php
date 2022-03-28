@@ -762,7 +762,7 @@ class Kpi_model extends MY_Model {
 					$dataToExport .= iconv('UTF-8', 'windows-1251', 'Бустер;Посещаемость;Прогресс;Сумма'."\r\n");
 					
 					foreach ($boosters as $b) {
-						$dataToExport .= iconv('UTF-8', 'windows-1251', $b['nickname'].';'.$b['koeff_percent'].'%;'.$b['progress'].'%;'.str_replace('.', ',', $b['summ']).'р.')."\r\n";
+						$dataToExport .= iconv('UTF-8', 'windows-1251', $b['nickname'].';'.$b['koeff_percent'].'%;'.$b['progress'].'%;'.str_replace('.', ',', $b['summ']).currency())."\r\n";
 					}
 					$dataToExport .= "\r\n";
 				}

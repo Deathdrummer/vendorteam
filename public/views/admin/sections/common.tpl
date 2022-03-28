@@ -58,6 +58,7 @@
 				
 				{% include form~'field.tpl' with {'label': 'Символ валюты', 'name': 'currency', 'class': 'w10'} %}
 				{% include form~'radio.tpl' with {'label': 'Позиция символа', 'name': 'currency_pos', 'data': {'Перед': 'before', 'После': 'after'}} %}
+				{% include form~'field.tpl' with {'label': 'количество цифр после запятой', 'name': 'currency_dot_count', 'type': 'number', 'class': 'w10'} %}
 				
 			</fieldset>
 			

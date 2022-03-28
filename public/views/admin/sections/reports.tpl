@@ -205,8 +205,8 @@
 									</td>
 									<td>{{item.payment}}</td>
 									<td>{{item.order}}</td>
-									<td class="nowrap">{{item.summ|number_format(2, '.', ' ')}} <small>₽</small></td>
-									<td class="nowrap">{{item.to_deposit|number_format(2, '.', ' ')}} <small>₽</small></td>
+									<td class="nowrap">{{currency(item.summ, '<small>₽</small>')}}</td>
+									<td class="nowrap">{{currency(item.to_deposit, '<small>₽</small>')}}</td>
 									<td><small style="word-break: break-all; white-space: pre-wrap;">{{item.comment}}</small></td>
 									<td class="nowrap">{{item.date|d}} {{item.date|t}}</td>
 									<td class="center top pt8px">
@@ -312,7 +312,6 @@
 
 <script type="text/javascript"><!--
 $(document).ready(function() {
-	
 	//------------------------------------------------------------------------------------------------ 1 Отчет
 	
 	
@@ -1680,7 +1679,7 @@ $(document).ready(function() {
 										summ = parseInt(d[2]);
 									totalSumm += summ;
 								});
-								$(this).closest('tbody').siblings('tfoot').find('[totalsumm]').text($.number(totalSumm, 2, '.', ' ')+' ₽');
+								$(this).closest('tbody').siblings('tfoot').find('[totalsumm]').text($.number(totalSumm, 2, '.', ' ')+' '+currencySetting);
 							});
 							
 							

@@ -14,7 +14,7 @@
 					<td>{{gift.title}}</td>
 					<td>
 						{{actions[gift.action]}} от <strong>{{gift.items_from}}</strong> до <strong>{{gift.items_to}}</strong>
-						{% if gift.action == 'balance' %}руб.{% elseif gift.action == 'stage' %}дн.{% endif %}
+						{% if gift.action == 'balance' %}{{currency}}{% elseif gift.action == 'stage' %}дн.{% endif %}
 					</td>
 					<td>
 						<div class="field w50px">

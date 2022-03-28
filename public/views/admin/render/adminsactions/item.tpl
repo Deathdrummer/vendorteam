@@ -161,7 +161,7 @@
 												</div>
 											</div>
 										</td>
-										<td><strong>{{user.summ|number_format(2, '.', ' ')}}</strong> ₽</td>
+										<td><strong>{{currency(user.summ)}}</strong></td>
 									</tr>
 								{% endfor %}
 							</tbody>
@@ -206,10 +206,10 @@
 						</td>
 						<td{% if deposit_old != deposit_new %} class="changed" title="Изменено"{% endif %}>
 							{% if deposit_old != deposit_new %}
-								<p>До: <strong>{{deposit_old|number_format(2, '.', ' ')}}</strong> ₽</p>
-								<p>После: <strong>{{deposit_new|number_format(2, '.', ' ')}}</strong> ₽</p>
+								<p>До: <strong>{{currency(deposit_old)}}</strong></p>
+								<p>После: <strong>{{currency(deposit_new)}}</strong></p>
 							{% else %}
-								<p><strong>{{deposit_old|number_format(2, '.', ' ')}}</strong> ₽</p>
+								<p><strong>{{currency(deposit_old)}}</strong></p>
 							{% endif %}
 							
 						</td>
@@ -230,7 +230,7 @@
 			{% if users %}
 				<div class="d-flex align-items-center justify-content-between mb10px">
 					<strong class="fz14px">Участники:</strong>
-					<span class="fz14px">Общая сумма: <strong>{{total_summ|number_format(2, '.', ' ')}} ₽</strong></span>
+					<span class="fz14px">Общая сумма: <strong>{{currency(total_summ)}}</strong></span>
 				</div>
 				
 				<table>
@@ -252,7 +252,7 @@
 										</div>
 									</div>
 								</td>
-								<td><strong>{{user.summ|number_format(2, '.', ' ')}}</strong> ₽</td>
+								<td><strong>{{currency(user.summ)}}</strong></td>
 							</tr>
 						{% endfor %}
 					</tbody>

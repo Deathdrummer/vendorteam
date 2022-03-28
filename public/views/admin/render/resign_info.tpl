@@ -29,11 +29,11 @@
 				{% endif %}
 				
 				{% if resign.summ is not same as(null) %}
-					<li><strong>Выплаченная сумма</strong>{{resign.summ|number_format(2, '.', ' ')}} <small>₽</small></li>
+					<li><strong>Выплаченная сумма</strong>{{currency(resign.summ, '<small>$</small>')}}</li>
 				{% endif %}
 				
 				{% if resign.summ is not same as(null) %}
-					<li><strong>Ударжано на баланс</strong>{{resign.summ_to_balance|number_format(2, '.', ' ')}} <small>₽</small></li>
+					<li><strong>Ударжано на баланс</strong>{{currency(resign.summ_to_balance, '<small>$</small>')}}</li>
 				{% endif %}
 				
 			</ul>

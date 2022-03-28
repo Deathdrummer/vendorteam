@@ -243,10 +243,8 @@ jQuery(document).ready(function($) {
     
     
     
-    
-    
-    
-    
+    // --------------------------------------------------- глобальная переменная знак валюты для JS скриптов
+    const currencySetting = $('#hiddenInputCurrency').val();
     
     
     

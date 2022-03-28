@@ -38,7 +38,7 @@
 							{% for rId, rTitle in reports_titles.items %}
 								<td class="h52px">
 									{% if report[stId][rId] %}
-										<p>{{report[stId][rId]|number_format(2, '.', ' ')}} ₽</p>
+										<p>{{currency(report[stId][rId])}}</p>
 									{% else %}
 										-
 									{% endif %}
@@ -62,13 +62,13 @@
 					{% for stId, static in statics %}
 						<tr>
 							<td class="h52px">
-								{% if totals[stId]['median'] %}<strong>{{totals[stId]['median']|number_format(2, '.', ' ')}} ₽</strong>{% else %}-{% endif %}
+								{% if totals[stId]['median'] %}<strong>{{currency(totals[stId]['median'])}}</strong>{% else %}-{% endif %}
 							</td>
 							<td class="h52px">
-								{% if totals[stId]['avg'] %}<strong>{{totals[stId]['avg']|number_format(2, '.', ' ')}} ₽</strong>{% else %}-{% endif %}
+								{% if totals[stId]['avg'] %}<strong>{{currency(totals[stId]['avg'])}}</strong>{% else %}-{% endif %}
 							</td>
 							<td class="h52px">
-								{% if totals[stId]['summ'] %}<strong>{{totals[stId]['summ']|number_format(2, '.', ' ')}} ₽</strong>{% else %}-{% endif %}
+								{% if totals[stId]['summ'] %}<strong>{{currency(totals[stId]['summ'])}}</strong>{% else %}-{% endif %}
 							</td>
 						</tr>
 					{% endfor %}

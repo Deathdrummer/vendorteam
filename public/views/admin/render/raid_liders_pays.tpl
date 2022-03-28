@@ -33,7 +33,7 @@
 													<div class="field small">
 														<input type="number" showrows rlsinput="{{stId}}|{{rLId}}|{{rId}}" value="{{summs[stId][rLId][rId]}}">
 													</div>
-													<small class="ml4px fz16px">₽</small>
+													<small class="ml4px fz16px">{{currency}}</small>
 												</div>
 											</div>
 										</div>

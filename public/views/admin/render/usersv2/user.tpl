@@ -15,7 +15,7 @@
 			</li>
 			<li class="usersv2usercard__item">
 				<span>Баланс</span>
-				<strong>{{balance.current|number_format(2, '.', ' ')}} ₽</strong>
+				<strong>{{currency(balance.current)}}</strong>
 			</li>
 			<li class="usersv2usercard__item">
 				<span>Резерв</span>
@@ -84,9 +84,9 @@
 						<td><span class="fz12px">{{balance.types[item.type]}}</span></td>
 						<td><span class="fz12px">{{item.title}}</span></td>
 						<td><span class="fz12px">{{item.date|d}}</span></td>
-						<td><strong>{{item.summ|number_format(0, '.', ' ')}}</strong> <small>₽</small></td>
-						<td><strong>{{item.deposit|number_format(0, '.', ' ')}}</strong> <small>₽</small></td>
-						<td><strong>{{item.current_balance|number_format(0, '.', ' ')}}</strong> <small>₽</small></td>
+						<td><strong>{{currency(item.summ, '<small>₽</small>')}}</strong></td>
+						<td><strong>{{currency(item.deposit, '<small>₽</small>')}}</strong></td>
+						<td><strong>{{currency(item.current_balance, '<small>₽</small>')}}</strong></td>
 					</tr>
 				{% endfor %}
 			</tbody>

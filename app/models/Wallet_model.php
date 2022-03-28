@@ -331,8 +331,6 @@ class Wallet_model extends MY_Model {
 		//$this->db->order_by('wh.id', 'DESC');
 		if (!$userHistory = $this->_result($this->walletHistoryTable.' wh')) return false;
 		
-		toLog($userHistory);
-		
 		$userGlobalSumm = 0;
 		foreach ($userHistory as $k => $item) {
 			$totalSumm = (float)$item['summ'] + (float)$item['deposit'];

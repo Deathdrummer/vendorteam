@@ -55,7 +55,7 @@
 									</div>
 								</td>
 								<td>
-									<strong>{{row['summ']|default(0)|number_format(2, '.', ' ')}} ₽</strong>
+									<strong>{{currency(row['summ'])}}</strong>
 								</td>
 								<td></td>
 							</tr>

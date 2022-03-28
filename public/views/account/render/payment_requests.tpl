@@ -40,7 +40,7 @@
 									</td>
 									<td><small>{{item.payment}}</small></td>
 									<td><p>{{item.order}}</p></td>
-									<td class="nowrap right"><p class="inline">{{item.summ|number_format(2, '.', ' ')}}</p> <small class="inline">руб.</small></td>
+									<td class="nowrap right"><p class="inline">{{currency(item.summ, '<small class="inline">$</small>')}}</p></td>
 									<td><small>{{item.comment}}</small></td>
 									<td><p class="nowrap">{{item.date|d}} {{item.date|t}}</p></td>
 								</tr>

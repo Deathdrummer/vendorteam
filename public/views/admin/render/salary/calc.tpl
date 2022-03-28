@@ -21,15 +21,15 @@
 							</td>
 							<td>{{user.nickname}}</td>
 							<td>{{user.order}}</td>
-							<td><strong>{{user.summ|number_format(2, '.', ' ')}} ₽</strong></td>
-							{#<td><strong>{{user.to_deposit|number_format(2, '.', ' ')}} ₽</strong></td>#}
+							<td><strong>{{currency(user.summ)}}</strong></td>
+							{#<td><strong>{{currency(user.to_deposit)}}</strong></td>#}
 							<td><small>{{user.comment}}</small></td>
 						</tr>
 					{% endfor %}
 				</tbody>
 				<tfoot>
 					<tr>
-						<td colspan="5" class="right">Общая сумма: <strong>{{total[stId]|number_format(2, '.', ' ')}} ₽</strong></td>
+						<td colspan="5" class="right">Общая сумма: <strong>{{currency(total[stId])}}</strong></td>
 					</tr>
 				</tfoot>
 			</table>	

@@ -58,7 +58,7 @@
 											<div class="kpireportitem">
 												<div class="kpireportitem__row">
 													<span class="fz12px">Сумма</span>
-													<strong class="fz12px">{{report[staticId][uId]['periods'][period.id]['summ']|number_format(2, '.', ' ')|default(0)}} ₽</strong>
+													<strong class="fz12px">{{currency(report[staticId][uId]['periods'][period.id]['summ'])}}</strong>
 													<input type="hidden" name="report[{{staticId}}][{{uId}}][planes][{{period.id}}][summ]" value="{{report[staticId][uId]['periods'][period.id]['summ']|default(0)}}">
 												</div>
 												<div class="kpireportitem__row">
@@ -68,7 +68,7 @@
 												</div>
 												<div class="kpireportitem__row">
 													<span class="fz12px">Сумма выплаты</span>
-													<strong class="fz12px">{{report[staticId][uId]['periods'][period.id]['payout']|number_format(2, '.', ' ')|default(0)}} ₽</strong>
+													<strong class="fz12px">{{currency(report[staticId][uId]['periods'][period.id]['payout'])}}</strong>
 													<input type="hidden" name="report[{{staticId}}][{{uId}}][planes][{{period.id}}][payout]" value="{{report[staticId][uId]['periods'][period.id]['payout']|replace({'.': ','})|default(0)}}">
 												</div>
 											</div>
@@ -93,13 +93,13 @@
 								<tr>
 									<td class="h72px w100px">
 										{% if saved_report %}
-											<p>{{user.payout|number_format(2, '.', ' ')|default(0)}} ₽</p>
+											<p>{{currency(user.payout)}}</p>
 										{% else %}
 											<div class="d-flex align-items-center">
 												<div class="field w125px">
 													<input class="w125px" type="text" name="report[{{staticId}}][{{uId}}][payout]" payoutinput value="{{user.payout_all|replace({'.': ','})}}" rules="empty">
 												</div>
-												<strong class="fz12px ml5px">₽</strong>
+												<strong class="fz12px ml5px">{{currency}}</strong>
 											</div>
 											<input type="hidden" name="report[{{staticId}}][{{uId}}][payment]" value="{{user.payment}}">
 											<input type="hidden" name="report[{{staticId}}][{{uId}}][nda]" value="{{user.nda}}">

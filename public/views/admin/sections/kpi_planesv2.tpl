@@ -54,7 +54,7 @@
 					<label for="kpiv2RelationFieldsPToS">
 						<strong class="fz14px">%</strong>
 						<i class="fa fa-chevron-right fz10px pl2px pr2px"></i>
-						<span class="fz14px">₽</span>
+						<span class="fz14px">{{currency}}</span>
 					</label>
 				</div>
 				
@@ -63,7 +63,7 @@
 					<label for="kpiv2RelationFieldsNone">
 						<strong class="fz14px">%</strong>
 						<i class="fa fa-chevron-left fz10px pl2px pr2px"></i>
-						<span class="fz14px">₽</span>
+						<span class="fz14px">{{currency}}</span>
 					</label>
 				</div>
 			</div>

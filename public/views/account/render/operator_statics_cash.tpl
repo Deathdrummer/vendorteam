@@ -12,7 +12,7 @@
 						autocomplete="off"
 						static="{{id}}"
 						value="{% if set_cash[id] %}{{set_cash[id]}}{% else %}0{% endif %}"
-						placeholder="руб.">
+						placeholder="{{currency}}">
 				</td>
 			</tr>
 		{% endfor %}

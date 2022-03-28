@@ -22,7 +22,7 @@
 							{% else %}
 								<input class="fz11px w46px h24px ml-auto" type="number" showrows personalusersgifts="{{gift.id}}" value="{{gift.value}}">
 							{% endif %}
-							<small class="ml3px w16px">{% if gift.action == 'balance' %}₽{% elseif gift.action == 'stage' %}дн.{% endif %}</small>
+							<small class="ml3px w16px">{% if gift.action == 'balance' %}{{currency}}{% elseif gift.action == 'stage' %}дн.{% endif %}</small>
 						</div>
 						</p>
 					</td>

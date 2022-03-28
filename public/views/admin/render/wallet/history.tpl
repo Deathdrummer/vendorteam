@@ -23,9 +23,9 @@
 							<td><p class="fz12px">{{item.title}}</p></td>
 						{% endif %}
 						<td><small class="fz12px">{{item.date|d}} в {{item.date|t}}</small></td>
-						<td>{{item.summ|number_format(1, '.', ' ')}} <small class="wallet__postfix">₽</small></td>
-						<td>{{item.deposit|number_format(1, '.', ' ')}} <small class="wallet__postfix">₽</small></td>
-						<td>{{item.current_balance|number_format(1, '.', ' ')}} <small class="wallet__postfix">₽</small></td>
+						<td>{{currency(item.summ, '<small class="wallet__postfix">₽</small>')}}</td>
+						<td>{{currency(item.deposit, '<small class="wallet__postfix">₽</small>')}}</td>
+						<td>{{currency(item.current_balance, '<small class="wallet__postfix">₽</small>')}}</td>
 						<td class="center" title="{% if item.transfer == '+' %}Пополнение{% else %}Выплата{% endif %}"><strong>{{item.transfer}}</strong></td>
 					</tr>
 				{% endfor %}

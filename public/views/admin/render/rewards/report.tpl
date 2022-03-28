@@ -45,7 +45,7 @@
 					<tr class="h45px">
 						{% for pId, summ in periods %}
 							<td>
-								{{summ|number_format(2, '.', ' ')}} <small>₽</small>
+								{{currency(summ, '<small>$</small>')}}
 							</td>
 						{% endfor %}
 						<td></td>
@@ -55,7 +55,7 @@
 			<tfoot>
 				<tr>
 					{% for pId, period in periods %}
-						<td class="w100px"><strong>{{total_periods[pId]|number_format(2, '.', ' ')}} <small>₽</small></strong></td>
+						<td class="w100px"><strong>{{currency(total_periods[pId], '<small>$</small>')}}</strong></td>
 					{% endfor %}
 					<td></td>
 				</tr>
@@ -72,7 +72,7 @@
 		<tbody>
 			{% for stId, periods in report %}
 				<tr class="h45px">
-					<td><strong>{{total_statics[stId]|number_format(2, '.', ' ')}} <small>₽</small></strong></td>
+					<td><strong>{{currency(total_statics[stId], '<small>$</small>')}}</strong></td>
 				</tr>
 			{% endfor %}
 		</tbody>

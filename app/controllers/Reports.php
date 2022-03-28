@@ -721,17 +721,18 @@ class Reports extends MY_Controller {
 	 */
 	public function paymentrequest_export() {
 		$dataToExport = '';
+		$currency = $this->admin_model->getSettings('currency') ?: '₽';
 		
 		if ($paymentRequests = $this->reports_model->getPaymentRequests(false, true)) {
 			$statics = $this->admin_model->getStatics();
 			foreach($paymentRequests as $k => $pr) {
-				$paymentRequests[$k]['static'] = $statics[$pr['static']]['name'];
+				$paymentRequests[$k]['static'] = $statics[$pr['static']]['name'] ?? false;
 			}
 		} else {
 			exit($dataToExport);
 		}
 		
-		$dataToExport .= iconv('UTF-8', 'windows-1251', 'Никнейм;Сумма заказа (руб);Способ оплаты')."\r\n";
+		$dataToExport .= iconv('UTF-8', 'windows-1251', 'Никнейм;Сумма заказа ('.$currency.');Способ оплаты')."\r\n";
 		foreach ($paymentRequests as $pr) {
 			$dataToExport .= iconv('UTF-8', 'windows-1251', $pr['nickname'].';'.str_replace('.', ',', $pr['summ']).';'.$pr['payment']);
 			$dataToExport .= "\r\n";
@@ -860,7 +861,8 @@ class Reports extends MY_Controller {
 		
 		$params = ['where_in' => ['field' => 'us.static_id', 'values' => $post['statics']], 'where' => ['us.main' => 1, 'u.deleted' => 0, 'u.verification' => 1]];
 		if ($stopListUsersIds) $params['where_not_in'] = ['field' => 'u.id', 'values' => $stopListUsersIds];
-		$usersData = $this->users_model->getUsers($params);
+		if (!$usersData = $this->users_model->getUsers($params)) return false;
+		
 		
 		$ranks = $this->admin_model->getRanks();
 		$statics = $this->admin_model->getStatics();

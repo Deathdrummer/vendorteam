@@ -1,7 +1,7 @@
 <div class="d-flex align-items-end wallet__title">
 	<span class="wallet__label">Текущий баланс:</span>
 	{# <small class="wallet__postfix">{{balance}}</small> #}
-	<span class="wallet__balance">{{balance|currency('wallet__postfix')|raw}}</span>
+	<span class="wallet__balance">{{currency(balance, '<small class="wallet__postfix">$</small>')}}</span>
 </div>
 
 {% if history %}
@@ -30,11 +30,11 @@
 						<td><small class="fz12px">{{item.date|d}} в {{item.date|t}}</small></td>
 						<td>
 							<div class="d-flex justify-content-between">
-								<span>{{item.summ|currency('wallet__postfix')|raw}}</span>
+								<span>{{currency(item.summ, '<small class="wallet__postfix">$</small>')}}</span>
 								<div class="text-right">
 									{% if not item.type and item.currency %}
-										<p class="fz12px grayblue">{{(item.summ * item.currency)|number_format(1, ',', ' ')}} ₽</p>
-										<p class="lightfontcolor fz10px">по курсу: {{item.currency}} ₽</p>
+										<p class="fz12px grayblue">{{currency(item.summ * item.currency)}}</p>
+										<p class="lightfontcolor fz10px">по курсу: {{currency(item.currency)}}</p>
 									{% else %}
 										<p>-</p>
 									{% endif %}
@@ -43,18 +43,18 @@
 						</td>
 						<td>
 							<div class="d-flex justify-content-between">
-								<span>{{item.deposit|currency('wallet__postfix')|raw}}</span>
+								<span>{{currency(item.deposit, '<small class="wallet__postfix">$</small>')}}</span>
 								<div class="text-right">
 									{% if not item.type and item.currency %}
-										<p class="fz12px grayblue">{{(item.deposit * item.currency)|number_format(1, ',', ' ')}} ₽</p>
-										<p class="lightfontcolor fz10px">по курсу: {{item.currency}} ₽</p>
+										<p class="fz12px grayblue">{{currency(item.deposit * item.currency)}}</p>
+										<p class="lightfontcolor fz10px">по курсу: {{currency(item.currency)}}</p>
 									{% else %}
 										<p>-</p>
 									{% endif %}
 								</div>
 							</div>
 						</td>
-						<td>{{item.current_balance|currency('wallet__postfix')|raw}}</td>
+						<td>{{currency(item.current_balance, '<small class="wallet__postfix">$</small>')}}</td>
 						<td class="center" title="{% if item.transfer == '+' %}Пополнение{% else %}Выплата{% endif %}"><strong>{{item.transfer}}</strong></td>
 					</tr>
 				{% endfor %}

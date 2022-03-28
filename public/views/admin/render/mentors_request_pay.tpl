@@ -25,7 +25,7 @@
 		</div>#}
 		<div class="payment_request_form__item">
 			<label>Сумма</label>
-			<input type="number" name="summ" class="number" min="0" value="0" autocomplete="off"/> <span>руб.</span>
+			<input type="number" name="summ" class="number" min="0" value="0" autocomplete="off"/> <span>{{currency}}</span>
 		</div>
 		<div class="payment_request_form__item">
 			<label>Комментарий</label>

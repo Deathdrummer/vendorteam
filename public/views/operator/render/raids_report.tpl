@@ -31,7 +31,7 @@
 											<p>{{userData.nickname}}</p>
 											<small class="fz11px nowrap">{{userData.rank_name}}</small>
 										</td>
-										<td><span class=" ">{{userData.deposit|number_format(2, '.', ' ')}} ₽</span></td>
+										<td><span class=" ">{{currency(userData.deposit)}}</span></td>
 									</tr>
 									{% set index = index + 1 %}
 								{% endfor %}
@@ -131,9 +131,9 @@
 										<td class="nowidth center">{% if userData['raids'] %}{{userData.effectiveness}}{% else %}-{% endif %}</td>
 										<td class="nowidth center">{% if userData['raids'] %}{{userData.fine}}{% else %}-{% endif %}</td>
 										<td class="nowidth center">{% if userData['raids'] %}{{userData.period_koeff|round(3)}}{% else %}-{% endif %}</td>
-										<td class="nowidth"><span class="nowrap">{{userData.payment|number_format(2, '.', ' ')}} ₽</span></td>
-										<td><span class="nowrap">{{userData.to_deposit|number_format(2, '.', ' ')}} ₽</span></td>
-										<td><strong class="nowrap">{{userData.final_payment|number_format(2, '.', ' ')}} ₽</strong></td>
+										<td class="nowidth"><span class="nowrap">{{currency(userData.payment)}}</span></td>
+										<td><span class="nowrap">{{currency(userData.to_deposit)}}</span></td>
+										<td><strong class="nowrap">{{currency(userData.final_payment)}}</strong></td>
 										{% if pattern_id and not to_user and 7 in access %}
 											<td class="square_block">
 												{% if userData.final_payment != 0 %}
@@ -153,7 +153,7 @@
 								<tr>
 									<td colspan="4" class="right">Сумма коэффициентов периода:</td>
 									<td><strong>{{static.period_koeff_summ|round(3)}}</strong></td>
-									<td colspan="3" class="right"><span class="nowrap right">Бюджет:</span> <strong class="nowrap">{{static.cash|number_format(2, '.', ' ')}} ₽</strong></td>
+									<td colspan="3" class="right"><span class="nowrap right">Бюджет:</span> <strong class="nowrap">{{currency(static.cash)}}</strong></td>
 									{% if pattern_id and not to_user and 7 in access %}<td></td>{% endif %}
 								</tr>
 							</tbody>

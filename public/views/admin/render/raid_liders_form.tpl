@@ -30,7 +30,7 @@
 								<div class="field">
 									<input type="number" showrows value="{{summs[stId][lider.rank_lider][lider.rank]|default('0')}}" raidliderspayssumm>
 								</div>
-								<small class="ml4px fz16px">₽</small>
+								<small class="ml4px fz16px">{{currency}}</small>
 							</div>
 						</td>
 						<td class="center">

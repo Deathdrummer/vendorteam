@@ -36,6 +36,43 @@ if (!function_exists('jsonResponse')) {
 
 
 
+if (!function_exists('currency')) {
+	/**
+	 * Валюта
+	 * @param 
+	 * @return 
+	*/
+	function currency($summ = 0, $tag = false, $countAfterDot = 0) {
+		$CI = &get_instance();
+		$params = $CI->admin_model->getSettings(['currency', 'currency_dot_count', 'currency_dot_count', 'currency_pos'], true);
+		$currency = $params['currency'] ?? '₽';
+		
+		$currencyPos = $params['currency_pos'] ?? 'after';
+		if (is_numeric($tag)) {
+			$countAfterDot = $tag;
+			$tag = false;
+		}
+		
+		$currencyDotCount = $countAfterDot ?: ($params['currency_dot_count'] ?? 0);
+		
+		$summ = number_format((float)$summ, $currencyDotCount, '.', ' ');
+		
+		if ($tag) $currencyStr = preg_replace('/\$|₽/', $currency, $tag);
+		//else $currencyStr = '<small>'.$currency.'</small>';
+		else $currencyStr = $currency;
+		
+		if ($currencyPos == 'before') return $currencyStr.' '.$summ;
+		if ($currencyPos == 'after') return $summ.' '.$currencyStr;
+		return $currency;
+	}
+}
+
+
+
+
+
+
+
 
 if (!function_exists('arrRemoveByKeys')) {
 	/**

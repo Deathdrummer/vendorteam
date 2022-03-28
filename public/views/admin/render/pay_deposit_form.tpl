@@ -16,7 +16,7 @@
 			<ul class="resign__info">
 				<li><strong>Назначенная дата увольнения</strong>{{resign.date_resign|d}}</li>
 				<li><strong>Последний рабочий день</strong>{{resign.date_last|d}}</li>
-				<li class="large"><strong>Резерв</strong><h3 >{{resign.deposit|number_format(2, '.', ' ')}} <small>₽</small></h3></li>
+				<li class="large"><strong>Резерв</strong><h3 >{{currency(resign.deposit)}}</h3></li>
 				
 				{% if resign.deposit > 0 %}
 					<li>
@@ -44,8 +44,8 @@
 							<input type="hidden" id="confirmResignFullSumm" value="{{resign.deposit}}">
 							<input type="number" showrows id="confirmResignSumm" value="{{resign.deposit}}">
 						</div>
-						<strong class="ml-2">₽</strong>
-						<span class="ml40px">На баланс уйдет: <strong id="confirmResignBalance">0</strong> <small>₽</small></span>
+						<strong class="ml-2">{{currency}}</strong>
+						<span class="ml40px">На баланс уйдет: <strong id="confirmResignBalance">0</strong> <small>{{currency}}</small></span>
 					</div>
 				</div>
 				<div class="resign__textblock mt20px">
