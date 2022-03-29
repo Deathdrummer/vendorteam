@@ -9,7 +9,7 @@
 			<table class="clear w100">
 				<tbody>
 					{% for url, title in sectionsList %}
-						{% if url not in ['admins'] %}
+						{# {% if url not in ['admins'] %} #}
 							<tr class="adminpermissions__item">
 								<td class="pr4px"><span class="fz14px d-block">{% if title is iterable %}{{title['title']}}{% else %}{{title}}{% endif %}</span></td>
 								<td>
@@ -24,7 +24,7 @@
 									</div>
 								</td>
 							</tr>
-						{% endif %}
+						{# {% endif %} #}
 						
 						{% if title is iterable %}
 							<tr class="adminpermissions__subitems" subitems="{{url}}">
