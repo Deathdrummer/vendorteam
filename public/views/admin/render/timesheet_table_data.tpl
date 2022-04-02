@@ -1,4 +1,4 @@
-{% if timesheet %}
+{# {% if timesheet %} #}
 	<div class="popup__title">
 		<div class="image"><img src="{{base_url('public/filemanager/')}}{{static_icon}}" alt=""></div>
 		
@@ -25,33 +25,38 @@
 									<tr>
 										{% for day in 1..7 %}
 											<td>
-												{% for data in timesheet[staticId][day] %}
-													<div class="timesheet__item_raid" style="background-color: {{data.color|default('#eff1f3')}}" tdata="{{day}}|{{data.tid}}">
-														<div>
-															<ul>
-																<li>
-																	<span>Тип рейда:</span>
-																	<strong>{{data.raid_name}}</strong>
-																</li>
-																<li>
-																	<span>Время начала:</span>
-																	<strong>{{data.time_start_h|add_zero}}:{{data.time_start_m|add_zero}}</strong>
-																</li>
-																<li>
-																	<span>Длительность:</span>
-																	<strong>{{(data.duration / 60)|floor|add_zero}}:{{(data.duration % 60)|add_zero}}</strong>
-																</li>
-															</ul>
-														</div>
-														<div>
-															<div class="bittons">
-																<button edittimesheetitem="{{data.tid}}|{{data.raid_id}}|{{data.time_start_h}}|{{data.time_start_m}}|{{data.duration}}"><i class="fa fa-edit"></i></button>
-																<button removetimesheetitem="{{data.tid}}" class="ml-0"><i class="fa fa-trash"></i></button>
+												{% if timesheet[staticId][day] %}
+													{% for data in timesheet[staticId][day] %}
+														<div class="timesheet__item_raid" style="background-color: {{data.color|default('#eff1f3')}}" tdata="{{day}}|{{data.tid}}">
+															<div>
+																<ul>
+																	<li>
+																		<span>Тип рейда:</span>
+																		<strong>{{data.raid_name}}</strong>
+																	</li>
+																	<li>
+																		<span>Время начала:</span>
+																		<strong>{{data.time_start_h|add_zero}}:{{data.time_start_m|add_zero}}</strong>
+																	</li>
+																	<li>
+																		<span>Длительность:</span>
+																		<strong>{{(data.duration / 60)|floor|add_zero}}:{{(data.duration % 60)|add_zero}}</strong>
+																	</li>
+																</ul>
 															</div>
+															<div>
+																<div class="bittons">
+																	<button edittimesheetitem="{{data.tid}}|{{data.raid_id}}|{{data.time_start_h}}|{{data.time_start_m}}|{{data.duration}}"><i class="fa fa-edit"></i></button>
+																	<button removetimesheetitem="{{data.tid}}" class="ml-0"><i class="fa fa-trash"></i></button>
+																</div>
+															</div>
+																
 														</div>
-															
-													</div>
-												{% endfor %}
+													{% endfor %}
+												{% else %}
+													<p class="empty mt17px center">Нет данных</p>
+												{% endif %}
+													
 											</td>
 										{% endfor %}
 									</tr>
@@ -124,4 +129,4 @@
 			</div>
 		{% endif %}
 	</div>
-{% endif %}
+{# {% endif %} #}

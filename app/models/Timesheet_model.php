@@ -113,10 +113,11 @@ class Timesheet_model extends My_Model {
 		$this->db->select('t.*, t.id AS tid, rt.id AS raid_id, rt.name AS raid_name, rt.end_name AS raid_end_name, rt.color');
 		$this->db->where('t.period', $periodId);
 		if (!is_null($staticId)) $this->db->where('t.static', $staticId);
-		$this->db->join('raids_types rt', 'rt.id = t.raid_type');
+		$this->db->join('raids_types rt', 'rt.id = t.raid_type', 'LEFT OUTER');
 		$this->db->order_by('tid', 'ASC');
 		$query = $this->db->get('timesheet t');
 		$response = $query->result_array();
+		
 		
 		$stData = $this->admin_model->getStatics(false, $staticId);
 		if ($staticId) $timesheet['statics'][$staticId] = $stData;
