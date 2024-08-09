@@ -119,7 +119,8 @@ class Reports extends MY_Controller {
 			$toUserData = [];
 			foreach ($reportsPatterns as $patternId => $data) {
 				$isKey = $data['is_key'] == 1 ? 'keys' : 'raids';
-				$toUserData[$isKey][$patternId] = $data;
+				$amountType = $data['is_cumulative'] == 1 ? 'cumulative' : 'wallet';
+				$toUserData[$isKey][$amountType][$patternId] = $data;
 			}
 			
 			echo $this->twig->render('views/account/render/reports_patterns.tpl', [
@@ -128,8 +129,16 @@ class Reports extends MY_Controller {
 				'statics'			=> $this->admin_model->getStatics()
 			]);
 		} else {
+			
+			$toAdminData = [];
+			foreach ($reportsPatterns as $patternId => $data) {
+				$amountType = $data['is_cumulative'] == 1 ? 'cumulative' : 'wallet';
+				$toAdminData[$amountType][$patternId] = $data;
+			}
+			
+			toLog($toAdminData);
 			echo $this->twig->render('views/admin/render/reports_patterns.tpl', [
-				'reports_patterns' 	=> bringTypes($reportsPatterns),
+				'reports_patterns' 	=> bringTypes($toAdminData),
 				'statics'			=> $this->admin_model->getStatics()
 			]);
 		}

@@ -59,6 +59,7 @@ class Account extends MY_Controller {
 		$this->userData['agreement'] = $this->get_agreement_stat();
 		$this->userData['feed_messages'] = $this->admin->getFeedMessagesStatic(array_keys($this->userData['statics']));
 		$this->userData['balance'] = $this->wallet->getUserBalance($this->userData['id']);
+		$this->userData['cumulative_balance'] = $this->wallet->getUserCumulativeBalance($this->userData['id']);
 		$this->userData['active_period'] = $this->reports->getActivePeriod();
 		
 		
@@ -1363,6 +1364,21 @@ class Account extends MY_Controller {
 		$data = $this->wallet->getUserHistory($userId);
 		$data['balance'] = $this->wallet->getUserBalance($userId);
 		echo $this->twig->render('views/account/render/wallet/history.tpl', $data);
+	}
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function get_cumulative_balance() {
+		if (!$userId = $this->userData['id']) exit('');
+		$this->load->model('wallet_model', 'wallet');
+		$data = $this->wallet->getUserHistory($userId, 'cumulative');
+		$data['balance'] = $this->wallet->getUserCumulativeBalance($userId);
+		echo $this->twig->render('views/account/render/wallet/history_cumulative.tpl', $data);
 	}
 	
 	

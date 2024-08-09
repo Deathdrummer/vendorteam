@@ -5,6 +5,7 @@ class Wallet_model extends MY_Model {
 	private $walletHistoryTable = 'wallet_history';
 	private $walletTitlesTable = 'wallet_titles';
 	private $walletAmountsTable = 'wallet_amounts';
+	private $walletCumulativeTable = 'wallet_cumulative';
 	private $walletReportsTable = 'wallet_reports';
 	private $walletReportsDataTable = 'wallet_reports_data';
 	private $walletCurrencyTable = 'wallet_currency';
@@ -34,9 +35,10 @@ class Wallet_model extends MY_Model {
 	 * @param тип (откуда приход)
 	 * @param название отчета или заявки на оплату
 	 * @param + Приход \ - уход \ false без изменения саммы в балансе
+	 * @param amountType на какой баланс кинуть wallet cumulative
 	 * @return bool
 	*/
-	public function setToWallet($items = false, $type = false, $title = false, $transfer = '+', $currency = null) {
+	public function setToWallet($items = false, $type = false, $title = false, $transfer = '+', $currency = null, $amountType = 'wallet') {
 		if (!$items || $type === false || !$title) return false;
 		if (!$titleId = $this->_addTitle($title)) return false;
 		
@@ -47,14 +49,15 @@ class Wallet_model extends MY_Model {
 			$deposit = isset($item['to_deposit']) ? round((float)$item['to_deposit'], 1) : 0;
 			
 			$toHistoryData[] = [
-				'user_id'	=> $userId,
-				'type'		=> $type,
-				'title_id'	=> $titleId,
-				'summ'		=> $summ,
-				'deposit'	=> $deposit,
-				'transfer'	=> $transfer,
-				'currency'	=> $currency,
-				'date'		=> $date,
+				'user_id'		=> $userId,
+				'type'			=> $type,
+				'title_id'		=> $titleId,
+				'summ'			=> $summ,
+				'deposit'		=> $deposit,
+				'transfer'		=> $transfer,
+				'currency'		=> $currency,
+				'date'			=> $date,
+				'is_cumulative'	=> $amountType == 'cumulative' ? 1 : 0,
 			];
 			
 			// если плата - то вычитается и сумма и резерв, если зачисление - то только сумма
@@ -68,7 +71,7 @@ class Wallet_model extends MY_Model {
 		
 		
 		$this->_addToHistory($toHistoryData); // Добавить записи в историю
-		if ($transfer !== false) $this->_addToAmounts($toAmountsData, $transfer); // Прибавить \ отнять суммы у участников
+		if ($transfer !== false) $this->_addToAmounts($toAmountsData, $transfer, $amountType); // Прибавить \ отнять суммы у участников
 		
 		return true;
 	}
@@ -324,10 +327,14 @@ class Wallet_model extends MY_Model {
 	 * @param 
 	 * @return 
 	*/
-	public function getUserHistory($userId = false) {
+	public function getUserHistory($userId = false, $amountType = 'wallet') {
 		if (!$userId) return false;
 		$this->db->join($this->walletTitlesTable.' wt', 'wt.id = wh.title_id');
 		$this->db->where('wh.user_id', $userId);
+		
+		if ($amountType == 'wallet') $this->db->where('wh.is_cumulative', 0);
+		else if ($amountType == 'cumulative') $this->db->where('wh.is_cumulative', 1);
+		
 		//$this->db->order_by('wh.id', 'DESC');
 		if (!$userHistory = $this->_result($this->walletHistoryTable.' wh')) return false;
 		
@@ -355,6 +362,19 @@ class Wallet_model extends MY_Model {
 		$this->db->select('summ');
 		$this->db->where('user_id', $userId);
 		if (!$userBalanse = $this->_row($this->walletAmountsTable)) return false;
+		return $userBalanse;
+	}
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function getUserCumulativeBalance($userId = false) {
+		if (!$userId) return false;
+		$this->db->select('summ');
+		$this->db->where('user_id', $userId);
+		if (!$userBalanse = $this->_row($this->walletCumulativeTable)) return false;
 		return $userBalanse;
 	}
 	
@@ -450,12 +470,16 @@ class Wallet_model extends MY_Model {
 	 * @param +/-
 	 * @return bool
 	*/
-	private function _addToAmounts($toAmountsData = false, $transfer = false) {
+	private function _addToAmounts($toAmountsData = false, $transfer = false, $amountType = null) {
 		if (!$toAmountsData || !$transfer) return false;
 		$toAmountsData = setArrKeyFromField($toAmountsData, 'user_id', 'summ');
 		
+		$table = $this->walletAmountsTable;
 		
-		$amountsTableData = $this->_result($this->walletAmountsTable) ?: [];
+		if ($amountType == 'cumulative') $table = $this->walletCumulativeTable;
+		
+		
+		$amountsTableData = $this->_result($table) ?: [];
 		if ($amountsTableData) $amountsTableData = setArrKeyFromField($amountsTableData, 'user_id', 'summ');
 		
 		
@@ -486,8 +510,8 @@ class Wallet_model extends MY_Model {
 		}
 		
 		
-		if ($update) $this->db->update_batch($this->walletAmountsTable, $update, 'user_id');
-		if ($insert) $this->db->insert_batch($this->walletAmountsTable, $insert);
+		if ($update) $this->db->update_batch($table, $update, 'user_id');
+		if ($insert) $this->db->insert_batch($table, $insert);
 		
 		return true;
 	}

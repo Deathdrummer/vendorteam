@@ -38,10 +38,10 @@
 																		<span>Время начала:</span>
 																		<strong>{{data.time_start_h|add_zero}}:{{data.time_start_m|add_zero}}</strong>
 																	</li>
-																	<li>
+																	{# <li>
 																		<span>Длительность:</span>
 																		<strong>{{(data.duration / 60)|floor|add_zero}}:{{(data.duration % 60)|add_zero}}</strong>
-																	</li>
+																	</li> #}
 																</ul>
 															</div>
 															<div>
@@ -105,7 +105,7 @@
 							<div class="dcol-7">
 								{% for data in timesheet[staticId][day] %}
 									<div class="popup__grid popup__grid_content" style="background-color: {{data.color|default('#eff1f3')}}">
-										<p class="center">{{data.raid_name}}</p>
+										<p class="center">{{data.raid_name ?: '---'}}</p>
 										
 										<ul>
 											<li>
@@ -113,12 +113,12 @@
 												<strong>{{data.time_start_h|add_zero}}:{{data.time_start_m|add_zero}}</strong>
 											</li>
 											
-											{% if data.raid_end_name %}
+											{# {% if data.raid_end_name %}
 												<li class="mt-2">
 													<span>{{data.raid_end_name}}</span>
 													<strong>{{getHoursMinutes(data.time_start_h, data.time_start_m, (data.duration - 30), ':')}}</strong>
 												</li>
-											{% endif %}	
+											{% endif %}	 #}
 										</ul>
 									</div>
 								{% endfor %}

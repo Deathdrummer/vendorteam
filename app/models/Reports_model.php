@@ -120,7 +120,7 @@ class Reports_model extends My_Model {
 	 * @return массив 
 	 */
 	public function getMainReportPatterns($patternId = null, $limOffs = null, $isKey = 0) {
-		$this->db->select('rp.id, rp.variant, rp.name AS report_name, rp.period_id, rp.is_key, rps.static, rps.cash');
+		$this->db->select('rp.id, rp.variant, rp.name AS report_name, rp.period_id, rp.is_key, rp.is_cumulative, rps.static, rps.cash');
 		if ($patternId) $this->db->where('rp.id', $patternId);
 		
 		$this->db->join('reports_patterns_statics rps', 'rp.id = rps.report_pattern_id');
@@ -138,6 +138,7 @@ class Reports_model extends My_Model {
 			$newData[$itemId]['report_name'] = $item['report_name'];
 			$newData[$itemId]['period_id'] = json_decode($item['period_id'], true);
 			$newData[$itemId]['is_key'] = $item['is_key'];
+			$newData[$itemId]['is_cumulative'] = $item['is_cumulative'];
 			$newData[$itemId]['variant'] = $item['variant'];
 			$newData[$itemId]['cash'][$item['static']] = $item['cash'];
 		}
@@ -170,7 +171,7 @@ class Reports_model extends My_Model {
 	 * @return массив 
 	 */
 	public function getMainReportPatternsTitles($reportsIds = false, $limit = false, $offset = 0) {
-		$limit = 
+		//$limit = 
 		$this->db->select('id, name AS title, variant, is_key');
 		if ($reportsIds) $this->db->where_in('id', $reportsIds);
 		$this->db->order_by('id', 'DESC');
@@ -253,7 +254,8 @@ class Reports_model extends My_Model {
 		$this->db->insert('reports_patterns', [
 			'name' 			=> $data['name'],
 			'period_id' 	=> $data['period_id'],
-			'variant'		=> $data['variant']
+			'variant'		=> $data['variant'],
+			'is_cumulative'	=> $data['amount_type'] ? 1 : 0
 		]);
 		$lastPatternId = $this->db->insert_id();
 		
@@ -307,7 +309,7 @@ class Reports_model extends My_Model {
 			
 			if ($toWalletData) {
 				$this->load->model('wallet_model');
-				$this->wallet_model->setToWallet($toWalletData, $data['variant'], $data['name'], '+');
+				$this->wallet_model->setToWallet($toWalletData, $data['variant'], $data['name'], '+', null, $data['amount_type']);
 			}
 			if ($usersPaymentsData) $this->db->insert_batch('reports_patterns_payments', $usersPaymentsData);
 			if ($usersStaticsData) $this->db->insert_batch('reports_patterns_user_static', $usersStaticsData);
@@ -707,7 +709,7 @@ class Reports_model extends My_Model {
 					$resultUsers[$key]['rank_coefficient'] = $pData['ranks'][$user['user_id']];
 				} else {
 					$coeff = json_decode($user['rank_coefficient'], true);
-					$resultUsers[$key]['rank_coefficient'] = $coeff[$variant];
+					$resultUsers[$key]['rank_coefficient'] = $coeff[$variant] ?? 1;
 				}
 				
 				

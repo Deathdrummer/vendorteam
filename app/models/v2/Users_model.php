@@ -168,7 +168,7 @@ class Users_model extends MY_Model {
 						}
 						
 						// если есть поле "звание" - добавить данные сл. звания
-						if (in_array('rank', $fields)) {
+						if (in_array('rank', $fields ?? [])) {
 							$row['rank'] = [
 								'current'	=> $row['rank'],
 								'next'		=> $this->account->getNextRankData($user['id'])

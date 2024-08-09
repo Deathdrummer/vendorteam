@@ -6,7 +6,7 @@ class Timesheet extends MY_Controller {
 	
 	public function __construct() {
 		parent::__construct();
-		$this->load->model('timesheet_model');
+		$this->load->model(['timesheet_model', 'admin_model' => 'admin']);
 		
 		
 		$this->dayOffsets = [
@@ -222,6 +222,119 @@ class Timesheet extends MY_Controller {
 	
 	
 	
+	
+	/**
+	 * Получить форму для импорта данных для расписания
+	 * @param POST данные ID
+	 * @return html
+	 */
+	public function get_timesheet_import_form() {
+		$periodId = $this->input->post('period_id');
+		echo $this->twig->render('views/admin/render/timesheet_import_form.tpl', ['periodId' => $periodId]);
+	}
+	
+	
+	
+	
+	/**
+	 * Импорта данных для расписания
+	 * @param POST данные ID
+	 * @return
+	 */
+	public function import_from_file() {
+		$importedFile = bringTypes($this->input->files('import_file')) ?? false;
+		$periodId = $this->input->post('period_id');
+		
+		if (!$importData = @file_get_contents($importedFile['tmp_name'] ?? null)) return -1;
+		
+		$raidsTypes = $this->_getRaidtypesToImport();
+		$statics = $this->_getStaticsToImport();
+		
+		
+		$importDataArr = $this->_parseImportedFile($importData);
+		$buildedDta = [];
+		foreach ($importDataArr as $item) {
+			[$data, $time, $staticName, $raidType, $day] = $item;
+			
+			[$h, $m] = explode(':', $time);
+			
+			$buildedDta[] = [
+				'period' 		=> $periodId,
+				'day' 			=> (int)$day,
+				'static' 		=> $statics[$staticName] ?? null,
+				'raid_type' 	=> $raidsTypes[$raidType] ?? null,
+				'time_start_h' 	=> $h,
+				'time_start_m' 	=> $m,
+			];
+		}
+		
+		echo $this->timesheet_model->importDataToTimesheet($buildedDta);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//----------------------------------------------------------------------------------------------------------------
+	
+	
+	/**
+	* 
+	* @param 
+	* @return 
+	*/
+	private function _parseImportedFile($data = null) {
+		if (is_null($data)) return false;
+		if (!$baseArr = preg_split("/\n/", $data)) return false;
+		
+		$finalData = [];
+		foreach ($baseArr as $row) {
+			$finalData[] = array_filter(preg_split('/\s+/', $row));
+		}
+		
+		
+		return $finalData;
+	}
+	
+	
+	/**
+	* 
+	* @param 
+	* @return 
+	*/
+	private function _getRaidtypesToImport($raidTypeName = null) {
+		$raidsTypes = array_column($this->timesheet_model->getRaidsTypes(), 'name', 'id');
+		$raidsTypes = array_flip($raidsTypes);
+		if ($raidTypeName) return $raidsTypes[$raidTypeName] ?? null;
+		return $raidsTypes;
+	}
+	
+	
+	
+	
+	/**
+	* 
+	* @param 
+	* @return 
+	*/
+	private function _getStaticsToImport() {
+		if (!$statics = $this->admin->getStatics()) return false;
+		
+		$staticsData = [];
+		foreach ($statics as $id => $static) {
+			$staticsData[$static['name']] = $id;
+		}
+		return $staticsData;
+	}
 	
 	
 	

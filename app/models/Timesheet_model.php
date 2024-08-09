@@ -188,12 +188,29 @@ class Timesheet_model extends My_Model {
 	
 	
 	/**
+	 * Импортировать рейды в расписание
+	 * @param Данные
+	 * @return статус
+	 */
+	public function importDataToTimesheet($data = null) {
+		if (is_null($data)) return 0;
+		if ($this->db->insert_batch('timesheet', $data)) return 1;
+		else return 0;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
 	 * Обновить рейд в расписании
 	 * @param Данные
 	 * @return статус
 	 */
 	public function updateTimesheetRaid($data) {
-		
 		if (isset($data['edit']) && !empty($data['edit'])) {
 			$editIds = array_keys($data['edit']);
 			$update[] = [

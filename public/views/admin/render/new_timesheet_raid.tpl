@@ -39,7 +39,7 @@
 	</div>
 	
 	
-	<div class="popup__form_item">
+	{# <div class="popup__form_item">
 		<div><label for="">Длительность:</label></div>
 		<div>
 			<div class="number time">
@@ -52,7 +52,7 @@
 			</div>
 			<span>мин.</span>
 		</div>
-	</div>
+	</div> #}
 	
 	
 	<div class="popup__form_item">

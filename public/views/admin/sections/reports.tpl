@@ -36,7 +36,8 @@
 						<input type="hidden" id="reportVariant" value="">
 						
 						<button id="reportPatternsButton" class="fieldheight alt" title="Отчеты"><i class="fa fa-list-alt"></i></button>
-						<button id="saveMainReport" class="fieldheight alt" disabled title="Сохранить отчет"><i class="fa fa-save"></i></button>
+						<button id="saveMainReport" amounttype="wellet" class="fieldheight alt" disabled title="Сохранить отчет на баланс"><i class="fa fa-save"></i></button>
+						<button id="saveMainCumulativelReport" amounttype="cumulative" class="fieldheight pay" disabled title="Сохранить отчет на накопительный счет"><i class="fa fa-save"></i></button>
 					</div>
 				</div>
 				
@@ -357,7 +358,14 @@ $(document).ready(function() {
 								$('[tabid^="tabstatic"]:first').addClass('visible');
 								$('#reportVariant').val(reportVariant);
 								reportVariantWin.close();
-								$('#saveMainReport').removeAttrib('disabled');
+								
+								if (reportVariant == 1) {
+									$('#saveMainReport').removeAttrib('disabled');
+									$('#saveMainCumulativelReport').removeAttrib('disabled');
+								}  else if (reportVariant == 2) {
+									$('#saveMainReport').removeAttrib('disabled');
+									$('#saveMainCumulativelReport').setAttrib('disabled');
+								}
 							});
 						}
 					});
@@ -413,7 +421,7 @@ $(document).ready(function() {
 						staticsCashWin.close();
 						$('#setStaticsCash').addClass('done');
 						notify('Бюджет статиков задан!');
-						$('#saveMainReport').setAttrib('disabled');
+						$('#saveMainReport, #saveMainCumulativelReport').setAttrib('disabled');
 					});
 					
 				} else {
@@ -461,7 +469,7 @@ $(document).ready(function() {
 					else notify('Период выбран!');
 					$('#periodsButton').addClass('done');
 					periodsWin.close();
-					$('#saveMainReport').setAttrib('disabled');
+					$('#saveMainReport, #saveMainCumulativelReport').setAttrib('disabled');
 				});
 				
 				
@@ -730,7 +738,7 @@ $(document).ready(function() {
 			
 			getAjaxHtml('reports/get_main_reports_patterns', {limit: limit, offset: offset}, function(html) {
 				$('#reportPatternsList').html(html);
-				$('#reportPatternsList').ddrScrollTableY({height: '80vh', wrapBorderColor: '#d7dbde'});
+				//$('#reportPatternsList').ddrScrollTableY({height: '85vh', wrapBorderColor: '#d7dbde'});
 				
 				if ($(html).find('tbody').children('tr').length == limit) {
 					reportPatternsWin.setButtons([{id: 'getEarlyPatterns', title: 'Вниз'}, {id: 'getOlderPatterns', title: 'Вверх'}]);
@@ -749,7 +757,7 @@ $(document).ready(function() {
 					if (stat) {
 						$('#getOlderPatterns').prop('disabled', false);
 						$('#reportPatternsList').html(html);
-						$('#reportPatternsList').ddrScrollTableY({height: '80vh', wrapBorderColor: '#d7dbde'});
+						//$('#reportPatternsList').ddrScrollTableY({height: '80vh', wrapBorderColor: '#d7dbde'});
 					} else {
 						$('#getEarlyPatterns').prop('disabled', true);
 						notify('Это самые последние отчеты!', 'info');
@@ -838,7 +846,9 @@ $(document).ready(function() {
 	
 	
 	// --------------------------------------------- Сохранить паттерн первого отчета
-	$('#saveMainReport').on(tapEvent, function() {
+	$('#saveMainReport, #saveMainCumulativelReport').on(tapEvent, function(e) {
+		const amountType = e.currentTarget.getAttribute('amounttype');
+		
 		var staticsCash = $('#staticsCashData').val(),
 			periodId = $('#choosenPeriodId').val(),
 			reportVariant = $('#reportVariant').val()
@@ -875,7 +885,8 @@ $(document).ready(function() {
 							name: reportName,
 							cash: staticsCash,
 							period_id: periodId,
-							variant: reportVariant
+							variant: reportVariant,
+							amount_type: amountType, //wallet cumulative
 						}, function(response) {
 							if (response) notify('Данные успешно сохранены!');
 							savePatternWin.close();

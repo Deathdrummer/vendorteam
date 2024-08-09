@@ -2625,6 +2625,25 @@ $(document).ready(function() {
 	
 	
 	
+	$('[cumulativebalance]').on(tapEvent, function() {
+		popUp({
+			title: 'Мой баланс|4',
+			width: 1200,
+			closeButton: 'Закрыть',
+		}, function(walletBalanceWin) {
+			walletBalanceWin.wait();
+			getAjaxHtml('account/get_cumulative_balance', function(html) {
+				walletBalanceWin.setData(html, false);
+				$('#walletUserBalance').ddrScrollTableY({height: '400px', wrapBorderColor: '#d7dbde'});
+			}, function() {
+				walletBalanceWin.wait(false);
+			});
+		});
+	});
+	
+	
+	
+	
 	
 	
 	

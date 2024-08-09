@@ -411,7 +411,12 @@ if (!function_exists('toLog')) {
 	*/
 	function toLog($data = null, $exit = false) {
 		if (is_null($data)) return false;
-		$fileData = @file_get_contents(APPPATH.'/logs/log.lg');  
+		
+		$logPath = APPPATH.'/logs/log.lg';
+		
+		if (!file_exists($logPath)) mkdir(APPPATH.'/logs', 0755);
+		
+		$fileData = @file_get_contents($logPath);
 		$data = is_array($data) ? json_encode($data) : $data;
 		
 		if ($fileData != '') {
@@ -420,7 +425,7 @@ if (!function_exists('toLog')) {
 			$fileData = $data;
 		}
 		
-		@file_put_contents(APPPATH.'/logs/log.lg', $fileData);  
+		@file_put_contents($logPath, $fileData);  
 		if ($exit !== false && $exit !== true) exit($exit);
 		elseif ($exit === true) exit;
 	}

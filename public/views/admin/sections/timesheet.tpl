@@ -17,6 +17,13 @@
 			<h3 class="mt-3" id="timesheetPeriodName"></h3>
 		</div>
 		
+		<div class="item inline right">
+			<input type="file" id="" hidden>
+			<div class="buttons notop">
+				<button id="timesheetImportBtn" class="fieldheight alt" title="Импорт данных для расписания" disabled><i class="fa fa-upload"></i></button>
+			</div>
+		</div>
+		
 	</fieldset>
 	
 	
@@ -47,8 +54,14 @@
 $(document).ready(function() {
 	//-------------------------------------------------------------------------------------------------------------------- Расписание
 	
+	
+	let periodId,
+		periodName;
+	
+	
+	
 	//---------------------------------------------------------------- Периоды расписания
-	var periodName = '', currentPeriod = null, timesheetPeriodsWin;
+	var currentPeriod = null, timesheetPeriodsWin;
 	$('#timesheetPeriodButton').on(tapEvent, function() {
 		popUp({
 			title: 'Периоды расписания',
@@ -159,8 +172,11 @@ $(document).ready(function() {
 	$('body').off(tapEvent, '[choosetimesheetperiod]').on(tapEvent, '[choosetimesheetperiod]', function() {
 		var thisId = $(this).attr('choosetimesheetperiod'),
 			thisRow = $(this).closest('tr');
-			periodName = $(thisRow).find('td:first').text();
+			prdName = $(thisRow).find('td:first').text();
 			currentPeriod = thisId;
+		
+		periodId = thisId;
+		periodName = prdName;
 		
 		$('#timesheetPeriodId').val(thisId);
 		notify('Период расписания выбран!');
@@ -169,6 +185,7 @@ $(document).ready(function() {
 		getAjaxHtml('timesheet/get_timesheet_data', {period_id: thisId}, function(html) {
 			$('#timesheetTable').html(html);
 			$('#timesheetPeriodName').html('Период: <strong>'+periodName+'</strong>');
+			$('#timesheetImportBtn').prop('disabled', false);
 		});
 	});
 	
@@ -431,5 +448,73 @@ $(document).ready(function() {
 		});
 		
 	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//---------------------------------------------------------------------- Импорт
+	
+	$('#timesheetImportBtn').on(tapEvent, function() {
+		popUp({
+			title: 'Импорт данных расписания',
+		    width: 520,
+		    buttons: [{id: 'importDataToTimesheet', title: 'Импорт', disabled: 1}],
+		    closeButton: 'Отмена',
+		}, function(tPWin) {
+			tPWin.wait();
+			getAjaxHtml('timesheet/get_timesheet_import_form', {period_id: currentPeriod}, function(html) {
+				tPWin.setData(html, false);
+			}, function() {
+				tPWin.wait(false);
+				
+				$('#importTimesheetActionBtn').on(tapEvent, function() {
+					$('#importFileField').trigger(tapEvent);
+				});
+				
+				$('#importFileField').on('input', function() {
+					$('#importDataToTimesheet').prop('disabled', false);
+				});
+				
+				
+				$('#importDataToTimesheet').on(tapEvent, function() {
+					$('#timesheetTable').html('');
+					
+					tPWin.wait();
+					
+					sendFormData('#importTimesheetForm', {
+						url: '/timesheet/import_from_file',
+						success: function(response) {
+							getAjaxHtml('timesheet/get_timesheet_data', {period_id: currentPeriod}, function(html) {
+								$('#timesheetTable').html(html);
+								$('#timesheetPeriodName').html('Период: <strong>'+periodName+'</strong>');
+							});
+							
+							notify('Данные успешно импортированы!');
+							tPWin.close();
+						},
+						complete: function() {
+							tPWin.wait(false);
+						},
+						error() {
+							notify('Системная ошибка!', 'error');
+							showError(e);
+						}
+					});
+					
+				});
+			});
+			
+		});
+	});
+	
+	
+	
+	
 });
 //--></script>
