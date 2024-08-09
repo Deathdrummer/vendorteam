@@ -6,7 +6,7 @@ on:
 env:
   SERVER_HOST: 159.253.18.128
   SERVER_USER: github_user
-  SERVER_PATH: /var/www/empin_pro_usr/data/www/empin-pro.ru
+  SERVER_PATH: /var/www/github_user/data/www/test.vendorteam.ru
 
 jobs:
 
