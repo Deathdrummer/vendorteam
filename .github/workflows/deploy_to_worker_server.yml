@@ -1,4 +1,4 @@
-name: Публикация на events.vendorteam.ru
+name: Публикация на vendorteam.ru
 
 on:
   push
@@ -30,15 +30,10 @@ jobs:
       - run: |
           rsync \
           --exclude=/node_modules/ \
-          --exclude=/vendor/ \
-          --exclude=/.env \
-          --exclude=/.env.example \
+          --exclude=/gulp/ \
           --exclude=/.editorconfig \
           --exclude=/.git \
           --exclude=/.github \
-          --exclude=/public/build \
-          --exclude=/public/hot \
-          --exclude=/storage \
           -rc \
           --delete \
           . ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:${{ env.SERVER_PATH }}
