@@ -689,7 +689,6 @@
 													</td>
 												</tr>
 											{% endfor %}
-											
 											<tr>
 												<td colspan="11" class="text-right">Всего:</td>
 												<td colspan="12"><strong>{{cumulative[staticId]|number_format(1, '.', ' ')|default(0)}} <small>₽</small></strong></td>
