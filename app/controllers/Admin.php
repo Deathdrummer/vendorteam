@@ -509,7 +509,6 @@ class Admin extends MY_Controller {
 						//if (!isset($data['cumulative']['total'])) $data['cumulative']['total'] = 0;
 						//$data['cumulative']['total'] += $usersAmounts[$user['id']]['cumulative'] ?? 0;
 						
-						
 						if ($user['verification'] == 0 && $user['deleted'] == 0) {
 							$data['users']['new'][0][] = $user;
 						} elseif ($user['verification'] == 1 && $user['deleted'] == 0 && $user['excluded'] == 0) {
