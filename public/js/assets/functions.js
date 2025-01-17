@@ -7,6 +7,13 @@ if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phon
 };
 
 
+isHosting = function() {
+	return location.hostname.includes('192.168.0') == false && location.hostname != 'localhost';
+}
+
+
+
+
 //--------------------------------------------- Месяцы
 monthNames = {
 	1: 'января',

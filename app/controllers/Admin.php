@@ -479,6 +479,8 @@ class Admin extends MY_Controller {
 				$newUsersData = $this->users_model->getUsers(array_replace_recursive((array)$params, ['where' => ['u.deleted' => 0, 'u.verification' => 0, 'u.excluded' => 0]]));
 				$usersData = array_merge($usersData, $newUsersData);
 				
+				$usersAmounts = $this->users_model->getUsersAmounts();
+				
 				$data['statics'] = $this->admin_model->getStatics();
 				$data['ranks'] = $this->admin_model->getRanks();
 				$data['roles'] = $this->admin_model->getRoles();
@@ -497,6 +499,17 @@ class Admin extends MY_Controller {
 				if ($usersData) {
 					foreach ($usersData as $user) {
 						$user['rank'] = isset($data['ranks'][$user['rank']]) ? $data['ranks'][$user['rank']]['name'] : false;
+						
+						$user['amount'] = $usersAmounts[$user['id']]['amount'] ?? null;
+						$user['cumulative'] = $usersAmounts[$user['id']]['cumulative'] ?? null;
+						
+						if (!isset($data['cumulative'][$user['static']])) $data['cumulative'][$user['static']] = 0;
+						$data['cumulative'][$user['static']] += $usersAmounts[$user['id']]['cumulative'] ?? 0;
+						
+						//if (!isset($data['cumulative']['total'])) $data['cumulative']['total'] = 0;
+						//$data['cumulative']['total'] += $usersAmounts[$user['id']]['cumulative'] ?? 0;
+						
+						
 						if ($user['verification'] == 0 && $user['deleted'] == 0) {
 							$data['users']['new'][0][] = $user;
 						} elseif ($user['verification'] == 1 && $user['deleted'] == 0 && $user['excluded'] == 0) {
@@ -730,6 +743,35 @@ class Admin extends MY_Controller {
 		
 		return $data;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @param 
+	 * @return 
+	*/
+	public function get_cumulative_balance() {
+		if (!$userId = $this->input->post('user_id')) exit('');
+		$this->load->model('wallet_model', 'wallet');
+		$data = $this->wallet->getUserHistory($userId, 'cumulative');
+		$data['balance'] = $this->wallet->getUserCumulativeBalance($userId);
+		echo $this->twig->render('views/account/render/wallet/history_cumulative.tpl', $data);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -3415,6 +3457,140 @@ class Admin extends MY_Controller {
 			default: break;
 		}
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	* 
+	* @param 
+	* @return 
+	*/
+	public function change_user_amount() {
+		if (!$this->input->is_ajax_request()) return false;
+		$data = $this->input->post();
+		if (!isset($data['user_id'])) return false;
+		
+		$this->load->model(['users_model', 'wallet_model']);
+		
+		# создал эту функцию, а оказалось, что setToWallet все делает, что нужно
+		//if (!$this->users_model->changeUserAmount($data['user_id'], $data['wallet'], $data['summ'], $data['operation'])) exit('0');
+		
+		
+		$operations = [
+			'plus' 		=> '+',
+			'minus' 	=> '-',
+			'exchange' 	=> '-',
+		];
+		
+		$wType = [
+			'plus' 		=> 8,
+			'minus' 	=> -3,
+			'exchange' 	=> -3,
+		];
+		
+		
+		$reportTitle = [
+			'plus' => 'Начисление на накопительный счет',
+			'minus' => 'Списание с накопительного счета',
+			'exchange' => 'Списание с накопительного счета',
+		];
+		
+		
+		if ($data['wallet'] == 'amount') {
+			// тут ничего нет, потому что операций с основным балансом тут нет.
+		} elseif ($data['wallet'] == 'cumulative') {
+			$this->wallet_model->setToWallet([$data['user_id'] => $data['summ']], $wType[$data['operation']], $reportTitle[$data['operation']], $operations[$data['operation']] ?? false, null, 'cumulative');
+			
+			if ($data['operation'] == 'exchange') {
+				$this->wallet_model->setToWallet([$data['user_id'] => $data['summ']], 8, 'Начисление с накопительного счета', '+');
+			}
+		}
+		
+		echo '1';
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	* 
+	* @param 
+	* @return 
+	*/
+	public function change_users_amounts() {
+		if (!$this->input->is_ajax_request()) return false;
+		$data = $this->input->post();
+		if (!isset($data['users_amounts'])) return false;
+		
+		$usersAmounts = json_decode($data['users_amounts'], true);
+		
+		$this->load->model(['users_model', 'wallet_model']);
+		
+		# создал эту функцию, а оказалось, что setToWallet все делает, что нужно
+		//if (!$this->users_model->changeUserAmount($data['user_id'], $data['wallet'], $data['summ'], $data['operation'])) exit('0');
+		
+		
+		$operations = [
+			'plus' 		=> '+',
+			'minus' 	=> '-',
+			'exchange' 	=> '-',
+		];
+		
+		$wType = [
+			'plus' 		=> 8,
+			'minus' 	=> -3,
+			'exchange' 	=> -3,
+		];
+		
+		
+		$reportTitle = [
+			'plus' => 'Начисление на накопительный счет',
+			'minus' => 'Списание с накопительного счета',
+			'exchange' => 'Списание с накопительного счета',
+		];
+		
+		
+		if ($data['wallet'] == 'amount') {
+			// тут ничего нет, потому что операций с основным балансом тут нет.
+		} elseif ($data['wallet'] == 'cumulative') {
+			foreach ($usersAmounts as $userId => $summ) {
+				$this->wallet_model->setToWallet([$userId => $summ], $wType[$data['operation']], $reportTitle[$data['operation']], $operations[$data['operation']] ?? false, null, 'cumulative');
+				
+				if ($data['operation'] == 'exchange') {
+					$this->wallet_model->setToWallet([$userId => $summ], 8, 'Начисление с накопительного счета', '+');
+				}
+			}
+		}
+		
+		echo '1';
+	}
+	
+	
+	
 	
 	
 	

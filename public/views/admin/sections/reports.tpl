@@ -353,7 +353,22 @@ $(document).ready(function() {
 								$('#mainReport').ready(function() {
 									$('.scroll').ddrScrollTable();
 									$('#mainReportTitle').text('');
+									$('#mainReport').find('input[mainreportpayment]').number(true, 0, '.', ' ');
+									
+									
+									$('#mainReport').find('input[mainreportpayment]').on('input', (e) => {
+										let fieldsSumm =  0;
+										$(e.target).closest('[reporttableright]').find('[mainreportpayment]').each((k, field) => {
+											const fieldVal = $(field).val();
+											fieldsSumm += Math.floor(fieldVal);
+										});
+										
+										$('#mainReport').find('[finalcash]:visible').text($.number(fieldsSumm, 1, '.', ' '));
+										$('#mainReport').find('[finalcash]:visible').attr('finalcash', fieldsSumm);
+									});
+									
 								});
+								
 								$('[id^="tabstatic"]:first').addClass('active');
 								$('[tabid^="tabstatic"]:first').addClass('visible');
 								$('#reportVariant').val(reportVariant);
@@ -626,7 +641,6 @@ $(document).ready(function() {
 	
 	
 	
-	
 	$('body').off(tapEvent, '[setperiodstarttime]').on(tapEvent, '[setperiodstarttime]', function() {
 		var thisItem = this;
 		currentPeriodToTime = $(thisItem).attr('setperiodstarttime');
@@ -881,12 +895,39 @@ $(document).ready(function() {
 						notify('Ошибка! Необходимо необходимо ввести название отчета!', 'error');
 					} else {
 						savePatternWin.wait();
+						
+						const customPrices = [];
+						$('#mainReport').find('[mainreportpayment]').each((k, item) => {
+							let itemData = $(item).attr('mainreportpayment');
+							itemData = itemData.split('|');
+							customPrices.push({
+								static: Number(itemData[0]),
+								user: Number(itemData[1]),
+								summ: Number($(item).val())
+							});
+						});
+						
+						
+						const customStaticsSumm = [];
+						$('#mainReport').find('[mainreportfinalcash]').each((k, item) => {
+							let static = Number($(item).attr('mainreportfinalcash')),
+								summ = Number($(item).attr('finalcash'));
+								
+							customStaticsSumm.push({
+								static,
+								summ,
+							});
+						});
+						
+						
 						$.post('/reports/save_main_report_pattern', {
 							name: reportName,
 							cash: staticsCash,
 							period_id: periodId,
 							variant: reportVariant,
 							amount_type: amountType, //wallet cumulative
+							custom_prices: JSON.stringify(customPrices),
+							custom_statics_summ: JSON.stringify(customStaticsSumm),
 						}, function(response) {
 							if (response) notify('Данные успешно сохранены!');
 							savePatternWin.close();
@@ -902,6 +943,7 @@ $(document).ready(function() {
 			notify('Ошибка! Необходимо необходимо заполнить все данные!', 'error');
 		}
 	});
+	
 	
 	
 	

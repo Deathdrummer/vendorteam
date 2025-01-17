@@ -23,7 +23,7 @@ class MY_Controller extends CI_Controller {
 	
 	protected $miniFeedTypes = [
 		1	=> 'День рождения',
-		2 	=> 'Пошение звания',
+		2 	=> 'Повышение звания',
 		3 	=> 'Оповещение от администрации'
 	]; 
 	
@@ -71,7 +71,10 @@ class MY_Controller extends CI_Controller {
 		
 		
 		//----------------------------------------------------------------  Глобальные переменные
-		$this->twig->addGlobal('currency', $this->admin_model->getSettings('currency') ?: '₽');
+		if (gettype($this->twig) == 'object') {
+			$this->twig->addGlobal('currency', $this->admin_model->getSettings('currency') ?: '₽');
+		}
+		
 		
 		
 		
@@ -111,13 +114,14 @@ class MY_Controller extends CI_Controller {
 				'users' 				=> [
 					'title'	=> 'Участники',
 					'items'	=> [
-						'verifyUsers'	=> 'Верифицированные',
-						'newUsers'		=> 'Новые',
-						'excludedUsers'	=> 'Отстраненные',
-						'deletedUsers'	=> 'Удаленные',
-						'depositUsers'	=> 'Резерв',
-						'balance'		=> 'Баланс',
-						'colorsUsers'	=> 'Цвета рейдеров',
+						'verifyUsers'		=> 'Верифицированные',
+						'newUsers'			=> 'Новые',
+						'excludedUsers'		=> 'Отстраненные',
+						'deletedUsers'		=> 'Удаленные',
+						'depositUsers'		=> 'Резерв',
+						'balance'			=> 'Баланс',
+						'colorsUsers'		=> 'Цвета рейдеров',
+						'commulativeAmount'	=> 'Накопительный счет',
 					],],
 				'users_addict' 			=> 'Участники доп.',
 				'users_v2' 				=> 'Участники (версия 2)',
@@ -348,179 +352,187 @@ class MY_Controller extends CI_Controller {
 		
 		
 		
-		
-		//--------------------------------------------------------------------------- Twig фильтры
-		$this->twig->addFilter('d', function($date = null, $isShort = false) {
-			if (is_null($date)) return false;
-			if (!is_numeric($date)) $date = strtotime($date);
-			if ($isShort) return date('j', $date).' '.$this->monthesShort[date('n', $date)].' '.date('y', $date).' г.';
-			return date('j', $date).' '.$this->monthes[date('n', $date)].' '.date('Y', $date).' г.';
-		});
-		
-		$this->twig->addFilter('t', function($time = null) {
-			if (is_null($time)) return false;
-			if (!is_numeric($time)) $time = strtotime($time);
-			return date('H:i', $time);
-		});
-		
-		$this->twig->addFilter('week', function($date) {
-			if (!is_numeric($date)) $date = strtotime($date);
-			$weekDay = date('N', $date);
-			return $this->week[$weekDay];
-		});
-		
-		$this->twig->addFilter('month', function($date, $type = 'short', $case = 'n') { // short full n g
-			$m = date('n', $date);
-			if ($type == 'short') return $case == 'n' ? $this->monthesShort2[$m] : $this->monthesShort[$m];
-			if ($type == 'full') return $case == 'n' ? $this->monthes2[$m] : $this->monthes[$m];
+		if (gettype($this->twig) == 'object') {
 			
-		});
-		
-		
-		$this->twig->addFilter('padej', function($num, $variants = ['день', 'дня', 'дней'], $variantsEng = ['day', 'day', 'days']) {
-			if (!is_array($variants) || !is_array($variantsEng)) return false;
-			$lang = get_cookie('language') ?: 'ru';
-			$v = $lang == 'ru' ? $variants : ($variantsEng ?: $variants);
-			if (in_array($num, explode(' ', '11 12 13 14')) || in_array(substr($num, -1), explode(' ', '5 6 7 8 9 0'))) return $v[2];
-			elseif (in_array(substr($num, -1), explode(' ', '2 3 4'))) return $v[1];
-			elseif (substr($num, -1) == '1') return $v[0];
-		});
-		
-		$this->twig->addFilter('postfix', function($fileName, $postfix) {
-			if (! $fileName || ! $postfix) return '';
-			$fileData = explode('.', $fileName);
-			return implode('.', [$fileData[0].$postfix, $fileData[1]]);
-		});
-		
-		$this->twig->addFilter('postfix_setting', function($postfix, $default = '_setting') {
-			return isset($postfix) ? ($postfix == 0 ? '' : $postfix) : $default;
-		});
-		
-		$this->twig->addFilter('floor', function($str) {
-			return floor($str);
-		});
-		
-		$this->twig->addFilter('add_zero', function($str) {
-			return substr('0'.$str, -2);
-		});
-		
-		
-		$this->twig->addFilter('chunk', function($arr, $size, $preserveKeys = false) {
-			return array_chunk($arr, $size, $preserveKeys);
-		});
-		
-		
-		$this->twig->addFilter('chunktoparts', function($arr, $parts, $preserveKeys = false) {
-			$size = ceil(count($arr) / $parts);
-			return array_chunk($arr, $size, $preserveKeys);
-		});
-		
-		
-		
-		$this->twig->addFilter('filename', function($path, $return = 0) {
-			if (!$path) return false;
-			$fileName = explode('/', $path);
-			$fileName = array_pop($fileName);
-			$fileName = explode('.', $fileName);
-			$e = array_pop($fileName);
-			$n = implode('.', $fileName);
-			return $return == 1 ? $n : ($return == 2 ? $e : $n.'.'.$e);
-		});
-		
-		
-		$this->twig->addFilter('is_img_file', function($ext) {
-			return in_array($ext, $this->imgFileExt);
-		});
-		
-		
-		$this->twig->addFilter('is_file', function($filename, $nofile = '') {
-			$file = preg_replace('/https?:\/\/\w+.\w{2,4}\//', '', $filename);
-			return is_file($file) ? $filename : $nofile;
-		});
-		
-		
-		$this->twig->addFilter('no_file', function($filename, $nofile = '') {
-			$filePath = str_replace(base_url(), '', $filename);
-			$filePath = explode('?', $filePath);
-			return is_file($filePath[0]) ? $filename : $nofile;
-		});
-		
-		$this->twig->addFilter('trimstring', function($string, $length = 10, $end = '...') {
-			return mb_strimwidth($string, 0, $length, $end);
-		});
-		
-		
-		$this->twig->addFilter('ext', function($fileName, $ext = 'tpl') {
-			$f = explode('.', $fileName)[0];
-			return $f.'.'.$ext;
-		});
-		
-		$this->twig->addFilter('addtag', function($str, $find, $tag = 'span') {
-			return str_replace($find, '<'.$tag.'>'.$find.'</'.$tag.'>', $str);
-		});
-		
-		
-		$this->twig->addFilter('phonecode', function($str, $tag = 'span') {
-			$countNums = strpos($str, ' ') - (strpos($str, '+') !== false ? 1 : 0);
-			return preg_replace('/(\+?\d{'.$countNums.'} \(\d{3}\))(.+)/iu', '<'.$tag.'>$1</'.$tag.'>$2', $str);
-		});
-		
-		$this->twig->addFilter('freshfile', function($str) {
-			return $str.'?'.time();
-		});
-		
-		
-		$this->twig->addFilter('decodedirsfiles', function($str) {
-			if (!$str) return false;   
-	        $search = ["***", "&#39;", "&quot;", "&#39;", "&quot;", "___", "---", "==="];
-	        $replace = [DIRECTORY_SEPARATOR, "\'", "\"", "'", '"', " ", ".", ","];
-	        return str_replace($search, $replace, $str);
-		});
-		
-		
-		
-		$this->twig->addFilter('sortusers', function($arr, $field = 'nickname') {
-			if (!$arr || !$field) return false;
-	        uasort($arr, function($a, $b) use ($field) {
-	        	if (!isset($a[$field]) || !isset($b[$field])) return 0;
-			    if (preg_match('/[а-яё.]+/ui', $a[$field]) && preg_match('/[a-z.]+/ui', $b[$field])) {
-			        return -1;
-			    } elseif (preg_match('/[a-z.]+/ui', $a[$field]) && preg_match('/[а-яё.]+/ui', $b[$field])) {
-			        return 1;
-				} else {
-			        return $a[$field] < $b[$field] ? -1 : 1;
-			    }
+			//--------------------------------------------------------------------------- Twig фильтры
+			$this->twig->addFilter('d', function($date = null, $isShort = false) {
+				if (is_null($date)) return false;
+				if (!is_numeric($date)) $date = strtotime($date);
+				if ($isShort) return date('j', $date).' '.$this->monthesShort[date('n', $date)].' '.date('y', $date).' г.';
+				return date('j', $date).' '.$this->monthes[date('n', $date)].' '.date('Y', $date).' г.';
 			});
-			return $arr;
-		});
-		
-		
-		$this->twig->addFilter('ksort', function($arr) {
-			if (!$arr) return false;
-			ksort($arr);
-			return $arr;
-		});
-		
-		
-		
-		
-		$this->twig->addFilter('encrypt', function($str = false) {
-			if (!$str) return false;
-			return encrypt($str);
-		});
-		
-		
-		$this->twig->addFilter('decrypt', function($str = false) {
-			if (!$str) return false;
-			return decrypt($str);
-		});
-		
-		
-		$this->twig->addFilter('cyrillicDecode', function($str = false) {
-			if (!$str) return false;
-			return cyrillicDecode($str);
-		});
-		
+			
+			$this->twig->addFilter('t', function($time = null) {
+				if (is_null($time)) return false;
+				if (!is_numeric($time)) $time = strtotime($time);
+				return date('H:i', $time);
+			});
+			
+			$this->twig->addFilter('week', function($date) {
+				if (!is_numeric($date)) $date = strtotime($date);
+				$weekDay = date('N', $date);
+				return $this->week[$weekDay];
+			});
+			
+			$this->twig->addFilter('month', function($date, $type = 'short', $case = 'n') { // short full n g
+				$m = date('n', $date);
+				if ($type == 'short') return $case == 'n' ? $this->monthesShort2[$m] : $this->monthesShort[$m];
+				if ($type == 'full') return $case == 'n' ? $this->monthes2[$m] : $this->monthes[$m];
+				
+			});
+			
+			
+			$this->twig->addFilter('padej', function($num, $variants = ['день', 'дня', 'дней'], $variantsEng = ['day', 'day', 'days']) {
+				if (!is_array($variants) || !is_array($variantsEng)) return false;
+				$lang = get_cookie('language') ?: 'ru';
+				$v = $lang == 'ru' ? $variants : ($variantsEng ?: $variants);
+				if (in_array($num, explode(' ', '11 12 13 14')) || in_array(substr($num, -1), explode(' ', '5 6 7 8 9 0'))) return $v[2];
+				elseif (in_array(substr($num, -1), explode(' ', '2 3 4'))) return $v[1];
+				elseif (substr($num, -1) == '1') return $v[0];
+			});
+			
+			$this->twig->addFilter('postfix', function($fileName, $postfix) {
+				if (! $fileName || ! $postfix) return '';
+				$fileData = explode('.', $fileName);
+				return implode('.', [$fileData[0].$postfix, $fileData[1]]);
+			});
+			
+			$this->twig->addFilter('postfix_setting', function($postfix, $default = '_setting') {
+				return isset($postfix) ? ($postfix == 0 ? '' : $postfix) : $default;
+			});
+			
+			$this->twig->addFilter('floor', function($str) {
+				return floor($str);
+			});
+			
+			$this->twig->addFilter('add_zero', function($str) {
+				return substr('0'.$str, -2);
+			});
+			
+			
+			$this->twig->addFilter('chunk', function($arr, $size, $preserveKeys = false) {
+				return array_chunk($arr, $size, $preserveKeys);
+			});
+			
+			
+			$this->twig->addFilter('chunktoparts', function($arr, $parts, $preserveKeys = false) {
+				$size = ceil(count($arr) / $parts);
+				return array_chunk($arr, $size, $preserveKeys);
+			});
+			
+			
+			
+			$this->twig->addFilter('filename', function($path, $return = 0) {
+				if (!$path) return false;
+				$fileName = explode('/', $path);
+				$fileName = array_pop($fileName);
+				$fileName = explode('.', $fileName);
+				$e = array_pop($fileName);
+				$n = implode('.', $fileName);
+				return $return == 1 ? $n : ($return == 2 ? $e : $n.'.'.$e);
+			});
+			
+			
+			$this->twig->addFilter('is_img_file', function($ext) {
+				return in_array($ext, $this->imgFileExt);
+			});
+			
+			
+			$this->twig->addFilter('is_file', function($filename, $nofile = '') {
+				$file = preg_replace('/https?:\/\/\w+.\w{2,4}\//', '', $filename);
+				return is_file($file) ? $filename : $nofile;
+			});
+			
+			
+			$this->twig->addFilter('no_file', function($filename, $nofile = '') {
+				$filePath = str_replace(base_url(), '', $filename);
+				$filePath = explode('?', $filePath);
+				return is_file($filePath[0]) ? $filename : $nofile;
+			});
+			
+			$this->twig->addFilter('trimstring', function($string, $length = 10, $end = '...') {
+				return mb_strimwidth($string, 0, $length, $end);
+			});
+			
+			
+			$this->twig->addFilter('ext', function($fileName, $ext = 'tpl') {
+				$f = explode('.', $fileName)[0];
+				return $f.'.'.$ext;
+			});
+			
+			$this->twig->addFilter('addtag', function($str, $find, $tag = 'span') {
+				return str_replace($find, '<'.$tag.'>'.$find.'</'.$tag.'>', $str);
+			});
+			
+			
+			$this->twig->addFilter('phonecode', function($str, $tag = 'span') {
+				$countNums = strpos($str, ' ') - (strpos($str, '+') !== false ? 1 : 0);
+				return preg_replace('/(\+?\d{'.$countNums.'} \(\d{3}\))(.+)/iu', '<'.$tag.'>$1</'.$tag.'>$2', $str);
+			});
+			
+			$this->twig->addFilter('freshfile', function($str) {
+				return $str.'?'.time();
+			});
+			
+			
+			$this->twig->addFilter('decodedirsfiles', function($str) {
+				if (!$str) return false;   
+				$search = ["***", "&#39;", "&quot;", "&#39;", "&quot;", "___", "---", "==="];
+				$replace = [DIRECTORY_SEPARATOR, "\'", "\"", "'", '"', " ", ".", ","];
+				return str_replace($search, $replace, $str);
+			});
+			
+			
+			
+			$this->twig->addFilter('sortusers', function($arr, $field = 'nickname') {
+				if (!$arr || !$field) return false;
+				uasort($arr, function($a, $b) use ($field) {
+					if (!isset($a[$field]) || !isset($b[$field])) return 0;
+					if (preg_match('/[а-яё.]+/ui', $a[$field]) && preg_match('/[a-z.]+/ui', $b[$field])) {
+						return -1;
+					} elseif (preg_match('/[a-z.]+/ui', $a[$field]) && preg_match('/[а-яё.]+/ui', $b[$field])) {
+						return 1;
+					} else {
+						return $a[$field] < $b[$field] ? -1 : 1;
+					}
+				});
+				return $arr;
+			});
+			
+			
+			$this->twig->addFilter('ksort', function($arr) {
+				if (!$arr) return false;
+				ksort($arr);
+				return $arr;
+			});
+			
+			
+			
+			
+			$this->twig->addFilter('encrypt', function($str = false) {
+				if (!$str) return false;
+				return encrypt($str);
+			});
+			
+			
+			$this->twig->addFilter('decrypt', function($str = false) {
+				if (!$str) return false;
+				return decrypt($str);
+			});
+			
+			
+			$this->twig->addFilter('cyrillicDecode', function($str = false) {
+				if (!$str) return false;
+				return cyrillicDecode($str);
+			});
+			
+			
+			$this->twig->addFilter('serilizeArrayField', function($array = false, $field = false, $separator = '|') {
+				if (!$array || !$field) return false;
+				$arrOfField = array_column($array, $field);
+				return implode($separator, $arrOfField);
+			});
+		}
 	}
 	
 	
@@ -587,7 +599,7 @@ class MY_Controller extends CI_Controller {
 	
 	
 	protected function _isCliRequest() {
-		return (isset($_SERVER['HTTP_USER_AGENT']) && preg_match('/Wget\//', $_SERVER['HTTP_USER_AGENT']));
+		return (isset($_SERVER['HTTP_USER_AGENT']) && preg_match('/curl|Wget\//', $_SERVER['HTTP_USER_AGENT']));
 	}
 	
 }

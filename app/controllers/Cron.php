@@ -1,6 +1,6 @@
 <? defined('BASEPATH') OR exit('Доступ к скрипту запрещен');
 
-class Cron extends MY_Controller {
+class Cron extends CI_Controller {
 	
 	// fastVPS: /usr/bin/wget -O /dev/null "http://vendorteam.ru/controller/function"
 	
@@ -245,5 +245,11 @@ class Cron extends MY_Controller {
 		}
 	}
 	
+
+
+
+	private function _isCliRequest() {
+		return (isset($_SERVER['HTTP_USER_AGENT']) && preg_match('/curl|Wget\//', $_SERVER['HTTP_USER_AGENT']));
+	}
 	
 }

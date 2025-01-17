@@ -26,7 +26,7 @@
 								<tr>
 									<td>{{pattern.report_name}}</td>
 									<td class="w1 center">
-										<i{% if type == 'raids' %} patternid="{{id}}"{% else %} patternkeyid="{{id}}"{% endif %} patternname="{{pattern.report_name}}" title="Показать отчет" class="fa fa-table"></i>
+										<i patternid="{{id}}" patternname="{{pattern.report_name}}" title="Показать отчет" class="fa fa-table"></i>
 									</td>	
 								</tr>
 							{% endfor %}
@@ -50,7 +50,7 @@
 								<tr>
 									<td>{{pattern.report_name}}</td>
 									<td class="w1 center">
-										<i{% if type == 'raids' %} patternid="{{id}}"{% else %} patternkeyid="{{id}}"{% endif %} patternname="{{pattern.report_name}}" title="Показать отчет" class="fa fa-table"></i>
+										<i patternkeyid="{{id}}"} patternname="{{pattern.report_name}}" title="Показать отчет" class="fa fa-table"></i>
 									</td>	
 								</tr>
 							{% endfor %}

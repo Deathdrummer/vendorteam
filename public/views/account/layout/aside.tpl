@@ -70,7 +70,7 @@
 			
 			<li walletbalance class="pointer"><span>Мой баланс:</span> <strong>{{currency(balance)}}</strong> <sup>NDA {% if nda %}<i class="fa fa-check"></i>{% else %}<i class="fa fa-ban"></i>{% endif %}</sup></li>
 			
-			<li cumulativebalance class="pointer"><span>Накопительный счет:</span> <strong>{{currency(cumulative_balance)}}</strong></li>
+			<li cumulativebalance class="pointer"><span>Бонусный счет:</span> <strong>{{currency(cumulative_balance)}}</strong></li>
 			
 			<li><span title="Активный период">Период:</span> <strong class="fz14px">{{active_period|default('не указан')}}</strong></li>
 			

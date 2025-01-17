@@ -26,7 +26,8 @@ class Main extends MY_Controller {
 			$data['avatar'] = 'public/images/users/mini/'.$userData[0]['avatar'];
 		}
 		
-		$this->twig->display('views/account/start', $data);
+		if (gettype($this->twig) == 'object') $this->twig->display('views/account/start', $data);
+		else echo '<h1 style="text-align: center; font-size: 50px; color: red; margin-top: 100px; font-family: verdana;">Ошибка шаблонизатора</h1>';
 	}
 	
 	
@@ -134,7 +135,7 @@ class Main extends MY_Controller {
 		if ($email == '') exit('0');
 		if (! preg_match("/^[0-9a-zA-Z_.-]+@[a-z0-9_.-]+.[a-z]{2,10}$/", $email)) exit('1');
 		
-		if (! $this->main_model->resetPass($email, $newPassword)) exit('2');
+		
 		
 		$emailTitle = $this->admin_model->getSettings('email_title');
 		$emailFrom = $this->admin_model->getSettings('email_from');
@@ -164,6 +165,8 @@ class Main extends MY_Controller {
 		if (!$this->email->send()) {
 			toLog($this->email->print_debugger());
 		}
+		
+		if (!$this->main_model->resetPass($email, $newPassword)) exit('2');
 		
 		echo '3';
 	}

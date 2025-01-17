@@ -14,15 +14,16 @@
 			onScrollStart: false,
 			onScrollStop: false,
 			onScrollTop: false,
-			onScrollBottom: false 
+			onScrollBottom: false,
+			method: 'on'
 		}, params),
 		scrStart = 0,
 		dir;
 		
-	$(selector).on("scrollstart", {latency: (latency || 250)}, function() {
+	$(selector).[method]("scrollstart", {latency: (latency || 250)}, function() {
 		scrStart = $(this).scrollTop();
 		if (ops.onScrollStart && typeof ops.onScrollStart == 'function') ops.onScrollStart();
-	}).on("scrollstop", {latency: (latency || 250)}, function(data) {
+	}).[method]("scrollstop", {latency: (latency || 250)}, function(data) {
 		let scrTop =  $(this).scrollTop(),
 			scrollHeight = $(this).prop('scrollHeight'),
 			overflowHeight = $(this).height();

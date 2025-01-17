@@ -1,5 +1,4 @@
-if (location.hostname != 'localhost' && location.pathname == '/account') {
-	
+if (isHosting() && location.pathname == '/account') {
 	let cookieUserId = getCookie('id', true);
 	
 	const userId = cookieUserId ? parseInt(cookieUserId) : false;

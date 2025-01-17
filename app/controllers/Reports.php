@@ -97,6 +97,9 @@ class Reports extends MY_Controller {
 		if (!$this->input->is_ajax_request()) return false;
 		$postData = $this->input->post();
 		$postData['cash'] = json_decode($postData['cash'], true);
+		$postData['custom_prices'] = json_decode($postData['custom_prices'], true);
+		$postData['custom_statics_summ'] = json_decode($postData['custom_statics_summ'], true);
+
 		$this->reports_model->saveMainReportPattern($postData, $this->constants[$postData['variant']]);
 		echo 1;
 	}
@@ -136,7 +139,6 @@ class Reports extends MY_Controller {
 				$toAdminData[$amountType][$patternId] = $data;
 			}
 			
-			toLog($toAdminData);
 			echo $this->twig->render('views/admin/render/reports_patterns.tpl', [
 				'reports_patterns' 	=> bringTypes($toAdminData),
 				'statics'			=> $this->admin_model->getStatics()

@@ -74,7 +74,7 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'localhost',
+	'hostname' => 'MySQL-8.2',
 	'username' => 'root',
 	'password' => '',
 	'database' => 'vendorteam',

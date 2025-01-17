@@ -11,6 +11,7 @@ class Wallet_model extends MY_Model {
 	private $walletCurrencyTable = 'wallet_currency';
 	
 	private $types = [
+		-3 => 'Списание',
 		-2 => 'Корректировка',
 		-1 => 'Отмена выплаты',
 		1 => 'Сдельная выплата',
@@ -19,7 +20,8 @@ class Wallet_model extends MY_Model {
 		4 => 'Премии',
 		5 => 'Заявки на оплату',
 		6 => 'KPI',
-		7 => 'Подарок'
+		7 => 'Подарок',
+		8 => 'Начисление'
 	];
 
 	

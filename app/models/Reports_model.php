@@ -120,7 +120,7 @@ class Reports_model extends My_Model {
 	 * @return массив 
 	 */
 	public function getMainReportPatterns($patternId = null, $limOffs = null, $isKey = 0) {
-		$this->db->select('rp.id, rp.variant, rp.name AS report_name, rp.period_id, rp.is_key, rp.is_cumulative, rps.static, rps.cash');
+		$this->db->select('rp.id, rp.variant, rp.name AS report_name, rp.period_id, rp.is_key, rp.is_cumulative, rps.static, rps.cash, rps.final_cash');
 		if ($patternId) $this->db->where('rp.id', $patternId);
 		
 		$this->db->join('reports_patterns_statics rps', 'rp.id = rps.report_pattern_id');
@@ -141,6 +141,7 @@ class Reports_model extends My_Model {
 			$newData[$itemId]['is_cumulative'] = $item['is_cumulative'];
 			$newData[$itemId]['variant'] = $item['variant'];
 			$newData[$itemId]['cash'][$item['static']] = $item['cash'];
+			$newData[$itemId]['final_cash'][$item['static']] = $item['final_cash'];
 		}
 		
 		if ($patternId) {
@@ -255,17 +256,21 @@ class Reports_model extends My_Model {
 			'name' 			=> $data['name'],
 			'period_id' 	=> $data['period_id'],
 			'variant'		=> $data['variant'],
-			'is_cumulative'	=> $data['amount_type'] ? 1 : 0
+			'is_cumulative'	=> $data['amount_type'] == 'wellet' ? 0 : ($data['amount_type'] == 'cumulative' ? 1 : 0)
 		]);
+		
 		$lastPatternId = $this->db->insert_id();
+		
+		$customStaticsSumm = $this->buildCustomStaticsSumm($data['custom_statics_summ']);
 		
 		if ($data['cash']) {
 			$staticsData = [];
-			foreach ($data['cash'] as $staticName => $cash) {
+			foreach ($data['cash'] as $staticId => $cash) {
 				$staticsData[] = [
 					'report_pattern_id'	=> $lastPatternId,
-					'static'			=> $staticName,
-					'cash' 				=> $cash
+					'static'			=> $staticId,
+					'cash' 				=> $cash,
+					'final_cash' 		=> $customStaticsSumm[$staticId]['summ'] ?? $cash,
 				];
 			}
 			$this->db->insert_batch('reports_patterns_statics', $staticsData);
@@ -279,25 +284,31 @@ class Reports_model extends My_Model {
 		]);
 		
 		
+		$customPrices = $this->buildCustomPrices($data['custom_prices']);
+
+		
 		if ($paymentsData) {
 			$usersPaymentsData = []; $usersStaticsData = []; $toWalletData = [];
 			foreach ($paymentsData as $staticId => $payments) {
 				foreach($payments['users'] as $userId => $userData) {
-					
 					$walletPayment = (float)str_replace(' ', '', $userData['payment']);
+					if (isset($customPrices[$staticId][$userId])) $walletPayment = (float)$customPrices[$staticId][$userId]['summ'];
+					
+					
+					//toLog($staticId.' '.$userData['nickname'].' -> '.$walletPayment);
 					
 					$usersPaymentsData[] = [
 						'report_pattern_id'	=> $lastPatternId,
 						'static_id' 		=> $staticId,
 						'user_id' 			=> $userId,
-						'debit' 			=> (float)str_replace(' ', '', $userData['payment'])
+						'debit' 			=> $walletPayment,
 					];
 					
 					$usersStaticsData[] = [
 						'report_pattern_id'	=> $lastPatternId,
 						'static_id' 		=> $staticId,
 						'user_id'			=> $userId,
-						'lider'				=> $userData['lider']
+						'lider'				=> $userData['lider'],
 					];
 					
 					if (!isset($toWalletData[$userId])) $toWalletData[$userId] = $walletPayment;
@@ -305,7 +316,6 @@ class Reports_model extends My_Model {
 				}
 			}
 			
-			//toLog($usersPaymentsData, true);
 			
 			if ($toWalletData) {
 				$this->load->model('wallet_model');
@@ -499,14 +509,14 @@ class Reports_model extends My_Model {
 	 */
 	private function _getReportPatternsPayments($patternId) {
 		if (is_null($patternId)) return [];
-		$this->db->select('rpp.user_id, rpp.static_id, rpp.pay_done');
+		$this->db->select('rpp.user_id, rpp.static_id, rpp.debit');
 		$this->db->where('rpp.report_pattern_id', $patternId);
 		$queryRpp = $this->db->get('reports_patterns_payments rpp');
 		if (!$resultRpp = $queryRpp->result_array()) return [];
 		
 		$response = [];
 		foreach ($resultRpp as $item) {
-			$response[$item['static_id']][$item['user_id']] = $item['pay_done'];
+			$response[$item['static_id']][$item['user_id']] = $item['debit'];
 		}
 		return $response;
 	}
@@ -795,6 +805,7 @@ class Reports_model extends My_Model {
 			}
 			
 			if ($response) ksort($response);
+			
 			return $response;
 		}
 		
@@ -805,7 +816,6 @@ class Reports_model extends My_Model {
 		// pattern_id static_id user_id cash
 		$depositHistories = $this->getDepositHistories(); 
 		$rpp = $this->_getReportPatternsPayments($pData['pattern_id']);
-		
 		
 		$this->db->select('u.id AS user_id, u.color, u.nickname, u.deposit, u.deposit_percent, u.payment AS pay_method, u.deleted, s.name AS static_name, s.cap_simple, s.cap_lider, s.deposit_percent AS sdp, r.name AS rank_name, rpr.rank_coefficient, rpus.lider, rpus.static_id AS static');
 		$this->db->join('reports_patterns_user_static rpus', 'rpus.user_id = u.id', 'left outer');
@@ -848,6 +858,7 @@ class Reports_model extends My_Model {
 		
 		// static id => [static type, users => [user id => user data... raids => [raid id => rate]]]
 		$response = [];
+		
 		if ($resultUsers) {
 			foreach ($resultUsers as $user) {
 				// если в кэше не задан статик - то прьосто пропускаем его, так как необходимы записи "cap_lider" и "cap_simple", которые неоткуда взять
@@ -879,6 +890,7 @@ class Reports_model extends My_Model {
 				//$toDeposit = $deposit < $depositLimit ? ($depositLimit - $deposit >= $percentFromPayment ? round($percentFromPayment, 2) : round($depositLimit - $deposit, 2)) : 0;
 				
 				$response[$user['static']]['cash'] = $pData['cash'][$user['static']];
+				$response[$user['static']]['final_cash'] = $pData['final_cash'][$user['static']];
 				$response[$user['static']]['static_name'] = $user['static_name'];
 				$response[$user['static']]['users'][$user['user_id']] = [
 					'nickname' 			=> $user['nickname'],
@@ -892,7 +904,7 @@ class Reports_model extends My_Model {
 					'period_koeff' 		=> $periodKoeff,
 					'pay_method'		=> $user['pay_method'],
 					'deposit'			=> round($user['deposit'], 2),
-					'payment' 			=> round($payment, 2),
+					'payment' 			=> round(($rpp[$user['static']][$user['user_id']] ?? $payment), 2),
 					//'to_deposit'		=> $toDeposit,
 					//'final_payment'		=> round($payment - $toDeposit, 2),
 					//'pay_done'			=> isset($rpp[$user['static']][$user['user_id']]) ? $rpp[$user['static']][$user['user_id']] : 0,
@@ -2257,6 +2269,45 @@ class Reports_model extends My_Model {
 		if (!$boostersData = $this->_result('users u')) return false;
 		return setArrKeyFromField($boostersData, 'nickname');
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	* 
+	* @param 
+	* @return 
+	*/
+	private function buildCustomPrices($customPrices = null) {
+		if (!$customPrices) return false;
+		return arrRestructure($customPrices, 'static user');
+	}
+	
+	
+	/**
+	* 
+	* @param 
+	* @return 
+	*/
+	private function buildCustomStaticsSumm($customStaticsSumm = null) {
+		if (!$customStaticsSumm) return false;
+		return arrRestructure($customStaticsSumm, 'static');
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 }

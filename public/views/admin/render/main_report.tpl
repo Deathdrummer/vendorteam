@@ -88,7 +88,7 @@
 									{#{% if pattern_id and not to_user %}<td class="center"><i title="Статус выплаты" paydoneall class="fa fa-check-square"></i></td>{% endif %}#}
 								</tr>
 							</thead>
-							<tbody>
+							<tbody reporttableright>
 								{% for userId, userData in static.users %}
 									<tr>
 										<td class="nowidth">{{userData.koeff_summ}}</td>
@@ -96,7 +96,21 @@
 										<td class="nowidth">{{userData.effectiveness}}</td>
 										<td class="nowidth">{{userData.fine}}</td>
 										<td class="nowidth">{{userData.period_koeff|round(3)}}</td>
-										<td class="nowidth"><strong class="nowrap">{{currency(userData.payment)}}</strong></td>
+										<td class="nowidth">
+											{% if pattern_id %}
+												<strong class="nowrap">{{currency(userData.payment)}}</strong>
+											{% else %}
+												<div class="d-flex align-items-center">
+													<div class="notop inline mr3px">
+														<strong>{{currency}}</strong>
+													</div>
+													<div class="field">
+														<input type="text" class="fz12px" mainreportpayment="{{staticId}}|{{userId}}" value="{{userData.payment}}">
+													</div>
+												</div>
+											{% endif %}
+											{# <strong class="nowrap">{{currency(userData.payment)}}</strong> #}
+										</td>
 										{#<td><span class="nowrap">{{currency(userData.to_deposit)}}</span></td>#}
 										{#<td><strong class="nowrap">{{currency(userData.final_payment)}}</strong></td>#}
 										{#{% if pattern_id and not to_user %}
@@ -117,7 +131,18 @@
 								<tr>
 									<td colspan="2" class="right">Сум. коэф. периода:</td>
 									<td><strong>{{static.period_koeff_summ|round(3)}}</strong></td>
-									<td colspan="3" class="right"><span class="nowrap right">Бюджет:</span> <strong class="nowrap">{{currency(static.cash)}}</strong></td>
+									<td colspan="3" class="right">
+										<p><span class="nowrap right">Бюджет:</span> <strong class="nowrap">{{currency(static.cash)}}</strong></p>
+										<p>
+											<span class="nowrap right">Итоговый:</span>
+											<strong class="nowrap">{{currency}}
+												<span
+													mainreportfinalcash="{{staticId}}"
+													finalcash="{{static.cash}}"
+													>{{(static.final_cash ?: static.cash)|number_format(1, '.', ' ')}}</span>
+											</strong>
+										</p>
+									</td>
 									{#{% if pattern_id and not to_user %}<td></td>{% endif %}#}
 								</tr>
 							</tbody>

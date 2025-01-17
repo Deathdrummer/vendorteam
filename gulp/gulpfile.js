@@ -1,5 +1,5 @@
 const domain = 'vendorteam.loc', // прописать домен
-  prodDir = 'production', // директория для продакшн версии
+  prodDir = '../production/', // директория для продакшн версии
   repoDir = '../../repository/', // директория репозитория
   { src, dest, parallel, series, watch } = require('gulp'),
   browserSync = require('browser-sync').create(),
@@ -79,18 +79,15 @@ async function build() {
   src(['../app/**/*']).pipe(dest(prodDir + '/app'));
   src(['../system/**/*']).pipe(dest(prodDir + '/system'));
   src('../public/css/plugins.min.css').pipe(dest(prodDir + 'public/css'));
-  src('../public/css/assets.min.css').pipe(dest(prodDir + 'public/css'));
-  src('../public/css/components.min.css').pipe(dest(prodDir + 'public/css'));
 
   src('../public/js/plugins.min.js').pipe(dest(prodDir + 'public/js'));
-  src('../public/js/components.min.js').pipe(dest(prodDir + 'public/js'));
-  src(['../public/js/common.js', '../public/js/functions.js']).pipe(dest(prodDir + 'public/js'));
+  src(['../public/js/assets/common.js', '../public/js/assets/functions.js']).pipe(dest(prodDir + 'public/js/assets'));
 
   src('../public/fonts/**/*').pipe(dest(prodDir + 'public/fonts'));
   src('../public/images/**/*.svg').pipe(dest(prodDir + 'public/images'));
   src('../public/svg/sprite.svg').pipe(dest(prodDir + 'public/svg'));
   src('../public/filemanager/**/*').pipe(dest(prodDir + 'public/filemanager'));
-  src(['../public/components/**/*.tpl']).pipe(dest(prodDir + 'public/components'));
+  
 
   publicDirs.forEach(function (dir) {
     var dirName = dir.name;
@@ -112,7 +109,7 @@ async function build() {
 // основные команды: default b repo removedist cfr fr pjr pcr cr afr
 
 exports.default = series(clearcache, parallel(sassToCss, svg), startWatch); // слежение
-exports.b = series(clearcache, /*removedist,*/ imagemin, build); // сбилдить в продакшн
+exports.b = series(clearcache, /*removedist, imagemin,*/ build); // сбилдить в продакшн
 
 exports.repo = buld_from_repository; // сформировать файлы и библиотеки из репозитория
 

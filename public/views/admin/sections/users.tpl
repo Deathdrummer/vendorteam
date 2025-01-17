@@ -69,6 +69,7 @@
 			{% if permissions is not defined or id~'.depositUsers' in permissions %}<li id="depositUsers">Резерв</li>{% endif %}
 			{% if permissions is not defined or id~'.balance' in permissions %}<li id="balance">Баланс</li>{% endif %}
 			{% if permissions is not defined or id~'.colorsUsers' in permissions %}<li id="colorsUsers">Цвета рейдеров</li>{% endif %}
+			{% if permissions is not defined or id~'.commulativeAmount' in permissions %}<li id="commulativeAmount">Накопительный счет</li>{% endif %}
 		</ul>
 		
 		
@@ -560,6 +561,153 @@
 				</form>
 			</div>
 			{% endif %}
+			
+			
+			
+			
+			{% if permissions is not defined or id~'.commulativeAmount' in permissions %}
+			<div tabid="commulativeAmount">
+				{% if users.verify|length > 0 %}
+					<ul class="tabstitles sub">
+						{% for sId, sData in statics %}
+							{% if users.verify[sId] is defined %}
+								<li id="tab{{sId}}" group="{{statics[sId]['group']}}">{% if sId == 0 %}Статик не задан{% else %}{{statics[sId]['name']|default('Статик удален')}}{% endif %}</li>
+							{% endif %}
+						{% endfor %}
+					</ul>
+					
+					<div class="tabscontent">
+						{% for staticId, usersData in users.verify %}
+							<div tabid="tab{{staticId}}" class="scroll">
+								<strong>{% if staticId == 0 %}Статик не задан{% else %}{{statics[staticId]['name']|default('Статик удален')}}{% endif %}</strong>
+								
+								{% if usersData %}
+									<table id="usersAmountTable">
+										<thead>
+											<tr>
+												<td class="nowidth"></td>
+												<td class="nowidth" title="Цвет">Цвет</td>
+												<td class="{% if sort_field == 'u.nickname' %} active{% endif %}">Никнейм <i class="fa fa-sort" userssortfield="u.nickname" sortorder="{{sort_order}}"></i></td>
+												<td class="nowrap{% if sort_field == 'us.lider' %} active{% endif %}">Лидер <i class="fa fa-sort" userssortfield="us.lider" sortorder="{{sort_order}}"></i></td>
+												<td class="nowrap{% if sort_field == 'u.agreement' %} active{% endif %}" title="Соглашение">Согл. <i class="fa fa-sort" userssortfield="u.agreement" sortorder="{{sort_order}}"></i></td>
+												<td class="w140px{% if sort_field == 'u.rank' %} active{% endif %}">Звание <i class="fa fa-sort" userssortfield="u.rank" sortorder="{{sort_order}}"></i></td>
+												<td class="w150px{% if sort_field == 'u.email' %} active{% endif %}">E-mail <i class="fa fa-sort" userssortfield="u.email" sortorder="{{sort_order}}"></i></td>
+												<td class="w110px{% if sort_field == 'u.reg_date' %} active{% endif %}">Дата регистрации <i class="fa fa-sort" userssortfield="u.reg_date" sortorder="{{sort_order}}"></i></td>
+												<td class="nowidth">Стаж дн.</td>
+												<td class="w130px">Средство платежа</td>
+												<td class="w110px{% if sort_field == 'u.birthday' %} active{% endif %}">Дата рождения <i class="fa fa-sort" userssortfield="u.birthday" sortorder="{{sort_order}}"></i></td>
+												<td class="w160px">
+													<input type="hidden" amountuserids value="{{usersData|serilizeArrayField('id', '|')}}">
+													<div class="row gutters-4 align-items-center justify-content-between">
+														<div class="col-auto">
+															<p>Накоп. счет</p>
+														</div>
+														<div class="col-auto">
+															<div class="buttons notop mr4px">
+																<button class="small alt w30px mr3px p-0" usersgroupamount useramountoperation="plus" useramounttitle="Начислить всем на накоп. счет." title="Начислить"><i class="fa fa-fw fa-plus"></i></button>
+																<button class="small remove w30px p-0" usersgroupamount useramountoperation="minus" useramounttitle="Списать у всех с накоп. счета" title="Списать"><i class="fa fa-fw fa-minus"></i></button>
+																<button class="small w30px pay p-0" usersgroupamount useramountoperation="exchange" useramounttitle="Перевести всем на баланс" title="Перевод на баланс"><i class="fa fa-fw fa-exchange"></i></button>
+															</div>
+														</div>
+													</div>
+												</td>
+												<td class="w40px">Истор. зачисл.</td>
+											</tr>
+										</thead>
+										
+										<tbody userslistrows>
+											{% for k, user in usersData %}
+												<tr userid="{{user.id}}"{% if user.nickname %} usernickname="{{user.nickname}}"{% endif %}{% if user.payment %} userpayment="{{user.payment}}"{% endif %}>
+													<td class="nowidth nopadding">
+														{% if user.avatar %}
+															<div class="avatar" style="background-image: url('{{base_url('public/images/users/mini/'~user.avatar)}}')" title="{{user.nickname}}">
+																{% if user.excluded %}
+																	<i class="fa fa-minus-circle fz18px mt3px ml3px" style="color: #c54747;" title="Отстранен"></i>
+																{% endif %}
+															</div>
+														{% elseif user.deleted %}
+															<div class="avatar" style="background-image: url({{base_url('public/images/deleted_mini.jpg')}})" title="Нет аватарки"></div>
+														{% else %}
+															<div class="avatar" style="background-image: url({{base_url('public/images/user_mini.jpg')}})" title="Нет аватарки"></div>
+														{% endif %}
+													</td>
+													<td class="center">
+														<div class="color">
+															<div style="background-color: {{user.color}}"></div>
+														</div>
+													</td>
+													<td class="nowidth">
+														<p>{{user.nickname}}</p>
+													</td>
+													<td class="nowidth center">
+														{% if user.lider == 1 %}
+															<i class="fa fa-check"></i>
+														{% else %}
+															<i class="fa fa-ban"></i>
+														{% endif %}
+													</td>
+													<td class="nowidth center">
+														{% if user.agreement == 1 %}
+															<i class="fa fa-check"></i>
+														{% else %}
+															<i class="fa fa-ban"></i>
+														{% endif %}
+													</td>
+													<td>{{user.rank|default('не задано')}}</td>
+													<td>{{user.email}}</td>
+													<td class="nowidth">
+														<p>{{user.reg_date|d}}</p>
+													</td>
+													<td class="nowidth nowrap center">
+														<p>{{user.stage|default(0)}}</p>
+													</td>
+													<td class="nowidth">
+														<small>{{user.payment}}</small>
+													</td>
+													<td class="nowidth">
+														{% if user.birthday %}<p>{{user.birthday|d}}</p>{% endif %}
+													</td>
+													<td class="nowidth">
+														<div class="row gutters-4 align-items-center justify-content-between">
+															<div class="col-auto">
+																<input type="hidden" useramountdata value="{{user.id}}|{{user.cumulative}}|{{user.amount}}">
+																<p><span cellcumulative>{{user.cumulative|number_format(1, '.', ' ')|default(0)}}</span> <small>₽</small></p>
+															</div>
+															<div class="col-auto">
+																<div class="buttons">
+																	<button class="small alt w30px mr3px" useramount useramountoperation="plus" useramounttitle="Начислить на накоп. счет." title="Начислить"><i class="fa fa-fw fa-plus"></i></button>
+																	<button class="small remove w30px" useramount useramountoperation="minus" useramounttitle="Списать с накоп. счета" title="Списать"><i class="fa fa-fw fa-minus"></i></button>
+																	<button class="small w30px pay" useramount useramountoperation="exchange" useramounttitle="Перевести на баланс" title="Перевод на баланс"><i class="fa fa-fw fa-exchange"></i></button>
+																</div>
+															</div>
+														</div>
+													</td>
+													<td class="nowidth center">
+														<div class="buttons notop inline mb5px">
+															<button class="small w30px" useramounthistory="{{user.id}}|{{user.nickname}}" title="Посмотреть"><i class="fa fa-fw fa-eye"></i></button>
+														</div>
+													</td>
+												</tr>
+											{% endfor %}
+											<tr>
+												<td colspan="11" class="text-right">Всего:</td>
+												<td colspan="12"><strong>{{cumulative[staticId]|number_format(1, '.', ' ')|default(0)}} <small>₽</small></strong></td>
+											</tr>
+										</tbody>
+									</table>
+									<br>
+									<br>
+								{% else %}
+									<p class="empty">Нет данных</p>
+								{% endif %}
+							</div>
+						{% endfor %}
+					</div>
+				{% else %}
+					<p class="empty">Нет данных</p>
+				{% endif %}
+			</div>
+			{% endif %}
 		</div>
 		
 		
@@ -575,8 +723,7 @@
 
 <script type="text/javascript"><!--
 
-if (location.hostname != 'localhost') {
-	
+if (isHosting()) {
 	
 	socket.emit('take_users_online', users => {
 		$.each(users, function(k, item) {
@@ -613,6 +760,13 @@ if (location.hostname != 'localhost') {
 
 $(document).ready(function() {
 	
+	let usersAmountTooltip, usersGroupAmountTooltip;
+	
+	
+	
+	$('[usercumulative]').number(true, 1, '.', ' ');
+	
+	
 	//------------------------------------------------------------ Выбор группы
 	var groupFromCache = lscache.get('staticsGroup');
 	if (groupFromCache) {
@@ -646,6 +800,9 @@ $(document).ready(function() {
 			$('.tabstitles.sub').siblings('.tabscontent').children('div').removeClass('visible');
 			$('.tabstitles.sub').siblings('.tabscontent').children('div[tabid="'+tabId+'"]').addClass('visible');
 		}
+		
+		usersAmountTooltip.close();
+		usersGroupAmountTooltip.close();
 	});
 	
 	
@@ -836,6 +993,9 @@ $(document).ready(function() {
 	$('#setSearchFromUsers').on(tapEvent, function() {
 		var searchFieldData = $('#searchUsersField').val(),
 			searchUsersType = $('#searchUsersType').val();
+			
+		usersAmountTooltip.close();
+		usersGroupAmountTooltip.close();
 		
 		if (!searchFieldData) $('#searchUsersField').addClass('error');
 		else {
@@ -906,6 +1066,8 @@ $(document).ready(function() {
 		$('.tabstitles.sub').siblings('.tabscontent').children('div').removeClass('visible');
 		$('.tabstitles.sub').siblings('.tabscontent').children('div[tabid="'+tabId+'"]').addClass('visible');
 		
+		usersAmountTooltip.close();
+		usersGroupAmountTooltip.close();
 		
 		$('#resetSearchFromUsers').setAttrib('disabled');
 	});
@@ -1572,6 +1734,468 @@ $(document).ready(function() {
 	
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//------------------------------------------------------------------------------------- Накопительный счет
+	let uSUserId, amountProcess = false, resultSumm = 0;
+	if (usersAmountTooltip) usersAmountTooltip.destroy();
+	usersAmountTooltip = new jBox('Tooltip', {
+		attach: '[useramount]',
+		trigger: 'click',
+		closeOnClick: 'body',
+		//closeOnMouseleave: true,
+		//addClass: '',
+		onOpen: function(data) {
+			
+			const btn = usersAmountTooltip.target,
+				cellSummSelector = $(btn).closest('td').find('[cellcumulative]'),
+				operation = $(btn).attr('useramountoperation'),
+				useramountData = $(btn).closest('td').find('[useramountdata]').val().split('|'),
+				userId = useramountData[0],
+				cumulative = Number(useramountData[1]),
+				amount = Number(useramountData[2]),
+				btnTitleMap = {
+					plus: '<button class="button small alt w110px" amountaction title="Начислить"><p class="center">Начислить</p></button>',
+					minus: '<button class="button small remove w110px" amountaction title="Списать"><p class="center">Списать</p></button>',
+					exchange: '<button class="button small pay w110px" amountaction title="Перевести"><p class="center">Перевести</p></button>',
+				};
+			
+			
+			//closeToolTips('statics');
+			let html = '';
+			html += '<p>Введите сумму:</p>';
+			html += '<div class="row gutters-4">';
+			html += 	'<div class="col">';
+			html += 		'<div class="field small w100">';
+			html += 			'<input type="text" amountsumm value="" placeholder="0.0">';
+			html += 		'</div>';
+			html += 	'</div>';
+			html += 	'<div class="col-auto">';
+			html += 		'<div class="buttons">';
+			html += 			btnTitleMap[operation];
+			html += 		'</div>';
+			html += 	'</div>';
+			html += '</div>';
+			html += '<p class="mt5px">Итог: <span initamount></span> <small>₽</small></p>';
+
+			
+			usersAmountTooltip.setContent('<div class="w200px h4rem">'+html+'</div>');
+			usersAmountTooltip.setTitle($(usersAmountTooltip.target).attr('useramounttitle'));
+			
+			
+			$(usersAmountTooltip.content).find('[initamount]').number(cumulative, 1, '.', ' ');
+			
+			$(usersAmountTooltip.content).find('[amountsumm]').number(true, 1, '.', ' ');
+			
+			$(usersAmountTooltip.content).find('[amountsumm]').on('input', (e) => {
+				const val = Number(e.target.value.replace(' ', ''));
+				
+				if (operation == 'plus') {
+					resultSumm = cumulative + val;
+				} else if (operation == 'minus' || operation == 'exchange') {
+					if (val > cumulative) {
+						$(e.target).addClass('error');
+						$(usersAmountTooltip.content).find('[amountaction]').setAttrib('disabled');
+						
+						return false;
+					}
+					$(e.target).removeClass('error');
+					$(usersAmountTooltip.content).find('[amountaction]').removeAttrib('disabled');
+					resultSumm = cumulative - val;
+				}
+				
+				$(usersAmountTooltip.content).find('[initamount]').number(resultSumm, 1, '.', ' ');
+			});
+			
+			
+			
+			
+			$(usersAmountTooltip.content).find('[amountaction]').one(tapEvent, function(e) {
+				amountProcess = true;
+				
+				const summField = $(usersAmountTooltip.content).find('[amountsumm]'),
+					summVal = Number($(summField).val().replace(' ', ''));
+				
+				
+				if (summVal == 0) {
+					$(summField).addClass('error');
+					return;
+				}
+					
+				$(e.currentTarget).html('<i class="fa fa-spinner fa-pulse fz22px"></i>');
+				$(summField).setAttrib('disabled');
+				
+				$.post('/admin/change_user_amount', {
+					user_id: userId,
+					wallet: 'cumulative',
+					summ: summVal,
+					operation,
+				}, function(response) {
+					if (!response) {
+						notify('Ошибка! Средства не переведены!', 'error');
+						return;
+					}
+					
+					if (operation == 'plus') {
+						$(cellSummSelector).number(resultSumm, 1, '.', ' ');
+						notify('Средства успешно начислены!');
+					} else if (operation == 'minus') {
+						$(cellSummSelector).number(resultSumm, 1, '.', ' ');
+						notify('Средства успешно списаны!');
+					} else if (operation == 'exchange') {
+						$(cellSummSelector).number(resultSumm, 1, '.', ' ');
+						notify('Средства успешно переведены!');
+					}
+					
+					changeHiddenValue($(btn).closest('td').find('[useramountdata]'), 2, resultSumm)
+					
+					usersAmountTooltip.close();
+				});
+			});
+			
+		},
+		outside: 'x',
+		ignoreDelay: true,
+		zIndex: 1200,
+		repositionOnContent: true,
+		pointer: 'top',
+		//pointTo: 'left',
+		position: {
+		  x: 'left',
+		  y: 'center'
+		}
+	});
+	
+	
+	$('body').off(tapEvent, '[useramount]').on(tapEvent, '[useramount]', function() {
+		amountProcess = false;
+		
+		let staticsBtn = this;
+		uSUserId = $(this).attr('useramount');
+		
+		/*$(document).one("scrollstart", {latency: 250}, function() {
+			if (amountProcess) return;
+			closeToolTips();
+		});*/
+	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//------------------------------------------------------------------------------------- Накопительный счет групповое
+	let amountGroupProcess = false;
+	if (usersGroupAmountTooltip) usersGroupAmountTooltip.destroy();
+	usersGroupAmountTooltip = new jBox('Tooltip', {
+		attach: '[usersgroupamount]',
+		trigger: 'click',
+		closeOnClick: 'body',
+		//closeOnMouseleave: true,
+		//addClass: '',
+		onOpen: function(data) {
+			
+			const btn = usersGroupAmountTooltip.target,
+				cellSummSelector = $(btn).closest('td').find('[cellcumulative]'),
+				operation = $(btn).attr('useramountoperation'),
+				userAmountIds = $(btn).closest('td').find('[amountuserids]').val().split('|'),
+				btnTitleMap = {
+					plus: '<button class="button small alt w110px" amountaction="summ" title="Начислить"><p class="center">Начислить</p></button>',
+					minus: '<button class="button small remove w110px" amountaction="summ" title="Списать"><p class="center">Списать</p></button>',
+					exchange: '<button class="button small pay w110px" amountaction="summ" title="Перевести"><p class="center">Перевести</p></button>',
+				},
+				btnCls = {
+					plus: 'alt',
+					minus: 'remove',
+					exchange: 'pay',
+				},
+				actionStr = {
+					plus: 'Начислить',
+					minus: 'Списать',
+					exchange: 'Перевести',
+				};
+			
+			
+			 // 10%,  отправить 20% отправить 30% отправить 50% и отправить 100%
+			
+			//closeToolTips('statics');
+			let html = '';
+			html += `<p>${actionStr[operation]} процент от суммы:</p>`;
+			html += '<div class="buttons mb10px">';
+			html += 	`<button class="button small ${btnCls[operation]} w40px p-0" amountaction="10%" title="Начислить"><p class="center">10%</p></button>`;		
+			html += 	`<button class="button small ${btnCls[operation]} w40px p-0 ml10px" amountaction="20%" title="Начислить"><p class="center">20%</p></button>`;		
+			html += 	`<button class="button small ${btnCls[operation]} w40px p-0 ml10px" amountaction="30%" title="Начислить"><p class="center">30%</p></button>`;		
+			html += 	`<button class="button small ${btnCls[operation]} w40px p-0 ml10px" amountaction="50%" title="Начислить"><p class="center">50%</p></button>`;		
+			html += 	`<button class="button small ${btnCls[operation]} w40px p-0 ml10px" amountaction="100%" title="Начислить"><p class="center">100%</p></button>`;		
+			html += '</div>';
+			
+			html += '<p>Введите сумму:</p>';
+			html += '<div class="row gutters-4">';
+			html += 	'<div class="col">';
+			html += 		'<div class="field small w100">';
+			html += 			'<input type="text" amountsumm value="" placeholder="0.0">';
+			html += 		'</div>';
+			html += 	'</div>';
+			html += 	'<div class="col-auto">';
+			html += 		'<div class="buttons">';
+			html += 			btnTitleMap[operation];
+			html += 		'</div>';
+			html += 	'</div>';
+			html += '</div>';
+
+			
+			usersGroupAmountTooltip.setContent('<div class="w242px h104px">'+html+'</div>');
+			usersGroupAmountTooltip.setTitle($(usersGroupAmountTooltip.target).attr('useramounttitle'));
+			
+			let summ = getMinMaxAmountSumm();
+			
+			let dataToSave = {}; 
+			$(usersGroupAmountTooltip.content).find('[amountsumm]').number(true, 1, '.', ' ');
+			
+			$(usersGroupAmountTooltip.content).find('[amountaction]').on(tapEvent, (e) => {
+				const type = $(e.currentTarget).attr('amountaction');
+				
+				if (type == 'summ') {
+					const summField = $(usersGroupAmountTooltip.content).find('[amountsumm]'),
+						summVal = Number($(summField).val().replace(' ', ''));
+						
+					if (operation == 'minus' || operation == 'exchange') {
+						if (summVal > summ.min) {
+							notify('У некоторых участников недостаточно средств для списания!', 'error');
+							$(summField).addClass('error');
+							return;
+						}
+					}
+					dataToSave = setUsersSumm({summ: summVal}, operation);
+				} else {
+					if (operation == 'minus' || operation == 'exchange') {
+						console.log(summ);
+						if (summ.min == 0) {
+							notify('У некоторых участников недостаточно средств для списания!', 'error');
+							return;
+						}
+					}
+					dataToSave = setUsersSumm({percent: parseInt(type)}, operation);
+				}
+				
+				
+				
+				
+				$.post('/admin/change_users_amounts', {
+					users_amounts: JSON.stringify(dataToSave),
+					wallet: 'cumulative',
+					operation,
+				}, function(response) {
+					if (!response || response == 0) {
+						notify('Ошибка! Средства не переведены!', 'error');
+						return;
+					}
+					
+					if (operation == 'plus') {
+						notify('Средства успешно начислены!');
+					} else if (operation == 'minus') {
+						notify('Средства успешно списаны!');
+					} else if (operation == 'exchange') {
+						notify('Средства успешно переведены!');
+					}
+					summ = getMinMaxAmountSumm();
+					usersGroupAmountTooltip.close();
+				}).done(function(data) {
+				    console.log("Success:", data);
+				})
+				.fail(function(xhr, status, error) {
+				    console.error("Error:", status, error);
+				});
+			});
+		},
+		outside: 'x',
+		ignoreDelay: true,
+		zIndex: 1200,
+		repositionOnContent: true,
+		pointer: 'top',
+		//pointTo: 'left',
+		position: {
+		  x: 'left',
+		  y: 'center'
+		}
+	});
+	
+	
+	$('body').off(tapEvent, '[useramount]').on(tapEvent, '[useramount]', function() {
+		amountGroupProcess = false;
+		
+		let staticsBtn = this;
+		uSUserId = $(this).attr('useramount');
+		
+		/*$(document).one("scrollstart", {latency: 250}, function() {
+			if (amountGroupProcess) return;
+			closeToolTips();
+		});*/
+	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	$('body').off(tapEvent, '[useramounthistory]').on(tapEvent, '[useramounthistory]', function() {
+		let staticsBtn = this;
+		
+		let uData = $(this).attr('useramounthistory').split('|'),
+			uSUserId = uData[0],
+			uSUserName = uData[1];
+		
+		popUp({
+			title: `${uSUserName}: история транзакций|4`,
+			width: 1000,
+			closeButton: 'Закрыть',
+		}, function(walletBalanceWin) {
+			walletBalanceWin.wait();
+			getAjaxHtml('admin/get_cumulative_balance', {user_id: uSUserId}, function(html) {
+				walletBalanceWin.setData(html, false);
+				$('#walletUserBalance').ddrScrollTableY({height: '400px', wrapBorderColor: '#d7dbde'});
+			}, function() {
+				walletBalanceWin.wait(false);
+			});
+		});
+	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//--------------------------------------------------------------------------------------------------------------
+	
+	
+	$(document).on('changetabs', function() {
+		usersAmountTooltip.close();
+		usersGroupAmountTooltip.close();
+	});
+	
+	
+	function closeToolTips() {
+		if (typeof usersAmountTooltip.close === 'function') usersAmountTooltip.close();
+		if (typeof usersGroupAmountTooltip.close === 'function') usersGroupAmountTooltip.close();
+	}
+	
+	
+	
+	function changeHiddenValue(selector, section, value, separator = '|') {
+		const attrData = $(selector).val().split(separator);
+		
+		attrData[section - 1] = value;
+		
+		$(selector).val(attrData.join(separator));
+	}
+	
+	
+	function changeAttribute(selector, attrname, section, value, separator = '|') {
+		const attrData = $(selector).attr(attrname).split(separator);
+		
+		attrData[section - 1] = value;
+		
+		$(selector).setAttrib(attrname, attrData.join(separator));
+	}
+	
+	
+	
+	
+	function getMinMaxAmountSumm() {
+		const summData = [];
+		
+		$('#usersAmountTable').find('[userslistrows]').find('[useramountdata]').each((k, inp) => {
+			const inpVal = $(inp).val()?.split('|'),
+				summ = Number(inpVal[1]);
+			summData.push(summ);
+		});
+		
+		const min = Math.min(...summData),
+			max = Math.max(...summData);
+		
+		return {min, max};
+	}
+	
+	
+	function setUsersSumm(summData, operation) {
+		const usersSummResult = {};
+		$('#usersAmountTable').find('[userslistrows]').find('[useramountdata]').each((k, inp) => {
+			const inpVal = $(inp).val()?.split('|'),
+				userId = inpVal[0],
+				summ = Number(inpVal[1]),
+				cellSummSelector = $(inp).closest('td').find('[cellcumulative]');
+			
+			let calcSumm = 0;
+			if (summData.percent) {
+				calcSumm = Number((summ / 100 * Number(summData.percent)).toFixed(2));
+			} else if (summData.summ) {
+				calcSumm = Number(summData.summ);
+			}
+			
+			
+			let resultSumm = 0;
+			if (operation == 'plus') {
+				resultSumm = summ + calcSumm;
+			} else if (operation == 'minus' || operation == 'exchange') {
+				resultSumm = summ - calcSumm;
+			}
+			
+			
+			changeHiddenValue(inp, 2, resultSumm);
+			
+			$(cellSummSelector).number(resultSumm, 1, '.', ' ');
+			
+			usersSummResult[userId] = calcSumm;
+		});
+		
+		return usersSummResult;
+	}
 	
 });
 

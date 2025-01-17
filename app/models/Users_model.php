@@ -58,6 +58,34 @@ class Users_model extends MY_Model {
 	
 	
 	/**
+	* Получить список счетов участников 
+	* @param 
+	* @return 
+	*/
+	public function getUsersAmounts($userId = null) {
+		if ($userId) $this->db->where('wu.user_id', $userId);
+		$this->db->select('wu.user_id, wu.summ AS amount, wc.summ AS cumulative');
+		$this->db->join('wallet_cumulative wc', 'wc.user_id = wu.user_id', 'LEFT OUTER');
+		$query = $this->db->get('wallet_amounts wu');
+		
+		if ($userId) {
+			if (!$usersData = $query->row_array()) return false;
+			return $usersData;
+		}
+		
+		if (!$usersData = $query->result_array()) return false;
+		return setArrKeyFromField($usersData, 'user_id', ['amount', 'cumulative']);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
 	 * @param 
 	 * @return 
 	*/
@@ -921,5 +949,75 @@ class Users_model extends MY_Model {
 	}
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	* 
+	* @param 
+	* @return 
+	*/
+	public function changeUserAmount($userId = null, $wallet = 'amount', $summ = null, $operation = 'plus') {
+		if (!$userId || !$wallet || !$summ) return false;
+		
+		$this->db->where('user_id', $userId);
+		
+		
+		if ($wallet == 'amount') {
+			if (!$row = $this->_row('wallet_amounts')) return false;
+			
+			if ($operation == 'plus') {
+				$newSumm = (float)$row['summ'] + (float)$summ;
+			} elseif ($operation == 'minus') {
+				$newSumm = (float)$row['summ'] - (float)$summ;
+			} elseif ($operation == 'exchange') {
+				$newSumm = (float)$row['summ'] - (float)$summ;
+				
+				$this->db->where('user_id', $userId);
+				if (!$row = $this->_row('wallet_cumulative')) return false;
+				$newSummToAmount = (float)$row['summ'] + (float)$summ;
+				$this->db->where('user_id', $userId);
+				if (!$this->db->update('wallet_cumulative', ['summ' => $newSummToAmount])) return false;
+			}
+			
+			
+			$this->db->where('user_id', $userId);
+			if (!$this->db->update('wallet_amounts', ['summ' => $newSumm])) return false;
+			return true;
+		
+		} elseif ($wallet == 'cumulative') {
+			
+			if (!$row = $this->_row('wallet_cumulative')) return false;
+			
+			if ($operation == 'plus') {
+				$newSumm = (float)$row['summ'] + (float)$summ;
+			
+			} elseif ($operation == 'minus') {
+				$newSumm = (float)$row['summ'] - (float)$summ;
+			
+			} elseif ($operation == 'exchange') {
+				$newSumm = (float)$row['summ'] - (float)$summ;
+				
+				$this->db->where('user_id', $userId);
+				if (!$row = $this->_row('wallet_amounts')) return false;
+				$newSummToAmount = (float)$row['summ'] + (float)$summ;
+				$this->db->where('user_id', $userId);
+				if (!$this->db->update('wallet_amounts', ['summ' => $newSummToAmount])) return false;
+			}
+			
+			
+			$this->db->where('user_id', $userId);
+			if (!$this->db->update('wallet_cumulative', ['summ' => $newSumm])) return false;
+			return true;
+			
+		}
+		
+		return false;
+		
+	}
 	
 }

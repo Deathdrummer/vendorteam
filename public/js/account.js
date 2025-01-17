@@ -1568,6 +1568,7 @@ $(document).ready(function() {
 	
 	
 	$('body').off(tapEvent, '[patternkeyid]').on(tapEvent, '[patternkeyid]', function() {
+		console.log(123123123);
 		reportWin.wait();
 		var thisPatternId = $(this).attr('patternkeyid'),
 			thisPatternName = $(this).attr('patternname');
@@ -2627,7 +2628,7 @@ $(document).ready(function() {
 	
 	$('[cumulativebalance]').on(tapEvent, function() {
 		popUp({
-			title: 'Мой баланс|4',
+			title: 'Мой бонусный счет|4',
 			width: 1200,
 			closeButton: 'Закрыть',
 		}, function(walletBalanceWin) {

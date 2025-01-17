@@ -95,7 +95,7 @@
 <script type="text/javascript"><!--
 $(function() {
 	
-	if (location.hostname != 'localhost') {
+	if (isHosting()) {
 		socket.on('set_online_user', (userId, users) => {
 			let countUsersOnline = Object.keys(users).length;
 			$('#usersList').find('[userid="'+userId+'"]').find('.avatar').addClass('avatar_online').attr('title', 'Онлайн');
@@ -685,7 +685,7 @@ $(function() {
 		]).then((data) => {
 			if (reboot) $('#totalUsers').text(data[1]['headers']['total'] || 0);
 			
-			if (location.hostname != 'localhost') {
+			if (isHosting()) {
 				socket.emit('take_users_online', users => {
 					$.each(users, function(k, item) {
 						$('#usersList').find('[userid="'+item['user_id']+'"]').find('.avatar').addClass('avatar_online').attr('title', 'Онлайн');

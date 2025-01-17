@@ -9,11 +9,11 @@
 				
 				<div class="report">
 					<div>
-						<table class="popup__table report__table_left">
+						<table class="popup__table report__table_left w320px">
 							<thead>
 								<tr>
-									<td class="nowrap w50"><strong>Состав</strong></td>
-									<td class="nowrap w50"><strong>Звание</strong></td>
+									<td class="nowrap"><strong>Состав</strong></td>
+									<td class="nowrap w100px"><strong>Звание</strong></td>
 									<td><strong>Резерв</strong></td>
 								</tr>
 							</thead>
@@ -21,12 +21,12 @@
 								{% for userId, userData in static.users %}
 									<tr{% if userData.color %} style="background-color: {{userData.color}}"{% endif %}>
 										<td>{% if userId == to_user or lider %}{{userData.nickname}}{% else %}#{% endif %}</td>
-										<td>{% if userId == to_user or lider %}{{userData.rank_name}}{% else %}#{% endif %}</td>
+										<td><span class="fz12px">{% if userId == to_user or lider %}{{userData.rank_name}}{% else %}#{% endif %}</span></td>
 										<td><span class="nowrap">{% if userId == to_user or lider %}{{currency(userData.deposit)}}{% else %}<strong>#</strong>{% endif %}</span></td>
 									</tr>
 								{% endfor %}
 								<tr>
-									<td colspan="3" class="right">Сумма коэффициентов:</td>
+									<td colspan="3" class="right h3rem">Сумма коэффициентов:</td>
 								</tr>
 							</tbody>
 						</table>
@@ -57,7 +57,7 @@
 								{% endfor %}
 								<tr>
 									{% for raidId, raid in raids[staticId]['raids'] %}
-										<td class="center"><strong>{% if userId == to_user or lider %}{{raid.koeff_summ}}{% else %}#{% endif %}</strong></td>
+										<td class="center h3rem"><strong>{% if userId == to_user or lider %}{{raid.koeff_summ}}{% else %}#{% endif %}</strong></td>
 									{% endfor %}
 									<td class="p0"></td>
 								</tr>
@@ -76,9 +76,9 @@
 									<td><strong>Ошибки</strong></td>
 									<td><strong>Коэфф. периода</strong></td>
 									<td><strong>Выплата</strong></td>
-									<td><strong class="nowrap">В Резерв</strong></td>
-									<td><strong>Итого</strong></td>
-									{% if pattern_id and not to_user %}<td class="center"><i title="Статус выплаты" class="fa fa-check-square"></i></td>{% endif %}
+									{# <td><strong class="nowrap">В Резерв</strong></td>
+									<td><strong>Итого</strong></td> 
+									{% if pattern_id and not to_user %}<td class="center"><i title="Статус выплаты" class="fa fa-check-square"></i></td>{% endif %} #}
 								</tr>
 							</thead>
 							<tbody>
@@ -90,7 +90,7 @@
 										<td class="nowidth center"><p>{{userData.fine}}</p></td>
 										<td class="nowidth center">{% if userId == to_user or lider %}<p>{{userData.period_koeff|round(3)}}</p>{% else %}<p>#</p>{% endif %}</td>
 										<td class="nowidth center">{% if userId == to_user or lider %}<p class="nowrap">{{currency(userData.payment)}}</p>{% else %}<p>#</p>{% endif %}</td>
-										<td class="center">{% if userId == to_user or lider %}<p class="nowrap">{{currency(userData.to_deposit)}}</p>{% else %}<p>#</p>{% endif %}</td>
+										{# <td class="center">{% if userId == to_user or lider %}<p class="nowrap">{{currency(userData.to_deposit)}}</p>{% else %}<p>#</p>{% endif %}</td>
 										<td class="center">{% if userId == to_user or lider %}<p class="nowrap">{{currency(userData.final_payment)}}</p>{% else %}<p>#</p>{% endif %}</td>
 										{% if pattern_id and not to_user %}
 											<td class="square_block">
@@ -105,14 +105,19 @@
 												{% endif %}
 													
 											</td>
-										{% endif %}
+										{% endif %} #}
 									</tr>
 								{% endfor %}
 								<tr>
-									<td colspan="4" class="right">Сумма коэффициентов периода:</td>
-									<td class="center">{% if userId == to_user or lider %}<p>{{static.period_koeff_summ|round(3)}}</p>{% else %}<p>#</p>{% endif %}</td>
-									<td colspan="3" class="right"><span class="nowrap right">Бюджет:</span> <p class="nowrap">{% if userId == to_user or lider %}{{currency(static.cash)}}{% else %}#{% endif %}</p></td>
-									{% if pattern_id and not to_user %}<td></td>{% endif %}
+									<td colspan="3" class="right h3rem">
+										Сумм. коэфф. периода:
+										<strong>{% if userId == to_user or lider %}<p>{{static.period_koeff_summ|round(3)}}</p>{% else %}<p>#</p>{% endif %}</strong>
+									</td>
+									<td colspan="3" class="right h3rem w10rem">
+										<p><span class="nowrap right">Бюджет:</span> <strong class="nowrap">{% if userId == to_user or lider %}{{currency(static.cash)}}{% else %}#{% endif %}</strong></p>
+										<p><span class="nowrap right">Итоговый:</span> <strong class="nowrap">{% if userId == to_user or lider %}{{currency(static.final_cash)}}{% else %}#{% endif %}</strong></p>
+									</td>
+									{# {% if pattern_id and not to_user %}<td></td>{% endif %} #}
 								</tr>
 							</tbody>
 						</table>

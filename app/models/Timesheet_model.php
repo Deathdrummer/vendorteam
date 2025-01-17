@@ -161,7 +161,7 @@ class Timesheet_model extends My_Model {
 					'raid_type' 	=> $data['raid'],
 					'time_start_h'	=> $data['time_start']['h'],
 					'time_start_m'	=> $data['time_start']['m'],
-					'duration'		=> ($data['duration']['h'] * 60) + $data['duration']['m']
+					//'duration'		=> ($data['duration']['h'] * 60) + $data['duration']['m']
 				];
 			}
 			if ($this->db->insert_batch('timesheet', $insert)) return 1;
@@ -175,7 +175,7 @@ class Timesheet_model extends My_Model {
 			'raid_type' 	=> $data['raid'],
 			'time_start_h'	=> $data['time_start']['h'],
 			'time_start_m'	=> $data['time_start']['m'],
-			'duration'		=> ($data['duration']['h'] * 60) + $data['duration']['m']
+			//'duration'		=> ($data['duration']['h'] * 60) + $data['duration']['m']
 		]);
 		
 		if ($this->db->insert('timesheet')) return 1;
@@ -218,7 +218,7 @@ class Timesheet_model extends My_Model {
 				'raid_type' 	=> $data['raid'],
 				'time_start_h'	=> $data['time_start']['h'],
 				'time_start_m'	=> $data['time_start']['m'],
-				'duration'		=> ($data['duration']['h'] * 60) + $data['duration']['m']
+				//'duration'		=> ($data['duration']['h'] * 60) + $data['duration']['m']
 			];
 			foreach ($editIds as $id) {
 				$update[] = [
@@ -226,7 +226,7 @@ class Timesheet_model extends My_Model {
 					'raid_type' 	=> $data['raid'],
 					'time_start_h'	=> $data['time_start']['h'],
 					'time_start_m'	=> $data['time_start']['m'],
-					'duration'		=> ($data['duration']['h'] * 60) + $data['duration']['m']
+					//'duration'		=> ($data['duration']['h'] * 60) + $data['duration']['m']
 				];
 			}
 			if ($this->db->update_batch('timesheet', $update, 'id') !== false) return 1;
@@ -240,7 +240,7 @@ class Timesheet_model extends My_Model {
 			'raid_type' 	=> $data['raid'],
 			'time_start_h'	=> $data['time_start']['h'],
 			'time_start_m'	=> $data['time_start']['m'],
-			'duration'		=> ($data['duration']['h'] * 60) + $data['duration']['m']
+			//'duration'		=> ($data['duration']['h'] * 60) + $data['duration']['m']
 		];
 		
 		if ($this->db->update('timesheet', $updata) !== false) return 1;

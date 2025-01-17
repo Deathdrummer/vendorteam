@@ -2284,8 +2284,8 @@ class Admin_model extends My_Model {
 		foreach ($result as $item) {
 			$item['reason'] = $reasons[$item['reason']];
 			$item['stat'] = $statuses[$item['stat']];
-			$item['nickname'] = $usersData[$item['user_id']]['nickname'];
-			$item['avatar'] = $usersData[$item['user_id']]['avatar'];
+			$item['nickname'] = $usersData[$item['user_id']]['nickname'] ?? 'не существует';
+			$item['avatar'] = $usersData[$item['user_id']]['avatar'] ?? null;
 			$history[] = $item;
 		}
 		return $history;
