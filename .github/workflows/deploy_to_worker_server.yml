@@ -4,9 +4,9 @@ on:
   push
 
 env:
-  SERVER_HOST: 159.253.18.128
+  SERVER_HOST: 5.101.181.115
   SERVER_USER: root
-  SERVER_PATH: /var/www/fastuser/data/www/test.vendorteam.ru
+  SERVER_PATH: /var/www/fastuser/data/www/vendorteam.ru
 
 jobs:
 
