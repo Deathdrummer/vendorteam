@@ -808,13 +808,64 @@ $(document).ready(function() {
 	});
 	
 	
+	
+	
+	
 	// ----------------------------- Сформировать первый отчет по паттерну
+	let reportPatternId,
+		reportPatternTitle,
+		reportSortField = 'nickname',
+		reportSortOrder = 'ASC';
+	
 	$('body').off(tapEvent, '[patternid]').on(tapEvent, '[patternid]', function() {
 		var thisPatternId = $(this).attr('patternid'),
-			thisPatternTitle = $(this).closest('tr').children('td:first').text();
+			thisPatternTitle = $(this).closest('tr').children('td:first').text(),
+			reportPatternsWinSelector = reportPatternsWin.getSelector();
+		
+		
+		
+		getMainReport({
+			pattern_id: thisPatternId,
+			pattern_title: thisPatternTitle,
+		});
+		
+		reportPatternId = thisPatternId;
+		reportPatternTitle = thisPatternTitle;
+		
+	});
+	
+	
+	
+	//------------------------------------------- Сортировка
+	$('#mainReport').on(tapEvent, '[sortreportdata]', function() {
+		let attr = $(this).attr('sortreportdata').split('|'),
+			sortField = attr[0],
+			fieldType = attr[1];
+		
+		if (reportSortField != sortField) {
+			reportSortField = sortField;
+			reportSortOrder = 'ASC';
+		} else {
+			reportSortOrder = reportSortOrder == 'ASC' ? 'DESC' : 'ASC';
+		}
+		
+		$('#mainReport').prepend('<div class="waitblock"></div>');
+		
+		getMainReport({
+			pattern_id: reportPatternId,
+			pattern_title: reportPatternTitle,
+			sort_field: reportSortField,
+			sort_order: reportSortOrder,
+			field_type: fieldType
+		});
+	});
+		
+	
+	
+	function getMainReport({pattern_id, pattern_title, sort_field, sort_order, field_type}) {
 		reportPatternsWin.wait();
-		getAjaxHtml('reports/get_main_report', {pattern_id: thisPatternId}, function(html, stat) {
-			$('#mainReportTitle').text(thisPatternTitle);
+		getAjaxHtml('reports/get_main_report', {pattern_id, sort_field, sort_order, field_type}, function(html, stat) {
+			$('#mainReportTitle').text(pattern_title);
 			$('#mainReport').html(html);
 			$('#mainReport').ready(function() {
 				$('.scroll').ddrScrollTable();
@@ -826,7 +877,10 @@ $(document).ready(function() {
 		}, function() {
 			reportPatternsWin.wait(false);
 		});
-	});
+	}
+	
+	
+	
 	
 	
 	// ----------------------------- отправить сохраненный отчет в архив

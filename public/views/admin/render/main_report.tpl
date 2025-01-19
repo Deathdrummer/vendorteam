@@ -16,13 +16,19 @@
 							<thead>
 								<tr>
 									<td class="center w36px">№</td>
-									<td>Состав</td>
-									<td>Резерв</td>
+									<td class="sort{{sortField == 'nickname' ? ' sorted' : ''}}" sortreportdata="nickname|string">
+										<strong>Состав</strong>
+										<i class="fa fa-sort"></i>
+									</td>
+									<td class="sort{{sortField == 'deposit' ? ' sorted' : ''}}" sortreportdata="deposit|string">
+										<strong>Резерв</strong>
+										<i class="fa fa-sort"></i>
+									</td>
 								</tr>
 							</thead>
 							<tbody>
 								{% set index = 1 %}
-								{% for userId, userData in static.users %}
+								{% for userId, userData in static.users|sortBy(sortField, sortOrder, fieldType) %}
 									<tr>
 										<td class="center"><strong>{{index}}</strong></td>
 										<td>
@@ -55,7 +61,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								{% for userId, userData in static.users %}
+								{% for userId, userData in static.users|sortBy(sortField, sortOrder, fieldType) %}
 									<tr>
 										{% for raidId, raid in raids[staticId]['raids'] %}
 											<td>{{userData['raids'][raidId]['rate']|default('-')}}</td>
@@ -77,19 +83,38 @@
 						<table class="report__table_right">
 							<thead>
 								<tr>
-									<td>сумм коэф.</td>
-									<td>Персон.</td>
-									<td>Эффект.</td>
-									<td>Ошибки</td>
-									<td>Коэфф. периода</td>
-									<td>Выплата</td>
+									<td class="sort{{sortField == 'koeff_summ' ? ' sorted' : ''}}" sortreportdata="koeff_summ|string">
+										<strong>Cумм коэф.</strong>
+										<i class="fa fa-sort"></i>
+									</td>
+									<td class="sort{{sortField == 'persones_count' ? ' sorted' : ''}}" sortreportdata="persones_count|string">
+										<strong>Персон.</strong>
+										<i class="fa fa-sort"></i>
+									</td>
+									<td class="sort{{sortField == 'effectiveness' ? ' sorted' : ''}}" sortreportdata="effectiveness|string">
+										<strong>Эффект.</strong>
+										<i class="fa fa-sort"></i>
+									</td>
+									<td class="sort{{sortField == 'fine' ? ' sorted' : ''}}" sortreportdata="fine|string">
+										<strong>Ошибки</strong>
+										<i class="fa fa-sort"></i>
+									</td>
+									<td class="sort{{sortField == 'period_koeff' ? ' sorted' : ''}}" sortreportdata="period_koeff|string">
+										<strong>Коэфф. периода</strong>
+										<i class="fa fa-sort"></i>
+									</td>
+									<td class="sort{{sortField == 'payment' ? ' sorted' : ''}}" sortreportdata="payment|string">
+										<strong>Выплата</strong>
+										<i class="fa fa-sort"></i>
+									</td>
+									
 									{#<td class="nowrap">В Резерв</td>#}
 									{#<td>Итого</td>#}
 									{#{% if pattern_id and not to_user %}<td class="center"><i title="Статус выплаты" paydoneall class="fa fa-check-square"></i></td>{% endif %}#}
 								</tr>
 							</thead>
 							<tbody reporttableright>
-								{% for userId, userData in static.users %}
+								{% for userId, userData in static.users|sortBy(sortField, sortOrder, fieldType) %}
 									<tr>
 										<td class="nowidth">{{userData.koeff_summ}}</td>
 										<td class="nowidth">{{userData.persones_count}}</td>

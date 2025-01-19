@@ -725,7 +725,17 @@ class Account extends MY_Controller {
 		$raidsTypes = $this->admin->getRaidsTypes();
 		
 		$settings = isset($this->settings['compound_users_setting'][$postData['static_id']]) ? $this->settings['compound_users_setting'][$postData['static_id']] : null;
-		echo $this->twig->render('views/account/render/compound_users', ['compounds_data' => $data['compounds_data'], 'raids' => $data['raids'], 'is_lider' => $postData['is_lider'], 'raids_types' => $raidsTypes, 'settings' => $settings]);
+		
+		echo $this->twig->render('views/account/render/compound_users', [
+			'compounds_data'	=> $data['compounds_data'],
+			'raids' 			=> $data['raids'],
+			'is_lider'	 		=> $postData['is_lider'],
+			'raids_types' 		=> $raidsTypes,
+			'settings' 			=> $settings,
+			'sortField' 		=> $postData['sort_field'] ?? 'nickname',
+			'sortOrder' 		=> $postData['sort_order'] ?? 'ASC',
+			'sortFieldType' 	=> $postData['field_type'] ?? 'string',
+		]);
 	}
 	
 	

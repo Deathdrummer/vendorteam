@@ -6,18 +6,25 @@
 					<table class="popup__table report__table_left minheight" style="min-width: 230px !important;">
 						<thead>
 							<tr>
+								<td class="nowidth">№</td>
 								<td></td>
-								<td><strong>Никнейм</strong></td>
+								<td class="sort{{sortField == 'nickname' ? ' sorted' : ''}}" sortkoeffsdata="nickname|string">
+									<strong>Никнейм</strong>
+									<i class="fa fa-sort"></i>
+								</td>
 							</tr>
 						</thead>
 						<tbody>
-							{% for id, user in compounds_data|sortusers %}
+							{% set counter = 1 %}
+							{% for id, user in compounds_data|sortBy(sortField, sortOrder, sortFieldType) %}
 								<tr{% if user.color %} style="background-color: {{user.color}}"{% endif %}>
+									<td class="text-center"><strong>{{counter}}</strong></td>
 									<td class="w1 nopadding">
 										<div class="image mini" style="background-image: url('public/images/{% if user.avatar %}users/mini/{{user.avatar}}{% else %}user_mini.jpg{% endif %}')">{% if user.is_resign and is_lider %}<div class="resign" title="Увольняется"></div>{% endif %}</div>
 									</td>
 									<td>{{user.nickname}}</td>
 								</tr>
+								{% set counter = counter + 1 %}
 							{% endfor %}
 						</tbody>
 					</table>
@@ -48,7 +55,7 @@
 							</tr>
 						</thead>
 						<tbody>
-							{% for userId, user in compounds_data|sortusers %}
+							{% for userId, user in compounds_data|sortBy(sortField, sortOrder, sortFieldType) %}
 								<tr{% if user.color %} style="background-color: {{user.color}}"{% endif %}>
 									{% for raidId, raid in raids %}
 										<td class="text-center">
@@ -70,14 +77,30 @@
 					<table class="popup__table report__table_right minheight w340px">
 						<thead>
 							<tr>
-								<td><strong>Сумм. коэфф.</strong></td>
-								{% if settings.showfields.persones_count %}<td><strong>Персонажей</strong></td>{% endif %}
-								{% if settings.showfields.effectiveness %}<td><strong>Эффективн.</strong></td>{% endif %}
-								<td><strong>Штрафы</strong></td>
+								<td class="sort{{sortField == 'rate_summ' ? ' sorted' : ''}}" sortkoeffsdata="rate_summ|number">
+									<strong>Сумм. коэфф.</strong>
+									<i class="fa fa-sort"></i>
+								</td>
+								{% if settings.showfields.persones_count %}
+									<td class="sort{{sortField == 'persones_count' ? ' sorted' : ''}}" sortkoeffsdata="persones_count|number">
+										<strong>Персонажей</strong>
+										<i class="fa fa-sort"></i>
+									</td>
+								{% endif %}
+								{% if settings.showfields.effectiveness %}
+									<td class="sort{{sortField == 'effectiveness' ? ' sorted' : ''}}" sortkoeffsdata="effectiveness|number">
+										<strong>Эффективн.</strong>
+										<i class="fa fa-sort"></i>
+									</td>
+								{% endif %}
+								<td class="sort{{sortField == 'fine' ? ' sorted' : ''}}" sortkoeffsdata="fine|number">
+									<strong>Штрафы</strong>
+									<i class="fa fa-sort"></i>
+								</td>
 							</tr>
 						</thead>
 						<tbody>
-							{% for id, user in compounds_data|sortusers %}
+							{% for id, user in compounds_data|sortBy(sortField, sortOrder, sortFieldType) %}
 								<tr{% if user.color %} style="background-color: {{user.color}}"{% endif %}>
 									<td class="w1 text-center">
 										{{user.rate_summ|default(0)}}

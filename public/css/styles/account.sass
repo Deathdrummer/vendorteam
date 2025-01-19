@@ -3730,6 +3730,27 @@ img.avatar
 				
 			.nowrap, &.nowrap
 				white-space: nowrap
+			
+			&.sort
+				position: relative
+				cursor: pointer
+				
+				i
+					position: absolute
+					bottom: -9px
+					left: calc(50% - 6px)
+					color: #7267946e
+				
+				&.sorted
+					background-color: #b6c5d4
+					
+					i
+						color: #726794
+				
+				&:hover
+					i
+						color: #a196c3
+				
 		
 		+ table
 			tr

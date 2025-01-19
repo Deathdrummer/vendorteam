@@ -45,6 +45,10 @@ class Reports extends MY_Controller {
 		$mainReportData['to_user'] = isset($postData['to_user']) ? $userData['id'] : false;
 		$mainReportData['statics'] = isset($postData['to_user']) ? $userData['statics'] : false;
 		
+		$mainReportData['sortField'] = $postData['sort_field'] ?? null;
+		$mainReportData['sortOrder'] = $postData['sort_order'] ?? null;
+		$mainReportData['fieldType'] = $postData['field_type'] ?? null;
+		
 		if ($mainReportData['to_user']) echo $this->twig->render('views/account/render/main_report.tpl', $mainReportData);
 		else echo $this->twig->render('views/admin/render/main_report.tpl', $mainReportData);
 	}

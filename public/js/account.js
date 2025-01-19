@@ -988,7 +988,11 @@ $(document).ready(function() {
 	var setCompoundWin,
 		compoundPeriodId,
 		compoundStaticId,
-		compoundIsLider;
+		compoundIsLider,
+		compoundWinSelector,
+		compoundDatasortField = 'nickname',
+		compoundDatasortOrder = 'ASC';
+		
 	$('[setcompound]').on(tapEvent, function() {
 		var c = $(this).attr('setcompound').split('|');
 		compoundStaticId = c[0],
@@ -1002,12 +1006,29 @@ $(document).ready(function() {
 		}, function(sCWin) {
 			setCompoundWin = sCWin;
 			setCompoundWin.wait();
+			compoundWinSelector = setCompoundWin.getSelector();
 			
 			getAjaxHtml('account/get_reports_periods', function(html, stat) {
 				if (stat) setCompoundWin.setData(html, false);
 				else setCompoundWin.setData('<p class="empty center">Нет активных периодов!</p>', false);
 			}, function() {
 				setCompoundWin.wait(false);
+			});
+			
+			//------------------------------------------- Сортировка
+			$(compoundWinSelector).on(tapEvent, '[sortkoeffsdata]', function() {
+				let attr = $(this).attr('sortkoeffsdata').split('|'),
+					sortField = attr[0],
+					fieldType = attr[1];
+				
+				if (compoundDatasortField != sortField) {
+					compoundDatasortField = sortField;
+					compoundDatasortOrder = 'ASC';
+				} else {
+					compoundDatasortOrder = compoundDatasortOrder == 'ASC' ? 'DESC' : 'ASC';
+				}
+				
+				getUsersToCompound(sortField, compoundDatasortOrder, fieldType);
 			});
 		});
 	});
@@ -1021,9 +1042,23 @@ $(document).ready(function() {
 	
 	
 	
-	function getUsersToCompound() {
+	
+	
+	
+	
+	
+	
+	
+	function getUsersToCompound(sortField = 'nickname', sortOrder = 'ASC', fieldType = 'string') {
 		setCompoundWin.wait();
-		$.post('/account/get_users_to_compound', {period_id: compoundPeriodId, static_id: compoundStaticId, is_lider: compoundIsLider}, function(html) {
+		$.post('/account/get_users_to_compound', {
+			period_id: compoundPeriodId,
+			static_id: compoundStaticId,
+			is_lider: compoundIsLider,
+			sort_field: sortField,
+			sort_order: sortOrder,
+			field_type: fieldType,
+		}, function(html) {
 			if (html) {
 				setCompoundWin.setWidth(1300);
 				setCompoundWin.setData(html, false);
@@ -1088,7 +1123,6 @@ $(document).ready(function() {
 							});
 						}, 200);
 					});
-					
 				}
 			} else {
 				setCompoundWin.setData('<p class="empty center">Нет данных</p>', false);

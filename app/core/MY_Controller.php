@@ -500,6 +500,46 @@ class MY_Controller extends CI_Controller {
 			});
 			
 			
+			
+			$this->twig->addFilter('sortBy', function($arr, $field = null, $order = 'ASC', $fieldType = 'string') {
+				if (!$arr || !$field) return $arr;
+				uasort($arr, function($a, $b) use ($field, $order, $fieldType) {
+					$valA = $a[$field] ?? null;
+					$valB = $b[$field] ?? null;
+					
+					if ($fieldType == 'string') {
+						if (!isset($a[$field]) || !isset($b[$field])) return 0;
+						if (preg_match('/[а-яё.]+/ui', $a[$field]) && preg_match('/[a-z.]+/ui', $b[$field])) {
+							return $order == 'ASC' ? -1 : 1;
+						} elseif (preg_match('/[a-z.]+/ui', $a[$field]) && preg_match('/[а-яё.]+/ui', $b[$field])) {
+							return $order == 'ASC' ? 1 : -1;
+						} else {
+							if ($order == 'ASC') {
+								return $a[$field] < $b[$field] ? -1 : 1;
+							} elseif ($order == 'DESC') {
+								return $a[$field] < $b[$field] ? 1 : -1;
+							}
+						}
+						
+					} elseif ($fieldType == 'number') {
+						$valA = floatval($valA);
+						$valB = floatval($valB);
+						
+						if ($order == 'ASC') {
+							return $valA < $valB ? -1 : ($valA > $valB ? 1 : 0);
+						} elseif ($order == 'DESC') {
+							return $valA < $valB ? 1 : ($valA > $valB ? -1 : 0);
+						}
+					}
+				});
+				
+				return $arr;
+			});
+			
+			
+			
+			
+			
 			$this->twig->addFilter('ksort', function($arr) {
 				if (!$arr) return false;
 				ksort($arr);
