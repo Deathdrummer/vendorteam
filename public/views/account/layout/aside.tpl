@@ -14,7 +14,7 @@
 				<button class="leftblock__changebutton" id="changeAvatar">Изменить</button>
 			</div>
 			
-			<div class="leftblock__icons">
+			{# <div class="leftblock__icons">
 				<div class="leftblocktopicon" newmessages title="Сообщения от администрации">
 					<svg newmessage class="w30px h30px"><use xlink:href="#message"></use><span class="leftblocktopicon__counter" newmessagecounter></span></svg>
 				</div>
@@ -28,7 +28,7 @@
 				<div class="leftblocktopicon" getpollings title="Опросы">
 					<svg class="w30px h40px"><use xlink:href="#polling"></use><span class="leftblocktopicon__counter" pollingcounter></span></svg>
 				</div>
-				
+				 #}
 				{# <div class="leftblocktopicon leftblocktopicon_active">
 					<i class="fa fa-gift"></i>
 					<span class="leftblocktopicon__counter">5</span>
@@ -43,7 +43,7 @@
 				<div class="tadainterval infinite animated animated5s h22px" getgifts title="Получить подарки">
 					
 				</div> #}
-			</div>
+			{# </div> #}
 		</div>
 			
 		<p class="leftblock__nickname">

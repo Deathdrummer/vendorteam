@@ -8,7 +8,7 @@ if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phon
 
 
 isHosting = function() {
-	return location.hostname.includes('192.168.0') == false && location.hostname != 'localhost';
+	return location.hostname.includes('192.168.0') == false && location.hostname != 'localhost' && location.hostname.includes('.loc') == false;
 }
 
 

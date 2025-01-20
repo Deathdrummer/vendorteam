@@ -20,7 +20,7 @@
 	<div class="popup__data">
 		<ul class="tabstitles pt-2 px-1" id="raidStaticTabs">
 			<li id="raidStaticUsers" class="active"><p>Список участников</p></li>
-			<li id="raidStaticOrders"><p>Список заказов</p></li>
+			{# <li id="raidStaticOrders"><p>Список заказов</p></li> #}
 		</ul>
 		
 		<div class="tabscontent">
@@ -62,7 +62,7 @@
 					<p class="empty">Нет данных</p>
 				{% endif %}
 			</div>
-			<div tabid="raidStaticOrders">
+			{# <div tabid="raidStaticOrders">
 				<table class="popup__table popup__table_hover" id="newRaidOrders">
 					<thead>
 						<tr>
@@ -83,7 +83,7 @@
 						</tr>
 					</tfoot>
 				</table>
-			</div>
+			</div> #}
 		</div>
 	</div>	
 </form>

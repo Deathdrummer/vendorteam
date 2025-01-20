@@ -17,7 +17,7 @@
 			{% for week in offtime_dates|batch(7) %}
 				<tr>
 					{% for date in week %}
-						{% if disabled[static][date] is not defined and current_date < (date - location.timeoffset) %}
+						{% if disabled[static][date] is not defined and current_date <= (date - location.timeoffset) %}
 							<td>
 								<div class="offtime__title">
 									<strong>{{date|d}}</strong>

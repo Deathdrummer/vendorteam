@@ -724,7 +724,6 @@
 <script type="text/javascript"><!--
 
 if (isHosting()) {
-	
 	socket.emit('take_users_online', users => {
 		$.each(users, function(k, item) {
 			$('#users').find('[userid="'+item['user_id']+'"]').find('.avatar').addClass('avatar_online').attr('title', 'Онлайн');
@@ -734,8 +733,6 @@ if (isHosting()) {
 	});
 	
 	
-	
-
 	socket.on('set_online_user', (userId, users) => {
 		let countUsersOnline = Object.keys(users).length;
 		$('#users').find('[userid="'+userId+'"]').find('.avatar').addClass('avatar_online').attr('title', 'Онлайн');

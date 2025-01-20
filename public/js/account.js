@@ -2524,7 +2524,7 @@ $(document).ready(function() {
 		}, function(visitsRateWin) {
 			visitsRateWin.wait();
 			
-			getAjaxHtml('account/get_reports_periods', {attr: 'chooseperiodtovisits', 'only_opened': false, 'to_visits': true}, function(html) {
+			getAjaxHtml('account/get_reports_periods', {attr: 'chooseperiodtovisits', 'only_opened': false, 'to_visits': true, limit: 4}, function(html) {
 				$('#visitsRateWin').html(html);
 			}, function() {
 				visitsRateWin.wait(false);

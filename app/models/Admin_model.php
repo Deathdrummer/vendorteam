@@ -583,11 +583,12 @@ class Admin_model extends My_Model {
 	 * @param Вернуть данные заданного статика
 	 * @return [static id => static name] или [static id => static data]
 	 */
-	public function getStatics($nameOnly = false, $staticId = null) {
+	public function getStatics($nameOnly = false, $staticId = null, $onlyActive = false) {
 		$this->db->select('s.*, (SELECT COUNT(us.id) FROM users_statics us JOIN users u ON us.user_id = u.id WHERE s.id = us.static_id AND u.deleted = 0 AND us.main = 1) AS count_users');
 		if (is_array($staticId)) $this->db->where_in('s.id', $staticId);
 		elseif (!is_null($staticId)) $this->db->where('s.id', $staticId);
 		$this->db->order_by('id', 'ASC');
+		if ($onlyActive) $this->db->where('active', 1);
 		$query = $this->db->get('statics s');
 		if (!$response = $query->result_array()) return false;
 		$data = [];
@@ -607,6 +608,7 @@ class Admin_model extends My_Model {
 			$data[$staticId]['id'] = $staticId;
 			return $data[$staticId];
 		}
+		
 		return $data;
 	}
 	
@@ -784,17 +786,17 @@ class Admin_model extends My_Model {
 	 * @return 
 	 */
 	public function addRaidesColors($postData) {
-		$tableStatics = $this->getStatics() ?: [];
-		if ($newStatics = array_diff_key($postData, $tableStatics)) {
-			if ($newStatics = array_filter($newStatics)) {
-				$this->db->insert_batch('raiders_colors', array_values($newStatics));
+		$tableRaidsColors = $this->getRaidersColors() ?: [];
+		
+		if ($newRaidsColors = array_diff_key($postData, $tableRaidsColors)) {
+			if ($newRaidsColors = array_filter($newRaidsColors)) {
+				$this->db->insert_batch('raiders_colors', array_values($newRaidsColors));
 			}
-			
 		}
 		
-		if ($updateStatics = array_intersect_key($postData, $tableStatics)) {
-			foreach ($updateStatics as $key => $item) $updateStatics[$key]['id'] = $key;
-			$this->db->update_batch('raiders_colors', array_values($updateStatics), 'id');
+		if ($updateRaidsColors = array_intersect_key($postData, $tableRaidsColors)) {
+			foreach ($updateRaidsColors as $key => $item) $updateRaidsColors[$key]['id'] = $key;
+			$this->db->update_batch('raiders_colors', array_values($updateRaidsColors), 'id');
 		}
 		
 		return 1;

@@ -706,7 +706,7 @@ class Account extends MY_Controller {
 		$attr = isset($post['attr']) ? $post['attr'] : null;
 		$onlyOpened = isset($post['only_opened']) ? $post['only_opened'] : true;
 		$showToVisits = isset($post['to_visits']) ? $post['to_visits'] : false;
-		$reportsPeriods = $this->reports_model->getReportsPeriods($onlyOpened, $showToVisits);
+		$reportsPeriods = $this->reports_model->getReportsPeriods($onlyOpened, $showToVisits, $post['limit'] ?? 50);
 		echo $this->twig->render('views/account/render/reports_periods.tpl', ['periods' => $reportsPeriods, 'attr' => $attr]);
 	}
 	

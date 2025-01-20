@@ -84,7 +84,7 @@ class Reports extends MY_Controller {
 	public function get_statics_to_cash() {
 		if (!$this->input->is_ajax_request()) return false;
 		$setCash = json_decode($this->input->post('set_cash'), true);
-		$reportStatics = $this->admin_model->getStatics(true);
+		$reportStatics = $this->admin_model->getStatics(true, null, true);
 		echo $this->twig->render('views/admin/render/reports_statics_cash.tpl', ['report_statics' => $reportStatics, 'set_cash' => $setCash]);
 	}
 	

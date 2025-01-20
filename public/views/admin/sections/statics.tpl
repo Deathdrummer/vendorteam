@@ -70,8 +70,16 @@
 								<strong class="title">Начисление в депозит:</strong>
 								{% include form~'field.tpl' with {'label': 'Процент', 'name': 'statics|'~id~'|deposit_percent', 'postfix': 0, 'class': 'w100'} %}
 							</div>
+							
+							<div class="list_col right ml-auto">
+								<strong class="title">Актив:</strong>
+								<div class="checkblock">
+									<input type="checkbox" id="active{{id}}"{% if statics[id]['active'] %} checked{% endif %} name="statics[{{id}}][active]" value="1">
+									<label for="active{{id}}"></label>
+								</div>
+							</div>
 								
-							<div class="buttons right ml-auto">
+							<div class="buttons right ml20px">
 								<button class="remove remove_static fieldheight" data-id="{{id}}" title="Удалить Статик"><i class="fa fa-trash"></i></button>
 							</div>
 						</div>

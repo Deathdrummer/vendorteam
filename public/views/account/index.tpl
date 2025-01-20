@@ -128,7 +128,7 @@
 																			<div class="staticbuttons__row">
 																				<button newraid="{{staticId}}">Создать рейд</button>
 																				<button setcompound="{{staticId}}|1">Коэфф.</button>
-																				<button setkeys="{{staticId}}|1">Ключи</button>
+																				{# <button setkeys="{{staticId}}|1">Ключи</button> #}
 																			</div>
 																			<div class="staticbuttons__row">
 																				{% if statics[staticId]['payformat'] == 1 %}
@@ -139,7 +139,7 @@
 																		{% else %}
 																			<div class="staticbuttons__row">
 																				<button setcompound="{{staticId}}|0">Коэффициенты</button>
-																				<button setkeys="{{staticId}}|0">Ключи</button>
+																				{# <button setkeys="{{staticId}}|0">Ключи</button> #}
 																				{% if statics[staticId]['payformat'] == 1 %}<button myreward="{{staticId}}">Моя премия</button>{% endif %}	
 																			</div>
 																		{% endif %}
