@@ -628,12 +628,10 @@ class Account_model extends My_Model {
 		$raidUsers = $data['raid_users']; // appearance rate
 		
 		
-		$raidOrdersComment = array_pop($data['raid_orders']);
-		$raidOrders = array_filter($data['raid_orders'], function($item) {return trim($item) !== "";});
-		if (trim($raidOrdersComment) != '') {
+		$raidOrdersComment = isset($data['raid_orders']) ? array_pop($data['raid_orders']) : '';
+		$raidOrders = isset($data['raid_orders']) ? array_filter($data['raid_orders'], function($item) {return trim($item) !== "";}) : [];
+		if (trim($raidOrdersComment) != '' && $raidOrders) {
 			array_push($raidOrders, $raidOrdersComment);
-		} else {
-			array_push($raidOrders, 'Нет комментария');
 		}
 		
 		$this->db->insert('raids', [

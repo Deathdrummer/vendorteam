@@ -1576,13 +1576,58 @@ $(document).ready(function() {
 	});
 		
 		
+		
+		
+		
+	let reportPatternId,
+		reportPatternName,
+		reportWinSelector,
+		reportSortField = 'nickname',
+		reportSortOrder = 'ASC';
+		
 	$('body').off(tapEvent, '[patternid]').on(tapEvent, '[patternid]', function() {
 		reportWin.wait();
-		var thisPatternId = $(this).attr('patternid'),
-			thisPatternName = $(this).attr('patternname');
+		reportWinSelector = reportWin.getSelector();
+		reportPatternId = $(this).attr('patternid'),
+		reportPatternName = $(this).attr('patternname');
 		
-		getAjaxHtml('reports/get_main_report', {from_pattern: 1, to_user: 1, pattern_id: thisPatternId}, function(html, stat) {
-			reportWin.setTitle('Отчет по выплатам - '+thisPatternName+'|4');
+		getMainReport({pattern_id: reportPatternId, reportPatternName});
+		
+		//------------------------------------------- Сортировка
+		$(reportWinSelector).off(tapEvent, '[sortreportdata]').on(tapEvent, '[sortreportdata]', function() {
+			let attr = $(this).attr('sortreportdata').split('|'),
+				sortField = attr[0],
+				fieldType = attr[1];
+			
+			if (reportSortField != sortField) {
+				reportSortField = sortField;
+				reportSortOrder = 'ASC';
+			} else {
+				reportSortOrder = reportSortOrder == 'ASC' ? 'DESC' : 'ASC';
+			}
+			
+			reportWin.wait();
+			
+			getMainReport({
+				pattern_id: reportPatternId,
+				reportPatternName,
+				sort_field: reportSortField,
+				sort_order: reportSortOrder,
+				field_type: fieldType
+			});
+		});
+	});
+	
+	
+	
+		
+	
+	
+	
+	function getMainReport(params = {}) {
+		const reportPatternName = getItem(params, 'reportPatternName');
+		getAjaxHtml('reports/get_main_report', {from_pattern: 1, to_user: 1, ...params}, function(html, stat) {
+			reportWin.setTitle('Отчет по выплатам - '+reportPatternName+'|4');
 			
 			if (stat) {
 				reportWin.setWidth(1330);
@@ -1597,7 +1642,12 @@ $(document).ready(function() {
 		}, function() {
 			reportWin.wait(false);
 		});
-	});
+	}
+	
+	
+	
+	
+	
 	
 	
 	

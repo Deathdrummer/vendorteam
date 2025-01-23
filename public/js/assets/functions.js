@@ -61,6 +61,16 @@ searchInObject = function(arrObj, field, value) {
 
 
 
+getItem = function(obj, key) {
+    if (obj.hasOwnProperty(key)) {
+        const value = obj[key]; // Сохраняем значение ключа
+        delete obj[key]; // Удаляем ключ из объекта
+        return value; // Возвращаем значение
+    }
+    return undefined; // Если ключа нет, возвращаем undefined
+}
+
+
 
 
 /*

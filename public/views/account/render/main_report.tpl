@@ -12,13 +12,22 @@
 						<table class="popup__table report__table_left w320px">
 							<thead>
 								<tr>
-									<td class="nowrap"><strong>Состав</strong></td>
-									<td class="nowrap w100px"><strong>Звание</strong></td>
-									<td><strong>Резерв</strong></td>
+									<td class="nowrap sort{{sortField == 'nickname' ? ' sorted' : ''}}" sortreportdata="nickname|string">
+										<strong>Состав</strong>
+										<i class="fa fa-sort"></i>
+									</td>
+									<td class="nowrap w100px sort{{sortField == 'rank_name' ? ' sorted' : ''}}" sortreportdata="rank_name|string">
+										<strong>Звание</strong>
+										<i class="fa fa-sort"></i>
+									</td>
+									<td class="sort{{sortField == 'deposit' ? ' sorted' : ''}}" sortreportdata="deposit|number">
+										<strong>Резерв</strong>
+										<i class="fa fa-sort"></i>
+									</td>
 								</tr>
 							</thead>
 							<tbody>
-								{% for userId, userData in static.users %}
+								{% for userId, userData in static.users|sortBy(sortField, sortOrder, fieldType) %}
 									<tr{% if userData.color %} style="background-color: {{userData.color}}"{% endif %}>
 										<td>{% if userId == to_user or lider %}{{userData.nickname}}{% else %}#{% endif %}</td>
 										<td><span class="fz12px">{% if userId == to_user or lider %}{{userData.rank_name}}{% else %}#{% endif %}</span></td>
@@ -47,7 +56,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								{% for userId, userData in static.users %}
+								{% for userId, userData in static.users|sortBy(sortField, sortOrder, fieldType) %}
 									<tr{% if userData.color %} style="background-color: {{userData.color}}"{% endif %}>
 										{% for raidId, raid in raids[staticId]['raids'] %}
 											<td class="center">{% if userId == to_user or lider %}<p>{{userData['raids'][raidId]['rate']|default('-')}}</p>{% else %}<p>#</p>{% endif %}</td>
@@ -70,19 +79,38 @@
 						<table class="popup__table report__table_right">
 							<thead>
 								<tr>
-									<td><strong>сумм коэф.</strong></td>
-									<td><strong>Персон.</strong></td>
-									<td><strong>Эффект</strong>.</td>
-									<td><strong>Ошибки</strong></td>
-									<td><strong>Коэфф. периода</strong></td>
-									<td><strong>Выплата</strong></td>
+									<td class="sort{{sortField == 'koeff_summ' ? ' sorted' : ''}}" sortreportdata="koeff_summ|number">
+										<strong>Cумм коэф.</strong>
+										<i class="fa fa-sort"></i>
+									</td>
+									<td class="sort{{sortField == 'persones_count' ? ' sorted' : ''}}" sortreportdata="persones_count|number">
+										<strong>Персон.</strong>
+										<i class="fa fa-sort"></i>
+									</td>
+									<td class="sort{{sortField == 'effectiveness' ? ' sorted' : ''}}" sortreportdata="effectiveness|number">
+										<strong>Эффект.</strong>
+										<i class="fa fa-sort"></i>
+									</td>
+									<td class="sort{{sortField == 'fine' ? ' sorted' : ''}}" sortreportdata="fine|number">
+										<strong>Ошибки</strong>
+										<i class="fa fa-sort"></i>
+									</td>
+									<td class="sort{{sortField == 'period_koeff' ? ' sorted' : ''}}" sortreportdata="period_koeff|number">
+										<strong>Коэфф. периода</strong>
+										<i class="fa fa-sort"></i>
+									</td>
+									<td class="sort{{sortField == 'payment' ? ' sorted' : ''}}" sortreportdata="payment|number">
+										<strong>Выплата</strong>
+										<i class="fa fa-sort"></i>
+									</td>
+									
 									{# <td><strong class="nowrap">В Резерв</strong></td>
 									<td><strong>Итого</strong></td> 
 									{% if pattern_id and not to_user %}<td class="center"><i title="Статус выплаты" class="fa fa-check-square"></i></td>{% endif %} #}
 								</tr>
 							</thead>
 							<tbody>
-								{% for userId, userData in static.users %}
+								{% for userId, userData in static.users|sortBy(sortField, sortOrder, fieldType) %}
 									<tr{% if userData.color %} style="background-color: {{userData.color}}"{% endif %}>
 										<td class="nowidth center"><p>{{userData.koeff_summ}}</p></td>
 										<td class="nowidth center"><p>{{userData.persones_count}}</p></td>

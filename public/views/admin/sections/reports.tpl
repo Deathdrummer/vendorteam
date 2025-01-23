@@ -819,10 +819,7 @@ $(document).ready(function() {
 	
 	$('body').off(tapEvent, '[patternid]').on(tapEvent, '[patternid]', function() {
 		var thisPatternId = $(this).attr('patternid'),
-			thisPatternTitle = $(this).closest('tr').children('td:first').text(),
-			reportPatternsWinSelector = reportPatternsWin.getSelector();
-		
-		
+			thisPatternTitle = $(this).closest('tr').children('td:first').text();
 		
 		getMainReport({
 			pattern_id: thisPatternId,
